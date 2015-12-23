@@ -13,13 +13,28 @@ class Installer(Command):
         pass
 
     def run(self):
-        call(['pyinstaller', '-F', '-w', 'cddagl\launcher.py'])
+        call(['pyi-makespec', '-F', '-w', '--noupx', 'cddagl\launcher.py'])
+
+        added_files = [('alembic', 'alembic')]
+
+        spec_content = None
+        with open('launcher.spec', 'r') as f:
+            spec_content = f.read()
+
+        spec_content = spec_content.replace('datas=None', 'datas=added_files')
+        spec_content = ('added_files = ' + repr(added_files) + '\n' +
+            spec_content)
+
+        with open('launcher.spec', 'w') as f:
+            f.write(spec_content)
+
+        call(['pyinstaller', 'launcher.spec'])
 
 
 setup(name='cddagl',
       version='1.0',
       description=(
-        'A Cataclysm: Dark Days Ahead launcher with additional features'),
+          'A Cataclysm: Dark Days Ahead launcher with additional features'),
       author='Rémy Roy',
       author_email='remyroy@remyroy.com',
       url='https://github.com/remyroy/CDDA-Game-Launcher',

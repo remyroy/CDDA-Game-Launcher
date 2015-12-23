@@ -4,15 +4,15 @@ import sys
 from alembic.config import Config
 from alembic import command
 
-def init_config():
+def init_config(basedir):
     config_path = get_config_path()
 
-    project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    alembic_ini = os.path.join(project_dir, 'alembic.ini')
+    alembic_dir = os.path.join(basedir, 'alembic')
     
-    alembic_cfg = Config(alembic_ini)
-    alembic_cfg.set_main_option("sqlalchemy.url",
-        "sqlite:///{0}".format(config_path))
+    alembic_cfg = Config()
+    alembic_cfg.set_main_option('sqlalchemy.url',
+        'sqlite:///{0}'.format(config_path))
+    alembic_cfg.set_main_option('script_location', alembic_dir)
     command.upgrade(alembic_cfg, "head")
 
 def get_config_path():
