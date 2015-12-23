@@ -1,0 +1,4 @@
+SQLAlchemy
+alembic
+PyQt5
+PyInstaller
