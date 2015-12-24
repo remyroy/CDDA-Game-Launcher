@@ -6,8 +6,9 @@ from alembic import command
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import joinedload, joinedload_all
 
-from cddagl.configmodel import ConfigValue
+from cddagl.configmodel import ConfigValue, GameVersion
 
 _session = None
 
@@ -66,3 +67,28 @@ def set_config_value(name, value):
     db_value.value = value
     session.add(db_value)
     session.commit()
+
+def new_version(version, sha256):
+    session = get_session()
+
+    game_version = session.query(GameVersion).filter_by(sha256=sha256).first()
+
+    if game_version is None:
+        game_version = GameVersion()
+        game_version.sha256 = sha256
+        game_version.version = version
+
+        session.add(game_version)
+        session.commit()
+
+def get_build_from_sha256(sha256):
+    session = get_session()
+    
+    game_version = session.query(GameVersion).filter_by(sha256=sha256
+        ).options(joinedload('game_build')
+        ).first()
+
+    if game_version is not None and game_version.game_build is not None:
+        return game_version.game_build.build
+
+    return None

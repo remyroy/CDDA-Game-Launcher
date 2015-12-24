@@ -4,22 +4,34 @@ import hashlib
 import re
 
 from PyQt5.QtCore import Qt, QTimer
-
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
-    QProgressBar)
-
-from PyQt5.QtGui import QIcon
-
+    QProgressBar, QButtonGroup, QRadioButton)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
-from cddagl.config import get_config_value, set_config_value
+from cddagl.config import (
+    get_config_value, set_config_value, new_version, get_build_from_sha256)
 
 READ_BUFFER_SIZE = 16384
 
+BASE_URLS = {
+    'Tiles': {
+        'Windows x64': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows_x64/Tiles/',
+        'Windows x86': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Tiles/'
+    },
+    'Console': {
+        'Windows x64': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows_x64/Curses/',
+        'Windows x86': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Curses/'
+    }
+}
+
 def clean_qt_path(path):
     return path.replace('/', '\\')
+
+def is_64_windows():
+    return 'PROGRAMFILES(X86)' in os.environ
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
@@ -49,8 +61,12 @@ class CentralWidget(QWidget):
         game_dir_group_box = GameDirGroupBox()
         self.game_dir_group_box = game_dir_group_box
 
+        update_group_box = UpdateGroupBox()
+        self.update_group_box = update_group_box
+
         layout = QVBoxLayout()
         layout.addWidget(game_dir_group_box)
+        layout.addWidget(update_group_box)
         self.setLayout(layout)
 
     def get_main_window(self):
@@ -90,8 +106,17 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(version_value_label, 1, 1)
         self.version_value_label = version_value_label
 
-        self.setTitle('Game directory')
+        build_label = QLabel()
+        build_label.setText('Build:')
+        layout.addWidget(build_label, 2, 0, Qt.AlignRight)
+        self.build_label = build_label
 
+        build_value_label = QLabel()
+        build_value_label.setText('Unknown')
+        layout.addWidget(build_value_label, 2, 1)
+        self.build_value_label = build_value_label
+
+        self.setTitle('Game directory')
         self.setLayout(layout)
 
     def showEvent(self, event):
@@ -195,7 +220,14 @@ class GameDirGroupBox(QGroupBox):
                 status_bar.removeWidget(self.reading_progress_bar)
                 status_bar.showMessage('Ready')
 
-                print(self.exe_sha256.hexdigest())
+                sha256 = self.exe_sha256.hexdigest()
+
+                new_version(self.game_version, sha256)
+
+                build = get_build_from_sha256(sha256)
+
+                if build is not None:
+                    self.build_value_label.setText(build)
 
             else:
                 last_frame = bytes
@@ -225,10 +257,99 @@ class GameDirGroupBox(QGroupBox):
         import pdb; pdb.set_trace()
         pyqtRestoreInputHook()'''
 
-        '''status_bar.removeWidget(reading_label)
-        status_bar.removeWidget(progress_bar)
 
-        status_bar.showMessage('Ready')'''
+class UpdateGroupBox(QGroupBox):
+    def __init__(self):
+        super(UpdateGroupBox, self).__init__()
+
+        self.shown = False
+
+        layout = QGridLayout()
+
+        graphics_label = QLabel()
+        graphics_label.setText('Graphics:')
+        layout.addWidget(graphics_label, 0, 0, Qt.AlignRight)
+        self.graphics_label = graphics_label
+
+        graphics_button_group = QButtonGroup()
+        self.graphics_button_group = graphics_button_group
+
+        tiles_radio_button = QRadioButton()
+        tiles_radio_button.setText('Tiles')
+        layout.addWidget(tiles_radio_button, 0, 1)
+        self.tiles_radio_button = tiles_radio_button
+        graphics_button_group.addButton(tiles_radio_button)
+
+        console_radio_button = QRadioButton()
+        console_radio_button.setText('Console')
+        layout.addWidget(console_radio_button, 0, 2)
+        self.console_radio_button = console_radio_button
+        graphics_button_group.addButton(console_radio_button)
+
+        graphics_button_group.buttonClicked.connect(self.graphics_clicked)
+
+        platform_label = QLabel()
+        platform_label.setText('Platform:')
+        layout.addWidget(platform_label, 1, 0, Qt.AlignRight)
+        self.platform_label = platform_label
+
+        platform_button_group = QButtonGroup()
+        self.platform_button_group = platform_button_group
+
+        x64_radio_button = QRadioButton()
+        x64_radio_button.setText('Windows x64')
+        layout.addWidget(x64_radio_button, 1, 1)
+        self.x64_radio_button = x64_radio_button
+        platform_button_group.addButton(x64_radio_button)
+
+        platform_button_group.buttonClicked.connect(self.platform_clicked)
+
+        if not is_64_windows():
+            x64_radio_button.setEnabled(False)
+
+        x86_radio_button = QRadioButton()
+        x86_radio_button.setText('Windows x86')
+        layout.addWidget(x86_radio_button, 1, 2)
+        self.x86_radio_button = x86_radio_button
+        platform_button_group.addButton(x86_radio_button)
+
+        self.setTitle('Update/Installation')
+        self.setLayout(layout)
+
+    def showEvent(self, event):
+        if not self.shown:
+            graphics = get_config_value('graphics')
+            if graphics is None:
+                graphics = 'Tiles'
+
+            platform = get_config_value('platform')
+            if platform is None:
+                if is_64_windows():
+                    platform = 'Windows x64'
+                else:
+                    platform = 'Windows x86'
+
+            if graphics == 'Tiles':
+                self.tiles_radio_button.setChecked(True)
+            elif graphics == 'Console':
+                self.console_radio_button.setChecked(True)
+
+            if platform == 'Windows x64':
+                self.x64_radio_button.setChecked(True)
+            elif platform == 'Windows x86':
+                self.x86_radio_button.setChecked(True)
+
+            '''self.last_game_directory = None
+            self.dir_edit.setText(game_directory)
+            self.game_directory_changed()'''
+
+        self.shown = True
+
+    def graphics_clicked(self, button):
+        set_config_value('graphics', button.text())
+
+    def platform_clicked(self, button):
+        set_config_value('platform', button.text())
 
 def start_ui():
     app = QApplication(sys.argv)
