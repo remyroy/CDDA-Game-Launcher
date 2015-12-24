@@ -3,7 +3,7 @@ import os
 import hashlib
 import re
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
@@ -264,6 +264,9 @@ class UpdateGroupBox(QGroupBox):
 
         self.shown = False
 
+        self.qnam = QNetworkAccessManager()
+        self.http_reply = None
+
         layout = QGridLayout()
 
         graphics_label = QLabel()
@@ -313,6 +316,16 @@ class UpdateGroupBox(QGroupBox):
         self.x86_radio_button = x86_radio_button
         platform_button_group.addButton(x86_radio_button)
 
+        latest_build_label = QLabel()
+        latest_build_label.setText('Latest build:')
+        layout.addWidget(latest_build_label, 2, 0, Qt.AlignRight)
+        self.latest_build_label = latest_build_label
+
+        latest_build_value_label = QLabel()
+        latest_build_value_label.setText('Unknown')
+        layout.addWidget(latest_build_value_label, 2, 1, 1, 2)
+        self.latest_build_value_label = latest_build_value_label
+
         self.setTitle('Update/Installation')
         self.setLayout(layout)
 
@@ -339,11 +352,51 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'Windows x86':
                 self.x86_radio_button.setChecked(True)
 
-            '''self.last_game_directory = None
-            self.dir_edit.setText(game_directory)
-            self.game_directory_changed()'''
+            self.start_lb_request(BASE_URLS[graphics][platform])
 
         self.shown = True
+
+    def get_main_window(self):
+        return self.parentWidget().get_main_window()
+
+    def start_lb_request(self, url):
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.clearMessage()
+
+        fetching_label = QLabel()
+        fetching_label.setText('Fetching: {0}'.format(url))
+        status_bar.addWidget(fetching_label, 100)
+        self.fetching_label = fetching_label
+
+        progress_bar = QProgressBar()
+        status_bar.addWidget(progress_bar)
+        self.fetching_progress_bar = progress_bar
+
+        progress_bar.setMinimum(0)
+
+        self.http_reply = self.qnam.get(QNetworkRequest(QUrl(url)))
+        self.http_reply.finished.connect(self.lb_http_finished)
+        self.http_reply.readyRead.connect(self.lb_http_ready_read)
+        self.http_reply.downloadProgress.connect(self.lb_dl_progress)
+
+    def lb_http_finished(self):
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.removeWidget(self.fetching_label)
+        status_bar.removeWidget(self.fetching_progress_bar)
+
+    def lb_http_ready_read(self):
+        print('ready read')
+        self.http_reply.readAll()
+        #print(self.http_reply.readAll())
+
+    def lb_dl_progress(self, bytes_read, total_bytes):
+        print(bytes_read, total_bytes)
+        self.fetching_progress_bar.setMaximum(total_bytes)
+        self.fetching_progress_bar.setValue(bytes_read)
 
     def graphics_clicked(self, button):
         set_config_value('graphics', button.text())
