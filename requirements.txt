@@ -2,3 +2,7 @@ SQLAlchemy
 alembic
 PyQt5
 PyInstaller
+html5lib
+lxml
+cssselect
+arrow

@@ -3,6 +3,14 @@ import os
 import hashlib
 import re
 
+from datetime import datetime
+import arrow
+
+from io import BytesIO
+
+import html5lib
+from urllib.parse import urljoin
+
 from PyQt5.QtCore import Qt, QTimer, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
@@ -46,6 +54,7 @@ class MainWindow(QMainWindow):
 
     def create_status_bar(self):
         status_bar = self.statusBar()
+        status_bar.busy = 0
 
         status_bar.showMessage('Ready')
 
@@ -182,6 +191,8 @@ class GameDirGroupBox(QGroupBox):
         status_bar = main_window.statusBar()
         status_bar.clearMessage()
 
+        status_bar.busy += 1
+
         reading_label = QLabel()
         reading_label.setText('Reading: {0}'.format(self.exe_path))
         status_bar.addWidget(reading_label, 100)
@@ -218,7 +229,10 @@ class GameDirGroupBox(QGroupBox):
 
                 status_bar.removeWidget(self.reading_label)
                 status_bar.removeWidget(self.reading_progress_bar)
-                status_bar.showMessage('Ready')
+
+                status_bar.busy -= 1
+                if status_bar.busy == 0:
+                    status_bar.showMessage('Ready')
 
                 sha256 = self.exe_sha256.hexdigest()
 
@@ -352,6 +366,7 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'Windows x86':
                 self.x86_radio_button.setChecked(True)
 
+            self.lb_html = BytesIO()
             self.start_lb_request(BASE_URLS[graphics][platform])
 
         self.shown = True
@@ -365,8 +380,14 @@ class UpdateGroupBox(QGroupBox):
         status_bar = main_window.statusBar()
         status_bar.clearMessage()
 
+        status_bar.busy += 1
+
+        self.latest_build_value_label.setText(
+                'Fetching remote builds')
+
         fetching_label = QLabel()
         fetching_label.setText('Fetching: {0}'.format(url))
+        self.base_url = url
         status_bar.addWidget(fetching_label, 100)
         self.fetching_label = fetching_label
 
@@ -388,21 +409,80 @@ class UpdateGroupBox(QGroupBox):
         status_bar.removeWidget(self.fetching_label)
         status_bar.removeWidget(self.fetching_progress_bar)
 
+        status_bar.busy -= 1
+        if status_bar.busy == 0:
+            status_bar.showMessage('Ready')
+
+        self.lb_html.seek(0)
+        document = html5lib.parse(self.lb_html, treebuilder='lxml',
+            encoding='utf8', namespaceHTMLElements=False)
+
+        builds = []
+        for row in document.getroot().cssselect('tr'):
+            build = {}
+            for index, cell in enumerate(row.cssselect('td')):
+                if index == 1:
+                    if len(cell) > 0 and cell[0].text.startswith('cataclysmdda'):
+                        anchor = cell[0]
+                        url = urljoin(self.base_url, anchor.get('href'))
+                        name = anchor.text
+
+                        build_number = None
+                        match = re.search(
+                            'cataclysmdda-[01]\\.[A-F]-(?P<build>\d+)', name)
+                        if match is not None:
+                            build_number = match.group('build')
+
+                        build['url'] = url
+                        build['name'] = name
+                        build['number'] = build_number
+                elif index == 2:
+                    # build date
+                    str_date = cell.text.strip()
+                    if str_date != '':
+                        build_date = datetime.strptime(str_date,
+                            '%Y-%m-%d %H:%M')
+                        build['date'] = build_date
+
+            if 'url' in build:
+                builds.append(build)
+
+        if len(builds) > 0:
+            last_build = builds[-1]
+            build_date = arrow.get(last_build['date'], 'UTC')
+            human_delta = build_date.humanize(arrow.utcnow())
+            self.latest_build_value_label.setText('{number} ({delta})'.format(
+                number=last_build['number'], delta=human_delta))
+
+            self.last_build = last_build
+        else:
+            self.latest_build_value_label.setText(
+                'Could not find remote builds')
+
     def lb_http_ready_read(self):
-        print('ready read')
-        self.http_reply.readAll()
-        #print(self.http_reply.readAll())
+        self.lb_html.write(self.http_reply.readAll())
 
     def lb_dl_progress(self, bytes_read, total_bytes):
-        print(bytes_read, total_bytes)
         self.fetching_progress_bar.setMaximum(total_bytes)
         self.fetching_progress_bar.setValue(bytes_read)
 
     def graphics_clicked(self, button):
         set_config_value('graphics', button.text())
 
+        selected_graphics = self.graphics_button_group.checkedButton().text()
+        selected_platform = self.platform_button_group.checkedButton().text()
+        url = BASE_URLS[selected_graphics][selected_platform]
+
+        self.start_lb_request(url)
+
     def platform_clicked(self, button):
         set_config_value('platform', button.text())
+
+        selected_graphics = self.graphics_button_group.checkedButton().text()
+        selected_platform = self.platform_button_group.checkedButton().text()
+        url = BASE_URLS[selected_graphics][selected_platform]
+
+        self.start_lb_request(url)
 
 def start_ui():
     app = QApplication(sys.argv)
