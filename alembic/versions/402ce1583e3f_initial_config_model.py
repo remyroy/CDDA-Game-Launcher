@@ -36,6 +36,7 @@ def upgrade():
         sa.Column('version', sa.Integer, sa.ForeignKey('game_version.id'),
             nullable=False, index=True, unique=True),
         sa.Column('build', sa.String(16), nullable=False),
+        sa.Column('released_on', sa.DateTime, nullable=False),
         sa.Column('discovered_on', sa.DateTime, nullable=False),
     )
 

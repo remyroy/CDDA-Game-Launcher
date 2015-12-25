@@ -39,5 +39,7 @@ class GameBuild(Base):
     version = sa.Column(sa.Integer, sa.ForeignKey(GameVersion.id),
         nullable=False)
     build = sa.Column(sa.String(16), nullable=False)
+    released_on = sa.Column(sa.DateTime, nullable=False,
+        default=datetime.utcnow)
     discovered_on = sa.Column(sa.DateTime, nullable=False,
         default=datetime.utcnow)

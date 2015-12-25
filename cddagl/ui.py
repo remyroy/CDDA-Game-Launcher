@@ -2,6 +2,7 @@ import sys
 import os
 import hashlib
 import re
+import subprocess
 
 from datetime import datetime
 import arrow
@@ -125,6 +126,14 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(build_value_label, 2, 1)
         self.build_value_label = build_value_label
 
+        launch_game_button = QPushButton()
+        launch_game_button.setText('Launch game')
+        launch_game_button.setEnabled(False)
+        launch_game_button.setStyleSheet("font-size: 20px;")
+        launch_game_button.clicked.connect(self.launch_game)
+        layout.addWidget(launch_game_button, 3, 0, 1, 3)
+        self.launch_game_button = launch_game_button
+
         self.setTitle('Game directory')
         self.setLayout(layout)
 
@@ -142,8 +151,15 @@ class GameDirGroupBox(QGroupBox):
 
         self.shown = True
 
+    def launch_game(self):
+        self.get_main_window().setWindowState(Qt.WindowMinimized)
+        #subprocess.call(self.exe_path, shell=True)
+
+    def get_central_widget(self):
+        return self.parentWidget()
+
     def get_main_window(self):
-        return self.parentWidget().get_main_window()
+        return self.get_central_widget().get_main_window()
 
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
@@ -156,9 +172,16 @@ class GameDirGroupBox(QGroupBox):
 
     def game_directory_changed(self):
         directory = self.dir_edit.text()
+        self.exe_path = None
         
+        central_widget = self.get_central_widget()
+        update_group_box = central_widget.update_group_box
+
         if not os.path.isdir(directory):
             self.version_value_label.setText('Not a valid directory')
+            self.launch_game_button.setEnabled(False)
+
+            update_group_box.update_button.setText('Install game')
         else:
             # Find the executable
 
@@ -176,7 +199,13 @@ class GameDirGroupBox(QGroupBox):
 
             if version_type is None:
                 self.version_value_label.setText('Not a CDDA directory')
-            else:
+                self.launch_game_button.setEnabled(False)
+
+                update_group_box.update_button.setText('Install game')
+            else:               
+                update_group_box.update_button.setText('Update game')
+                self.launch_game_button.setEnabled(True)
+
                 self.exe_path = exe_path
                 self.version_type = version_type
                 if self.last_game_directory != directory:
@@ -340,6 +369,12 @@ class UpdateGroupBox(QGroupBox):
         layout.addWidget(latest_build_value_label, 2, 1, 1, 2)
         self.latest_build_value_label = latest_build_value_label
 
+        update_button = QPushButton()
+        update_button.setText('Update game')
+        update_button.setEnabled(False)
+        layout.addWidget(update_button, 3, 0, 1, 3)
+        self.update_button = update_button
+
         self.setTitle('Update/Installation')
         self.setLayout(layout)
 
@@ -371,10 +406,28 @@ class UpdateGroupBox(QGroupBox):
 
         self.shown = True
 
+    def get_central_widget(self):
+        return self.parentWidget()
+
     def get_main_window(self):
-        return self.parentWidget().get_main_window()
+        return self.get_central_widget().get_main_window()
+
+    def disable_radio_buttons(self):
+        self.tiles_radio_button.setEnabled(False)
+        self.console_radio_button.setEnabled(False)
+        self.x64_radio_button.setEnabled(False)
+        self.x86_radio_button.setEnabled(False)
+
+    def enable_radio_buttons(self):
+        self.tiles_radio_button.setEnabled(True)
+        self.console_radio_button.setEnabled(True)
+        if is_64_windows():
+            self.x64_radio_button.setEnabled(True)
+        self.x86_radio_button.setEnabled(True)
 
     def start_lb_request(self, url):
+        self.disable_radio_buttons()
+
         main_window = self.get_main_window()
 
         status_bar = main_window.statusBar()
@@ -412,6 +465,8 @@ class UpdateGroupBox(QGroupBox):
         status_bar.busy -= 1
         if status_bar.busy == 0:
             status_bar.showMessage('Ready')
+
+        self.enable_radio_buttons()
 
         self.lb_html.seek(0)
         document = html5lib.parse(self.lb_html, treebuilder='lxml',
@@ -455,6 +510,17 @@ class UpdateGroupBox(QGroupBox):
                 number=last_build['number'], delta=human_delta))
 
             self.last_build = last_build
+
+            central_widget = self.get_central_widget()
+            game_dir_group_box = central_widget.game_dir_group_box
+
+            if game_dir_group_box.exe_path is not None:
+                self.update_button.setText('Update game')
+            else:
+                self.update_button.setText('Install game')
+
+            self.update_button.setEnabled(True)
+
         else:
             self.latest_build_value_label.setText(
                 'Could not find remote builds')
