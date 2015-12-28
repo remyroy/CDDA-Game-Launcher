@@ -3,6 +3,7 @@ import os
 import hashlib
 import re
 import subprocess
+import random
 
 from datetime import datetime
 import arrow
@@ -12,7 +13,7 @@ from io import BytesIO
 import html5lib
 from urllib.parse import urljoin
 
-from PyQt5.QtCore import Qt, QTimer, QUrl
+from PyQt5.QtCore import Qt, QTimer, QUrl, QFileInfo
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
@@ -151,6 +152,16 @@ class GameDirGroupBox(QGroupBox):
 
         self.shown = True
 
+    def disable_controls(self):
+        self.launch_game_button.setEnabled(False)
+        self.dir_edit.setEnabled(False)
+        self.dir_change_button.setEnabled(False)
+
+    def enable_controls(self):
+        self.launch_game_button.setEnabled(True)
+        self.dir_edit.setEnabled(True)
+        self.dir_change_button.setEnabled(True)
+
     def launch_game(self):
         self.get_main_window().setWindowState(Qt.WindowMinimized)
         exe_dir = os.path.dirname(self.exe_path)
@@ -181,9 +192,6 @@ class GameDirGroupBox(QGroupBox):
 
         if not os.path.isdir(directory):
             self.version_value_label.setText('Not a valid directory')
-            self.launch_game_button.setEnabled(False)
-
-            update_group_box.update_button.setText('Install game')
         else:
             # Find the executable
 
@@ -201,17 +209,18 @@ class GameDirGroupBox(QGroupBox):
 
             if version_type is None:
                 self.version_value_label.setText('Not a CDDA directory')
-                self.launch_game_button.setEnabled(False)
-
-                update_group_box.update_button.setText('Install game')
-            else:               
-                update_group_box.update_button.setText('Update game')
-                self.launch_game_button.setEnabled(True)
-
+            else:
                 self.exe_path = exe_path
                 self.version_type = version_type
                 if self.last_game_directory != directory:
                     self.update_version()
+
+        if self.exe_path is None:
+            self.launch_game_button.setEnabled(False)
+            update_group_box.update_button.setText('Install game')
+        else:
+            self.launch_game_button.setEnabled(True)
+            update_group_box.update_button.setText('Update game')
 
         self.last_game_directory = directory
         set_config_value('game_directory', directory)
@@ -308,6 +317,7 @@ class UpdateGroupBox(QGroupBox):
         super(UpdateGroupBox, self).__init__()
 
         self.shown = False
+        self.updating = False
 
         self.qnam = QNetworkAccessManager()
         self.http_reply = None
@@ -374,6 +384,7 @@ class UpdateGroupBox(QGroupBox):
         update_button = QPushButton()
         update_button.setText('Update game')
         update_button.setEnabled(False)
+        update_button.clicked.connect(self.update_game)
         layout.addWidget(update_button, 3, 0, 1, 3)
         self.update_button = update_button
 
@@ -408,6 +419,76 @@ class UpdateGroupBox(QGroupBox):
 
         self.shown = True
 
+    def update_game(self):
+        if not self.updating:
+            self.updating = True
+            self.download_aborted = False
+
+            central_widget = self.get_central_widget()
+            game_dir_group_box = central_widget.game_dir_group_box
+
+            game_dir_group_box.disable_controls()
+            self.disable_radio_buttons()
+
+            game_dir = game_dir_group_box.dir_edit.text()
+
+            try:
+                if not os.path.isdir(game_dir):
+                    os.makedirs(game_dir)
+                
+                download_dir = os.path.join(game_dir, 'newbuild')
+                while os.path.isdir(download_dir):
+                    download_dir = os.path.join(game_dir, 'newbuild-{0}'.format(
+                        '%08x' % random.randrange(16**8)))
+                os.makedirs(download_dir)
+
+                download_url = self.last_build['url']
+                
+                url = QUrl(download_url)
+                file_info = QFileInfo(url.path())
+                file_name = file_info.fileName()
+
+                self.downloaded_file = os.path.join(download_dir, file_name)
+                self.downloading_file = open(self.downloaded_file, 'wb')
+
+                self.download_game_update(download_url)
+
+            except OSError as e:
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(str(e))
+
+                game_dir_group_box.enable_controls()
+                self.enable_radio_buttons()
+
+                return
+        else:
+            self.updating = False
+            
+            # Are we downloading the file?
+
+            if self.download_http_reply.isRunning():
+                self.download_aborted = True
+                self.download_http_reply.abort()
+
+                central_widget = self.get_central_widget()
+                game_dir_group_box = central_widget.game_dir_group_box
+
+                main_window = self.get_main_window()
+
+                status_bar = main_window.statusBar()
+
+                if game_dir_group_box.exe_path is not None:
+                    self.update_button.setText('Update game')
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Update cancelled')
+                else:
+                    self.update_button.setText('Install game')
+
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Installation cancelled')
+
     def get_central_widget(self):
         return self.parentWidget()
 
@@ -427,6 +508,66 @@ class UpdateGroupBox(QGroupBox):
             self.x64_radio_button.setEnabled(True)
         self.x86_radio_button.setEnabled(True)
 
+    def download_game_update(self, url):
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.clearMessage()
+
+        status_bar.busy += 1
+
+        downloading_label = QLabel()
+        downloading_label.setText('Downloading: {0}'.format(url))
+        status_bar.addWidget(downloading_label, 100)
+        self.downloading_label = downloading_label
+
+        progress_bar = QProgressBar()
+        status_bar.addWidget(progress_bar)
+        self.downloading_progress_bar = progress_bar
+        progress_bar.setMinimum(0)
+
+        self.download_http_reply = self.qnam.get(QNetworkRequest(QUrl(url)))
+        self.download_http_reply.finished.connect(self.download_http_finished)
+        self.download_http_reply.readyRead.connect(
+            self.download_http_ready_read)
+        self.download_http_reply.downloadProgress.connect(
+            self.download_dl_progress)
+
+        central_widget = self.get_central_widget()
+        game_dir_group_box = central_widget.game_dir_group_box
+
+        if game_dir_group_box.exe_path is not None:
+            self.update_button.setText('Cancel update')
+        else:
+            self.update_button.setText('Cancel installation')
+
+    def download_http_finished(self):
+        self.downloading_file.close()
+
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.removeWidget(self.downloading_label)
+        status_bar.removeWidget(self.downloading_progress_bar)
+
+        status_bar.busy -= 1
+
+        if self.download_aborted:
+            pass
+        else:
+            pass
+
+        '''status_bar.busy -= 1
+        if status_bar.busy == 0:
+            status_bar.showMessage('Ready')'''
+
+    def download_http_ready_read(self):
+        self.downloading_file.write(self.download_http_reply.readAll())
+
+    def download_dl_progress(self, bytes_read, total_bytes):
+        self.downloading_progress_bar.setMaximum(total_bytes)
+        self.downloading_progress_bar.setValue(bytes_read)
+
     def start_lb_request(self, url):
         self.disable_radio_buttons()
 
@@ -437,8 +578,7 @@ class UpdateGroupBox(QGroupBox):
 
         status_bar.busy += 1
 
-        self.latest_build_value_label.setText(
-                'Fetching remote builds')
+        self.latest_build_value_label.setText('Fetching remote builds')
 
         fetching_label = QLabel()
         fetching_label.setText('Fetching: {0}'.format(url))
