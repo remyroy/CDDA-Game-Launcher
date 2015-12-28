@@ -153,7 +153,9 @@ class GameDirGroupBox(QGroupBox):
 
     def launch_game(self):
         self.get_main_window().setWindowState(Qt.WindowMinimized)
-        #subprocess.call(self.exe_path, shell=True)
+        exe_dir = os.path.dirname(self.exe_path)
+        subprocess.call(['start', '/D', exe_dir, self.exe_path], shell=True)
+        self.get_main_window().close()
 
     def get_central_widget(self):
         return self.parentWidget()
