@@ -1,6 +1,6 @@
 # CDDA Game Launcher
 
-A Cataclysm: Dark Days Ahead with additional features.
+A Cataclysm: Dark Days Ahead launcher with additional features.
 
 ## Planned features
 
