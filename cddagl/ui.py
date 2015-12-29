@@ -24,7 +24,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
-    get_config_value, set_config_value, new_version, get_build_from_sha256)
+    get_config_value, set_config_value, new_version, get_build_from_sha256,
+    new_build)
 
 READ_BUFFER_SIZE = 16384
 
@@ -44,6 +45,13 @@ def clean_qt_path(path):
 
 def is_64_windows():
     return 'PROGRAMFILES(X86)' in os.environ
+
+def sizeof_fmt(num, suffix='B'):
+    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
@@ -290,7 +298,10 @@ class GameDirGroupBox(QGroupBox):
                 build = get_build_from_sha256(sha256)
 
                 if build is not None:
-                    self.build_value_label.setText(build)
+                    build_date = arrow.get(build['released_on'], 'UTC')
+                    human_delta = build_date.humanize(arrow.utcnow())
+                    self.build_value_label.setText('{0} ({1})'.format(
+                        build['build'], human_delta))
 
             else:
                 last_frame = bytes
@@ -319,6 +330,113 @@ class GameDirGroupBox(QGroupBox):
         pyqtRemoveInputHook()
         import pdb; pdb.set_trace()
         pyqtRestoreInputHook()'''
+
+    def analyse_new_build(self, build):
+        game_dir = self.dir_edit.text()
+
+        console_exe = os.path.join(game_dir, 'cataclysm.exe')
+        tiles_exe = os.path.join(game_dir, 'cataclysm-tiles.exe')
+
+        exe_path = None
+        version_type = None
+        if os.path.isfile(console_exe):
+            version_type = 'console'
+            exe_path = console_exe
+        elif os.path.isfile(tiles_exe):
+            version_type = 'tiles'
+            exe_path = tiles_exe
+
+        if version_type is None:
+            self.version_value_label.setText('Not a CDDA directory')
+        else:
+            self.exe_path = exe_path
+            self.version_type = version_type
+            self.build_number = build['number']
+            self.build_date = build['date']
+
+            main_window = self.get_main_window()
+
+            status_bar = main_window.statusBar()
+            status_bar.clearMessage()
+
+            status_bar.busy += 1
+
+            reading_label = QLabel()
+            reading_label.setText('Reading: {0}'.format(self.exe_path))
+            status_bar.addWidget(reading_label, 100)
+            self.reading_label = reading_label
+
+            progress_bar = QProgressBar()
+            status_bar.addWidget(progress_bar)
+            self.reading_progress_bar = progress_bar
+
+            timer = QTimer(self)
+            self.exe_reading_timer = timer
+
+            exe_size = os.path.getsize(self.exe_path)
+
+            progress_bar.setRange(0, exe_size)
+            self.exe_total_read = 0
+
+            self.exe_sha256 = hashlib.sha256()
+            self.last_bytes = None
+            self.game_version = 'Unknown'
+            self.opened_exe = open(self.exe_path, 'rb')
+
+            def timeout():
+                bytes = self.opened_exe.read(READ_BUFFER_SIZE)
+                if len(bytes) == 0:
+                    self.opened_exe.close()
+                    self.exe_reading_timer.stop()
+                    main_window = self.get_main_window()
+                    status_bar = main_window.statusBar()
+
+                    self.version_value_label.setText(
+                        '{version} ({type})'.format(version=self.game_version,
+                        type=self.version_type))
+                    build_date = arrow.get(self.build_date, 'UTC')
+                    human_delta = build_date.humanize(arrow.utcnow())
+                    self.build_value_label.setText('{0} ({1})'.format(
+                        self.build_number, human_delta))
+
+                    status_bar.removeWidget(self.reading_label)
+                    status_bar.removeWidget(self.reading_progress_bar)
+
+                    status_bar.busy -= 1
+
+                    sha256 = self.exe_sha256.hexdigest()
+
+                    new_build(self.game_version, sha256, self.build_number,
+                        self.build_date)
+
+                    central_widget = self.get_central_widget()
+                    update_group_box = central_widget.update_group_box
+
+                    update_group_box.post_extraction()
+
+                else:
+                    last_frame = bytes
+                    if self.last_bytes is not None:
+                        last_frame = self.last_bytes + last_frame
+
+                    match = re.search(
+                        b'(?P<version>[01]\\.[A-F](-\\d+-g[0-9a-f]+)?)\\x00',
+                        last_frame)
+                    if match is not None:
+                        game_version = match.group('version').decode('ascii')
+                        self.game_version = game_version
+                        self.version_value_label.setText(
+                            '{version} ({type})'.format(
+                                version=self.game_version,
+                                type=self.version_type))
+
+                    self.exe_total_read += len(bytes)
+                    self.reading_progress_bar.setValue(self.exe_total_read)
+                    self.exe_sha256.update(bytes)
+                    self.last_bytes = bytes
+
+            timer.timeout.connect(timeout)
+            timer.start(0)
 
 
 class UpdateGroupBox(QGroupBox):
@@ -475,11 +593,8 @@ class UpdateGroupBox(QGroupBox):
 
                 status_bar.showMessage(str(e))
 
-                game_dir_group_box.enable_controls()
-                self.enable_radio_buttons()
+                self.finish_updating()
         else:
-            self.updating = False
-            
             # Are we downloading the file?
             if self.download_http_reply.isRunning():
                 self.download_aborted = True
@@ -502,8 +617,7 @@ class UpdateGroupBox(QGroupBox):
                     if status_bar.busy == 0:
                         status_bar.showMessage('Installation cancelled')
 
-            game_dir_group_box.enable_controls()
-            self.enable_radio_buttons()
+            self.finish_updating()
 
     def get_central_widget(self):
         return self.parentWidget()
@@ -537,10 +651,18 @@ class UpdateGroupBox(QGroupBox):
         status_bar.addWidget(downloading_label, 100)
         self.downloading_label = downloading_label
 
+        dowloading_speed_label = QLabel()
+        status_bar.addWidget(dowloading_speed_label)
+        self.dowloading_speed_label = dowloading_speed_label
+
         progress_bar = QProgressBar()
         status_bar.addWidget(progress_bar)
         self.downloading_progress_bar = progress_bar
         progress_bar.setMinimum(0)
+
+        self.download_last_read = datetime.utcnow()
+        self.download_last_bytes_read = 0
+        self.download_speed_count = 0
 
         self.download_http_reply = self.qnam.get(QNetworkRequest(QUrl(url)))
         self.download_http_reply.finished.connect(self.download_http_finished)
@@ -564,6 +686,7 @@ class UpdateGroupBox(QGroupBox):
 
         status_bar = main_window.statusBar()
         status_bar.removeWidget(self.downloading_label)
+        status_bar.removeWidget(self.dowloading_speed_label)
         status_bar.removeWidget(self.downloading_progress_bar)
 
         status_bar.busy -= 1
@@ -642,16 +765,106 @@ class UpdateGroupBox(QGroupBox):
 
             timer.timeout.connect(timeout)
             timer.start(0)
+        else:
+            self.backing_up_game = False
+            self.extract_new_build()
 
     def extract_new_build(self):
         self.extracting_new_build = True
         
         z = zipfile.ZipFile(self.downloaded_file)
+        self.extracting_zipfile = z
 
-        from PyQt5.QtCore import pyqtRemoveInputHook, pyqtRestoreInputHook
-        pyqtRemoveInputHook()
-        import pdb; pdb.set_trace()
-        pyqtRestoreInputHook()
+        self.extracting_infolist = z.infolist()
+        self.extracting_index = 0
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.busy += 1
+
+        extracting_label = QLabel()
+        status_bar.addWidget(extracting_label, 100)
+        self.extracting_label = extracting_label
+
+        progress_bar = QProgressBar()
+        status_bar.addWidget(progress_bar)
+        self.extracting_progress_bar = progress_bar
+
+        timer = QTimer(self)
+        self.extracting_timer = timer
+
+        progress_bar.setRange(0, len(self.extracting_infolist))
+
+        def timeout():
+            self.extracting_progress_bar.setValue(self.extracting_index)
+
+            if self.extracting_index == len(self.extracting_infolist):
+                self.extracting_timer.stop()
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.removeWidget(self.extracting_label)
+                status_bar.removeWidget(self.extracting_progress_bar)
+
+                status_bar.busy -= 1
+
+                self.extracting_new_build = False
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir)
+
+                central_widget = self.get_central_widget()
+                game_dir_group_box = central_widget.game_dir_group_box
+
+                game_dir_group_box.analyse_new_build(self.last_build)
+
+            else:
+                extracting_element = self.extracting_infolist[
+                    self.extracting_index]
+                self.extracting_label.setText('Extracting {0}'.format(
+                    extracting_element.filename))
+                
+                self.extracting_zipfile.extract(extracting_element,
+                    self.game_dir)
+
+                self.extracting_index += 1
+
+        timer.timeout.connect(timeout)
+        timer.start(0)
+
+    def post_extraction(self):
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        # Copy config, save, templates and memorial directory from previous version
+        previous_version_dir = os.path.join(self.game_dir, 'previous_version')
+        if os.path.isdir(previous_version_dir):
+
+            previous_dirs = ('config', 'save', 'templates', 'memorial')
+            for previous_dir in previous_dirs:
+                previous_dir_path = os.path.join(previous_version_dir,
+                    previous_dir)
+
+                if os.path.isdir(previous_dir_path):
+                    status_bar.showMessage(
+                        'Restoring {0} directory from previous version'.format(
+                            previous_dir))
+                    dst_dir = os.path.join(self.game_dir, previous_dir)
+                    shutil.copytree(previous_dir_path, dst_dir)
+
+        # Copy custom tilesets, mods and soundpack from previous version
+        
+        self.finish_updating()
+
+    def finish_updating(self):
+        self.updating = False
+        central_widget = self.get_central_widget()
+        game_dir_group_box = central_widget.game_dir_group_box
+
+        game_dir_group_box.enable_controls()
+        self.enable_radio_buttons()
 
     def download_http_ready_read(self):
         self.downloading_file.write(self.download_http_reply.readAll())
@@ -659,6 +872,19 @@ class UpdateGroupBox(QGroupBox):
     def download_dl_progress(self, bytes_read, total_bytes):
         self.downloading_progress_bar.setMaximum(total_bytes)
         self.downloading_progress_bar.setValue(bytes_read)
+
+        self.download_speed_count += 1
+
+        if self.download_speed_count % 5 == 0:
+            delta_bytes = bytes_read - self.download_last_bytes_read
+            delta_time = datetime.utcnow() - self.download_last_read
+
+            bytes_secs = delta_bytes / delta_time.total_seconds()
+            self.dowloading_speed_label.setText('{0}/s'.format(
+                sizeof_fmt(bytes_secs)))
+
+            self.download_last_bytes_read = bytes_read
+            self.download_last_read = datetime.utcnow()
 
     def start_lb_request(self, url):
         self.disable_radio_buttons()
