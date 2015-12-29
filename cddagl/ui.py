@@ -20,7 +20,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
-    QProgressBar, QButtonGroup, QRadioButton)
+    QProgressBar, QButtonGroup, QRadioButton, QComboBox)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -497,22 +497,33 @@ class UpdateGroupBox(QGroupBox):
         self.x86_radio_button = x86_radio_button
         platform_button_group.addButton(x86_radio_button)
 
-        latest_build_label = QLabel()
-        latest_build_label.setText('Latest build:')
-        layout.addWidget(latest_build_label, 2, 0, Qt.AlignRight)
-        self.latest_build_label = latest_build_label
+        available_builds_label = QLabel()
+        available_builds_label.setText('Available builds:')
+        layout.addWidget(available_builds_label, 2, 0, Qt.AlignRight)
+        self.available_builds_label = available_builds_label
 
-        latest_build_value_label = QLabel()
-        latest_build_value_label.setText('Unknown')
-        layout.addWidget(latest_build_value_label, 2, 1, 1, 2)
-        self.latest_build_value_label = latest_build_value_label
+        builds_combo = QComboBox()
+        builds_combo.setEnabled(False)
+        builds_combo.addItem('Unknown')
+        layout.addWidget(builds_combo, 2, 1, 1, 2)
+        self.builds_combo = builds_combo
+
+        refresh_builds_button = QToolButton()
+        refresh_builds_button.setText('Refresh')
+        refresh_builds_button.clicked.connect(self.refresh_builds)
+        layout.addWidget(refresh_builds_button, 2, 3)
+        self.refresh_builds_button = refresh_builds_button
 
         update_button = QPushButton()
         update_button.setText('Update game')
         update_button.setEnabled(False)
+        update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
-        layout.addWidget(update_button, 3, 0, 1, 3)
+        layout.addWidget(update_button, 3, 0, 1, 4)
         self.update_button = update_button
+
+        layout.setColumnStretch(1, 100)
+        layout.setColumnStretch(2, 100)
 
         self.setTitle('Update/Installation')
         self.setLayout(layout)
@@ -552,11 +563,13 @@ class UpdateGroupBox(QGroupBox):
             self.backing_up_game = False
             self.extracting_new_build = False
 
+            self.selected_build = self.builds[self.builds_combo.currentIndex()]
+
             central_widget = self.get_central_widget()
             game_dir_group_box = central_widget.game_dir_group_box
 
             game_dir_group_box.disable_controls()
-            self.disable_radio_buttons()
+            self.disable_controls()
 
             game_dir = game_dir_group_box.dir_edit.text()
 
@@ -575,7 +588,7 @@ class UpdateGroupBox(QGroupBox):
                         '%08x' % random.randrange(16**8)))
                 os.makedirs(download_dir)
 
-                download_url = self.last_build['url']
+                download_url = self.selected_build['url']
                 
                 url = QUrl(download_url)
                 file_info = QFileInfo(url.path())
@@ -624,18 +637,29 @@ class UpdateGroupBox(QGroupBox):
     def get_main_window(self):
         return self.get_central_widget().get_main_window()
 
-    def disable_radio_buttons(self):
+    def disable_controls(self, update_button=False):
         self.tiles_radio_button.setEnabled(False)
         self.console_radio_button.setEnabled(False)
         self.x64_radio_button.setEnabled(False)
         self.x86_radio_button.setEnabled(False)
 
-    def enable_radio_buttons(self):
+        self.builds_combo.setEnabled(False)
+        self.refresh_builds_button.setEnabled(False)
+
+        if update_button:
+            self.update_button.setEnabled(False)
+
+    def enable_controls(self, builds_combo=False):
         self.tiles_radio_button.setEnabled(True)
         self.console_radio_button.setEnabled(True)
         if is_64_windows():
             self.x64_radio_button.setEnabled(True)
         self.x86_radio_button.setEnabled(True)
+
+        self.refresh_builds_button.setEnabled(True)
+
+        if builds_combo:
+            self.builds_combo.setEnabled(True)
 
     def download_game_update(self, url):
         main_window = self.get_main_window()
@@ -819,7 +843,7 @@ class UpdateGroupBox(QGroupBox):
                 central_widget = self.get_central_widget()
                 game_dir_group_box = central_widget.game_dir_group_box
 
-                game_dir_group_box.analyse_new_build(self.last_build)
+                game_dir_group_box.analyse_new_build(self.selected_build)
 
             else:
                 extracting_element = self.extracting_infolist[
@@ -865,7 +889,7 @@ class UpdateGroupBox(QGroupBox):
         game_dir_group_box = central_widget.game_dir_group_box
 
         game_dir_group_box.enable_controls()
-        self.enable_radio_buttons()
+        self.enable_controls(True)
 
     def download_http_ready_read(self):
         self.downloading_file.write(self.download_http_reply.readAll())
@@ -888,7 +912,7 @@ class UpdateGroupBox(QGroupBox):
             self.download_last_read = datetime.utcnow()
 
     def start_lb_request(self, url):
-        self.disable_radio_buttons()
+        self.disable_controls()
 
         main_window = self.get_main_window()
 
@@ -897,7 +921,8 @@ class UpdateGroupBox(QGroupBox):
 
         status_bar.busy += 1
 
-        self.latest_build_value_label.setText('Fetching remote builds')
+        self.builds_combo.clear()
+        self.builds_combo.addItem('Fetching remote builds')
 
         fetching_label = QLabel()
         fetching_label.setText('Fetching: {0}'.format(url))
@@ -927,7 +952,7 @@ class UpdateGroupBox(QGroupBox):
         if status_bar.busy == 0:
             status_bar.showMessage('Ready')
 
-        self.enable_radio_buttons()
+        self.enable_controls()
 
         self.lb_html.seek(0)
         document = html5lib.parse(self.lb_html, treebuilder='lxml',
@@ -963,14 +988,26 @@ class UpdateGroupBox(QGroupBox):
             if 'url' in build:
                 builds.append(build)
 
-        if len(builds) > 0:
-            last_build = builds[-1]
-            build_date = arrow.get(last_build['date'], 'UTC')
-            human_delta = build_date.humanize(arrow.utcnow())
-            self.latest_build_value_label.setText('{number} ({delta})'.format(
-                number=last_build['number'], delta=human_delta))
+        self.lb_html = BytesIO()
 
-            self.last_build = last_build
+        if len(builds) > 0:
+            builds.reverse()
+            self.builds = builds
+
+            self.builds_combo.clear()
+            for index, build in enumerate(builds):
+                build_date = arrow.get(build['date'], 'UTC')
+                human_delta = build_date.humanize(arrow.utcnow())
+
+                if index == 0:
+                    self.builds_combo.addItem(
+                        '{number} ({delta}) - latest'.format(
+                        number=build['number'], delta=human_delta))
+                else:
+                    self.builds_combo.addItem('{number} ({delta})'.format(
+                        number=build['number'], delta=human_delta))
+
+            self.builds_combo.setEnabled(True)
 
             central_widget = self.get_central_widget()
             game_dir_group_box = central_widget.game_dir_group_box
@@ -983,8 +1020,11 @@ class UpdateGroupBox(QGroupBox):
             self.update_button.setEnabled(True)
 
         else:
-            self.latest_build_value_label.setText(
-                'Could not find remote builds')
+            self.builds = None
+
+            self.builds_combo.clear()
+            self.builds_combo.addItem('Could not find remote builds')
+            self.builds_combo.setEnabled(False)
 
     def lb_http_ready_read(self):
         self.lb_html.write(self.http_reply.readAll())
@@ -993,23 +1033,22 @@ class UpdateGroupBox(QGroupBox):
         self.fetching_progress_bar.setMaximum(total_bytes)
         self.fetching_progress_bar.setValue(bytes_read)
 
-    def graphics_clicked(self, button):
-        set_config_value('graphics', button.text())
-
+    def refresh_builds(self):
         selected_graphics = self.graphics_button_group.checkedButton().text()
         selected_platform = self.platform_button_group.checkedButton().text()
         url = BASE_URLS[selected_graphics][selected_platform]
 
         self.start_lb_request(url)
+
+    def graphics_clicked(self, button):
+        set_config_value('graphics', button.text())
+
+        self.refresh_builds()
 
     def platform_clicked(self, button):
         set_config_value('platform', button.text())
 
-        selected_graphics = self.graphics_button_group.checkedButton().text()
-        selected_platform = self.platform_button_group.checkedButton().text()
-        url = BASE_URLS[selected_graphics][selected_platform]
-
-        self.start_lb_request(url)
+        self.refresh_builds()
 
 def start_ui():
     app = QApplication(sys.argv)
