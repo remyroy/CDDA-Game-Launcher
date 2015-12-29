@@ -211,7 +211,6 @@ class GameDirGroupBox(QGroupBox):
             self.version_value_label.setText('Not a valid directory')
         else:
             # Find the executable
-
             console_exe = os.path.join(directory, 'cataclysm.exe')
             tiles_exe = os.path.join(directory, 'cataclysm-tiles.exe')
 
@@ -811,6 +810,8 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.busy -= 1
 
                 self.extracting_new_build = False
+
+                self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
                 shutil.rmtree(download_dir)

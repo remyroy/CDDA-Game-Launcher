@@ -10,3 +10,4 @@ A Cataclysm: Dark Days Ahead launcher with additional features.
 * Tileset manager
 * Soundpack manager
 * Font presets
+* Regular save backups
