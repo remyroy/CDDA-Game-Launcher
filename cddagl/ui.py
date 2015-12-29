@@ -16,7 +16,7 @@ import html5lib
 from urllib.parse import urljoin
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, QFileInfo
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
@@ -131,19 +131,31 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(version_label, 1, 0, Qt.AlignRight)
         self.version_label = version_label
 
-        version_value_label = QLabel()
+        version_value_label = QLineEdit()
+        version_value_label.setReadOnly(True)
         layout.addWidget(version_value_label, 1, 1)
         self.version_value_label = version_value_label
+
+        palette = version_value_label.palette()
+        palette.setColor(QPalette.Base, version_label.palette().color(
+            QPalette.Window))
+        version_value_label.setPalette(palette)
 
         build_label = QLabel()
         build_label.setText('Build:')
         layout.addWidget(build_label, 2, 0, Qt.AlignRight)
         self.build_label = build_label
 
-        build_value_label = QLabel()
+        build_value_label = QLineEdit()
+        build_value_label.setReadOnly(True)
         build_value_label.setText('Unknown')
         layout.addWidget(build_value_label, 2, 1)
         self.build_value_label = build_value_label
+
+        palette = build_value_label.palette()
+        palette.setColor(QPalette.Base, build_label.palette().color(
+            QPalette.Window))
+        build_value_label.setPalette(palette)
 
         launch_game_button = QPushButton()
         launch_game_button.setText('Launch game')
@@ -209,6 +221,7 @@ class GameDirGroupBox(QGroupBox):
 
         if not os.path.isdir(directory):
             self.version_value_label.setText('Not a valid directory')
+            self.build_value_label.setText('Unknown')
         else:
             # Find the executable
             console_exe = os.path.join(directory, 'cataclysm.exe')
@@ -225,6 +238,7 @@ class GameDirGroupBox(QGroupBox):
 
             if version_type is None:
                 self.version_value_label.setText('Not a CDDA directory')
+                self.build_value_label.setText('Unknown')
             else:
                 self.exe_path = exe_path
                 self.version_type = version_type
@@ -301,6 +315,8 @@ class GameDirGroupBox(QGroupBox):
                     human_delta = build_date.humanize(arrow.utcnow())
                     self.build_value_label.setText('{0} ({1})'.format(
                         build['build'], human_delta))
+                else:
+                    self.build_value_label.setText('Unknown')
 
             else:
                 last_frame = bytes
@@ -347,6 +363,7 @@ class GameDirGroupBox(QGroupBox):
 
         if version_type is None:
             self.version_value_label.setText('Not a CDDA directory')
+            self.build_value_label.setText('Unknown')
         else:
             self.exe_path = exe_path
             self.version_type = version_type
