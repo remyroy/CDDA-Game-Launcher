@@ -4,6 +4,8 @@ import hashlib
 import re
 import subprocess
 import random
+import shutil
+import zipfile
 
 from datetime import datetime
 import arrow
@@ -48,6 +50,10 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setMinimumSize(400, 0)
+        width = int(get_config_value('window.width', -1))
+        height = int(get_config_value('window.height', -1))
+        if width != -1 and height != -1:
+            self.resize(width, height)
         
         self.create_status_bar()
         self.create_central_widget()
@@ -63,6 +69,10 @@ class MainWindow(QMainWindow):
     def create_central_widget(self):
         central_widget = CentralWidget()
         self.setCentralWidget(central_widget)
+
+    def resizeEvent(self, event):
+        set_config_value('window.width', event.size().width())
+        set_config_value('window.height', event.size().height())
 
 
 class CentralWidget(QWidget):
@@ -177,8 +187,7 @@ class GameDirGroupBox(QGroupBox):
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
-                "QFileDialog.getExistingDirectory()",
-                self.dir_edit.text(), options=options)
+                'Game directory', self.dir_edit.text(), options=options)
         if directory:
             self.dir_edit.setText(clean_qt_path(directory))
             self.game_directory_changed()
@@ -423,6 +432,8 @@ class UpdateGroupBox(QGroupBox):
         if not self.updating:
             self.updating = True
             self.download_aborted = False
+            self.backing_up_game = False
+            self.extracting_new_build = False
 
             central_widget = self.get_central_widget()
             game_dir_group_box = central_widget.game_dir_group_box
@@ -435,10 +446,15 @@ class UpdateGroupBox(QGroupBox):
             try:
                 if not os.path.isdir(game_dir):
                     os.makedirs(game_dir)
+
+                temp_dir = os.path.join(os.environ['TEMP'],
+                    'CDDA Game Launcher')
+                if not os.path.isdir(temp_dir):
+                    os.makedirs(temp_dir)
                 
-                download_dir = os.path.join(game_dir, 'newbuild')
+                download_dir = os.path.join(temp_dir, 'newbuild')
                 while os.path.isdir(download_dir):
-                    download_dir = os.path.join(game_dir, 'newbuild-{0}'.format(
+                    download_dir = os.path.join(temp_dir, 'newbuild-{0}'.format(
                         '%08x' % random.randrange(16**8)))
                 os.makedirs(download_dir)
 
@@ -461,13 +477,10 @@ class UpdateGroupBox(QGroupBox):
 
                 game_dir_group_box.enable_controls()
                 self.enable_radio_buttons()
-
-                return
         else:
             self.updating = False
             
             # Are we downloading the file?
-
             if self.download_http_reply.isRunning():
                 self.download_aborted = True
                 self.download_http_reply.abort()
@@ -488,6 +501,9 @@ class UpdateGroupBox(QGroupBox):
 
                     if status_bar.busy == 0:
                         status_bar.showMessage('Installation cancelled')
+
+            game_dir_group_box.enable_controls()
+            self.enable_radio_buttons()
 
     def get_central_widget(self):
         return self.parentWidget()
@@ -553,13 +569,89 @@ class UpdateGroupBox(QGroupBox):
         status_bar.busy -= 1
 
         if self.download_aborted:
-            pass
+            download_dir = os.path.dirname(self.downloaded_file)
+            shutil.rmtree(download_dir)
         else:
-            pass
+            self.backup_current_game()
 
-        '''status_bar.busy -= 1
-        if status_bar.busy == 0:
-            status_bar.showMessage('Ready')'''
+    def backup_current_game(self):
+        self.backing_up_game = True
+
+        central_widget = self.get_central_widget()
+        game_dir_group_box = central_widget.game_dir_group_box
+
+        game_dir = game_dir_group_box.dir_edit.text()
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        backup_dir = os.path.join(game_dir, 'previous_version')
+        if os.path.isdir(backup_dir):
+            shutil.rmtree(backup_dir)
+
+        dir_list = os.listdir(game_dir)
+        self.backup_dir_list = dir_list
+
+        if len(dir_list) > 0:
+            status_bar.busy += 1
+
+            backup_label = QLabel()
+            status_bar.addWidget(backup_label, 100)
+            self.backup_label = backup_label
+
+            progress_bar = QProgressBar()
+            status_bar.addWidget(progress_bar)
+            self.backup_progress_bar = progress_bar
+
+            timer = QTimer(self)
+            self.backup_timer = timer
+
+            progress_bar.setRange(0, len(dir_list))
+
+            os.makedirs(backup_dir)
+            self.backup_dir = backup_dir
+            self.game_dir = game_dir
+            self.backup_index = 0
+
+            def timeout():
+                self.backup_progress_bar.setValue(self.backup_index)
+
+                if self.backup_index == len(self.backup_dir_list):
+                    self.backup_timer.stop()
+
+                    main_window = self.get_main_window()
+                    status_bar = main_window.statusBar()
+
+                    status_bar.removeWidget(self.backup_label)
+                    status_bar.removeWidget(self.backup_progress_bar)
+
+                    status_bar.busy -= 1
+
+                    self.backing_up_game = False
+                    self.extract_new_build()
+
+                else:
+                    backup_element = self.backup_dir_list[self.backup_index]
+                    self.backup_label.setText('Backing up {0}'.format(
+                        backup_element))
+                    
+                    shutil.move(os.path.join(self.game_dir, backup_element),
+                        self.backup_dir)
+
+                    self.backup_index += 1
+
+            timer.timeout.connect(timeout)
+            timer.start(0)
+
+    def extract_new_build(self):
+        self.extracting_new_build = True
+        
+        z = zipfile.ZipFile(self.downloaded_file)
+
+        from PyQt5.QtCore import pyqtRemoveInputHook, pyqtRestoreInputHook
+        pyqtRemoveInputHook()
+        import pdb; pdb.set_trace()
+        pyqtRestoreInputHook()
 
     def download_http_ready_read(self):
         self.downloading_file.write(self.download_http_reply.readAll())

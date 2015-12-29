@@ -45,13 +45,13 @@ def get_session():
 
     return _session
 
-def get_config_value(name):
+def get_config_value(name, default=None):
     session = get_session()
 
     db_value = session.query(ConfigValue).filter_by(name=name).first()
 
     if db_value is None:
-        return None
+        return default
     
     return db_value.value
 
