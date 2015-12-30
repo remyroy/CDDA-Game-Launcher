@@ -108,6 +108,7 @@ class GameDirGroupBox(QGroupBox):
 
         self.shown = False
         self.restored_previous = False
+        self.exe_path = None
 
         layout = QGridLayout()
 
@@ -832,6 +833,31 @@ class UpdateGroupBox(QGroupBox):
             download_dir = os.path.dirname(self.downloaded_file)
             shutil.rmtree(download_dir)
         else:
+            # Test downloaded file
+            status_bar.showMessage('Testing downloaded file archive')
+
+            try:
+                with zipfile.ZipFile(self.downloaded_file) as z:
+                    if z.testzip() is not None:
+                        status_bar.clearMessage()
+                        status_bar.showMessage('Downloaded archive is invalid')
+
+                        download_dir = os.path.dirname(self.downloaded_file)
+                        shutil.rmtree(download_dir)
+                        self.finish_updating()
+
+                        return
+            except zipfile.BadZipFile:
+                status_bar.clearMessage()
+                status_bar.showMessage('Could not download game')
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir)
+                self.finish_updating()
+
+                return
+
+            status_bar.clearMessage()
             self.backup_current_game()
 
     def backup_current_game(self):
@@ -841,6 +867,7 @@ class UpdateGroupBox(QGroupBox):
         game_dir_group_box = central_widget.game_dir_group_box
 
         game_dir = game_dir_group_box.dir_edit.text()
+        self.game_dir = game_dir
 
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
@@ -870,7 +897,6 @@ class UpdateGroupBox(QGroupBox):
 
             os.makedirs(backup_dir)
             self.backup_dir = backup_dir
-            self.game_dir = game_dir
             self.backup_index = 0
 
             def timeout():
