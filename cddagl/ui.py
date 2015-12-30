@@ -107,6 +107,7 @@ class GameDirGroupBox(QGroupBox):
         super(GameDirGroupBox, self).__init__()
 
         self.shown = False
+        self.restored_previous = False
 
         layout = QGridLayout()
 
@@ -165,6 +166,13 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(launch_game_button, 3, 0, 1, 3)
         self.launch_game_button = launch_game_button
 
+        restore_button = QPushButton()
+        restore_button.setText('Restore previous version')
+        restore_button.setEnabled(False)
+        restore_button.clicked.connect(self.restore_previous)
+        layout.addWidget(restore_button, 4, 0, 1, 3)
+        self.restore_button = restore_button
+
         self.setTitle('Game directory')
         self.setLayout(layout)
 
@@ -183,14 +191,68 @@ class GameDirGroupBox(QGroupBox):
         self.shown = True
 
     def disable_controls(self):
-        self.launch_game_button.setEnabled(False)
         self.dir_edit.setEnabled(False)
         self.dir_change_button.setEnabled(False)
 
+        self.previous_lgb_enabled = self.launch_game_button.isEnabled()
+        self.launch_game_button.setEnabled(False)
+        self.previous_rb_enabled = self.restore_button.isEnabled()
+        self.restore_button.setEnabled(False)
+
     def enable_controls(self):
-        self.launch_game_button.setEnabled(True)
         self.dir_edit.setEnabled(True)
         self.dir_change_button.setEnabled(True)
+        self.launch_game_button.setEnabled(self.previous_lgb_enabled)
+        self.restore_button.setEnabled(self.previous_rb_enabled)
+
+    def restore_previous(self):
+        self.disable_controls()
+
+        central_widget = self.get_central_widget()
+        update_group_box = central_widget.update_group_box
+        update_group_box.disable_controls(True)
+
+        try:
+            game_dir = self.dir_edit.text()
+            previous_version_dir = os.path.join(game_dir, 'previous_version')
+
+            if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
+
+                temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
+                if not os.path.exists(temp_dir):
+                    os.makedirs(temp_dir)
+
+                temp_move_dir = os.path.join(temp_dir, 'moved')
+                while os.path.exists(temp_move_dir):
+                    temp_move_dir = os.path.join(temp_dir, 'moved-{0}'.format(
+                        '%08x' % random.randrange(16**8)))
+                os.makedirs(temp_move_dir)
+
+                for entry in os.listdir(game_dir):
+                    if entry != 'previous_version':
+                        entry_path = os.path.join(game_dir, entry)
+                        shutil.move(entry_path, temp_move_dir)
+
+                for entry in os.listdir(previous_version_dir):
+                    entry_path = os.path.join(previous_version_dir, entry)
+                    shutil.move(entry_path, game_dir)
+
+                for entry in os.listdir(temp_move_dir):
+                    entry_path = os.path.join(temp_move_dir, entry)
+                    shutil.move(entry_path, previous_version_dir)
+
+                shutil.rmtree(temp_move_dir)
+        except OSError as e:
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            status_bar.showMessage(str(e))
+
+        self.last_game_directory = None
+        self.restored_previous = True
+        self.enable_controls()
+        update_group_box.enable_controls()
+        self.game_directory_changed()
 
     def launch_game(self):
         self.get_main_window().setWindowState(Qt.WindowMinimized)
@@ -223,6 +285,10 @@ class GameDirGroupBox(QGroupBox):
             self.version_value_label.setText('Not a valid directory')
             self.build_value_label.setText('Unknown')
         else:
+            # Check for previous version
+            previous_version_dir = os.path.join(directory, 'previous_version')
+            self.restore_button.setEnabled(os.path.isdir(previous_version_dir))
+
             # Find the executable
             console_exe = os.path.join(directory, 'cataclysm.exe')
             tiles_exe = os.path.join(directory, 'cataclysm-tiles.exe')
@@ -248,6 +314,7 @@ class GameDirGroupBox(QGroupBox):
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
             update_group_box.update_button.setText('Install game')
+            self.restored_previous = False
         else:
             self.launch_game_button.setEnabled(True)
             update_group_box.update_button.setText('Update game')
@@ -302,7 +369,11 @@ class GameDirGroupBox(QGroupBox):
 
                 status_bar.busy -= 1
                 if status_bar.busy == 0:
-                    status_bar.showMessage('Ready')
+                    if self.restored_previous:
+                        self.restored_previous = False
+                        status_bar.showMessage('Restored previous version')
+                    else:
+                        status_bar.showMessage('Ready')
 
                 sha256 = self.exe_sha256.hexdigest()
 
@@ -348,6 +419,13 @@ class GameDirGroupBox(QGroupBox):
 
     def analyse_new_build(self, build):
         game_dir = self.dir_edit.text()
+
+        self.previous_exe_path = self.exe_path
+        self.exe_path = None
+
+        # Check for previous version
+        previous_version_dir = os.path.join(game_dir, 'previous_version')
+        self.previous_rb_enabled = os.path.isdir(previous_version_dir)
 
         console_exe = os.path.join(game_dir, 'cataclysm.exe')
         tiles_exe = os.path.join(game_dir, 'cataclysm-tiles.exe')
@@ -453,6 +531,11 @@ class GameDirGroupBox(QGroupBox):
 
             timer.timeout.connect(timeout)
             timer.start(0)
+
+        if self.exe_path is None:
+            self.previous_lgb_enabled = False
+        else:
+            self.previous_lgb_enabled = True
 
 
 class UpdateGroupBox(QGroupBox):
@@ -591,16 +674,24 @@ class UpdateGroupBox(QGroupBox):
             game_dir = game_dir_group_box.dir_edit.text()
 
             try:
-                if not os.path.isdir(game_dir):
+                if not os.path.exists(game_dir):
                     os.makedirs(game_dir)
+                elif os.path.isfile(game_dir):
+                    main_window = self.get_main_window()
+                    status_bar = main_window.statusBar()
+
+                    status_bar.showMessage('Cannot install game on a file')
+
+                    self.finish_updating()
+                    return
 
                 temp_dir = os.path.join(os.environ['TEMP'],
                     'CDDA Game Launcher')
-                if not os.path.isdir(temp_dir):
+                if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
                 
                 download_dir = os.path.join(temp_dir, 'newbuild')
-                while os.path.isdir(download_dir):
+                while os.path.exists(download_dir):
                     download_dir = os.path.join(temp_dir, 'newbuild-{0}'.format(
                         '%08x' % random.randrange(16**8)))
                 os.makedirs(download_dir)
@@ -660,9 +751,11 @@ class UpdateGroupBox(QGroupBox):
         self.x64_radio_button.setEnabled(False)
         self.x86_radio_button.setEnabled(False)
 
+        self.previous_bc_enabled = self.builds_combo.isEnabled()
         self.builds_combo.setEnabled(False)
         self.refresh_builds_button.setEnabled(False)
 
+        self.previous_ub_enabled = self.update_button.isEnabled()
         if update_button:
             self.update_button.setEnabled(False)
 
@@ -677,6 +770,10 @@ class UpdateGroupBox(QGroupBox):
 
         if builds_combo:
             self.builds_combo.setEnabled(True)
+        else:
+            self.builds_combo.setEnabled(self.previous_bc_enabled)
+
+        self.update_button.setEnabled(self.previous_ub_enabled)
 
     def download_game_update(self, url):
         main_window = self.get_main_window()
@@ -876,6 +973,18 @@ class UpdateGroupBox(QGroupBox):
         timer.timeout.connect(timeout)
         timer.start(0)
 
+    def asset_name(self, path, filename):
+        asset_file = os.path.join(path, filename)
+        if os.path.isfile(asset_file):
+            with open(asset_file, 'r') as f:
+                for line in f:
+                    if line.startswith('NAME'):
+                        space_index = line.find(' ')
+                        name = line[space_index:].strip().replace(
+                            ',', '')
+                        return name
+        return None
+
     def post_extraction(self):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
@@ -896,8 +1005,79 @@ class UpdateGroupBox(QGroupBox):
                     dst_dir = os.path.join(self.game_dir, previous_dir)
                     shutil.copytree(previous_dir_path, dst_dir)
 
+        status_bar.clearMessage()
+
         # Copy custom tilesets, mods and soundpack from previous version
+        tilesets_dir = os.path.join(self.game_dir, 'gfx')
+        previous_tilesets_dir = os.path.join(self.game_dir, 'previous_version',
+            'gfx')
+
+        if os.path.isdir(tilesets_dir) and os.path.isdir(previous_tilesets_dir):
+            status_bar.showMessage('Restoring custom tilesets')
+
+            official_set = {}
+            for entry in os.listdir(tilesets_dir):
+                entry_path = os.path.join(tilesets_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.asset_name(entry_path, 'tileset.txt')
+                    if name is not None and name not in official_set:
+                        official_set[name] = entry_path
+            previous_set = {}
+            for entry in os.listdir(previous_tilesets_dir):
+                entry_path = os.path.join(previous_tilesets_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.asset_name(entry_path, 'tileset.txt')
+                    if name is not None and name not in previous_set:
+                        previous_set[name] = entry_path
+
+            custom_set = set(previous_set.keys()) - set(official_set.keys())
+            for item in custom_set:
+                target_dir = os.path.join(tilesets_dir, os.path.basename(
+                    previous_set[item]))
+                if not os.path.exists(target_dir):
+                    shutil.copytree(previous_set[item], target_dir)
+
+            status_bar.clearMessage()
+
+        soundpack_dir = os.path.join(self.game_dir, 'data', 'sound')
+        previous_soundpack_dir = os.path.join(self.game_dir, 'previous_version',
+            'data', 'sound')
+
+        if os.path.isdir(soundpack_dir) and os.path.isdir(previous_soundpack_dir):
+            status_bar.showMessage('Restoring custom soundpacks')
+
+            official_set = {}
+            for entry in os.listdir(soundpack_dir):
+                entry_path = os.path.join(soundpack_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.asset_name(entry_path, 'soundpack.txt')
+                    if name is not None and name not in official_set:
+                        official_set[name] = entry_path
+            previous_set = {}
+            for entry in os.listdir(previous_soundpack_dir):
+                entry_path = os.path.join(previous_soundpack_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.asset_name(entry_path, 'soundpack.txt')
+                    if name is not None and name not in previous_set:
+                        previous_set[name] = entry_path
+
+            custom_set = set(previous_set.keys()) - set(official_set.keys())
+            for item in custom_set:
+                target_dir = os.path.join(soundpack_dir, os.path.basename(
+                    previous_set[item]))
+                if not os.path.exists(target_dir):
+                    shutil.copytree(previous_set[item], target_dir)
+
+            status_bar.clearMessage()
         
+        central_widget = self.get_central_widget()
+        game_dir_group_box = central_widget.game_dir_group_box
+
+        if game_dir_group_box.previous_exe_path is not None:
+            status_bar.showMessage('Update completed')
+        else:
+            status_bar.showMessage('Installation completed')
+
         self.finish_updating()
 
     def finish_updating(self):
@@ -907,6 +1087,11 @@ class UpdateGroupBox(QGroupBox):
 
         game_dir_group_box.enable_controls()
         self.enable_controls(True)
+
+        if game_dir_group_box.exe_path is not None:
+            self.update_button.setText('Update game')
+        else:
+            self.update_button.setText('Install game')
 
     def download_http_ready_read(self):
         self.downloading_file.write(self.download_http_reply.readAll())
