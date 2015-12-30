@@ -371,7 +371,7 @@ class GameDirGroupBox(QGroupBox):
                 if status_bar.busy == 0:
                     if self.restored_previous:
                         self.restored_previous = False
-                        status_bar.showMessage('Restored previous version')
+                        status_bar.showMessage('Previous version restored')
                     else:
                         status_bar.showMessage('Ready')
 
