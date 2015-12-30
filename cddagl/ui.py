@@ -6,6 +6,7 @@ import subprocess
 import random
 import shutil
 import zipfile
+import json
 
 from datetime import datetime
 import arrow
@@ -1011,6 +1012,20 @@ class UpdateGroupBox(QGroupBox):
                         return name
         return None
 
+    def mod_ident(self, path):
+        json_file = os.path.join(path, 'modinfo.json')
+        if os.path.isfile(json_file):
+            with open(json_file, 'r') as f:
+                values = {}
+                try:
+                    values = json.load(f)
+                except json.JSONDecodeError:
+                    pass
+                if 'ident' in values:
+                    return values['ident']
+
+        return None
+
     def post_extraction(self):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
@@ -1034,6 +1049,7 @@ class UpdateGroupBox(QGroupBox):
         status_bar.clearMessage()
 
         # Copy custom tilesets, mods and soundpack from previous version
+        # tilesets
         tilesets_dir = os.path.join(self.game_dir, 'gfx')
         previous_tilesets_dir = os.path.join(self.game_dir, 'previous_version',
             'gfx')
@@ -1065,6 +1081,7 @@ class UpdateGroupBox(QGroupBox):
 
             status_bar.clearMessage()
 
+        # soundpacks
         soundpack_dir = os.path.join(self.game_dir, 'data', 'sound')
         previous_soundpack_dir = os.path.join(self.game_dir, 'previous_version',
             'data', 'sound')
@@ -1096,6 +1113,38 @@ class UpdateGroupBox(QGroupBox):
 
             status_bar.clearMessage()
         
+        # mods
+        mods_dir = os.path.join(self.game_dir, 'data', 'mods')
+        previous_mods_dir = os.path.join(self.game_dir, 'previous_version',
+            'data', 'mods')
+
+        if os.path.isdir(mods_dir) and os.path.isdir(previous_mods_dir):
+            status_bar.showMessage('Restoring custom mods')
+
+            official_set = {}
+            for entry in os.listdir(mods_dir):
+                entry_path = os.path.join(mods_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.mod_ident(entry_path)
+                    if name is not None and name not in official_set:
+                        official_set[name] = entry_path
+            previous_set = {}
+            for entry in os.listdir(previous_mods_dir):
+                entry_path = os.path.join(previous_mods_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.mod_ident(entry_path)
+                    if name is not None and name not in previous_set:
+                        previous_set[name] = entry_path
+
+            custom_set = set(previous_set.keys()) - set(official_set.keys())
+            for item in custom_set:
+                target_dir = os.path.join(mods_dir, os.path.basename(
+                    previous_set[item]))
+                if not os.path.exists(target_dir):
+                    shutil.copytree(previous_set[item], target_dir)
+
+            status_bar.clearMessage()
+
         central_widget = self.get_central_widget()
         game_dir_group_box = central_widget.game_dir_group_box
 
@@ -1140,7 +1189,7 @@ class UpdateGroupBox(QGroupBox):
             self.download_last_read = datetime.utcnow()
 
     def start_lb_request(self, url):
-        self.disable_controls()
+        self.disable_controls(True)
 
         main_window = self.get_main_window()
 
