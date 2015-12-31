@@ -670,6 +670,7 @@ class UpdateGroupBox(QGroupBox):
             self.backing_up_game = False
             self.extracting_new_build = False
             self.analysing_new_build = False
+            self.in_post_extraction = False
 
             self.selected_build = self.builds[self.builds_combo.currentIndex()]
 
@@ -798,6 +799,23 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.removeWidget(game_dir_group_box.reading_progress_bar)
 
                 status_bar.busy -= 1
+
+                path = self.clean_game_dir()
+                self.restore_backup()
+                self.restore_previous_content(path)
+
+                if game_dir_group_box.exe_path is not None:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Update cancelled')
+                else:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Installation cancelled')
+            elif self.in_post_extraction:
+                self.in_post_extraction = False
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+                status_bar.clearMessage()
 
                 path = self.clean_game_dir()
                 self.restore_backup()
@@ -1149,6 +1167,7 @@ class UpdateGroupBox(QGroupBox):
 
     def post_extraction(self):
         self.analysing_new_build = False
+        self.in_post_extraction = True
 
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
@@ -1156,7 +1175,7 @@ class UpdateGroupBox(QGroupBox):
         # Copy config, save, templates and memorial directory from previous
         # version
         previous_version_dir = os.path.join(self.game_dir, 'previous_version')
-        if os.path.isdir(previous_version_dir):
+        if os.path.isdir(previous_version_dir) and self.in_post_extraction:
 
             previous_dirs = ('config', 'save', 'templates', 'memorial')
             for previous_dir in previous_dirs:
@@ -1170,6 +1189,9 @@ class UpdateGroupBox(QGroupBox):
                     dst_dir = os.path.join(self.game_dir, previous_dir)
                     shutil.copytree(previous_dir_path, dst_dir)
 
+                if not self.in_post_extraction:
+                    break
+
         status_bar.clearMessage()
 
         # Copy custom tilesets, mods and soundpack from previous version
@@ -1178,18 +1200,26 @@ class UpdateGroupBox(QGroupBox):
         previous_tilesets_dir = os.path.join(self.game_dir, 'previous_version',
             'gfx')
 
-        if os.path.isdir(tilesets_dir) and os.path.isdir(previous_tilesets_dir):
+        if (os.path.isdir(tilesets_dir) and os.path.isdir(previous_tilesets_dir)
+            and self.in_post_extraction):
             status_bar.showMessage('Restoring custom tilesets')
 
             official_set = {}
             for entry in os.listdir(tilesets_dir):
+                if not self.in_post_extraction:
+                    break
+
                 entry_path = os.path.join(tilesets_dir, entry)
                 if os.path.isdir(entry_path):
                     name = self.asset_name(entry_path, 'tileset.txt')
                     if name is not None and name not in official_set:
                         official_set[name] = entry_path
+
             previous_set = {}
             for entry in os.listdir(previous_tilesets_dir):
+                if not self.in_post_extraction:
+                    break
+
                 entry_path = os.path.join(previous_tilesets_dir, entry)
                 if os.path.isdir(entry_path):
                     name = self.asset_name(entry_path, 'tileset.txt')
@@ -1198,6 +1228,9 @@ class UpdateGroupBox(QGroupBox):
 
             custom_set = set(previous_set.keys()) - set(official_set.keys())
             for item in custom_set:
+                if not self.in_post_extraction:
+                    break
+
                 target_dir = os.path.join(tilesets_dir, os.path.basename(
                     previous_set[item]))
                 if not os.path.exists(target_dir):
@@ -1210,19 +1243,26 @@ class UpdateGroupBox(QGroupBox):
         previous_soundpack_dir = os.path.join(self.game_dir, 'previous_version',
             'data', 'sound')
 
-        if os.path.isdir(soundpack_dir) and os.path.isdir(
-            previous_soundpack_dir):
+        if (os.path.isdir(soundpack_dir) and os.path.isdir(
+            previous_soundpack_dir) and self.in_post_extraction):
             status_bar.showMessage('Restoring custom soundpacks')
 
             official_set = {}
             for entry in os.listdir(soundpack_dir):
+                if not self.in_post_extraction:
+                    break
+
                 entry_path = os.path.join(soundpack_dir, entry)
                 if os.path.isdir(entry_path):
                     name = self.asset_name(entry_path, 'soundpack.txt')
                     if name is not None and name not in official_set:
                         official_set[name] = entry_path
+
             previous_set = {}
             for entry in os.listdir(previous_soundpack_dir):
+                if not self.in_post_extraction:
+                    break
+
                 entry_path = os.path.join(previous_soundpack_dir, entry)
                 if os.path.isdir(entry_path):
                     name = self.asset_name(entry_path, 'soundpack.txt')
@@ -1231,6 +1271,9 @@ class UpdateGroupBox(QGroupBox):
 
             custom_set = set(previous_set.keys()) - set(official_set.keys())
             for item in custom_set:
+                if not self.in_post_extraction:
+                    break
+
                 target_dir = os.path.join(soundpack_dir, os.path.basename(
                     previous_set[item]))
                 if not os.path.exists(target_dir):
@@ -1243,7 +1286,8 @@ class UpdateGroupBox(QGroupBox):
         previous_mods_dir = os.path.join(self.game_dir, 'previous_version',
             'data', 'mods')
 
-        if os.path.isdir(mods_dir) and os.path.isdir(previous_mods_dir):
+        if (os.path.isdir(mods_dir) and os.path.isdir(previous_mods_dir) and
+            self.in_post_extraction):
             status_bar.showMessage('Restoring custom mods')
 
             official_set = {}
@@ -1270,6 +1314,9 @@ class UpdateGroupBox(QGroupBox):
 
             status_bar.clearMessage()
 
+        if not self.in_post_extraction:
+            return
+
         central_widget = self.get_central_widget()
         game_dir_group_box = central_widget.game_dir_group_box
 
@@ -1277,6 +1324,8 @@ class UpdateGroupBox(QGroupBox):
             status_bar.showMessage('Update completed')
         else:
             status_bar.showMessage('Installation completed')
+
+        self.in_post_extraction = False
 
         self.finish_updating()
 
