@@ -32,12 +32,16 @@ READ_BUFFER_SIZE = 16384
 
 BASE_URLS = {
     'Tiles': {
-        'Windows x64': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows_x64/Tiles/',
-        'Windows x86': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Tiles/'
+        'Windows x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+            'Windows_x64/Tiles/'),
+        'Windows x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+            'Windows/Tiles/')
     },
     'Console': {
-        'Windows x64': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows_x64/Curses/',
-        'Windows x86': 'http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Curses/'
+        'Windows x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+            'Windows_x64/Curses/'),
+        'Windows x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+            'Windows/Curses/')
     }
 }
 
@@ -220,7 +224,8 @@ class GameDirGroupBox(QGroupBox):
 
             if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
 
-                temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
+                temp_dir = os.path.join(os.environ['TEMP'],
+                    'CDDA Game Launcher')
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
 
@@ -664,6 +669,7 @@ class UpdateGroupBox(QGroupBox):
             self.download_aborted = False
             self.backing_up_game = False
             self.extracting_new_build = False
+            self.analysing_new_build = False
 
             self.selected_build = self.builds[self.builds_combo.currentIndex()]
 
@@ -717,29 +723,143 @@ class UpdateGroupBox(QGroupBox):
 
                 self.finish_updating()
         else:
+            central_widget = self.get_central_widget()
+            game_dir_group_box = central_widget.game_dir_group_box
+
             # Are we downloading the file?
             if self.download_http_reply.isRunning():
                 self.download_aborted = True
                 self.download_http_reply.abort()
-
-                central_widget = self.get_central_widget()
-                game_dir_group_box = central_widget.game_dir_group_box
 
                 main_window = self.get_main_window()
 
                 status_bar = main_window.statusBar()
 
                 if game_dir_group_box.exe_path is not None:
-                    self.update_button.setText('Update game')
                     if status_bar.busy == 0:
                         status_bar.showMessage('Update cancelled')
                 else:
-                    self.update_button.setText('Install game')
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Installation cancelled')
+            elif self.backing_up_game:
+                self.backup_timer.stop()
 
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.removeWidget(self.backup_label)
+                status_bar.removeWidget(self.backup_progress_bar)
+
+                status_bar.busy -= 1
+
+                self.restore_backup()
+
+                if game_dir_group_box.exe_path is not None:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Update cancelled')
+                else:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Installation cancelled')
+
+            elif self.extracting_new_build:
+                self.extracting_timer.stop()
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.removeWidget(self.extracting_label)
+                status_bar.removeWidget(self.extracting_progress_bar)
+
+                status_bar.busy -= 1
+
+                self.extracting_zipfile.close()
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir)
+
+                path = self.clean_game_dir()
+                self.restore_backup()
+                self.restore_previous_content(path)
+
+                if game_dir_group_box.exe_path is not None:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Update cancelled')
+                else:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Installation cancelled')
+            elif self.analysing_new_build:
+                game_dir_group_box.opened_exe.close()
+                game_dir_group_box.exe_reading_timer.stop()
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.removeWidget(game_dir_group_box.reading_label)
+                status_bar.removeWidget(game_dir_group_box.reading_progress_bar)
+
+                status_bar.busy -= 1
+
+                path = self.clean_game_dir()
+                self.restore_backup()
+                self.restore_previous_content(path)
+
+                if game_dir_group_box.exe_path is not None:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Update cancelled')
+                else:
                     if status_bar.busy == 0:
                         status_bar.showMessage('Installation cancelled')
 
             self.finish_updating()
+
+    def clean_game_dir(self):
+        game_dir = self.game_dir
+        dir_list = os.listdir(game_dir)
+        if len(dir_list) == 0 or
+            (len(dir_list) == 1 and dir_list[0] == 'previous_version'):
+            return None
+
+        temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+
+        temp_move_dir = os.path.join(temp_dir, 'moved')
+        while os.path.exists(temp_move_dir):
+            temp_move_dir = os.path.join(temp_dir, 'moved-{0}'.format(
+                '%08x' % random.randrange(16**8)))
+        os.makedirs(temp_move_dir)
+
+        for entry in dir_list:
+            if entry != 'previous_version':
+                entry_path = os.path.join(game_dir, entry)
+                shutil.move(entry_path, temp_move_dir)
+
+        return temp_dir
+
+    def restore_previous_content(self, path):
+        if path is None:
+            return
+
+        game_dir = self.game_dir
+        previous_version_dir = os.path.join(game_dir, 'previous_version')
+        if not os.path.exists(previous_version_dir):
+            os.makedirs(previous_version_dir)
+
+        for entry in os.listdir(path):
+            entry_path = os.path.join(path, entry)
+            shutil.move(entry_path, previous_version_dir)
+
+    def restore_backup(self):
+        game_dir = self.game_dir
+        previous_version_dir = os.path.join(game_dir, 'previous_version')
+
+        if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
+
+            for entry in os.listdir(previous_version_dir):
+                entry_path = os.path.join(previous_version_dir, entry)
+                shutil.move(entry_path, game_dir)
+
+            shutil.rmtree(previous_version_dir)
 
     def get_central_widget(self):
         return self.parentWidget()
@@ -984,6 +1104,7 @@ class UpdateGroupBox(QGroupBox):
                 central_widget = self.get_central_widget()
                 game_dir_group_box = central_widget.game_dir_group_box
 
+                self.analysing_new_build = True
                 game_dir_group_box.analyse_new_build(self.selected_build)
 
             else:
@@ -1027,10 +1148,13 @@ class UpdateGroupBox(QGroupBox):
         return None
 
     def post_extraction(self):
+        self.analysing_new_build = False
+
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
-        # Copy config, save, templates and memorial directory from previous version
+        # Copy config, save, templates and memorial directory from previous
+        # version
         previous_version_dir = os.path.join(self.game_dir, 'previous_version')
         if os.path.isdir(previous_version_dir):
 
@@ -1086,7 +1210,8 @@ class UpdateGroupBox(QGroupBox):
         previous_soundpack_dir = os.path.join(self.game_dir, 'previous_version',
             'data', 'sound')
 
-        if os.path.isdir(soundpack_dir) and os.path.isdir(previous_soundpack_dir):
+        if os.path.isdir(soundpack_dir) and os.path.isdir(
+            previous_soundpack_dir):
             status_bar.showMessage('Restoring custom soundpacks')
 
             official_set = {}
@@ -1240,7 +1365,8 @@ class UpdateGroupBox(QGroupBox):
             build = {}
             for index, cell in enumerate(row.cssselect('td')):
                 if index == 1:
-                    if len(cell) > 0 and cell[0].text.startswith('cataclysmdda'):
+                    if len(cell) > 0 and cell[0].text.startswith(
+                        'cataclysmdda'):
                         anchor = cell[0]
                         url = urljoin(self.base_url, anchor.get('href'))
                         name = anchor.text
