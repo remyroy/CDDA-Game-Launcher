@@ -815,8 +815,8 @@ class UpdateGroupBox(QGroupBox):
     def clean_game_dir(self):
         game_dir = self.game_dir
         dir_list = os.listdir(game_dir)
-        if len(dir_list) == 0 or
-            (len(dir_list) == 1 and dir_list[0] == 'previous_version'):
+        if len(dir_list) == 0 or (
+            len(dir_list) == 1 and dir_list[0] == 'previous_version'):
             return None
 
         temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
@@ -834,7 +834,7 @@ class UpdateGroupBox(QGroupBox):
                 entry_path = os.path.join(game_dir, entry)
                 shutil.move(entry_path, temp_move_dir)
 
-        return temp_dir
+        return temp_move_dir
 
     def restore_previous_content(self, path):
         if path is None:
