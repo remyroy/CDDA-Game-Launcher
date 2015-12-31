@@ -21,12 +21,15 @@ from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
-    QProgressBar, QButtonGroup, QRadioButton, QComboBox)
+    QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
+    QTextBrowser)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build)
+
+from .__version__ import version
 
 READ_BUFFER_SIZE = 16384
 
@@ -71,6 +74,9 @@ class MainWindow(QMainWindow):
         
         self.create_status_bar()
         self.create_central_widget()
+        self.create_menu()
+
+        self.about_dialog = None
 
         self.setWindowTitle(title)
 
@@ -84,6 +90,19 @@ class MainWindow(QMainWindow):
         central_widget = CentralWidget()
         self.setCentralWidget(central_widget)
         self.central_widget = central_widget
+
+    def create_menu(self):
+        about_action = QAction('&About', self, triggered=self.show_about_dialog)
+        self.about_action = about_action
+        self.menuBar().addAction(about_action)
+
+    def show_about_dialog(self):
+        if self.about_dialog is None:
+            about_dialog = AboutDialog(self, Qt.WindowTitleHint |
+                Qt.WindowCloseButtonHint)
+            self.about_dialog = about_dialog
+        
+        self.about_dialog.exec()
 
     def resizeEvent(self, event):
         set_config_value('window.width', event.size().width())
@@ -1523,6 +1542,59 @@ class UpdateGroupBox(QGroupBox):
         set_config_value('platform', button.text())
 
         self.refresh_builds()
+
+class AboutDialog(QDialog):
+    def __init__(self, parent=0, f=0):
+        super(AboutDialog, self).__init__(parent, f)
+
+        layout = QGridLayout()
+
+        text_content = QTextBrowser()
+        text_content.setReadOnly(True)
+        text_content.setOpenExternalLinks(True)
+        text_content.setHtml('''
+<p>CDDA Game Launcher version {version}</p>
+
+<p>Get the latest release <a href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on Github</a>.</p>
+
+<p>Please report any issue <a href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on Github</a>.</p>
+
+<p>Copyright (c) 2015 Rémy Roy</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+
+'''.format(version=version))
+        layout.addWidget(text_content, 0, 0)
+        self.text_content = text_content
+
+        ok_button = QPushButton()
+        ok_button.setText('OK')
+        ok_button.clicked.connect(self.done)
+        layout.addWidget(ok_button, 1, 0, Qt.AlignRight)
+        self.ok_button = ok_button
+
+        layout.setRowStretch(0, 100)
+
+        self.setMinimumSize(400, 250)
+
+        self.setLayout(layout)
+        self.setWindowTitle('About CDDA Game Launcher')
 
 def start_ui():
     app = QApplication(sys.argv)
