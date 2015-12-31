@@ -13,7 +13,8 @@ class Installer(Command):
         pass
 
     def run(self):
-        call(['pyi-makespec', '-F', '-w', '--noupx', 'cddagl\launcher.py'])
+        call(['pyi-makespec', '-F', '-w', '--noupx',
+          '--hidden-import=lxml.cssselect', 'cddagl\launcher.py'])
 
         added_files = [('alembic', 'alembic')]
 
