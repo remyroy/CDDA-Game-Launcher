@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
-    QTextBrowser)
+    QTextBrowser, QTabWidget)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -109,7 +109,7 @@ class MainWindow(QMainWindow):
         set_config_value('window.height', event.size().height())
 
     def closeEvent(self, event):
-        update_group_box = self.central_widget.update_group_box
+        update_group_box = self.central_widget.main_tab.update_group_box
 
         if update_group_box.updating:
             update_group_box.close_after_update = True
@@ -123,9 +123,27 @@ class MainWindow(QMainWindow):
             event.accept()
 
 
-class CentralWidget(QWidget):
+class CentralWidget(QTabWidget):
     def __init__(self):
         super(CentralWidget, self).__init__()
+
+        self.create_main_tab()
+        self.create_settings_tab()
+
+    def create_main_tab(self):
+        main_tab = MainTab()
+        self.addTab(main_tab, 'Main')
+        self.main_tab = main_tab
+
+    def create_settings_tab(self):
+        settings_tab = SettingsTab()
+        self.addTab(settings_tab, 'Settings')
+        self.settings_tab = settings_tab
+
+
+class MainTab(QWidget):
+    def __init__(self):
+        super(MainTab, self).__init__()
 
         game_dir_group_box = GameDirGroupBox()
         self.game_dir_group_box = game_dir_group_box
@@ -139,8 +157,12 @@ class CentralWidget(QWidget):
         self.setLayout(layout)
 
     def get_main_window(self):
-        return self.parentWidget()
+        return self.parentWidget().parentWidget().parentWidget()
 
+
+class SettingsTab(QWidget):
+    def __init__(self):
+        super(SettingsTab, self).__init__()
 
 class GameDirGroupBox(QGroupBox):
     def __init__(self):
@@ -249,8 +271,8 @@ class GameDirGroupBox(QGroupBox):
     def restore_previous(self):
         self.disable_controls()
 
-        central_widget = self.get_central_widget()
-        update_group_box = central_widget.update_group_box
+        main_tab = self.get_main_tab()
+        update_group_box = main_tab.update_group_box
         update_group_box.disable_controls(True)
 
         try:
@@ -304,11 +326,11 @@ class GameDirGroupBox(QGroupBox):
         subprocess.call(command, shell=True)
         self.get_main_window().close()
 
-    def get_central_widget(self):
+    def get_main_tab(self):
         return self.parentWidget()
 
     def get_main_window(self):
-        return self.get_central_widget().get_main_window()
+        return self.get_main_tab().get_main_window()
 
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
@@ -322,8 +344,8 @@ class GameDirGroupBox(QGroupBox):
         directory = self.dir_edit.text()
         self.exe_path = None
         
-        central_widget = self.get_central_widget()
-        update_group_box = central_widget.update_group_box
+        main_tab = self.get_main_tab()
+        update_group_box = main_tab.update_group_box
 
         if not os.path.isdir(directory):
             self.version_value_label.setText('Not a valid directory')
@@ -547,8 +569,8 @@ class GameDirGroupBox(QGroupBox):
                     new_build(self.game_version, sha256, self.build_number,
                         self.build_date)
 
-                    central_widget = self.get_central_widget()
-                    update_group_box = central_widget.update_group_box
+                    main_tab = self.get_main_tab()
+                    update_group_box = main_tab.update_group_box
 
                     update_group_box.post_extraction()
 
@@ -712,8 +734,8 @@ class UpdateGroupBox(QGroupBox):
 
             self.selected_build = self.builds[self.builds_combo.currentIndex()]
 
-            central_widget = self.get_central_widget()
-            game_dir_group_box = central_widget.game_dir_group_box
+            main_tab = self.get_main_tab()
+            game_dir_group_box = main_tab.game_dir_group_box
 
             game_dir_group_box.disable_controls()
             self.disable_controls()
@@ -762,8 +784,8 @@ class UpdateGroupBox(QGroupBox):
 
                 self.finish_updating()
         else:
-            central_widget = self.get_central_widget()
-            game_dir_group_box = central_widget.game_dir_group_box
+            main_tab = self.get_main_tab()
+            game_dir_group_box = main_tab.game_dir_group_box
 
             # Are we downloading the file?
             if self.download_http_reply.isRunning():
@@ -917,11 +939,11 @@ class UpdateGroupBox(QGroupBox):
 
             shutil.rmtree(previous_version_dir)
 
-    def get_central_widget(self):
+    def get_main_tab(self):
         return self.parentWidget()
 
     def get_main_window(self):
-        return self.get_central_widget().get_main_window()
+        return self.get_main_tab().get_main_window()
 
     def disable_controls(self, update_button=False):
         self.tiles_radio_button.setEnabled(False)
@@ -986,8 +1008,8 @@ class UpdateGroupBox(QGroupBox):
         self.download_http_reply.downloadProgress.connect(
             self.download_dl_progress)
 
-        central_widget = self.get_central_widget()
-        game_dir_group_box = central_widget.game_dir_group_box
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
 
         if game_dir_group_box.exe_path is not None:
             self.update_button.setText('Cancel update')
@@ -1040,8 +1062,8 @@ class UpdateGroupBox(QGroupBox):
     def backup_current_game(self):
         self.backing_up_game = True
 
-        central_widget = self.get_central_widget()
-        game_dir_group_box = central_widget.game_dir_group_box
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
 
         game_dir = game_dir_group_box.dir_edit.text()
         self.game_dir = game_dir
@@ -1157,8 +1179,8 @@ class UpdateGroupBox(QGroupBox):
                 download_dir = os.path.dirname(self.downloaded_file)
                 shutil.rmtree(download_dir)
 
-                central_widget = self.get_central_widget()
-                game_dir_group_box = central_widget.game_dir_group_box
+                main_tab = self.get_main_tab()
+                game_dir_group_box = main_tab.game_dir_group_box
 
                 self.analysing_new_build = True
                 game_dir_group_box.analyse_new_build(self.selected_build)
@@ -1355,8 +1377,8 @@ class UpdateGroupBox(QGroupBox):
         if not self.in_post_extraction:
             return
 
-        central_widget = self.get_central_widget()
-        game_dir_group_box = central_widget.game_dir_group_box
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
 
         if game_dir_group_box.previous_exe_path is not None:
             status_bar.showMessage('Update completed')
@@ -1369,8 +1391,8 @@ class UpdateGroupBox(QGroupBox):
 
     def finish_updating(self):
         self.updating = False
-        central_widget = self.get_central_widget()
-        game_dir_group_box = central_widget.game_dir_group_box
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
 
         game_dir_group_box.enable_controls()
         self.enable_controls(True)
@@ -1502,8 +1524,8 @@ class UpdateGroupBox(QGroupBox):
 
             self.builds_combo.setEnabled(True)
 
-            central_widget = self.get_central_widget()
-            game_dir_group_box = central_widget.game_dir_group_box
+            main_tab = self.get_main_tab()
+            game_dir_group_box = main_tab.game_dir_group_box
 
             if game_dir_group_box.exe_path is not None:
                 self.update_button.setText('Update game')
