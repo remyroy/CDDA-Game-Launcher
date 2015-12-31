@@ -58,6 +58,7 @@ def sizeof_fmt(num, suffix='B'):
         num /= 1024.0
     return "%.1f%s%s" % (num, 'Yi', suffix)
 
+
 class MainWindow(QMainWindow):
     def __init__(self, title):
         super(MainWindow, self).__init__()
@@ -82,10 +83,25 @@ class MainWindow(QMainWindow):
     def create_central_widget(self):
         central_widget = CentralWidget()
         self.setCentralWidget(central_widget)
+        self.central_widget = central_widget
 
     def resizeEvent(self, event):
         set_config_value('window.width', event.size().width())
         set_config_value('window.height', event.size().height())
+
+    def closeEvent(self, event):
+        update_group_box = self.central_widget.update_group_box
+
+        if update_group_box.updating:
+            update_group_box.close_after_update = True
+            update_group_box.update_game()
+
+            if not update_group_box.updating:
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.accept()
 
 
 class CentralWidget(QWidget):
@@ -551,6 +567,7 @@ class UpdateGroupBox(QGroupBox):
 
         self.shown = False
         self.updating = False
+        self.close_after_update = False
 
         self.qnam = QNetworkAccessManager()
         self.http_reply = None
@@ -1341,6 +1358,9 @@ class UpdateGroupBox(QGroupBox):
             self.update_button.setText('Update game')
         else:
             self.update_button.setText('Install game')
+
+        if self.close_after_update:
+            self.get_main_window().close()
 
     def download_http_ready_read(self):
         self.downloading_file.write(self.download_http_reply.readAll())
