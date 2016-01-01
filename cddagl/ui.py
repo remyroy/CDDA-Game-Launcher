@@ -164,6 +164,20 @@ class SettingsTab(QWidget):
     def __init__(self):
         super(SettingsTab, self).__init__()
 
+        launcher_settings_group_box = LauncherSettingsGroupBox()
+        self.launcher_settings_group_box = launcher_settings_group_box
+
+        update_settings_group_box = UpdateSettingsGroupBox()
+        self.update_settings_group_box = update_settings_group_box
+
+        layout = QVBoxLayout()
+        layout.addWidget(launcher_settings_group_box)
+        layout.addWidget(update_settings_group_box)
+        self.setLayout(layout)
+
+    def get_main_window(self):
+        return self.parentWidget().parentWidget().parentWidget()
+
 class GameDirGroupBox(QGroupBox):
     def __init__(self):
         super(GameDirGroupBox, self).__init__()
@@ -321,9 +335,15 @@ class GameDirGroupBox(QGroupBox):
     def launch_game(self):
         self.get_main_window().setWindowState(Qt.WindowMinimized)
         exe_dir = os.path.dirname(self.exe_path)
-        command = 'start /D "{app_path}" "" "{exe_path}"'.format(
-            app_path=exe_dir, exe_path=self.exe_path)
+
+        params = get_config_value('command.params', '').strip()
+        if params != '':
+            params = ' ' + params
+
+        command = 'start /D "{app_path}" "" "{exe_path}"{params}'.format(
+            app_path=exe_dir, exe_path=self.exe_path, params=params)
         subprocess.call(command, shell=True)
+
         self.get_main_window().close()
 
     def get_main_tab(self):
@@ -1565,6 +1585,7 @@ class UpdateGroupBox(QGroupBox):
 
         self.refresh_builds()
 
+
 class AboutDialog(QDialog):
     def __init__(self, parent=0, f=0):
         super(AboutDialog, self).__init__(parent, f)
@@ -1617,6 +1638,43 @@ SOFTWARE.</p>
 
         self.setLayout(layout)
         self.setWindowTitle('About CDDA Game Launcher')
+
+
+class LauncherSettingsGroupBox(QGroupBox):
+    def __init__(self):
+        super(LauncherSettingsGroupBox, self).__init__()
+
+        layout = QGridLayout()        
+
+        command_line_parameters_label = QLabel()
+        command_line_parameters_label.setText('Command line parameters:')
+        layout.addWidget(command_line_parameters_label, 0, 0, Qt.AlignRight)
+        self.command_line_parameters_label = command_line_parameters_label
+
+        command_line_parameters_edit = QLineEdit()
+        command_line_parameters_edit.setText(get_config_value('command.params',
+            ''))
+        command_line_parameters_edit.editingFinished.connect(
+            self.clp_changed)
+        layout.addWidget(command_line_parameters_edit, 0, 1)
+        self.command_line_parameters_edit = command_line_parameters_edit
+
+        self.setTitle('Launcher')
+        self.setLayout(layout)
+
+    def clp_changed(self):
+        set_config_value('command.params',
+            self.command_line_parameters_edit.text())
+
+
+class UpdateSettingsGroupBox(QGroupBox):
+    def __init__(self):
+        super(UpdateSettingsGroupBox, self).__init__()
+
+        layout = QGridLayout()        
+
+        self.setTitle('Update/Installation')
+        self.setLayout(layout)
 
 def start_ui():
     app = QApplication(sys.argv)
