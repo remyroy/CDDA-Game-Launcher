@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
-    QTextBrowser, QTabWidget)
+    QTextBrowser, QTabWidget, QCheckBox)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -214,11 +214,6 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(version_value_label, 1, 1)
         self.version_value_label = version_value_label
 
-        palette = version_value_label.palette()
-        palette.setColor(QPalette.Base, version_label.palette().color(
-            QPalette.Window))
-        version_value_label.setPalette(palette)
-
         build_label = QLabel()
         build_label.setText('Build:')
         layout.addWidget(build_label, 2, 0, Qt.AlignRight)
@@ -229,11 +224,6 @@ class GameDirGroupBox(QGroupBox):
         build_value_label.setText('Unknown')
         layout.addWidget(build_value_label, 2, 1)
         self.build_value_label = build_value_label
-
-        palette = build_value_label.palette()
-        palette.setColor(QPalette.Base, build_label.palette().color(
-            QPalette.Window))
-        build_value_label.setPalette(palette)
 
         launch_game_button = QPushButton()
         launch_game_button.setText('Launch game')
@@ -306,14 +296,21 @@ class GameDirGroupBox(QGroupBox):
                         '%08x' % random.randrange(16**8)))
                 os.makedirs(temp_move_dir)
 
+                excluded_dirs = set(['previous_version'])
+                if get_config_value('prevent_save_move', False):
+                    excluded_dirs.add('save')
                 for entry in os.listdir(game_dir):
-                    if entry != 'previous_version':
+                    if entry not in excluded_dirs:
                         entry_path = os.path.join(game_dir, entry)
                         shutil.move(entry_path, temp_move_dir)
 
+                excluded_dirs = set()
+                if get_config_value('prevent_save_move', False):
+                    excluded_dirs.add('save')
                 for entry in os.listdir(previous_version_dir):
-                    entry_path = os.path.join(previous_version_dir, entry)
-                    shutil.move(entry_path, game_dir)
+                    if entry not in excluded_dirs:
+                        entry_path = os.path.join(previous_version_dir, entry)
+                        shutil.move(entry_path, game_dir)
 
                 for entry in os.listdir(temp_move_dir):
                     entry_path = os.path.join(temp_move_dir, entry)
@@ -435,7 +432,7 @@ class GameDirGroupBox(QGroupBox):
 
         self.exe_sha256 = hashlib.sha256()
         self.last_bytes = None
-        self.game_version = 'Unknown'
+        self.game_version = ''
         self.opened_exe = open(self.exe_path, 'rb')
 
         def timeout():
@@ -445,6 +442,9 @@ class GameDirGroupBox(QGroupBox):
                 self.exe_reading_timer.stop()
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
+
+                if self.game_version == '':
+                    self.game_version = 'Unknown'
 
                 self.version_value_label.setText(
                     '{version} ({type})'.format(version=self.game_version,
@@ -485,10 +485,8 @@ class GameDirGroupBox(QGroupBox):
                     last_frame)
                 if match is not None:
                     game_version = match.group('version').decode('ascii')
-                    self.game_version = game_version
-                    self.version_value_label.setText(
-                        '{version} ({type})'.format(version=self.game_version,
-                            type=self.version_type))
+                    if len(game_version) > len(self.game_version):
+                        self.game_version = game_version
 
                 self.exe_total_read += len(bytes)
                 self.reading_progress_bar.setValue(self.exe_total_read)
@@ -560,7 +558,7 @@ class GameDirGroupBox(QGroupBox):
 
             self.exe_sha256 = hashlib.sha256()
             self.last_bytes = None
-            self.game_version = 'Unknown'
+            self.game_version = ''
             self.opened_exe = open(self.exe_path, 'rb')
 
             def timeout():
@@ -571,9 +569,12 @@ class GameDirGroupBox(QGroupBox):
                     main_window = self.get_main_window()
                     status_bar = main_window.statusBar()
 
+                    if self.game_version == '':
+                        self.game_version = 'Unknown'
                     self.version_value_label.setText(
                         '{version} ({type})'.format(version=self.game_version,
                         type=self.version_type))
+
                     build_date = arrow.get(self.build_date, 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow())
                     self.build_value_label.setText('{0} ({1})'.format(
@@ -604,11 +605,8 @@ class GameDirGroupBox(QGroupBox):
                         last_frame)
                     if match is not None:
                         game_version = match.group('version').decode('ascii')
-                        self.game_version = game_version
-                        self.version_value_label.setText(
-                            '{version} ({type})'.format(
-                                version=self.game_version,
-                                type=self.version_type))
+                        if len(game_version) > len(self.game_version):
+                            self.game_version = game_version
 
                     self.exe_total_read += len(bytes)
                     self.reading_progress_bar.setValue(self.exe_total_read)
@@ -927,8 +925,11 @@ class UpdateGroupBox(QGroupBox):
                 '%08x' % random.randrange(16**8)))
         os.makedirs(temp_move_dir)
 
+        excluded_dirs = set(['previous_version'])
+        if get_config_value('prevent_save_move', False):
+            excluded_dirs.add('save')
         for entry in dir_list:
-            if entry != 'previous_version':
+            if entry not in excluded_dirs:
                 entry_path = os.path.join(game_dir, entry)
                 shutil.move(entry_path, temp_move_dir)
 
@@ -954,6 +955,9 @@ class UpdateGroupBox(QGroupBox):
         if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
 
             for entry in os.listdir(previous_version_dir):
+                if (entry == 'save' and
+                    get_config_value('prevent_save_move', False)):
+                    continue
                 entry_path = os.path.join(previous_version_dir, entry)
                 shutil.move(entry_path, game_dir)
 
@@ -1097,6 +1101,9 @@ class UpdateGroupBox(QGroupBox):
 
         dir_list = os.listdir(game_dir)
         self.backup_dir_list = dir_list
+
+        if get_config_value('prevent_save_move', False) and 'save' in dir_list:
+            dir_list.remove('save')
 
         if len(dir_list) > 0:
             status_bar.busy += 1
@@ -1257,7 +1264,11 @@ class UpdateGroupBox(QGroupBox):
         previous_version_dir = os.path.join(self.game_dir, 'previous_version')
         if os.path.isdir(previous_version_dir) and self.in_post_extraction:
 
-            previous_dirs = ('config', 'save', 'templates', 'memorial')
+            previous_dirs = ['config', 'save', 'templates', 'memorial']
+            if (get_config_value('prevent_save_move', False) and
+                'save' in previous_dirs):
+                previous_dirs.remove('save')
+
             for previous_dir in previous_dirs:
                 previous_dir_path = os.path.join(previous_version_dir,
                     previous_dir)
@@ -1644,7 +1655,7 @@ class LauncherSettingsGroupBox(QGroupBox):
     def __init__(self):
         super(LauncherSettingsGroupBox, self).__init__()
 
-        layout = QGridLayout()        
+        layout = QGridLayout()
 
         command_line_parameters_label = QLabel()
         command_line_parameters_label.setText('Command line parameters:')
@@ -1671,10 +1682,27 @@ class UpdateSettingsGroupBox(QGroupBox):
     def __init__(self):
         super(UpdateSettingsGroupBox, self).__init__()
 
-        layout = QGridLayout()        
+        layout = QGridLayout()
+
+        prevent_save_move_checkbox = QCheckBox()
+        prevent_save_move_checkbox.setText(
+            'Do not copy or move the save directory')
+        prevent_save_move_checkbox.setToolTip('If your save directory size is '
+            'large, it might take a long time to copy it during the update '
+            'process. This option might help you speed the whole thing but '
+            'your previous version will lack the save directory.')
+        check_state = (Qt.Checked if get_config_value(
+            'prevent_save_move', False) else Qt.Unchecked)
+        prevent_save_move_checkbox.setCheckState(check_state)
+        prevent_save_move_checkbox.stateChanged.connect(self.psmc_changed)
+        layout.addWidget(prevent_save_move_checkbox, 0, 0)
+        self.prevent_save_move_checkbox = prevent_save_move_checkbox
 
         self.setTitle('Update/Installation')
         self.setLayout(layout)
+
+    def psmc_changed(self, state):
+        set_config_value('prevent_save_move', state != Qt.Unchecked)
 
 def start_ui():
     app = QApplication(sys.argv)
