@@ -1252,6 +1252,15 @@ class UpdateGroupBox(QGroupBox):
 
                 self.extracting_zipfile.close()
 
+                # Keep a copy of the archive if selected in the settings
+                if config_true(get_config_value('keep_archive_copy', 'False')):
+                    archive_dir = get_config_value('archive_directory', '')
+                    archive_name = os.path.basename(self.downloaded_file)
+                    move_target = os.path.join(archive_dir, archive_name)
+                    if (os.path.isdir(archive_dir)
+                        and not os.path.exists(move_target)):
+                        shutil.move(self.downloaded_file, archive_dir)
+
                 download_dir = os.path.dirname(self.downloaded_file)
                 shutil.rmtree(download_dir)
 
@@ -1800,14 +1809,54 @@ class UpdateSettingsGroupBox(QGroupBox):
             'prevent_save_move', 'False')) else Qt.Unchecked)
         prevent_save_move_checkbox.setCheckState(check_state)
         prevent_save_move_checkbox.stateChanged.connect(self.psmc_changed)
-        layout.addWidget(prevent_save_move_checkbox, 0, 0)
+        layout.addWidget(prevent_save_move_checkbox, 0, 0, 1, 3)
         self.prevent_save_move_checkbox = prevent_save_move_checkbox
+
+        keep_archive_copy_checkbox = QCheckBox()
+        keep_archive_copy_checkbox.setText('Keep a copy of the downloaded '
+            'archive in the following directory:')
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'keep_archive_copy', 'False')) else Qt.Unchecked)
+        keep_archive_copy_checkbox.setCheckState(check_state)
+        keep_archive_copy_checkbox.stateChanged.connect(self.kacc_changed)
+        layout.addWidget(keep_archive_copy_checkbox, 1, 0)
+        self.keep_archive_copy_checkbox = keep_archive_copy_checkbox
+
+        keep_archive_directory_line = QLineEdit()
+        keep_archive_directory_line.setText(get_config_value(
+            'archive_directory', ''))
+        keep_archive_directory_line.editingFinished.connect(
+            self.ka_directory_changed)
+        layout.addWidget(keep_archive_directory_line, 1, 1)
+        self.keep_archive_directory_line = keep_archive_directory_line
+
+        ka_dir_change_button = QToolButton()
+        ka_dir_change_button.setText('...')
+        ka_dir_change_button.clicked.connect(self.set_ka_directory)
+        layout.addWidget(ka_dir_change_button, 1, 2)
+        self.ka_dir_change_button = ka_dir_change_button
 
         self.setTitle('Update/Installation')
         self.setLayout(layout)
 
     def psmc_changed(self, state):
         set_config_value('prevent_save_move', str(state != Qt.Unchecked))
+
+    def kacc_changed(self, state):
+        set_config_value('keep_archive_copy', str(state != Qt.Unchecked))
+
+    def set_ka_directory(self):
+        options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
+        directory = QFileDialog.getExistingDirectory(self,
+                'Archive directory', self.keep_archive_directory_line.text(),
+                options=options)
+        if directory:
+            self.keep_archive_directory_line.setText(clean_qt_path(directory))
+            self.ka_directory_changed()
+
+    def ka_directory_changed(self):
+        set_config_value('archive_directory',
+            self.keep_archive_directory_line.text())
 
 def start_ui():
     app = QApplication(sys.argv)
