@@ -24,7 +24,11 @@ def init_config(basedir):
     command.upgrade(alembic_cfg, "head")
 
 def get_config_path():
-    local_app_data = os.environ['LOCALAPPDATA']
+    local_app_data = os.environ['LOCALAPPDATA']    
+    
+    if os.path.exists(os.path.join(basedir, 'configs.db')):
+        return os.path.join(basedir, 'configs.db')
+
     if not os.path.isdir(local_app_data):
         local_app_data = sys.path
 
