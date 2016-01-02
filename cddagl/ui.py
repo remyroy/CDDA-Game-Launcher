@@ -1457,6 +1457,21 @@ class UpdateGroupBox(QGroupBox):
         if not self.in_post_extraction:
             return
 
+        # Copy user-default-mods.json if present
+        user_default_mods_file = os.path.join(mods_dir,
+            'user-default-mods.json')
+        previous_user_default_mods_file = os.path.join(previous_mods_dir,
+            'user-default-mods.json')
+
+        if (not os.path.exists(user_default_mods_file)
+            and os.path.isfile(previous_user_default_mods_file)):
+            status_bar.showMessage('Restoring user-default-mods.json')
+
+            shutil.copy2(previous_user_default_mods_file,
+                user_default_mods_file)
+
+            status_bar.clearMessage()
+
         main_tab = self.get_main_tab()
         game_dir_group_box = main_tab.game_dir_group_box
 
