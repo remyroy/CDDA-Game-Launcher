@@ -2,10 +2,15 @@
 
 A Cataclysm: Dark Days Ahead launcher with additional features.
 
+## Implemented features
+
+* Launching the game
+* Detecting the game version and build number
+* Retreiving the available update builds
+* Automatically updating the game while preserving the user modifications
+
 ## Planned features
 
-* Basic game installer
-* Automatic updates and version detection
 * Mod manager
 * Tileset manager
 * Soundpack manager
