@@ -61,6 +61,8 @@ def sizeof_fmt(num, suffix='B'):
         num /= 1024.0
     return "%.1f%s%s" % (num, 'Yi', suffix)
 
+def config_true(value):
+    return value == 'True' or value == '1'
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
@@ -183,8 +185,8 @@ class GameDirGroupBox(QGroupBox):
         super(GameDirGroupBox, self).__init__()
 
         self.shown = False
-        self.restored_previous = False
         self.exe_path = None
+        self.restored_previous = False
 
         layout = QGridLayout()
 
@@ -245,6 +247,7 @@ class GameDirGroupBox(QGroupBox):
 
     def showEvent(self, event):
         if not self.shown:
+            set_config_value('blah', True)
             game_directory = get_config_value('game_directory')
             if game_directory is None:
                 cddagl_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -279,6 +282,8 @@ class GameDirGroupBox(QGroupBox):
         update_group_box = main_tab.update_group_box
         update_group_box.disable_controls(True)
 
+        self.restored_previous = False
+
         try:
             game_dir = self.dir_edit.text()
             previous_version_dir = os.path.join(game_dir, 'previous_version')
@@ -297,7 +302,7 @@ class GameDirGroupBox(QGroupBox):
                 os.makedirs(temp_move_dir)
 
                 excluded_dirs = set(['previous_version'])
-                if get_config_value('prevent_save_move', False):
+                if config_true(get_config_value('prevent_save_move', 'False')):
                     excluded_dirs.add('save')
                 for entry in os.listdir(game_dir):
                     if entry not in excluded_dirs:
@@ -305,7 +310,7 @@ class GameDirGroupBox(QGroupBox):
                         shutil.move(entry_path, temp_move_dir)
 
                 excluded_dirs = set()
-                if get_config_value('prevent_save_move', False):
+                if config_true(get_config_value('prevent_save_move', 'False')):
                     excluded_dirs.add('save')
                 for entry in os.listdir(previous_version_dir):
                     if entry not in excluded_dirs:
@@ -317,6 +322,8 @@ class GameDirGroupBox(QGroupBox):
                     shutil.move(entry_path, previous_version_dir)
 
                 shutil.rmtree(temp_move_dir)
+
+                self.restored_previous = True
         except OSError as e:
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
@@ -324,7 +331,6 @@ class GameDirGroupBox(QGroupBox):
             status_bar.showMessage(str(e))
 
         self.last_game_directory = None
-        self.restored_previous = True
         self.enable_controls()
         update_group_box.enable_controls()
         self.game_directory_changed()
@@ -341,7 +347,8 @@ class GameDirGroupBox(QGroupBox):
             app_path=exe_dir, exe_path=self.exe_path, params=params)
         subprocess.call(command, shell=True)
 
-        self.get_main_window().close()
+        if not config_true(get_config_value('keep_launcher_open', 'False')):
+            self.get_main_window().close()
 
     def get_main_tab(self):
         return self.parentWidget()
@@ -456,7 +463,6 @@ class GameDirGroupBox(QGroupBox):
                 status_bar.busy -= 1
                 if status_bar.busy == 0:
                     if self.restored_previous:
-                        self.restored_previous = False
                         status_bar.showMessage('Previous version restored')
                     else:
                         status_bar.showMessage('Ready')
@@ -926,7 +932,7 @@ class UpdateGroupBox(QGroupBox):
         os.makedirs(temp_move_dir)
 
         excluded_dirs = set(['previous_version'])
-        if get_config_value('prevent_save_move', False):
+        if config_true(get_config_value('prevent_save_move', 'False')):
             excluded_dirs.add('save')
         for entry in dir_list:
             if entry not in excluded_dirs:
@@ -956,7 +962,7 @@ class UpdateGroupBox(QGroupBox):
 
             for entry in os.listdir(previous_version_dir):
                 if (entry == 'save' and
-                    get_config_value('prevent_save_move', False)):
+                    config_true(get_config_value('prevent_save_move', 'False'))):
                     continue
                 entry_path = os.path.join(previous_version_dir, entry)
                 shutil.move(entry_path, game_dir)
@@ -1102,7 +1108,8 @@ class UpdateGroupBox(QGroupBox):
         dir_list = os.listdir(game_dir)
         self.backup_dir_list = dir_list
 
-        if get_config_value('prevent_save_move', False) and 'save' in dir_list:
+        if (config_true(get_config_value('prevent_save_move', 'False'))
+            and 'save' in dir_list):
             dir_list.remove('save')
 
         if len(dir_list) > 0:
@@ -1265,7 +1272,7 @@ class UpdateGroupBox(QGroupBox):
         if os.path.isdir(previous_version_dir) and self.in_post_extraction:
 
             previous_dirs = ['config', 'save', 'templates', 'memorial']
-            if (get_config_value('prevent_save_move', False) and
+            if (config_true(get_config_value('prevent_save_move', 'False')) and
                 'save' in previous_dirs):
                 previous_dirs.remove('save')
 
@@ -1670,8 +1677,21 @@ class LauncherSettingsGroupBox(QGroupBox):
         layout.addWidget(command_line_parameters_edit, 0, 1)
         self.command_line_parameters_edit = command_line_parameters_edit
 
+        keep_launcher_open_checkbox = QCheckBox()
+        keep_launcher_open_checkbox.setText(
+            'Keep the launcher opened after launching the game')
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'keep_launcher_open', 'False')) else Qt.Unchecked)
+        keep_launcher_open_checkbox.setCheckState(check_state)
+        keep_launcher_open_checkbox.stateChanged.connect(self.klo_changed)
+        layout.addWidget(keep_launcher_open_checkbox, 1, 0, 1, 2)
+        self.keep_launcher_open_checkbox = keep_launcher_open_checkbox
+
         self.setTitle('Launcher')
         self.setLayout(layout)
+
+    def klo_changed(self, state):
+        set_config_value('keep_launcher_open', str(state != Qt.Unchecked))
 
     def clp_changed(self):
         set_config_value('command.params',
@@ -1691,8 +1711,8 @@ class UpdateSettingsGroupBox(QGroupBox):
             'large, it might take a long time to copy it during the update '
             'process. This option might help you speed the whole thing but '
             'your previous version will lack the save directory.')
-        check_state = (Qt.Checked if get_config_value(
-            'prevent_save_move', False) else Qt.Unchecked)
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'prevent_save_move', 'False')) else Qt.Unchecked)
         prevent_save_move_checkbox.setCheckState(check_state)
         prevent_save_move_checkbox.stateChanged.connect(self.psmc_changed)
         layout.addWidget(prevent_save_move_checkbox, 0, 0)
@@ -1702,7 +1722,7 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.setLayout(layout)
 
     def psmc_changed(self, state):
-        set_config_value('prevent_save_move', state != Qt.Unchecked)
+        set_config_value('prevent_save_move', str(state != Qt.Unchecked))
 
 def start_ui():
     app = QApplication(sys.argv)
