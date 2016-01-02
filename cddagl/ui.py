@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
-    QTextBrowser, QTabWidget, QCheckBox)
+    QTextBrowser, QTabWidget, QCheckBox, QMessageBox)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -187,6 +187,7 @@ class GameDirGroupBox(QGroupBox):
         self.shown = False
         self.exe_path = None
         self.restored_previous = False
+        self.current_build = None
 
         layout = QGridLayout()
 
@@ -374,6 +375,7 @@ class GameDirGroupBox(QGroupBox):
         if not os.path.isdir(directory):
             self.version_value_label.setText('Not a valid directory')
             self.build_value_label.setText('Unknown')
+            self.current_build = None
         else:
             # Check for previous version
             previous_version_dir = os.path.join(directory, 'previous_version')
@@ -395,6 +397,7 @@ class GameDirGroupBox(QGroupBox):
             if version_type is None:
                 self.version_value_label.setText('Not a CDDA directory')
                 self.build_value_label.setText('Unknown')
+                self.current_build = None
             else:
                 self.exe_path = exe_path
                 self.version_type = version_type
@@ -478,8 +481,29 @@ class GameDirGroupBox(QGroupBox):
                     human_delta = build_date.humanize(arrow.utcnow())
                     self.build_value_label.setText('{0} ({1})'.format(
                         build['build'], human_delta))
+                    self.current_build = build['build']
+
+                    main_tab = self.get_main_tab()
+                    update_group_box = main_tab.update_group_box
+
+                    if (update_group_box.builds is not None
+                        and len(update_group_box.builds) > 0
+                        and status_bar.busy == 0):
+                        last_build = update_group_box.builds[0]
+
+                        message = status_bar.currentMessage()
+                        if message != '':
+                            message = message + ' - '
+
+                        if last_build['number'] == self.current_build:
+                            message = message + 'Your game is up to date'
+                        else:
+                            message = message + 'There is a new update available'
+                        status_bar.showMessage(message)
+
                 else:
                     self.build_value_label.setText('Unknown')
+                    self.current_build = None
 
             else:
                 last_frame = bytes
@@ -532,6 +556,7 @@ class GameDirGroupBox(QGroupBox):
         if version_type is None:
             self.version_value_label.setText('Not a CDDA directory')
             self.build_value_label.setText('Unknown')
+            self.current_build = None
         else:
             self.exe_path = exe_path
             self.version_type = version_type
@@ -585,6 +610,7 @@ class GameDirGroupBox(QGroupBox):
                     human_delta = build_date.humanize(arrow.utcnow())
                     self.build_value_label.setText('{0} ({1})'.format(
                         self.build_number, human_delta))
+                    self.current_build = self.build_number
 
                     status_bar.removeWidget(self.reading_label)
                     status_bar.removeWidget(self.reading_progress_bar)
@@ -635,6 +661,7 @@ class UpdateGroupBox(QGroupBox):
         self.shown = False
         self.updating = False
         self.close_after_update = False
+        self.builds = []
 
         self.qnam = QNetworkAccessManager()
         self.http_reply = None
@@ -760,6 +787,21 @@ class UpdateGroupBox(QGroupBox):
 
             main_tab = self.get_main_tab()
             game_dir_group_box = main_tab.game_dir_group_box
+
+            latest_build = self.builds[0]
+            if game_dir_group_box.current_build == latest_build['number']:
+                confirm_msgbox = QMessageBox()
+                confirm_msgbox.setWindowTitle('Game is up to date')
+                confirm_msgbox.setText('You already have the latest version.')
+                confirm_msgbox.setInformativeText('Are you sure you want to '
+                    'update your game?')
+                confirm_msgbox.addButton('Update the game', QMessageBox.YesRole)
+                confirm_msgbox.addButton('Do not update the game',
+                    QMessageBox.NoRole)
+
+                if confirm_msgbox.exec() == 1:
+                    self.updating = False
+                    return
 
             game_dir_group_box.disable_controls()
             self.disable_controls()
@@ -1423,6 +1465,20 @@ class UpdateGroupBox(QGroupBox):
         else:
             status_bar.showMessage('Installation completed')
 
+        if (game_dir_group_box.current_build is not None
+            and status_bar.busy == 0):
+            last_build = self.builds[0]
+
+            message = status_bar.currentMessage()
+            if message != '':
+                message = message + ' - '
+
+            if last_build['number'] == game_dir_group_box.current_build:
+                message = message + 'Your game is up to date'
+            else:
+                message = message + 'There is a new update available'
+            status_bar.showMessage(message)
+
         self.in_post_extraction = False
 
         self.finish_updating()
@@ -1567,6 +1623,20 @@ class UpdateGroupBox(QGroupBox):
 
             if game_dir_group_box.exe_path is not None:
                 self.update_button.setText('Update game')
+
+                if (game_dir_group_box.current_build is not None
+                    and status_bar.busy == 0):
+                    last_build = self.builds[0]
+
+                    message = status_bar.currentMessage()
+                    if message != '':
+                        message = message + ' - '
+
+                    if last_build['number'] == game_dir_group_box.current_build:
+                        message = message + 'Your game is up to date'
+                    else:
+                        message = message + 'There is a new update available'
+                    status_bar.showMessage(message)
             else:
                 self.update_button.setText('Install game')
 
