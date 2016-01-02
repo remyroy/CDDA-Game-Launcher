@@ -243,7 +243,7 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(restore_button, 4, 0, 1, 3)
         self.restore_button = restore_button
 
-        self.setTitle('Game directory')
+        self.setTitle('Game')
         self.setLayout(layout)
 
     def showEvent(self, event):
@@ -302,19 +302,27 @@ class GameDirGroupBox(QGroupBox):
                         '%08x' % random.randrange(16**8)))
                 os.makedirs(temp_move_dir)
 
-                excluded_dirs = set(['previous_version'])
+                excluded_entries = set(['previous_version'])
                 if config_true(get_config_value('prevent_save_move', 'False')):
-                    excluded_dirs.add('save')
+                    excluded_entries.add('save')
+
+                # Prevent moving the launcher if it's in the game directory
+                if getattr(sys, 'frozen', False):
+                    launcher_exe = os.path.abspath(sys.argv[0])
+                    launcher_dir = os.path.dirname(launcher_exe)
+                    if os.path.abspath(game_dir) == launcher_dir:
+                        excluded_entries.add(os.path.basename(launcher_exe))
+
                 for entry in os.listdir(game_dir):
-                    if entry not in excluded_dirs:
+                    if entry not in excluded_entries:
                         entry_path = os.path.join(game_dir, entry)
                         shutil.move(entry_path, temp_move_dir)
 
-                excluded_dirs = set()
+                excluded_entries = set()
                 if config_true(get_config_value('prevent_save_move', 'False')):
-                    excluded_dirs.add('save')
+                    excluded_entries.add('save')
                 for entry in os.listdir(previous_version_dir):
-                    if entry not in excluded_dirs:
+                    if entry not in excluded_entries:
                         entry_path = os.path.join(previous_version_dir, entry)
                         shutil.move(entry_path, game_dir)
 
@@ -973,11 +981,17 @@ class UpdateGroupBox(QGroupBox):
                 '%08x' % random.randrange(16**8)))
         os.makedirs(temp_move_dir)
 
-        excluded_dirs = set(['previous_version'])
+        excluded_entries = set(['previous_version'])
         if config_true(get_config_value('prevent_save_move', 'False')):
-            excluded_dirs.add('save')
+            excluded_entries.add('save')
+        # Prevent moving the launcher if it's in the game directory
+        if getattr(sys, 'frozen', False):
+            launcher_exe = os.path.abspath(sys.argv[0])
+            launcher_dir = os.path.dirname(launcher_exe)
+            if os.path.abspath(game_dir) == launcher_dir:
+                excluded_entries.add(os.path.basename(launcher_exe))
         for entry in dir_list:
-            if entry not in excluded_dirs:
+            if entry not in excluded_entries:
                 entry_path = os.path.join(game_dir, entry)
                 shutil.move(entry_path, temp_move_dir)
 
@@ -1004,7 +1018,8 @@ class UpdateGroupBox(QGroupBox):
 
             for entry in os.listdir(previous_version_dir):
                 if (entry == 'save' and
-                    config_true(get_config_value('prevent_save_move', 'False'))):
+                    config_true(get_config_value('prevent_save_move',
+                        'False'))):
                     continue
                 entry_path = os.path.join(previous_version_dir, entry)
                 shutil.move(entry_path, game_dir)
@@ -1153,6 +1168,14 @@ class UpdateGroupBox(QGroupBox):
         if (config_true(get_config_value('prevent_save_move', 'False'))
             and 'save' in dir_list):
             dir_list.remove('save')
+
+        if getattr(sys, 'frozen', False):
+            launcher_exe = os.path.abspath(sys.argv[0])
+            launcher_dir = os.path.dirname(launcher_exe)
+            if os.path.abspath(game_dir) == launcher_dir:
+                launcher_name = os.path.basename(launcher_exe)
+                if launcher_name in dir_list:
+                    dir_list.remove(launcher_name)
 
         if len(dir_list) > 0:
             status_bar.busy += 1
