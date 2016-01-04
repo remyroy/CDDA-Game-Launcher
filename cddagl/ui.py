@@ -1208,6 +1208,10 @@ class UpdateGroupBox(QGroupBox):
         status_bar.addWidget(dowloading_speed_label)
         self.dowloading_speed_label = dowloading_speed_label
 
+        downloading_size_label = QLabel()
+        status_bar.addWidget(downloading_size_label)
+        self.downloading_size_label = downloading_size_label
+
         progress_bar = QProgressBar()
         status_bar.addWidget(progress_bar)
         self.downloading_progress_bar = progress_bar
@@ -1240,6 +1244,7 @@ class UpdateGroupBox(QGroupBox):
         status_bar = main_window.statusBar()
         status_bar.removeWidget(self.downloading_label)
         status_bar.removeWidget(self.dowloading_speed_label)
+        status_bar.removeWidget(self.downloading_size_label)
         status_bar.removeWidget(self.downloading_progress_bar)
 
         status_bar.busy -= 1
@@ -1683,6 +1688,9 @@ class UpdateGroupBox(QGroupBox):
         self.downloading_progress_bar.setValue(bytes_read)
 
         self.download_speed_count += 1
+
+        self.downloading_size_label.setText('{0}/{1}'.format(
+            sizeof_fmt(bytes_read), sizeof_fmt(total_bytes)))
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read
