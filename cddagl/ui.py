@@ -931,9 +931,9 @@ class UpdateGroupBox(QGroupBox):
                 confirm_msgbox.setText('You already have the latest version.')
                 confirm_msgbox.setInformativeText('Are you sure you want to '
                     'update your game?')
-                confirm_msgbox.addButton('Update the game', QMessageBox.YesRole)
-                confirm_msgbox.addButton('Do not update the game',
-                    QMessageBox.NoRole)
+                confirm_msgbox.addButton('Update the game again', QMessageBox.YesRole)
+                confirm_msgbox.addButton('I do not need to update the '
+                    'game again', QMessageBox.NoRole)
                 confirm_msgbox.setIcon(QMessageBox.Question)
 
                 if confirm_msgbox.exec() == 1:
