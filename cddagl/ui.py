@@ -14,7 +14,10 @@ import arrow
 from io import BytesIO
 
 import html5lib
+from lxml import etree
 from urllib.parse import urljoin
+
+from distutils.version import LooseVersion
 
 from PyQt5.QtCore import Qt, QTimer, QUrl, QFileInfo
 from PyQt5.QtGui import QIcon, QPalette
@@ -48,6 +51,8 @@ BASE_URLS = {
     }
 }
 
+RELEASES_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/releases'
+
 def clean_qt_path(path):
     return path.replace('/', '\\')
 
@@ -78,6 +83,11 @@ class MainWindow(QMainWindow):
         self.create_central_widget()
         self.create_menu()
 
+        self.shown = False
+        self.qnam = QNetworkAccessManager()
+        self.http_reply = None
+        self.in_manual_update_check = False
+
         self.about_dialog = None
 
         self.setWindowTitle(title)
@@ -94,6 +104,11 @@ class MainWindow(QMainWindow):
         self.central_widget = central_widget
 
     def create_menu(self):
+        update_action = QAction('&Check for launcher update', self,
+            triggered=self.manual_update_check)
+        self.update_action = update_action
+        self.menuBar().addAction(update_action)
+
         about_action = QAction('&About', self, triggered=self.show_about_dialog)
         self.about_action = about_action
         self.menuBar().addAction(about_action)
@@ -105,6 +120,121 @@ class MainWindow(QMainWindow):
             self.about_dialog = about_dialog
         
         self.about_dialog.exec()
+
+    def check_new_launcher_version(self):
+        self.lv_html = BytesIO()
+        self.http_reply = self.qnam.get(QNetworkRequest(QUrl(RELEASES_URL)))
+        self.http_reply.finished.connect(self.lv_http_finished)
+        self.http_reply.readyRead.connect(self.lv_http_ready_read)
+
+    def lv_http_finished(self):
+        self.lv_html.seek(0)
+        document = html5lib.parse(self.lv_html, treebuilder='lxml',
+            encoding='utf8', namespaceHTMLElements=False)
+
+        for release in document.getroot().cssselect('div.release.label-latest'):
+            latest_version = None
+            for index, span in enumerate(
+                release.cssselect('ul.tag-references li:first-child span')):
+                if index == 1:
+                    version_text = span.text
+                    if version_text.startswith('v'):
+                        version_text = version_text[1:]
+                    latest_version = LooseVersion(version_text)
+
+            if latest_version is not None:
+                current_version = LooseVersion(version)
+
+                if latest_version > current_version:
+                    release_header = ''
+                    release_body = ''
+
+                    header_divs = release.cssselect(
+                        'div.release-body div.release-header')
+                    if len(header_divs) > 0:
+                        header = header_divs[0]
+                        for anchor in header.cssselect('a'):
+                            if 'href' in anchor.keys():
+                                anchor.set('href', urljoin(RELEASES_URL,
+                                    anchor.get('href')))
+                        release_header = etree.tostring(header,
+                             encoding='utf8', method='html').decode('utf8')
+
+                    body_divs = release.cssselect(
+                        'div.release-body div.markdown-body')
+                    if len(body_divs) > 0:
+                        body = body_divs[0]
+                        for anchor in body.cssselect('a'):
+                            if 'href' in anchor.keys():
+                                anchor.set('href', urljoin(RELEASES_URL,
+                                    anchor.get('href')))
+                        release_body = etree.tostring(body,
+                            encoding='utf8', method='html').decode('utf8')
+
+                    html_text = release_header + release_body
+
+                    no_launcher_version_check_checkbox = QCheckBox()
+                    no_launcher_version_check_checkbox.setText('Do not check '
+                        'for new version of the CDDA Game Launcher on launch')
+                    check_state = (Qt.Checked if config_true(get_config_value(
+                        'prevent_version_check_launch', 'False'))
+                        else Qt.Unchecked)
+                    no_launcher_version_check_checkbox.stateChanged.connect(
+                        self.nlvcc_changed)
+                    no_launcher_version_check_checkbox.setCheckState(
+                        check_state)
+
+                    launcher_update_msgbox = QMessageBox()
+                    launcher_update_msgbox.setWindowTitle('Launcher update')
+                    launcher_update_msgbox.setText(('You are using version '
+                        '{version} but there is a new update for CDDA Game '
+                        'Launcher. Would you like to update?').format(
+                        version=version))
+                    launcher_update_msgbox.setInformativeText(html_text)
+                    launcher_update_msgbox.addButton('Update the launcher',
+                        QMessageBox.YesRole)
+                    launcher_update_msgbox.addButton('Not right now',
+                        QMessageBox.NoRole)
+                    launcher_update_msgbox.setCheckBox(
+                        no_launcher_version_check_checkbox)
+                    launcher_update_msgbox.setIcon(QMessageBox.Question)
+
+                    if launcher_update_msgbox.exec() == 0:
+                        # Update launcher
+                        pass
+                else:
+                    self.no_launcher_update_found()
+
+    def nlvcc_changed(self, state):
+        no_launcher_version_check_checkbox = (
+            self.central_widget.settings_tab.launcher_settings_group_box.no_launcher_version_check_checkbox)
+        no_launcher_version_check_checkbox.setCheckState(state)
+
+    def manual_update_check(self):
+        self.in_manual_update_check = True
+        self.check_new_launcher_version()
+
+    def no_launcher_update_found(self):
+        if self.in_manual_update_check:
+            up_to_date_msgbox = QMessageBox()
+            up_to_date_msgbox.setWindowTitle('Up to date')
+            up_to_date_msgbox.setText('The CDDA Game Launcher is up to date.')
+            up_to_date_msgbox.setIcon(QMessageBox.Information)
+
+            up_to_date_msgbox.exec()
+
+            self.in_manual_update_check = False
+
+    def lv_http_ready_read(self):
+        self.lv_html.write(self.http_reply.readAll())
+
+    def showEvent(self, event):
+        if not self.shown:
+            if not config_true(get_config_value('prevent_version_check_launch',
+                'False')):
+                self.check_new_launcher_version()
+
+        self.shown = True
 
     def resizeEvent(self, event):
         set_config_value('window.width', event.size().width())
@@ -248,7 +378,6 @@ class GameDirGroupBox(QGroupBox):
 
     def showEvent(self, event):
         if not self.shown:
-            set_config_value('blah', True)
             game_directory = get_config_value('game_directory')
             if game_directory is None:
                 cddagl_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -777,7 +906,6 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'Windows x86':
                 self.x86_radio_button.setChecked(True)
 
-            self.lb_html = BytesIO()
             self.start_lb_request(BASE_URLS[graphics][platform])
 
         self.shown = True
@@ -806,6 +934,7 @@ class UpdateGroupBox(QGroupBox):
                 confirm_msgbox.addButton('Update the game', QMessageBox.YesRole)
                 confirm_msgbox.addButton('Do not update the game',
                     QMessageBox.NoRole)
+                confirm_msgbox.setIcon(QMessageBox.Question)
 
                 if confirm_msgbox.exec() == 1:
                     self.updating = False
@@ -1591,6 +1720,7 @@ class UpdateGroupBox(QGroupBox):
 
         progress_bar.setMinimum(0)
 
+        self.lb_html = BytesIO()
         self.http_reply = self.qnam.get(QNetworkRequest(QUrl(url)))
         self.http_reply.finished.connect(self.lb_http_finished)
         self.http_reply.readyRead.connect(self.lb_http_ready_read)
@@ -1643,8 +1773,6 @@ class UpdateGroupBox(QGroupBox):
 
             if 'url' in build:
                 builds.append(build)
-
-        self.lb_html = BytesIO()
 
         if len(builds) > 0:
             builds.reverse()
@@ -1804,8 +1932,26 @@ class LauncherSettingsGroupBox(QGroupBox):
         layout.addWidget(keep_launcher_open_checkbox, 1, 0, 1, 2)
         self.keep_launcher_open_checkbox = keep_launcher_open_checkbox
 
+        no_launcher_version_check_checkbox = QCheckBox()
+        no_launcher_version_check_checkbox.setText('Do not check '
+            'for new version of the CDDA Game Launcher on launch')
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'prevent_version_check_launch', 'False'))
+            else Qt.Unchecked)
+        no_launcher_version_check_checkbox.setCheckState(
+            check_state)
+        no_launcher_version_check_checkbox.stateChanged.connect(
+            self.nlvcc_changed)
+        layout.addWidget(no_launcher_version_check_checkbox, 2, 0, 1, 2)
+        self.no_launcher_version_check_checkbox = (
+            no_launcher_version_check_checkbox)
+
         self.setTitle('Launcher')
         self.setLayout(layout)
+
+    def nlvcc_changed(self, state):
+        set_config_value('prevent_version_check_launch',
+            str(state != Qt.Unchecked))
 
     def klo_changed(self, state):
         set_config_value('keep_launcher_open', str(state != Qt.Unchecked))
