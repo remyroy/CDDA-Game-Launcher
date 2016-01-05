@@ -1479,7 +1479,8 @@ class UpdateGroupBox(QGroupBox):
         previous_version_dir = os.path.join(self.game_dir, 'previous_version')
         if os.path.isdir(previous_version_dir) and self.in_post_extraction:
 
-            previous_dirs = ['config', 'save', 'templates', 'memorial']
+            previous_dirs = ['config', 'save', 'templates', 'memorial',
+                'graveyard']
             if (config_true(get_config_value('prevent_save_move', 'False')) and
                 'save' in previous_dirs):
                 previous_dirs.remove('save')
