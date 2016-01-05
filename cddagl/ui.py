@@ -1639,6 +1639,32 @@ class UpdateGroupBox(QGroupBox):
 
             status_bar.clearMessage()
 
+        # Copy custom fonts
+        fonts_dir = os.path.join(self.game_dir, 'data', 'font')
+        previous_fonts_dir = os.path.join(self.game_dir, 'previous_version',
+            'data', 'font')
+
+        if (os.path.isdir(fonts_dir) and os.path.isdir(previous_fonts_dir) and
+            self.in_post_extraction):
+            status_bar.showMessage('Restoring custom fonts')
+
+            official_set = set(os.listdir(fonts_dir))
+            previous_set = set(os.listdir(previous_fonts_dir))
+
+            custom_set = previous_set - official_set
+            for entry in custom_set:
+                source = os.path.join(previous_fonts_dir, entry)
+                target = os.path.join(fonts_dir, entry)
+                if os.path.isfile(source):
+                    shutil.copy2(source, target)
+                elif os.path.isdir(source):
+                    shutil.copytree(source, target)
+
+            status_bar.clearMessage()
+
+        if not self.in_post_extraction:
+            return
+
         main_tab = self.get_main_tab()
         game_dir_group_box = main_tab.game_dir_group_box
 
