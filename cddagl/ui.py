@@ -8,6 +8,11 @@ import shutil
 import zipfile
 import json
 
+try:
+    from os import scandir
+except ImportError:
+    from scandir import scandir
+
 from datetime import datetime
 import arrow
 
@@ -25,7 +30,7 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
-    QTextBrowser, QTabWidget, QCheckBox, QMessageBox)
+    QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -51,7 +56,11 @@ BASE_URLS = {
     }
 }
 
+SAVES_WARNING_SIZE = 150 * 1024 * 1024
+
 RELEASES_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/releases'
+
+WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 
 def clean_qt_path(path):
     return path.replace('/', '\\')
@@ -62,9 +71,9 @@ def is_64_windows():
 def sizeof_fmt(num, suffix='B'):
     for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
         if abs(num) < 1024.0:
-            return "%3.1f%s%s" % (num, unit, suffix)
+            return "%3.1f %s%s" % (num, unit, suffix)
         num /= 1024.0
-    return "%.1f%s%s" % (num, 'Yi', suffix)
+    return "%.1f %s%s" % (num, 'Yi', suffix)
 
 def config_true(value):
     return value == 'True' or value == '1'
@@ -306,6 +315,9 @@ class MainTab(QWidget):
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
+    def get_settings_tab(self):
+        return self.parentWidget().parentWidget().settings_tab
+
 
 class SettingsTab(QWidget):
     def __init__(self):
@@ -325,6 +337,9 @@ class SettingsTab(QWidget):
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
+    def get_main_tab(self):
+        return self.parentWidget().parentWidget().main_tab
+
 class GameDirGroupBox(QGroupBox):
     def __init__(self):
         super(GameDirGroupBox, self).__init__()
@@ -333,6 +348,9 @@ class GameDirGroupBox(QGroupBox):
         self.exe_path = None
         self.restored_previous = False
         self.current_build = None
+
+        self.update_saves_timer = None
+        self.saves_size = 0
 
         layout = QGridLayout()
 
@@ -373,19 +391,41 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(build_value_label, 2, 1)
         self.build_value_label = build_value_label
 
+        saves_label = QLabel()
+        saves_label.setText('Saves:')
+        layout.addWidget(saves_label, 3, 0, Qt.AlignRight)
+        self.saves_label = saves_label
+
+        saves_value_edit = QLineEdit()
+        saves_value_edit.setReadOnly(True)
+        saves_value_edit.setText('Unknown')
+        layout.addWidget(saves_value_edit, 3, 1)
+        self.saves_value_edit = saves_value_edit
+
+        saves_warning_label = QLabel()
+        icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
+        saves_warning_label.setPixmap(icon.pixmap(16, 16))
+        saves_warning_label.setToolTip('Your save directory might be large '
+            'enough to cause significant delays during the update process.\n'
+            'You might want to enable the "Do not copy or move the save '
+            'directory" option in the settings tab.')
+        saves_warning_label.hide()
+        layout.addWidget(saves_warning_label, 3, 2)
+        self.saves_warning_label = saves_warning_label
+
         launch_game_button = QPushButton()
         launch_game_button.setText('Launch game')
         launch_game_button.setEnabled(False)
         launch_game_button.setStyleSheet("font-size: 20px;")
         launch_game_button.clicked.connect(self.launch_game)
-        layout.addWidget(launch_game_button, 3, 0, 1, 3)
+        layout.addWidget(launch_game_button, 4, 0, 1, 3)
         self.launch_game_button = launch_game_button
 
         restore_button = QPushButton()
         restore_button.setText('Restore previous version')
         restore_button.setEnabled(False)
         restore_button.clicked.connect(self.restore_previous)
-        layout.addWidget(restore_button, 4, 0, 1, 3)
+        layout.addWidget(restore_button, 5, 0, 1, 3)
         self.restore_button = restore_button
 
         self.setTitle('Game')
@@ -555,6 +595,7 @@ class GameDirGroupBox(QGroupBox):
                 self.version_type = version_type
                 if self.last_game_directory != directory:
                     self.update_version()
+                    self.update_saves()
 
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
@@ -682,6 +723,76 @@ class GameDirGroupBox(QGroupBox):
         pyqtRemoveInputHook()
         import pdb; pdb.set_trace()
         pyqtRestoreInputHook()'''
+
+    def update_saves(self):
+        self.game_dir = self.dir_edit.text()
+        
+        if (self.update_saves_timer is not None
+            and self.update_saves_timer.isActive()):
+            self.update_saves_timer.stop()
+            self.saves_value_edit.setText('Unknown')
+
+        save_dir = os.path.join(self.game_dir, 'save')
+        if not os.path.isdir(save_dir):
+            self.saves_value_edit.setText('Not found')
+            return
+
+        timer = QTimer(self)
+        self.update_saves_timer = timer
+
+        self.saves_size = 0
+        self.saves_worlds = 0
+        self.saves_characters = 0
+        self.world_dirs = set()
+
+        self.saves_scan = scandir(save_dir)
+        self.next_scans = []
+        self.save_dir = save_dir
+
+        def timeout():
+            try:
+                entry = next(self.saves_scan)
+                if entry.is_dir():
+                    self.next_scans.append(entry.path)
+                elif entry.is_file():
+                    self.saves_size += entry.stat().st_size
+
+                    if entry.name.endswith('.sav'):
+                        world_dir = os.path.dirname(entry.path)
+                        if self.save_dir == os.path.dirname(world_dir):
+                            self.saves_characters += 1
+
+                    if entry.name in WORLD_FILES:
+                        world_dir = os.path.dirname(entry.path)
+                        if (world_dir not in self.world_dirs
+                            and self.save_dir == os.path.dirname(world_dir)):
+                            self.world_dirs.add(world_dir)
+                            self.saves_worlds += 1
+
+                def splurial(value):
+                    return 's' if value > 1 else ''
+
+                self.saves_value_edit.setText('{worlds} World{wp} - '
+                    '{characters} Character{cp} ({size})'.format(
+                    worlds=self.saves_worlds, size=sizeof_fmt(self.saves_size),
+                    characters=self.saves_characters,
+                    wp=splurial(self.saves_worlds),
+                    cp=splurial(self.saves_characters)))
+            except StopIteration:
+                if len(self.next_scans) > 0:
+                    self.saves_scan = scandir(self.next_scans.pop())
+                else:
+                    # End of the tree
+                    self.update_saves_timer.stop()
+
+                    # Warning about saves size
+                    if (self.saves_size > SAVES_WARNING_SIZE and
+                        not config_true(get_config_value('prevent_save_move',
+                            'False'))):
+                        self.saves_warning_label.show()
+
+        timer.timeout.connect(timeout)
+        timer.start(0)
 
     def analyse_new_build(self, build):
         game_dir = self.dir_edit.text()
@@ -2023,7 +2134,7 @@ class UpdateSettingsGroupBox(QGroupBox):
             'Do not copy or move the save directory')
         prevent_save_move_checkbox.setToolTip('If your save directory size is '
             'large, it might take a long time to copy it during the update '
-            'process. This option might help you speed the whole thing but '
+            'process.\nThis option might help you speed the whole thing but '
             'your previous version will lack the save directory.')
         check_state = (Qt.Checked if config_true(get_config_value(
             'prevent_save_move', 'False')) else Qt.Unchecked)
@@ -2059,8 +2170,22 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.setTitle('Update/Installation')
         self.setLayout(layout)
 
+    def get_settings_tab(self):
+        return self.parentWidget()
+
+    def get_main_tab(self):
+        return self.get_settings_tab().get_main_tab()
+
     def psmc_changed(self, state):
         set_config_value('prevent_save_move', str(state != Qt.Unchecked))
+        game_dir_group_box = self.get_main_tab().game_dir_group_box
+        saves_warning_label = game_dir_group_box.saves_warning_label
+
+        if state != Qt.Unchecked:
+            saves_warning_label.hide()
+        else:
+            if game_dir_group_box.saves_size > SAVES_WARNING_SIZE:
+                saves_warning_label.show()
 
     def kacc_changed(self, state):
         set_config_value('keep_archive_copy', str(state != Qt.Unchecked))
