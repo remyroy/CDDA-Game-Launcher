@@ -2075,7 +2075,6 @@ class AboutDialog(QDialog):
     def __init__(self, parent=0, f=0):
         super(AboutDialog, self).__init__(parent, f)
 
-        raise OSError('Testing')
         layout = QGridLayout()
 
         text_content = QTextBrowser()
