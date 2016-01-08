@@ -288,12 +288,30 @@ class CentralWidget(QTabWidget):
         super(CentralWidget, self).__init__()
 
         self.create_main_tab()
+        #self.create_mods_tab()
+        #self.create_tilesets_tab()
+        #self.create_soundpacks_tab()
         self.create_settings_tab()
 
     def create_main_tab(self):
         main_tab = MainTab()
         self.addTab(main_tab, 'Main')
         self.main_tab = main_tab
+
+    def create_mods_tab(self):
+        mods_tab = ModsTab()
+        self.addTab(mods_tab, 'Mods')
+        self.mods_tab = mods_tab
+
+    def create_tilesets_tab(self) :
+        tilesets_tab = TilesetsTab()
+        self.addTab(tilesets_tab, 'Tilesets')
+        self.tilesets_tab = tilesets_tab
+
+    def create_soundpacks_tab(self):
+        soundpacks_tab = SoundpacksTab()
+        self.addTab(soundpacks_tab, 'Soundpacks')
+        self.soundpacks_tab = soundpacks_tab
 
     def create_settings_tab(self):
         settings_tab = SettingsTab()
@@ -2417,6 +2435,39 @@ class LauncherUpdateDialog(QDialog):
             self.close()
 
 
+class SoundpacksTab(QTabWidget):
+    def __init__(self):
+        super(SoundpacksTab, self).__init__()
+
+    def get_main_window(self):
+        return self.parentWidget().parentWidget().parentWidget()
+
+    def get_main_tab(self):
+        return self.parentWidget().parentWidget().main_tab
+
+
+class ModsTab(QTabWidget):
+    def __init__(self):
+        super(ModsTab, self).__init__()
+
+    def get_main_window(self):
+        return self.parentWidget().parentWidget().parentWidget()
+
+    def get_main_tab(self):
+        return self.parentWidget().parentWidget().main_tab
+
+
+class TilesetsTab(QTabWidget):
+    def __init__(self):
+        super(TilesetsTab, self).__init__()
+
+    def get_main_window(self):
+        return self.parentWidget().parentWidget().parentWidget()
+
+    def get_main_tab(self):
+        return self.parentWidget().parentWidget().main_tab
+
+
 # Recursively copy an entire directory tree while showing progress in a
 # status bar.
 class ProgressCopyTree(QTimer):
@@ -2622,6 +2673,7 @@ class ProgressCopyTree(QTimer):
             self.completed.emit()
         else:
             self.aborted.emit()
+
 
 def start_ui():
     app = QApplication(sys.argv)
