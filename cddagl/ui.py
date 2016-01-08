@@ -1620,13 +1620,18 @@ class UpdateGroupBox(QGroupBox):
         json_file = os.path.join(path, 'modinfo.json')
         if os.path.isfile(json_file):
             with open(json_file, 'r') as f:
-                values = {}
                 try:
                     values = json.load(f)
+                    if isinstance(values, dict):
+                        if values.get('type', '') == 'MOD_INFO':
+                            return values.get('ident', None)
+                    elif isinstance(values, list):
+                        for item in values:
+                            if (isinstance(item, dict)
+                                and item.get('type', '') == 'MOD_INFO'):
+                                    return item.get('ident', None)
                 except json.JSONDecodeError:
                     pass
-                if 'ident' in values:
-                    return values['ident']
 
         return None
 
