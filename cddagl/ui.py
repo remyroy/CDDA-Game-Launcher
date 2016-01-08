@@ -13,7 +13,7 @@ try:
 except ImportError:
     from scandir import scandir
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import arrow
 
 from io import BytesIO
@@ -1058,7 +1058,8 @@ class UpdateGroupBox(QGroupBox):
                 confirm_msgbox.setText('You already have the latest version.')
                 confirm_msgbox.setInformativeText('Are you sure you want to '
                     'update your game?')
-                confirm_msgbox.addButton('Update the game again', QMessageBox.YesRole)
+                confirm_msgbox.addButton('Update the game again',
+                    QMessageBox.YesRole)
                 confirm_msgbox.addButton('I do not need to update the '
                     'game again', QMessageBox.NoRole)
                 confirm_msgbox.setIcon(QMessageBox.Question)
@@ -1110,9 +1111,9 @@ class UpdateGroupBox(QGroupBox):
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
 
-                status_bar.showMessage(str(e))
-
                 self.finish_updating()
+
+                status_bar.showMessage(str(e))
         else:
             main_tab = self.get_main_tab()
             game_dir_group_box = main_tab.game_dir_group_box
@@ -1202,6 +1203,9 @@ class UpdateGroupBox(QGroupBox):
                         status_bar.showMessage('Installation cancelled')
             elif self.in_post_extraction:
                 self.in_post_extraction = False
+
+                if self.progress_copy is not None:
+                    self.progress_copy.stop()
 
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
@@ -1479,9 +1483,23 @@ class UpdateGroupBox(QGroupBox):
                     backup_element = self.backup_dir_list[self.backup_index]
                     self.backup_label.setText('Backing up {0}'.format(
                         backup_element))
-                    
-                    shutil.move(os.path.join(self.game_dir, backup_element),
-                        self.backup_dir)
+                    try:
+                        shutil.move(os.path.join(self.game_dir, backup_element),
+                            self.backup_dir)
+                    except OSError as e:
+                        self.backup_timer.stop()
+                        
+                        main_window = self.get_main_window()
+                        status_bar = main_window.statusBar()
+
+                        status_bar.removeWidget(self.backup_label)
+                        status_bar.removeWidget(self.backup_progress_bar)
+
+                        status_bar.busy -= 1
+
+                        self.finish_updating()
+
+                        status_bar.showMessage(str(e))
 
                     self.backup_index += 1
 
@@ -1594,6 +1612,26 @@ class UpdateGroupBox(QGroupBox):
 
         return None
 
+    def copy_next_dir(self):
+        if self.in_post_extraction and len(self.previous_dirs) > 0:
+            next_dir = self.previous_dirs.pop()
+            src_path = os.path.join(self.previous_version_dir, next_dir)
+            dst_path = os.path.join(self.game_dir, next_dir)
+            if os.path.isdir(src_path) and not os.path.exists(dst_path):
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                progress_copy = ProgressCopyTree(src_path, dst_path, status_bar,
+                    '{0} directory'.format(next_dir))
+                progress_copy.completed.connect(self.copy_next_dir)
+                self.progress_copy = progress_copy
+                progress_copy.start()
+            else:
+                self.copy_next_dir()
+        elif self.in_post_extraction:
+            self.progress_copy = None
+            self.post_extraction_step2()
+
     def post_extraction(self):
         self.analysing_new_build = False
         self.in_post_extraction = True
@@ -1612,21 +1650,15 @@ class UpdateGroupBox(QGroupBox):
                 'save' in previous_dirs):
                 previous_dirs.remove('save')
 
-            for previous_dir in previous_dirs:
-                previous_dir_path = os.path.join(previous_version_dir,
-                    previous_dir)
+            self.previous_dirs = previous_dirs
+            self.previous_version_dir = previous_version_dir
 
-                if os.path.isdir(previous_dir_path):
-                    status_bar.showMessage(
-                        'Restoring {0} directory from previous version'.format(
-                            previous_dir))
-                    dst_dir = os.path.join(self.game_dir, previous_dir)
-                    shutil.copytree(previous_dir_path, dst_dir)
+            self.progress_copy = None
+            self.copy_next_dir()
 
-                if not self.in_post_extraction:
-                    break
-
-        status_bar.clearMessage()
+    def post_extraction_step2(self):
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
 
         # Copy custom tilesets, mods and soundpack from previous version
         # tilesets
@@ -2479,7 +2511,7 @@ class ProgressCopyTree(QTimer):
 
         elif self.copying:
             if self.current_entry is None:
-                if len(self.source_entries) > 0
+                if len(self.source_entries) > 0:
                     self.current_entry = self.source_entries.popleft()
                     self.display_entry(self.current_entry)
                 else:
@@ -2489,6 +2521,8 @@ class ProgressCopyTree(QTimer):
             elif self.source_file is None and self.destination_file is None:
                 relpath = os.path.relpath(self.current_entry.path, self.src)
                 dstpath = os.path.join(self.dst, relpath)
+                self.dstpath = dstpath
+
                 if self.current_entry.is_dir():
                     os.makedirs(dstpath)
                     self.current_entry = None
@@ -2496,7 +2530,7 @@ class ProgressCopyTree(QTimer):
                     filedir = os.path.dirname(dstpath)
                     if not os.path.isdir(filedir):
                         os.makedirs(filedir)
-                    self.source_file = open(self.current_entry, 'rb')
+                    self.source_file = open(self.current_entry.path, 'rb')
                     self.destination_file = open(dstpath, 'wb')
             else:
                 buf = self.source_file.read(READ_BUFFER_SIZE)
@@ -2504,6 +2538,7 @@ class ProgressCopyTree(QTimer):
                 if buf_len == 0:
                     self.source_file.close()
                     self.destination_file.close()
+                    shutil.copystat(self.current_entry.path, self.dstpath)
                     self.source_file = None
                     self.destination_file = None
                     self.current_entry = None
@@ -2513,16 +2548,19 @@ class ProgressCopyTree(QTimer):
                     self.destination_file.write(buf)
                     
                     self.copied_size += buf_len
+                    self.progress_bar.setValue(self.copied_size)
 
                     self.copy_speed_count += 1
 
-                    if self.copy_speed_count % 5 == 0:
+                    if self.copy_speed_count % 10 == 0:
                         self.copying_size_label.setText('{0}/{1}'.format(
                             sizeof_fmt(self.copied_size),
                             sizeof_fmt(self.total_copy_size)))
-                        
-                        delta_bytes = copied_size - self.last_copied_bytes
+
+                        delta_bytes = self.copied_size - self.last_copied_bytes
                         delta_time = datetime.utcnow() - self.last_copied
+                        if delta_time.total_seconds() == 0:
+                            delta_time = timedelta.resolution
 
                         bytes_secs = delta_bytes / delta_time.total_seconds()
                         self.copying_speed_label.setText('{0}/s'.format(
@@ -2532,7 +2570,7 @@ class ProgressCopyTree(QTimer):
                         self.last_copied = datetime.utcnow()
 
 
-    def display_entry(entry):
+    def display_entry(self, entry):
         if self.status_label is not None:
             entry_rel_path = os.path.relpath(entry.path, self.src)
             self.status_label.setText(
@@ -2565,15 +2603,15 @@ class ProgressCopyTree(QTimer):
         super(ProgressCopyTree, self).stop()
 
         if self.started:
-            self.status_bar -= 1
+            self.status_bar.busy -= 1
             if self.status_label is not None:
-                status_bar.removeWidget(self.status_label)
+                self.status_bar.removeWidget(self.status_label)
             if self.progress_bar is not None:
-                status_bar.removeWidget(self.progress_bar)
+                self.status_bar.removeWidget(self.progress_bar)
             if self.copying_speed_label is not None:
-                status_bar.removeWidget(self.copying_speed_label)
+                self.status_bar.removeWidget(self.copying_speed_label)
             if self.copying_size_label is not None:
-                status_bar.removeWidget(self.copying_size_label)
+                self.status_bar.removeWidget(self.copying_size_label)
 
             if self.source_file is not None:
                 self.source_file.close()
