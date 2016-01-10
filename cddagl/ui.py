@@ -33,7 +33,8 @@ from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
-    QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle)
+    QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
+    QSpinBox)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -2228,6 +2229,46 @@ class UpdateSettingsGroupBox(QGroupBox):
         layout.addWidget(ka_dir_change_button, 1, 2)
         self.ka_dir_change_button = ka_dir_change_button
 
+        arb_timer = QTimer()
+        arb_timer.setInterval(int(get_config_value(
+            'auto_refresh_builds_minutes', '30')) * 1000 * 60)
+        arb_timer.timeout.connect(self.arb_timeout)
+        self.arb_timer = arb_timer
+        if config_true(get_config_value('auto_refresh_builds', 'False')):
+            arb_timer.start()
+
+        arb_group = QWidget()
+        arb_layout = QHBoxLayout()
+        arb_layout.setContentsMargins(0, 0, 0, 0)
+
+        auto_refresh_builds_checkbox = QCheckBox()
+        auto_refresh_builds_checkbox.setText(
+            'Automatically refresh builds list every')
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'auto_refresh_builds', 'False')) else Qt.Unchecked)
+        auto_refresh_builds_checkbox.setCheckState(check_state)
+        auto_refresh_builds_checkbox.stateChanged.connect(self.arbc_changed)
+        arb_layout.addWidget(auto_refresh_builds_checkbox)
+        self.auto_refresh_builds_checkbox = auto_refresh_builds_checkbox
+
+        arb_min_spinbox = QSpinBox()
+        arb_min_spinbox.setMinimum(1)
+        arb_min_spinbox.setValue(int(get_config_value(
+            'auto_refresh_builds_minutes', '30')))
+        arb_min_spinbox.valueChanged.connect(self.ams_changed)
+        arb_layout.addWidget(arb_min_spinbox)
+        self.arb_min_spinbox = arb_min_spinbox
+
+        arb_min_label = QLabel()
+        arb_min_label.setText('minutes')
+        arb_layout.addWidget(arb_min_label)
+        self.arb_min_label = arb_min_label
+
+        arb_group.setLayout(arb_layout)
+        layout.addWidget(arb_group, 2, 0, 1, 3)
+        self.arb_group = arb_group
+        self.arb_layout = arb_layout        
+
         self.setTitle('Update/Installation')
         self.setLayout(layout)
 
@@ -2236,6 +2277,25 @@ class UpdateSettingsGroupBox(QGroupBox):
 
     def get_main_tab(self):
         return self.get_settings_tab().get_main_tab()
+
+    def arb_timeout(self):
+        main_tab = self.get_main_tab()
+        update_group_box = main_tab.update_group_box
+        refresh_builds_button = update_group_box.refresh_builds_button
+
+        if refresh_builds_button.isEnabled():
+            update_group_box.refresh_builds()
+
+    def ams_changed(self, value):
+        set_config_value('auto_refresh_builds_minutes', value)
+        self.arb_timer.setInterval(value * 1000 * 60)
+
+    def arbc_changed(self, state):
+        set_config_value('auto_refresh_builds', str(state != Qt.Unchecked))
+        if state != Qt.Unchecked:
+            self.arb_timer.start()
+        else:
+            self.arb_timer.stop()
 
     def psmc_changed(self, state):
         set_config_value('prevent_save_move', str(state != Qt.Unchecked))
