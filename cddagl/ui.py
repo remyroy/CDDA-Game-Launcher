@@ -27,7 +27,7 @@ from urllib.parse import urljoin, urlencode
 
 from distutils.version import LooseVersion
 
-from PyQt5.QtCore import Qt, QTimer, QUrl, QFileInfo, pyqtSignal
+from PyQt5.QtCore import Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
@@ -94,10 +94,6 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setMinimumSize(400, 0)
-        width = int(get_config_value('window.width', -1))
-        height = int(get_config_value('window.height', -1))
-        if width != -1 and height != -1:
-            self.resize(width, height)
         
         self.create_status_bar()
         self.create_central_widget()
@@ -109,6 +105,11 @@ class MainWindow(QMainWindow):
         self.in_manual_update_check = False
 
         self.about_dialog = None
+
+        geometry = get_config_value('window_geometry')
+        if geometry is not None:
+            qt_geometry = QByteArray.fromBase64(geometry.encode('utf8'))
+            self.restoreGeometry(qt_geometry)
 
         self.setWindowTitle(title)
 
@@ -270,9 +271,9 @@ class MainWindow(QMainWindow):
 
         self.shown = True
 
-    def resizeEvent(self, event):
-        set_config_value('window.width', event.size().width())
-        set_config_value('window.height', event.size().height())
+    def save_geometry(self):
+        geometry = self.saveGeometry().toBase64().data().decode('utf8')
+        set_config_value('window_geometry', geometry)
 
     def closeEvent(self, event):
         update_group_box = self.central_widget.main_tab.update_group_box
@@ -282,10 +283,12 @@ class MainWindow(QMainWindow):
             update_group_box.update_game()
 
             if not update_group_box.updating:
+                self.save_geometry()
                 event.accept()
             else:
                 event.ignore()
         else:
+            self.save_geometry()
             event.accept()
 
 
