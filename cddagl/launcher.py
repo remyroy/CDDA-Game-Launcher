@@ -45,6 +45,10 @@ def init_logging():
 
     logger.addHandler(handler)
 
+    if not getattr(sys, 'frozen', False):
+        handler = logging.StreamHandler()
+        logger.addHandler(handler)
+
     logger.info('Launcher started: {version}'.format(version=version))
 
 def handle_exception(extype, value, tb):
@@ -53,8 +57,8 @@ def handle_exception(extype, value, tb):
     tb_io = StringIO()
     traceback.print_tb(tb, file=tb_io)
 
-    logger.critical('Global error: Launcher version: {version}, Type: '
-        '{extype}, Value: {value}, Traceback: {traceback}'.format(
+    logger.critical('Global error:\nLauncher version: {version}\nType: '
+        '{extype}\nValue: {value}\nTraceback:\n{traceback}'.format(
             version=version, extype=str(extype), value=str(value),
             traceback=tb_io.getvalue()))
 

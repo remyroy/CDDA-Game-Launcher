@@ -27,14 +27,15 @@ from urllib.parse import urljoin, urlencode
 
 from distutils.version import LooseVersion
 
-from PyQt5.QtCore import Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray
+from PyQt5.QtCore import (
+    Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel)
 from PyQt5.QtGui import QIcon, QPalette
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
     QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
-    QSpinBox)
+    QSpinBox, QListView)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -299,7 +300,7 @@ class CentralWidget(QTabWidget):
         self.create_main_tab()
         #self.create_mods_tab()
         #self.create_tilesets_tab()
-        #self.create_soundpacks_tab()
+        self.create_soundpacks_tab()
         self.create_settings_tab()
 
     def create_main_tab(self):
@@ -312,7 +313,7 @@ class CentralWidget(QTabWidget):
         self.addTab(mods_tab, 'Mods')
         self.mods_tab = mods_tab
 
-    def create_tilesets_tab(self) :
+    def create_tilesets_tab(self):
         tilesets_tab = TilesetsTab()
         self.addTab(tilesets_tab, 'Tilesets')
         self.tilesets_tab = tilesets_tab
@@ -580,6 +581,14 @@ class GameDirGroupBox(QGroupBox):
     def get_main_window(self):
         return self.get_main_tab().get_main_window()
 
+    def update_soundpacks(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        soundpacks_tab = central_widget.soundpacks_tab
+
+        directory = self.dir_edit.text()
+        soundpacks_tab.game_dir_changed(directory)
+
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
@@ -627,6 +636,7 @@ class GameDirGroupBox(QGroupBox):
                 if self.last_game_directory != directory:
                     self.update_version()
                     self.update_saves()
+                    self.update_soundpacks()
 
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
@@ -2512,12 +2522,190 @@ class SoundpacksTab(QTabWidget):
     def __init__(self):
         super(SoundpacksTab, self).__init__()
 
+        layout = QVBoxLayout()
+
+        top_part = QWidget()
+        tp_layout = QHBoxLayout()
+        tp_layout.setContentsMargins(0, 0, 0, 0)
+        self.tp_layout = tp_layout
+
+        installed_gb = QGroupBox()
+        installed_gb.setTitle('Installed')
+        tp_layout.addWidget(installed_gb)
+        self.installed_gb = installed_gb
+
+        installed_gb_layout = QVBoxLayout()
+        installed_gb.setLayout(installed_gb_layout)
+        self.installed_gb_layout = installed_gb_layout
+
+        installed_lv = QListView()
+        installed_gb_layout.addWidget(installed_lv)
+        self.installed_lv = installed_lv
+
+        repository_gb = QGroupBox()
+        repository_gb.setTitle('Repository')
+        tp_layout.addWidget(repository_gb)
+        self.repository_gb = repository_gb
+
+        repository_gb_layout = QVBoxLayout()
+        repository_gb.setLayout(repository_gb_layout)
+        self.repository_gb_layout = repository_gb_layout
+
+        repository_lv = QListView()
+        repository_gb_layout.addWidget(repository_lv)
+        self.repository_lv = repository_lv
+
+        top_part.setLayout(tp_layout)
+        layout.addWidget(top_part)
+        self.top_part = top_part
+
+        details_gb = QGroupBox()
+        details_gb.setTitle('Details')
+        layout.addWidget(details_gb)
+        self.details_gb = details_gb
+
+        details_gb_layout = QGridLayout()
+
+        viewname_label = QLabel()
+        viewname_label.setText('View name:')
+        details_gb_layout.addWidget(viewname_label, 0, 0, Qt.AlignRight)
+        self.viewname_label = viewname_label
+
+        viewname_le = QLineEdit()
+        viewname_le.setReadOnly(True)
+        details_gb_layout.addWidget(viewname_le, 0, 1)
+        self.viewname_le = viewname_le
+
+        name_label = QLabel()
+        name_label.setText('Name:')
+        details_gb_layout.addWidget(name_label, 1, 0, Qt.AlignRight)
+        self.name_label = name_label
+
+        name_le = QLineEdit()
+        name_le.setReadOnly(True)
+        details_gb_layout.addWidget(name_le, 1, 1)
+        self.name_le = name_le
+
+        path_label = QLabel()
+        path_label.setText('Path:')
+        details_gb_layout.addWidget(path_label, 2, 0, Qt.AlignRight)
+        self.path_label = path_label
+
+        path_le = QLineEdit()
+        path_le.setReadOnly(True)
+        details_gb_layout.addWidget(path_le, 2, 1)
+        self.path_le = path_le
+
+        size_label = QLabel()
+        size_label.setText('Size:')
+        details_gb_layout.addWidget(size_label, 3, 0, Qt.AlignRight)
+        self.size_label = size_label
+
+        size_le = QLineEdit()
+        size_le.setReadOnly(True)
+        details_gb_layout.addWidget(size_le, 3, 1)
+        self.size_le = size_le
+
+        details_gb.setLayout(details_gb_layout)
+        self.details_gb_layout = details_gb_layout
+
+        self.setLayout(layout)
+
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
     def get_main_tab(self):
         return self.parentWidget().parentWidget().main_tab
 
+    def installed_selection(self, selected, previous):
+        selected_info = self.soundpacks[selected.row()]
+        
+        self.viewname_le.setText(selected_info['VIEW'])
+        self.name_le.setText(selected_info['NAME'])
+        self.path_le.setText(selected_info['path'])
+        self.size_le.setText(sizeof_fmt(selected_info['size']))
+
+    def config_info(self, config_file):
+        val = {}
+        with open(config_file, 'r') as f:
+            for line in f:
+                if line.startswith('NAME'):
+                    space_index = line.find(' ')
+                    name = line[space_index:].strip().replace(
+                        ',', '')
+                    val['NAME'] = name
+                elif line.startswith('VIEW'):
+                    space_index = line.find(' ')
+                    view = line[space_index:].strip()
+                    val['VIEW'] = view
+
+                if 'NAME' in val and 'VIEW' in val:
+                    break
+        return val
+
+    def scan_size(self, soundpack_info):
+        next_scans = deque()
+        current_scan = scandir(soundpack_info['path'])
+
+        total_size = 0
+
+        while True:
+            try:
+                entry = next(current_scan)
+                if entry.is_dir():
+                    next_scans.append(entry.path)
+                elif entry.is_file():
+                    total_size += entry.stat().st_size
+            except StopIteration:
+                if len(next_scans) > 0:
+                    current_scan = scandir(next_scans.popleft())
+                else:
+                    break
+
+        return total_size
+
+    def add_soundpack(self, soundpack_info):
+        index = self.soundpacks_model.rowCount()
+        self.soundpacks_model.insertRows(self.soundpacks_model.rowCount(), 1)
+        self.soundpacks_model.setData(self.soundpacks_model.index(index),
+            soundpack_info['VIEW'])
+
+    def game_dir_changed(self, new_dir):
+        self.game_dir = new_dir
+        self.soundpacks = []
+        self.soundpacks_model = QStringListModel()
+        self.installed_lv.setModel(self.soundpacks_model)
+        self.installed_lv.selectionModel().currentChanged.connect(
+            self.installed_selection)
+
+        self.viewname_le.setText('')
+
+        soundpacks_dir = os.path.join(new_dir, 'data', 'sound')
+        if os.path.isdir(soundpacks_dir):
+            dir_scan = scandir(soundpacks_dir)
+
+            while True:
+                try:
+                    entry = next(dir_scan)
+                    if entry.is_dir():
+                        soundpack_path = entry.path
+                        config_file = os.path.join(soundpack_path,
+                            'soundpack.txt')
+                        if os.path.isfile(config_file):
+                            info = self.config_info(config_file)
+                            if 'NAME' in info and 'VIEW' in info:
+                                soundpack_info = {
+                                    'path': soundpack_path
+                                }
+                                soundpack_info.update(info)
+
+                                self.soundpacks.append(soundpack_info)
+                                soundpack_info['size'] = (
+                                    self.scan_size(soundpack_info))
+                                self.add_soundpack(soundpack_info)
+
+                except StopIteration:
+                    break
 
 class ModsTab(QTabWidget):
     def __init__(self):
