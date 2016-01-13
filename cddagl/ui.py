@@ -35,7 +35,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
     QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
-    QSpinBox, QListView)
+    QSpinBox, QListView, QAbstractItemView)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -349,6 +349,9 @@ class MainTab(QWidget):
 
     def get_settings_tab(self):
         return self.parentWidget().parentWidget().settings_tab
+
+    def get_soundpacks_tab(self):
+        return self.parentWidget().parentWidget().soundpacks_tab
 
 
 class SettingsTab(QWidget):
@@ -1107,6 +1110,9 @@ class UpdateGroupBox(QGroupBox):
 
             game_dir_group_box.disable_controls()
             self.disable_controls()
+
+            soundpacks_tab = main_tab.get_soundpacks_tab()
+            soundpacks_tab.disable_tab()
 
             game_dir = game_dir_group_box.dir_edit.text()
 
@@ -1900,6 +1906,10 @@ class UpdateGroupBox(QGroupBox):
         game_dir_group_box.enable_controls()
         self.enable_controls(True)
 
+        soundpacks_tab = main_tab.get_soundpacks_tab()
+        soundpacks_tab.enable_tab()
+        soundpacks_tab.game_dir_changed(game_dir_group_box.dir_edit.text())
+
         if game_dir_group_box.exe_path is not None:
             self.update_button.setText('Update game')
         else:
@@ -2097,9 +2107,9 @@ class AboutDialog(QDialog):
         text_content.setHtml('''
 <p>CDDA Game Launcher version {version}</p>
 
-<p>Get the latest release <a href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on Github</a>.</p>
+<p>Get the latest release <a href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.</p>
 
-<p>Please report any issue <a href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on Github</a>.</p>
+<p>Please report any issue <a href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.</p>
 
 <p>Copyright (c) 2015 Rémy Roy</p>
 
@@ -2539,8 +2549,31 @@ class SoundpacksTab(QTabWidget):
         self.installed_gb_layout = installed_gb_layout
 
         installed_lv = QListView()
+        installed_lv.setEditTriggers(QAbstractItemView.NoEditTriggers)
         installed_gb_layout.addWidget(installed_lv)
         self.installed_lv = installed_lv
+
+        installed_buttons = QWidget()
+        ib_layout = QHBoxLayout()
+        installed_buttons.setLayout(ib_layout)
+        ib_layout.setContentsMargins(0, 0, 0, 0)
+        self.ib_layout = ib_layout
+        self.installed_buttons = installed_buttons
+        installed_gb_layout.addWidget(installed_buttons)
+
+        disable_existing_button = QPushButton()
+        disable_existing_button.clicked.connect(self.disable_existing)
+        disable_existing_button.setEnabled(False)
+        disable_existing_button.setText('Disable')
+        ib_layout.addWidget(disable_existing_button)
+        self.disable_existing_button = disable_existing_button
+
+        delete_existing_button = QPushButton()
+        delete_existing_button.clicked.connect(self.delete_existing)
+        delete_existing_button.setEnabled(False)
+        delete_existing_button.setText('Delete')
+        ib_layout.addWidget(delete_existing_button)
+        self.delete_existing_button = delete_existing_button
 
         repository_gb = QGroupBox()
         repository_gb.setTitle('Repository')
@@ -2552,8 +2585,31 @@ class SoundpacksTab(QTabWidget):
         self.repository_gb_layout = repository_gb_layout
 
         repository_lv = QListView()
+        repository_lv.setEditTriggers(QAbstractItemView.NoEditTriggers)
         repository_gb_layout.addWidget(repository_lv)
         self.repository_lv = repository_lv
+
+        suggest_new_label = QLabel()
+        suggest_new_label.setOpenExternalLinks(True)
+        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
+            'title': 'Add this new soundpack to the repository',
+            'body': '''* Name: [Enter the name of the soundpack]
+* Url: [Enter the Url where we can find the soundpack]
+* Author: [Enter the name of the author]
+* Website: [Enter the Url of the author website or where the soundpack was published]
+* Soundpack not found in version: {version}
+'''.format(version=version)
+        })
+        suggest_new_label.setText('<a href="{url}">Suggest a new soundpack '
+            'on GitHub</a>'.format(url=suggest_url))
+        repository_gb_layout.addWidget(suggest_new_label)
+        self.suggest_new_label = suggest_new_label
+
+        install_new_button = QPushButton()
+        install_new_button.setEnabled(False)
+        install_new_button.setText('Install this soundpack')
+        repository_gb_layout.addWidget(install_new_button)
+        self.install_new_button = install_new_button
 
         top_part.setLayout(tp_layout)
         layout.addWidget(top_part)
@@ -2617,6 +2673,105 @@ class SoundpacksTab(QTabWidget):
     def get_main_tab(self):
         return self.parentWidget().parentWidget().main_tab
 
+    def disable_tab(self):
+        self.installed_lv.setEnabled(False)
+        self.repository_lv.setEnabled(False)
+
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+
+        self.install_new_button.setEnabled(False)
+
+    def enable_tab(self):
+        self.installed_lv.setEnabled(True)
+        self.repository_lv.setEnabled(True)
+
+        installed_selection = self.installed_lv.selectionModel()
+        if installed_selection is None:
+            installed_selected = False
+        else:
+            installed_selected = installed_selection.hasSelection()
+
+        self.disable_existing_button.setEnabled(installed_selected)
+        self.delete_existing_button.setEnabled(installed_selected)
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is None:
+            repository_selected = False
+        else:
+            repository_selected = repository_selection.hasSelection()
+
+        self.install_new_button.setEnabled(repository_selected)
+
+    def disable_existing(self):
+        if not self.installed_lv.selectionModel().hasSelection():
+            return
+
+        selected = self.installed_lv.selectionModel().currentIndex()
+        selected_info = self.soundpacks[selected.row()]
+
+        if selected_info['enabled']:
+            config_file = os.path.join(selected_info['path'], 'soundpack.txt')
+            new_config_file = os.path.join(selected_info['path'],
+                'soundpack.txt.disabled')
+            try:
+                shutil.move(config_file, new_config_file)
+                selected_info['enabled'] = False
+                self.soundpacks_model.setData(selected, selected_info['VIEW'] +
+                    ' (Disabled)')
+                self.disable_existing_button.setText('Enable')
+            except OSError as e:
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(str(e))
+        else:
+            config_file = os.path.join(selected_info['path'],
+                'soundpack.txt.disabled')
+            new_config_file = os.path.join(selected_info['path'],
+                'soundpack.txt')
+            try:
+                shutil.move(config_file, new_config_file)
+                selected_info['enabled'] = True
+                self.soundpacks_model.setData(selected, selected_info['VIEW'])
+                self.disable_existing_button.setText('Disable')
+            except OSError as e:
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(str(e))
+
+    def delete_existing(self):
+        if not self.installed_lv.selectionModel().hasSelection():
+            return
+
+        selected = self.installed_lv.selectionModel().currentIndex()
+        selected_info = self.soundpacks[selected.row()]
+
+        confirm_msgbox = QMessageBox()
+        confirm_msgbox.setWindowTitle('Delete soundpack')
+        confirm_msgbox.setText('This will delete the soundpack directory. It '
+            'cannot be undone.')
+        confirm_msgbox.setInformativeText('Are you sure you want to '
+            'delete the {view} soundpack?'.format(view=selected_info['VIEW']))
+        confirm_msgbox.addButton('Delete the soundpack',
+            QMessageBox.YesRole)
+        confirm_msgbox.addButton('I want to keep the soundpack',
+            QMessageBox.NoRole)
+        confirm_msgbox.setIcon(QMessageBox.Warning)
+
+        if confirm_msgbox.exec() == 0:
+            try:
+                shutil.rmtree(selected_info['path'])
+
+                self.soundpacks_model.removeRows(selected.row(), 1)
+                self.soundpacks.remove(selected_info)
+            except OSError as e:
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(str(e))
+
     def installed_selection(self, selected, previous):
         selected_info = self.soundpacks[selected.row()]
         
@@ -2624,6 +2779,18 @@ class SoundpacksTab(QTabWidget):
         self.name_le.setText(selected_info['NAME'])
         self.path_le.setText(selected_info['path'])
         self.size_le.setText(sizeof_fmt(selected_info['size']))
+
+        if selected_info['enabled']:
+            self.disable_existing_button.setText('Disable')
+        else:
+            self.disable_existing_button.setText('Enable')
+
+        self.disable_existing_button.setEnabled(True)
+        self.delete_existing_button.setEnabled(True)
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
 
     def config_info(self, config_file):
         val = {}
@@ -2667,18 +2834,28 @@ class SoundpacksTab(QTabWidget):
     def add_soundpack(self, soundpack_info):
         index = self.soundpacks_model.rowCount()
         self.soundpacks_model.insertRows(self.soundpacks_model.rowCount(), 1)
+        disabled_text = ''
+        if not soundpack_info['enabled']:
+            disabled_text = ' (Disabled)'
         self.soundpacks_model.setData(self.soundpacks_model.index(index),
-            soundpack_info['VIEW'])
+            soundpack_info['VIEW'] + disabled_text)
 
     def game_dir_changed(self, new_dir):
         self.game_dir = new_dir
         self.soundpacks = []
+
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+
         self.soundpacks_model = QStringListModel()
         self.installed_lv.setModel(self.soundpacks_model)
         self.installed_lv.selectionModel().currentChanged.connect(
             self.installed_selection)
 
         self.viewname_le.setText('')
+        self.name_le.setText('')
+        self.path_le.setText('')
+        self.size_le.setText('')
 
         soundpacks_dir = os.path.join(new_dir, 'data', 'sound')
         if os.path.isdir(soundpacks_dir):
@@ -2695,7 +2872,24 @@ class SoundpacksTab(QTabWidget):
                             info = self.config_info(config_file)
                             if 'NAME' in info and 'VIEW' in info:
                                 soundpack_info = {
-                                    'path': soundpack_path
+                                    'path': soundpack_path,
+                                    'enabled': True
+                                }
+                                soundpack_info.update(info)
+
+                                self.soundpacks.append(soundpack_info)
+                                soundpack_info['size'] = (
+                                    self.scan_size(soundpack_info))
+                                self.add_soundpack(soundpack_info)
+                                continue
+                        disabled_config_file = os.path.join(soundpack_path,
+                            'soundpack.txt.disabled')
+                        if os.path.isfile(disabled_config_file):
+                            info = self.config_info(disabled_config_file)
+                            if 'NAME' in info and 'VIEW' in info:
+                                soundpack_info = {
+                                    'path': soundpack_path,
+                                    'enabled': False
                                 }
                                 soundpack_info.update(info)
 
@@ -2973,11 +3167,11 @@ class ExceptionWindow(QWidget):
 
         report_url = NEW_ISSUE_URL + '?' + urlencode({
             'title': 'Unhandled exception: [Enter a title]',
-            'body': '''Description: [Enter what you did and what happened]
-Version: {version}
-Type: `{extype}`
-Value: {value}
-Traceback:
+            'body': '''* Description: [Enter what you did and what happened]
+* Version: {version}
+* Type: `{extype}`
+* Value: {value}
+* Traceback:
 ```
 {traceback}
 ```
@@ -2988,7 +3182,7 @@ Traceback:
         report_label = QLabel()
         report_label.setOpenExternalLinks(True)
         report_label.setText('Please help up make a better launcher '
-            '<a href="{url}">by reporting this issue on Github</a>.'.format(
+            '<a href="{url}">by reporting this issue on GitHub</a>.'.format(
                 url=html.escape(report_url)))
         layout.addWidget(report_label, 2, 0)
         self.report_label = report_label
