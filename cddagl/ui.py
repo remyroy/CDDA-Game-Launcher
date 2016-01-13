@@ -2757,6 +2757,9 @@ class ProgressCopyTree(QTimer):
         self.copying_size_label = None
         self.progress_bar = None
 
+        self.source_file = None
+        self.destination_file = None
+
         self.analysing = False
         self.copying = False
         self.copy_completed = False
