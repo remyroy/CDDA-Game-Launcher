@@ -72,4 +72,4 @@ if __name__ == '__main__':
     init_exception_catcher()
 
     init_config(basedir)
-    start_ui()
+    start_ui(basedir)

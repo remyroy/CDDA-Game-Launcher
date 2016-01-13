@@ -45,6 +45,7 @@ from cddagl.config import (
 from .__version__ import version
 
 main_app = None
+basedir = None
 
 READ_BUFFER_SIZE = 16 * 1024
 
@@ -89,6 +90,8 @@ def config_true(value):
 def splurial(value):
     return 's' if value > 1 else ''
 
+def get_data_path():
+    return os.path.join(basedir, 'data')
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
@@ -353,6 +356,13 @@ class MainTab(QWidget):
     def get_soundpacks_tab(self):
         return self.parentWidget().parentWidget().soundpacks_tab
 
+    def disable_tab(self):
+        self.game_dir_group_box.disable_controls()
+        self.update_group_box.disable_controls(True)
+
+    def enable_tab(self):
+        self.game_dir_group_box.enable_controls()
+        self.update_group_box.enable_controls()
 
 class SettingsTab(QWidget):
     def __init__(self):
@@ -1655,7 +1665,7 @@ class UpdateGroupBox(QGroupBox):
                             if (isinstance(item, dict)
                                 and item.get('type', '') == 'MOD_INFO'):
                                     return item.get('ident', None)
-                except json.JSONDecodeError:
+                except ValueError:
                     pass
 
         return None
@@ -2532,6 +2542,11 @@ class SoundpacksTab(QTabWidget):
     def __init__(self):
         super(SoundpacksTab, self).__init__()
 
+        self.qnam = QNetworkAccessManager()
+
+        self.http_reply = None
+        self.current_repo_info = None
+
         layout = QVBoxLayout()
 
         top_part = QWidget()
@@ -2549,6 +2564,7 @@ class SoundpacksTab(QTabWidget):
         self.installed_gb_layout = installed_gb_layout
 
         installed_lv = QListView()
+        installed_lv.clicked.connect(self.installed_clicked)
         installed_lv.setEditTriggers(QAbstractItemView.NoEditTriggers)
         installed_gb_layout.addWidget(installed_lv)
         self.installed_lv = installed_lv
@@ -2585,6 +2601,7 @@ class SoundpacksTab(QTabWidget):
         self.repository_gb_layout = repository_gb_layout
 
         repository_lv = QListView()
+        repository_lv.clicked.connect(self.repository_clicked)
         repository_lv.setEditTriggers(QAbstractItemView.NoEditTriggers)
         repository_gb_layout.addWidget(repository_lv)
         self.repository_lv = repository_lv
@@ -2606,6 +2623,7 @@ class SoundpacksTab(QTabWidget):
         self.suggest_new_label = suggest_new_label
 
         install_new_button = QPushButton()
+        install_new_button.clicked.connect(self.install_new)
         install_new_button.setEnabled(False)
         install_new_button.setText('Install this soundpack')
         repository_gb_layout.addWidget(install_new_button)
@@ -2667,6 +2685,8 @@ class SoundpacksTab(QTabWidget):
 
         self.setLayout(layout)
 
+        self.load_repository()
+
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
@@ -2703,11 +2723,192 @@ class SoundpacksTab(QTabWidget):
 
         self.install_new_button.setEnabled(repository_selected)
 
-    def disable_existing(self):
-        if not self.installed_lv.selectionModel().hasSelection():
+    def load_repository(self):
+        self.repo_soundpacks = []
+
+        self.install_new_button.setEnabled(False)
+
+        self.repo_soundpacks_model = QStringListModel()
+        self.repository_lv.setModel(self.repo_soundpacks_model)
+        self.repository_lv.selectionModel().currentChanged.connect(
+            self.repository_selection)
+
+        json_file = os.path.join(get_data_path(), 'soundpacks.json')
+
+        if os.path.isfile(json_file):
+            with open(json_file, 'r') as f:
+                try:
+                    values = json.load(f)
+                    if isinstance(values, list):
+                        self.repo_soundpacks = values
+
+                        self.repo_soundpacks_model.insertRows(
+                            self.repo_soundpacks_model.rowCount(),
+                            len(self.repo_soundpacks))
+                        for index, soundpack_info in enumerate(
+                            self.repo_soundpacks):
+                            self.repo_soundpacks_model.setData(
+                                self.repo_soundpacks_model.index(index),
+                                soundpack_info['viewname'])
+                except ValueError:
+                    pass
+
+    def install_new(self):
+        selection_model = self.repository_lv.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
             return
 
-        selected = self.installed_lv.selectionModel().currentIndex()
+        selected = selection_model.currentIndex()
+        selected_info = self.repo_soundpacks[selected.row()]
+
+        if selected_info['type'] == 'direct_download':
+            if self.http_reply is not None and self.http_reply.isRunning():
+                self.http_reply_aborted = True
+                self.http_reply.abort()
+
+            self.http_reply_aborted = False
+
+            temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
+            if not os.path.exists(temp_dir):
+                os.makedirs(temp_dir)
+            
+            download_dir = os.path.join(temp_dir, 'newsoundpack')
+            while os.path.exists(download_dir):
+                download_dir = os.path.join(temp_dir, 'newsoundpack-{0}'.format(
+                    '%08x' % random.randrange(16**8)))
+            os.makedirs(download_dir)
+
+            download_url = selected_info['url']
+            
+            url = QUrl(download_url)
+            file_info = QFileInfo(url.path())
+            file_name = file_info.fileName()
+
+            self.downloaded_file = os.path.join(download_dir, file_name)
+            self.downloading_file = open(self.downloaded_file, 'wb')
+
+            main_window = self.get_main_window()
+
+            status_bar = main_window.statusBar()
+            status_bar.clearMessage()
+
+            status_bar.busy += 1
+
+            downloading_label = QLabel()
+            downloading_label.setText('Downloading: {0}'.format(
+                selected_info['url']))
+            status_bar.addWidget(downloading_label, 100)
+            self.downloading_label = downloading_label
+
+            dowloading_speed_label = QLabel()
+            status_bar.addWidget(dowloading_speed_label)
+            self.dowloading_speed_label = dowloading_speed_label
+
+            downloading_size_label = QLabel()
+            status_bar.addWidget(downloading_size_label)
+            self.downloading_size_label = downloading_size_label
+
+            progress_bar = QProgressBar()
+            status_bar.addWidget(progress_bar)
+            self.downloading_progress_bar = progress_bar
+            progress_bar.setMinimum(0)
+
+            self.download_last_read = datetime.utcnow()
+            self.download_last_bytes_read = 0
+            self.download_speed_count = 0
+
+            request = QNetworkRequest(QUrl(url))
+            request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+
+            self.download_http_reply = self.qnam.get(request)
+            self.download_http_reply.finished.connect(
+                self.download_http_finished)
+            self.download_http_reply.readyRead.connect(
+                self.download_http_ready_read)
+            self.download_http_reply.downloadProgress.connect(
+                self.download_dl_progress)
+
+            self.install_new_button.setText('Cancel installation')
+            self.installed_lv.setEnabled(False)
+            self.repository_lv.setEnabled(False)
+
+            self.get_main_tab().disable_tab()
+
+    def download_http_finished(self):
+        self.downloading_file.close()
+
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.removeWidget(self.downloading_label)
+        status_bar.removeWidget(self.dowloading_speed_label)
+        status_bar.removeWidget(self.downloading_size_label)
+        status_bar.removeWidget(self.downloading_progress_bar)
+
+        status_bar.busy -= 1
+
+        if self.download_aborted:
+            download_dir = os.path.dirname(self.downloaded_file)
+            shutil.rmtree(download_dir)
+        else:
+            # Test downloaded file
+            status_bar.showMessage('Testing downloaded file archive')
+
+            try:
+                with zipfile.ZipFile(self.downloaded_file) as z:
+                    if z.testzip() is not None:
+                        status_bar.clearMessage()
+                        status_bar.showMessage('Downloaded archive is invalid')
+
+                        download_dir = os.path.dirname(self.downloaded_file)
+                        shutil.rmtree(download_dir)
+                        self.finish_updating()
+
+                        return
+            except zipfile.BadZipFile:
+                status_bar.clearMessage()
+                status_bar.showMessage('Could not download soundpack')
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir)
+                self.finish_updating()
+
+                return
+
+            status_bar.clearMessage()
+
+            # TODO Extract here
+            #self.backup_current_game()
+
+    def download_http_ready_read(self):
+        self.downloading_file.write(self.download_http_reply.readAll())
+
+    def download_dl_progress(self, bytes_read, total_bytes):
+        self.downloading_progress_bar.setMaximum(total_bytes)
+        self.downloading_progress_bar.setValue(bytes_read)
+
+        self.download_speed_count += 1
+
+        self.downloading_size_label.setText('{0}/{1}'.format(
+            sizeof_fmt(bytes_read), sizeof_fmt(total_bytes)))
+
+        if self.download_speed_count % 5 == 0:
+            delta_bytes = bytes_read - self.download_last_bytes_read
+            delta_time = datetime.utcnow() - self.download_last_read
+
+            bytes_secs = delta_bytes / delta_time.total_seconds()
+            self.dowloading_speed_label.setText('{0}/s'.format(
+                sizeof_fmt(bytes_secs)))
+
+            self.download_last_bytes_read = bytes_read
+            self.download_last_read = datetime.utcnow()
+
+    def disable_existing(self):
+        selection_model = self.installed_lv.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
+            return
+
+        selected = selection_model.currentIndex()
         selected_info = self.soundpacks[selected.row()]
 
         if selected_info['enabled']:
@@ -2742,10 +2943,11 @@ class SoundpacksTab(QTabWidget):
                 status_bar.showMessage(str(e))
 
     def delete_existing(self):
-        if not self.installed_lv.selectionModel().hasSelection():
+        selection_model = self.installed_lv.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
             return
 
-        selected = self.installed_lv.selectionModel().currentIndex()
+        selected = selection_model.currentIndex()
         selected_info = self.soundpacks[selected.row()]
 
         confirm_msgbox = QMessageBox()
@@ -2773,24 +2975,97 @@ class SoundpacksTab(QTabWidget):
                 status_bar.showMessage(str(e))
 
     def installed_selection(self, selected, previous):
-        selected_info = self.soundpacks[selected.row()]
-        
-        self.viewname_le.setText(selected_info['VIEW'])
-        self.name_le.setText(selected_info['NAME'])
-        self.path_le.setText(selected_info['path'])
-        self.size_le.setText(sizeof_fmt(selected_info['size']))
+        self.installed_clicked()
 
-        if selected_info['enabled']:
-            self.disable_existing_button.setText('Disable')
-        else:
-            self.disable_existing_button.setText('Enable')
+    def installed_clicked(self):
+        selection_model = self.installed_lv.selectionModel()
+        if selection_model is not None and selection_model.hasSelection():
+            selected = selection_model.currentIndex()
+            selected_info = self.soundpacks[selected.row()]
+            
+            self.viewname_le.setText(selected_info['VIEW'])
+            self.name_le.setText(selected_info['NAME'])
+            self.path_label.setText('Path:')
+            self.path_le.setText(selected_info['path'])
+            self.size_le.setText(sizeof_fmt(selected_info['size']))
+
+            if selected_info['enabled']:
+                self.disable_existing_button.setText('Disable')
+            else:
+                self.disable_existing_button.setText('Enable')
 
         self.disable_existing_button.setEnabled(True)
         self.delete_existing_button.setEnabled(True)
+        self.install_new_button.setEnabled(False)
 
         repository_selection = self.repository_lv.selectionModel()
         if repository_selection is not None:
             repository_selection.clearSelection()
+
+    def repository_selection(self, selected, previous):
+        self.repository_clicked()
+
+    def repository_clicked(self):
+        selection_model = self.repository_lv.selectionModel()
+        if selection_model is not None and selection_model.hasSelection():
+            selected = selection_model.currentIndex()
+            selected_info = self.repo_soundpacks[selected.row()]
+
+            self.viewname_le.setText(selected_info['viewname'])
+            self.name_le.setText(selected_info['name'])
+
+            if selected_info['type'] == 'direct_download':
+                self.path_label.setText('Url:')
+                self.path_le.setText(selected_info['url'])
+                if 'size' not in selected_info:
+                    if not (self.current_repo_info is not None
+                        and self.http_reply is not None
+                        and self.http_reply.isRunning()
+                        and self.current_repo_info is selected_info):
+                        if (self.http_reply is not None
+                            and self.http_reply.isRunning()):
+                            self.http_reply_aborted = True
+                            self.http_reply.abort()
+                        
+                        self.http_reply_aborted = False
+                        self.size_le.setText('Getting remote size')
+                        self.current_repo_info = selected_info
+
+                        request = QNetworkRequest(QUrl(selected_info['url']))
+                        request.setRawHeader(b'User-Agent',
+                            b'Mozilla /5.0 (linux-gnu)')
+
+                        self.http_reply = self.qnam.head(request)
+                        self.http_reply.finished.connect(
+                            self.size_query_finished)
+                else:
+                    self.size_le.setText(sizeof_fmt(selected_info['size']))
+
+        self.install_new_button.setEnabled(True)
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+
+        installed_selection = self.installed_lv.selectionModel()
+        if installed_selection is not None:
+            installed_selection.clearSelection()
+
+    def size_query_finished(self):
+        if (not self.http_reply_aborted
+            and self.http_reply.attribute(
+                QNetworkRequest.HttpStatusCodeAttribute) == 200
+            and self.http_reply.hasRawHeader(b'Content-Length')):
+
+            content_length = int(self.http_reply.rawHeader(b'Content-Length'))
+            self.current_repo_info['size'] = content_length
+            self.size_le.setText(sizeof_fmt(content_length))
+        else:
+            selection_model = self.repository_lv.selectionModel()
+            if selection_model is not None and selection_model.hasSelection():
+                selected = selection_model.currentIndex()
+                selected_info = self.repo_soundpacks[selected.row()]
+
+                if selected_info is self.current_repo_info:
+                    self.size_le.setText('Unknown')
 
     def config_info(self, config_file):
         val = {}
@@ -3197,8 +3472,11 @@ class ExceptionWindow(QWidget):
         self.setWindowTitle('Something went wrong')
         self.setMinimumSize(350, 0)
 
-def start_ui():
+def start_ui(bdir):
     global main_app
+    global basedir
+
+    basedir = bdir
 
     main_app = QApplication(sys.argv)
     main_win = MainWindow('CDDA Game Launcher')

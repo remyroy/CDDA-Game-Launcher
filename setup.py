@@ -16,7 +16,8 @@ class Installer(Command):
         call(['pyi-makespec', '-F', '-w', '--noupx',
           '--hidden-import=lxml.cssselect', 'cddagl\launcher.py'])
 
-        added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.')]
+        added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
+          ('data', 'data')]
 
         spec_content = None
         with open('launcher.spec', 'r') as f:
