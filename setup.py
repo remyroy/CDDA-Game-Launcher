@@ -34,7 +34,7 @@ class Installer(Command):
 
 
 setup(name='cddagl',
-      version='0.6.5',
+      version='0.7',
       description=(
           'A Cataclysm: Dark Days Ahead launcher with additional features'),
       author='Rémy Roy',
