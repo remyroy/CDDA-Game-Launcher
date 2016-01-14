@@ -9,6 +9,7 @@ import zipfile
 import json
 import traceback
 import html
+import stat
 
 try:
     from os import scandir
@@ -2547,6 +2548,12 @@ class SoundpacksTab(QTabWidget):
         self.http_reply = None
         self.current_repo_info = None
 
+        self.soundpacks = []
+
+        self.installing_new_soundpack = False
+        self.downloading_new_soundpack = False
+        self.extracting_new_soundpack = False
+
         layout = QVBoxLayout()
 
         top_part = QWidget()
@@ -2754,85 +2761,150 @@ class SoundpacksTab(QTabWidget):
                     pass
 
     def install_new(self):
-        selection_model = self.repository_lv.selectionModel()
-        if selection_model is None or not selection_model.hasSelection():
-            return
+        if not self.installing_new_soundpack:
+            selection_model = self.repository_lv.selectionModel()
+            if selection_model is None or not selection_model.hasSelection():
+                return
 
-        selected = selection_model.currentIndex()
-        selected_info = self.repo_soundpacks[selected.row()]
+            selected = selection_model.currentIndex()
+            selected_info = self.repo_soundpacks[selected.row()]
 
-        if selected_info['type'] == 'direct_download':
-            if self.http_reply is not None and self.http_reply.isRunning():
-                self.http_reply_aborted = True
-                self.http_reply.abort()
+            # Is it already installed?
+            for soundpack in self.soundpacks:
+                if soundpack['NAME'] == selected_info['name']:
+                    confirm_msgbox = QMessageBox()
+                    confirm_msgbox.setWindowTitle('Soundpack already present')
+                    confirm_msgbox.setText('It seems this soundpack is '
+                        'already installed. The launcher will not overwrite '
+                        'the soundpack if it has the same directory name. You '
+                        'might want to delete the soundpack first if you want '
+                        'to update it. Also, there can only be a single '
+                        'soundpack with the same name value available in the '
+                        'game.')
+                    confirm_msgbox.setInformativeText('Are you sure you want '
+                        'to install the {view} soundpack?'.format(
+                            view=selected_info['viewname']))
+                    confirm_msgbox.addButton('Install the soundpack',
+                        QMessageBox.YesRole)
+                    confirm_msgbox.addButton('Do not install the soundpack '
+                        'again',
+                        QMessageBox.NoRole)
+                    confirm_msgbox.setIcon(QMessageBox.Warning)
 
-            self.http_reply_aborted = False
+                    if confirm_msgbox.exec() == 1:
+                        return
+                    break
 
-            temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
-            if not os.path.exists(temp_dir):
-                os.makedirs(temp_dir)
-            
-            download_dir = os.path.join(temp_dir, 'newsoundpack')
-            while os.path.exists(download_dir):
-                download_dir = os.path.join(temp_dir, 'newsoundpack-{0}'.format(
-                    '%08x' % random.randrange(16**8)))
-            os.makedirs(download_dir)
+            if selected_info['type'] == 'direct_download':
+                if self.http_reply is not None and self.http_reply.isRunning():
+                    self.http_reply_aborted = True
+                    self.http_reply.abort()
 
-            download_url = selected_info['url']
-            
-            url = QUrl(download_url)
-            file_info = QFileInfo(url.path())
-            file_name = file_info.fileName()
+                self.installing_new_soundpack = True
+                self.download_aborted = False
 
-            self.downloaded_file = os.path.join(download_dir, file_name)
-            self.downloading_file = open(self.downloaded_file, 'wb')
+                temp_dir = os.path.join(os.environ['TEMP'],
+                    'CDDA Game Launcher')
+                if not os.path.exists(temp_dir):
+                    os.makedirs(temp_dir)
+                
+                download_dir = os.path.join(temp_dir, 'newsoundpack')
+                while os.path.exists(download_dir):
+                    download_dir = os.path.join(temp_dir,
+                        'newsoundpack-{0}'.format(
+                        '%08x' % random.randrange(16**8)))
+                os.makedirs(download_dir)
 
+                download_url = selected_info['url']
+                
+                url = QUrl(download_url)
+                file_info = QFileInfo(url.path())
+                file_name = file_info.fileName()
+
+                self.downloaded_file = os.path.join(download_dir, file_name)
+                self.downloading_file = open(self.downloaded_file, 'wb')
+
+                main_window = self.get_main_window()
+
+                status_bar = main_window.statusBar()
+                status_bar.clearMessage()
+
+                status_bar.busy += 1
+
+                downloading_label = QLabel()
+                downloading_label.setText('Downloading: {0}'.format(
+                    selected_info['url']))
+                status_bar.addWidget(downloading_label, 100)
+                self.downloading_label = downloading_label
+
+                dowloading_speed_label = QLabel()
+                status_bar.addWidget(dowloading_speed_label)
+                self.dowloading_speed_label = dowloading_speed_label
+
+                downloading_size_label = QLabel()
+                status_bar.addWidget(downloading_size_label)
+                self.downloading_size_label = downloading_size_label
+
+                progress_bar = QProgressBar()
+                status_bar.addWidget(progress_bar)
+                self.downloading_progress_bar = progress_bar
+                progress_bar.setMinimum(0)
+
+                self.download_last_read = datetime.utcnow()
+                self.download_last_bytes_read = 0
+                self.download_speed_count = 0
+
+                self.downloading_new_soundpack = True
+
+                request = QNetworkRequest(QUrl(url))
+                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+
+                self.download_http_reply = self.qnam.get(request)
+                self.download_http_reply.finished.connect(
+                    self.download_http_finished)
+                self.download_http_reply.readyRead.connect(
+                    self.download_http_ready_read)
+                self.download_http_reply.downloadProgress.connect(
+                    self.download_dl_progress)
+
+                self.install_new_button.setText('Cancel soundpack installation')
+                self.installed_lv.setEnabled(False)
+                self.repository_lv.setEnabled(False)
+
+                self.get_main_tab().disable_tab()
+        else:
             main_window = self.get_main_window()
-
             status_bar = main_window.statusBar()
-            status_bar.clearMessage()
 
-            status_bar.busy += 1
+            # Cancel installation
+            if self.downloading_new_soundpack:
+                self.download_aborted = True
+                self.download_http_reply.abort()
+            elif self.extracting_new_soundpack:
+                self.extracting_timer.stop()
 
-            downloading_label = QLabel()
-            downloading_label.setText('Downloading: {0}'.format(
-                selected_info['url']))
-            status_bar.addWidget(downloading_label, 100)
-            self.downloading_label = downloading_label
+                status_bar.removeWidget(self.extracting_label)
+                status_bar.removeWidget(self.extracting_progress_bar)
 
-            dowloading_speed_label = QLabel()
-            status_bar.addWidget(dowloading_speed_label)
-            self.dowloading_speed_label = dowloading_speed_label
+                status_bar.busy -= 1
 
-            downloading_size_label = QLabel()
-            status_bar.addWidget(downloading_size_label)
-            self.downloading_size_label = downloading_size_label
+                self.extracting_new_soundpack = False
 
-            progress_bar = QProgressBar()
-            status_bar.addWidget(progress_bar)
-            self.downloading_progress_bar = progress_bar
-            progress_bar.setMinimum(0)
+                self.extracting_zipfile.close()
 
-            self.download_last_read = datetime.utcnow()
-            self.download_last_bytes_read = 0
-            self.download_speed_count = 0
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir)
 
-            request = QNetworkRequest(QUrl(url))
-            request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+                if os.path.isdir(self.extract_dir):
+                    def remove_readonly(func, path, _):
+                        os.chmod(path, stat.S_IWRITE)
+                        func(path)
 
-            self.download_http_reply = self.qnam.get(request)
-            self.download_http_reply.finished.connect(
-                self.download_http_finished)
-            self.download_http_reply.readyRead.connect(
-                self.download_http_ready_read)
-            self.download_http_reply.downloadProgress.connect(
-                self.download_dl_progress)
+                    shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            
+            status_bar.showMessage('Soundpack installation cancelled')
 
-            self.install_new_button.setText('Cancel installation')
-            self.installed_lv.setEnabled(False)
-            self.repository_lv.setEnabled(False)
-
-            self.get_main_tab().disable_tab()
+            self.finish_install_new_soundpack()
 
     def download_http_finished(self):
         self.downloading_file.close()
@@ -2850,6 +2922,8 @@ class SoundpacksTab(QTabWidget):
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
             shutil.rmtree(download_dir)
+
+            self.downloading_new_soundpack = False
         else:
             # Test downloaded file
             status_bar.showMessage('Testing downloaded file archive')
@@ -2862,8 +2936,9 @@ class SoundpacksTab(QTabWidget):
 
                         download_dir = os.path.dirname(self.downloaded_file)
                         shutil.rmtree(download_dir)
-                        self.finish_updating()
+                        self.downloading_new_soundpack = False
 
+                        self.finish_install_new_soundpack()
                         return
             except zipfile.BadZipFile:
                 status_bar.clearMessage()
@@ -2871,14 +2946,24 @@ class SoundpacksTab(QTabWidget):
 
                 download_dir = os.path.dirname(self.downloaded_file)
                 shutil.rmtree(download_dir)
-                self.finish_updating()
+                self.downloading_new_soundpack = False
 
+                self.finish_install_new_soundpack()
                 return
 
             status_bar.clearMessage()
+            self.downloading_new_soundpack = False
+            self.extract_new_soundpack()
 
-            # TODO Extract here
-            #self.backup_current_game()
+    def finish_install_new_soundpack(self):
+        self.installing_new_soundpack = False
+
+        self.installed_lv.setEnabled(True)
+        self.repository_lv.setEnabled(True)
+
+        self.install_new_button.setText('Install this soundpack')
+
+        self.get_main_tab().enable_tab()
 
     def download_http_ready_read(self):
         self.downloading_file.write(self.download_http_reply.readAll())
@@ -2902,6 +2987,141 @@ class SoundpacksTab(QTabWidget):
 
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
+
+    def extract_new_soundpack(self):
+        self.extracting_new_soundpack = True
+        
+        z = zipfile.ZipFile(self.downloaded_file)
+        self.extracting_zipfile = z
+
+        self.extract_dir = os.path.join(self.game_dir, 'newsoundpack')
+        while os.path.exists(self.extract_dir):
+            self.extract_dir = os.path.join(self.game_dir,
+                'newsoundpack-{0}'.format('%08x' % random.randrange(16**8)))
+        os.makedirs(self.extract_dir)
+
+        self.extracting_infolist = z.infolist()
+        self.extracting_index = 0
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.busy += 1
+
+        extracting_label = QLabel()
+        status_bar.addWidget(extracting_label, 100)
+        self.extracting_label = extracting_label
+
+        progress_bar = QProgressBar()
+        status_bar.addWidget(progress_bar)
+        self.extracting_progress_bar = progress_bar
+
+        timer = QTimer(self)
+        self.extracting_timer = timer
+
+        progress_bar.setRange(0, len(self.extracting_infolist))
+
+        def timeout():
+            self.extracting_progress_bar.setValue(self.extracting_index)
+
+            if self.extracting_index == len(self.extracting_infolist):
+                self.extracting_timer.stop()
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.removeWidget(self.extracting_label)
+                status_bar.removeWidget(self.extracting_progress_bar)
+
+                status_bar.busy -= 1
+
+                self.extracting_new_soundpack = False
+
+                self.extracting_zipfile.close()
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir)
+
+                self.move_new_soundpack()
+
+            else:
+                extracting_element = self.extracting_infolist[
+                    self.extracting_index]
+                self.extracting_label.setText('Extracting {0}'.format(
+                    extracting_element.filename))
+                
+                self.extracting_zipfile.extract(extracting_element,
+                    self.extract_dir)
+
+                self.extracting_index += 1
+
+        timer.timeout.connect(timeout)
+        timer.start(0)
+
+    def move_new_soundpack(self):
+        # Find the soundpack in the self.extract_dir
+        # Move the soundpack from that location into self.soundpacks_dir
+
+        self.moving_new_soundpack = True
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.showMessage('Finding the soundpack')
+
+        next_scans = deque()
+        current_scan = scandir(self.extract_dir)
+
+        soundpack_dir = None
+
+        while True:
+            try:
+                entry = next(current_scan)
+                if entry.is_dir():
+                    next_scans.append(entry.path)
+                elif entry.is_file():
+                    dirname, basename = os.path.split(entry.path)
+                    if basename == 'soundpack.txt':
+                        soundpack_dir = dirname
+                        entry = None
+                        break
+            except StopIteration:
+                if len(next_scans) > 0:
+                    current_scan = scandir(next_scans.popleft())
+                else:
+                    break
+
+        for item in current_scan:
+            pass
+
+        if soundpack_dir is None:
+            status_bar.showMessage('Soundpack installation cancelled - There '
+                'is no soundpack in the downloaded archive')
+            shutil.rmtree(self.extract_dir)
+            self.moving_new_soundpack = False
+
+            self.finish_install_new_soundpack()
+        else:
+            soundpack_dir_name = os.path.basename(soundpack_dir)
+            target_dir = os.path.join(self.soundpacks_dir, soundpack_dir_name)
+            if os.path.exists(target_dir):
+                status_bar.showMessage('Soundpack installation cancelled - '
+                    'There is already a {basename} directory in '
+                    '{soundpacks_dir}'.format(basename=soundpack_dir_name,
+                        soundpacks_dir=self.soundpacks_dir))
+            else:
+                shutil.move(soundpack_dir, self.soundpacks_dir)
+                status_bar.showMessage('Soundpack installation completed')
+
+            def remove_readonly(func, path, _):
+                os.chmod(path, stat.S_IWRITE)
+                func(path)
+
+            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            self.moving_new_soundpack = False
+
+            self.game_dir_changed(self.game_dir)
+            self.finish_install_new_soundpack()
 
     def disable_existing(self):
         selection_model = self.installed_lv.selectionModel()
@@ -3041,7 +3261,8 @@ class SoundpacksTab(QTabWidget):
                 else:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
 
-        self.install_new_button.setEnabled(True)
+        if os.path.isdir(self.soundpacks_dir):
+            self.install_new_button.setEnabled(True)
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
 
@@ -3133,6 +3354,7 @@ class SoundpacksTab(QTabWidget):
         self.size_le.setText('')
 
         soundpacks_dir = os.path.join(new_dir, 'data', 'sound')
+        self.soundpacks_dir = soundpacks_dir
         if os.path.isdir(soundpacks_dir):
             dir_scan = scandir(soundpacks_dir)
 
