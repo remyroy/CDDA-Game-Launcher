@@ -603,6 +603,13 @@ class GameDirGroupBox(QGroupBox):
         directory = self.dir_edit.text()
         soundpacks_tab.game_dir_changed(directory)
 
+    def clear_soundpacks(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        soundpacks_tab = central_widget.soundpacks_tab
+
+        soundpacks_tab.clear_soundpacks()
+
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
@@ -620,8 +627,6 @@ class GameDirGroupBox(QGroupBox):
 
         if not os.path.isdir(directory):
             self.version_value_label.setText('Not a valid directory')
-            self.build_value_label.setText('Unknown')
-            self.current_build = None
         else:
             # Check for previous version
             previous_version_dir = os.path.join(directory, 'previous_version')
@@ -642,8 +647,6 @@ class GameDirGroupBox(QGroupBox):
 
             if version_type is None:
                 self.version_value_label.setText('Not a CDDA directory')
-                self.build_value_label.setText('Unknown')
-                self.current_build = None
             else:
                 self.exe_path = exe_path
                 self.version_type = version_type
@@ -656,6 +659,11 @@ class GameDirGroupBox(QGroupBox):
             self.launch_game_button.setEnabled(False)
             update_group_box.update_button.setText('Install game')
             self.restored_previous = False
+
+            self.current_build = None
+            self.build_value_label.setText('Unknown')
+            self.saves_value_edit.setText('Unknown')
+            self.clear_soundpacks()
         else:
             self.launch_game_button.setEnabled(True)
             update_group_box.update_button.setText('Update game')
@@ -977,6 +985,7 @@ class UpdateGroupBox(QGroupBox):
         self.updating = False
         self.close_after_update = False
         self.builds = []
+        self.progress_copy = None
 
         self.qnam = QNetworkAccessManager()
         self.http_reply = None
@@ -1714,6 +1723,10 @@ class UpdateGroupBox(QGroupBox):
 
             self.progress_copy = None
             self.copy_next_dir()
+        elif self.in_post_extraction:
+            # New install
+            self.in_post_extraction = False
+            self.finish_updating()
 
     def post_extraction_step2(self):
         main_window = self.get_main_window()
@@ -1917,9 +1930,10 @@ class UpdateGroupBox(QGroupBox):
         game_dir_group_box.enable_controls()
         self.enable_controls(True)
 
+        game_dir_group_box.update_soundpacks()
+
         soundpacks_tab = main_tab.get_soundpacks_tab()
         soundpacks_tab.enable_tab()
-        soundpacks_tab.game_dir_changed(game_dir_group_box.dir_edit.text())
 
         if game_dir_group_box.exe_path is not None:
             self.update_button.setText('Update game')
@@ -2549,10 +2563,14 @@ class SoundpacksTab(QTabWidget):
         self.current_repo_info = None
 
         self.soundpacks = []
+        self.soundpacks_model = None
 
         self.installing_new_soundpack = False
         self.downloading_new_soundpack = False
         self.extracting_new_soundpack = False
+
+        self.game_dir = None
+        self.soundpacks_dir = None
 
         layout = QVBoxLayout()
 
@@ -2708,6 +2726,14 @@ class SoundpacksTab(QTabWidget):
         self.delete_existing_button.setEnabled(False)
 
         self.install_new_button.setEnabled(False)
+
+        installed_selection = self.installed_lv.selectionModel()
+        if installed_selection is not None:
+            installed_selection.clearSelection()
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
 
     def enable_tab(self):
         self.installed_lv.setEnabled(True)
@@ -3261,7 +3287,8 @@ class SoundpacksTab(QTabWidget):
                 else:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
 
-        if os.path.isdir(self.soundpacks_dir):
+        if (self.soundpacks_dir is not None
+            and os.path.isdir(self.soundpacks_dir)):
             self.install_new_button.setEnabled(True)
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
@@ -3336,6 +3363,22 @@ class SoundpacksTab(QTabWidget):
         self.soundpacks_model.setData(self.soundpacks_model.index(index),
             soundpack_info['VIEW'] + disabled_text)
 
+    def clear_soundpacks(self):
+        self.game_dir = None
+        self.soundpacks = []
+
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+        self.install_new_button.setEnabled(False)
+
+        if self.soundpacks_model is not None:
+            self.soundpacks_model.setStringList([])
+        self.soundpacks_model = None
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
+
     def game_dir_changed(self, new_dir):
         self.game_dir = new_dir
         self.soundpacks = []
@@ -3354,8 +3397,9 @@ class SoundpacksTab(QTabWidget):
         self.size_le.setText('')
 
         soundpacks_dir = os.path.join(new_dir, 'data', 'sound')
-        self.soundpacks_dir = soundpacks_dir
         if os.path.isdir(soundpacks_dir):
+            self.soundpacks_dir = soundpacks_dir
+
             dir_scan = scandir(soundpacks_dir)
 
             while True:
@@ -3397,6 +3441,8 @@ class SoundpacksTab(QTabWidget):
 
                 except StopIteration:
                     break
+        else:
+            self.soundpacks_dir = None
 
 class ModsTab(QTabWidget):
     def __init__(self):
