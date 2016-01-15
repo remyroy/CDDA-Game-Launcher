@@ -3388,6 +3388,11 @@ class SoundpacksTab(QTabWidget):
         if repository_selection is not None:
             repository_selection.clearSelection()
 
+        self.viewname_le.setText('')
+        self.name_le.setText('')
+        self.path_le.setText('')
+        self.size_le.setText('')
+
     def game_dir_changed(self, new_dir):
         self.game_dir = new_dir
         self.soundpacks = []
@@ -3399,6 +3404,11 @@ class SoundpacksTab(QTabWidget):
         self.installed_lv.setModel(self.soundpacks_model)
         self.installed_lv.selectionModel().currentChanged.connect(
             self.installed_selection)
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
+        self.install_new_button.setEnabled(False)
 
         self.viewname_le.setText('')
         self.name_le.setText('')
