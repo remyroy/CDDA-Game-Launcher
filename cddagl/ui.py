@@ -1651,14 +1651,23 @@ class UpdateGroupBox(QGroupBox):
 
     def asset_name(self, path, filename):
         asset_file = os.path.join(path, filename)
-        if os.path.isfile(asset_file):
-            with open(asset_file, 'r') as f:
-                for line in f:
-                    if line.startswith('NAME'):
-                        space_index = line.find(' ')
-                        name = line[space_index:].strip().replace(
-                            ',', '')
-                        return name
+
+        if not os.path.isfile(asset_file):
+            disabled_asset_file = os.path.join(path, filename + '.disabled')
+            if not os.path.isfile(disabled_asset_file):
+                return None
+            else:
+                asset_file_path = disabled_asset_file
+        else:
+            asset_file_path = asset_file
+
+        with open(asset_file_path, 'r') as f:
+            for line in f:
+                if line.startswith('NAME'):
+                    space_index = line.find(' ')
+                    name = line[space_index:].strip().replace(
+                        ',', '')
+                    return name
         return None
 
     def mod_ident(self, path):
