@@ -42,6 +42,7 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build)
+from cddagl.win32 import find_process_with_file_handle
 
 from .__version__ import version
 
@@ -93,6 +94,54 @@ def splurial(value):
 
 def get_data_path():
     return os.path.join(basedir, 'data')
+
+def remove_readonly(func, path, _):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+def retry_rmtree(path, ignore=False):
+    while os.path.isdir(path):
+        try:
+            shutil.rmtree(path, onerror=remove_readonly)
+        except OSError as e:
+            retry_msgbox = QMessageBox()
+            retry_msgbox.setWindowTitle('Cannot remove directory')
+
+            process = None
+            if e.filename is not None:
+                process = find_process_with_file_handle(e.filename)
+
+            text = '''
+<p>The launcher failed to remove the following directory: {directory}</p>
+<p>When trying to remove or access {filename}, the launcher raised the 
+following error: {error}</p>
+'''.format(
+    directory=html.escape(path),
+    filename=html.escape(e.filename),
+    error=html.escape(e.strerror))
+
+            if process is None:
+                text = text + '''
+<p>No process seems to be using that file.</p>
+'''
+            else:
+                text = text + '''
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+that file. You might need to end it if you want to retry.</p>
+'''.format(image_file_name=process['image_file_name'], pid=process['pid'])
+
+            retry_msgbox.setText(text)
+            retry_msgbox.setInformativeText('Do you want to retry removing '
+                'this directory?')
+            retry_msgbox.addButton('Retry removing the directory',
+                QMessageBox.YesRole)
+            retry_msgbox.addButton('Cancel the operation', QMessageBox.NoRole)
+            retry_msgbox.setIcon(QMessageBox.Critical)
+
+            if retry_msgbox.exec() == 1:
+                return False
+
+    return True
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
@@ -754,7 +803,8 @@ class GameDirGroupBox(QGroupBox):
                         if last_build['number'] == self.current_build:
                             message = message + 'Your game is up to date'
                         else:
-                            message = message + 'There is a new update available'
+                            message = message + ('There is a new update '
+                            'available')
                         status_bar.showMessage(message)
 
                 else:
@@ -1488,7 +1538,18 @@ class UpdateGroupBox(QGroupBox):
 
         backup_dir = os.path.join(game_dir, 'previous_version')
         if os.path.isdir(backup_dir):
-            shutil.rmtree(backup_dir)
+            if not retry_rmtree(backup_dir):
+                self.backing_up_game = False
+
+                if game_dir_group_box.exe_path is not None:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Update cancelled')
+                else:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage('Installation cancelled')
+
+                self.finish_updating()
+                return
 
         dir_list = os.listdir(game_dir)
         self.backup_dir_list = dir_list
@@ -2141,9 +2202,12 @@ class AboutDialog(QDialog):
         text_content.setHtml('''
 <p>CDDA Game Launcher version {version}</p>
 
-<p>Get the latest release <a href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.</p>
+<p>Get the latest release <a 
+href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.</p>
 
-<p>Please report any issue <a href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.</p>
+<p>Please report any issue <a 
+href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.
+</p>
 
 <p>Copyright (c) 2015 Rémy Roy</p>
 
@@ -2154,8 +2218,8 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:</p>
 
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
+<p>The above copyright notice and this permission notice shall be included in 
+all copies or substantial portions of the Software.</p>
 
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -2931,10 +2995,6 @@ class SoundpacksTab(QTabWidget):
                 shutil.rmtree(download_dir)
 
                 if os.path.isdir(self.extract_dir):
-                    def remove_readonly(func, path, _):
-                        os.chmod(path, stat.S_IWRITE)
-                        func(path)
-
                     shutil.rmtree(self.extract_dir, onerror=remove_readonly)
             
             status_bar.showMessage('Soundpack installation cancelled')
@@ -3147,10 +3207,6 @@ class SoundpacksTab(QTabWidget):
             else:
                 shutil.move(soundpack_dir, self.soundpacks_dir)
                 status_bar.showMessage('Soundpack installation completed')
-
-            def remove_readonly(func, path, _):
-                os.chmod(path, stat.S_IWRITE)
-                func(path)
 
             shutil.rmtree(self.extract_dir, onerror=remove_readonly)
             self.moving_new_soundpack = False
