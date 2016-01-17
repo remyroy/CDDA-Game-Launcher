@@ -122,12 +122,12 @@ following error: {error}</p>
 
             if process is None:
                 text = text + '''
-<p>No process seems to be using that file.</p>
+<p>No process seems to be using that file or directory.</p>
 '''
             else:
                 text = text + '''
 <p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
-that file. You might need to end it if you want to retry.</p>
+that file or directory. You might need to end it if you want to retry.</p>
 '''.format(image_file_name=process['image_file_name'], pid=process['pid'])
 
             retry_msgbox.setText(text)
