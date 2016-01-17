@@ -99,7 +99,7 @@ def remove_readonly(func, path, _):
     os.chmod(path, stat.S_IWRITE)
     func(path)
 
-def retry_rmtree(path, ignore=False):
+def retry_rmtree(path):
     while os.path.isdir(path):
         try:
             shutil.rmtree(path, onerror=remove_readonly)
@@ -609,7 +609,7 @@ class GameDirGroupBox(QGroupBox):
                     entry_path = os.path.join(temp_move_dir, entry)
                     shutil.move(entry_path, previous_version_dir)
 
-                shutil.rmtree(temp_move_dir)
+                shutil.rmtree(temp_move_dir, onerror=remove_readonly)
 
                 self.restored_previous = True
         except OSError as e:
@@ -1280,7 +1280,7 @@ class UpdateGroupBox(QGroupBox):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
 
                 path = self.clean_game_dir()
                 self.restore_backup()
@@ -1495,7 +1495,7 @@ class UpdateGroupBox(QGroupBox):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            shutil.rmtree(download_dir)
+            shutil.rmtree(download_dir, onerror=remove_readonly)
         else:
             # Test downloaded file
             status_bar.showMessage('Testing downloaded file archive')
@@ -1507,7 +1507,7 @@ class UpdateGroupBox(QGroupBox):
                         status_bar.showMessage('Downloaded archive is invalid')
 
                         download_dir = os.path.dirname(self.downloaded_file)
-                        shutil.rmtree(download_dir)
+                        shutil.rmtree(download_dir, onerror=remove_readonly)
                         self.finish_updating()
 
                         return
@@ -1516,7 +1516,7 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.showMessage('Could not download game')
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
                 self.finish_updating()
 
                 return
@@ -1688,7 +1688,7 @@ class UpdateGroupBox(QGroupBox):
                         shutil.move(self.downloaded_file, archive_dir)
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
 
                 main_tab = self.get_main_tab()
                 game_dir_group_box = main_tab.game_dir_group_box
@@ -2548,13 +2548,13 @@ class LauncherUpdateDialog(QDialog):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            shutil.rmtree(download_dir)
+            shutil.rmtree(download_dir, onerror=remove_readonly)
         else:
             redirect = self.http_reply.attribute(
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
                 os.makedirs(download_dir)
 
                 self.downloading_file = open(self.downloaded_file, 'wb')
@@ -2992,7 +2992,7 @@ class SoundpacksTab(QTabWidget):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
 
                 if os.path.isdir(self.extract_dir):
                     shutil.rmtree(self.extract_dir, onerror=remove_readonly)
@@ -3016,7 +3016,7 @@ class SoundpacksTab(QTabWidget):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            shutil.rmtree(download_dir)
+            shutil.rmtree(download_dir, onerror=remove_readonly)
 
             self.downloading_new_soundpack = False
         else:
@@ -3030,7 +3030,7 @@ class SoundpacksTab(QTabWidget):
                         status_bar.showMessage('Downloaded archive is invalid')
 
                         download_dir = os.path.dirname(self.downloaded_file)
-                        shutil.rmtree(download_dir)
+                        shutil.rmtree(download_dir, onerror=remove_readonly)
                         self.downloading_new_soundpack = False
 
                         self.finish_install_new_soundpack()
@@ -3040,7 +3040,7 @@ class SoundpacksTab(QTabWidget):
                 status_bar.showMessage('Could not download soundpack')
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
                 self.downloading_new_soundpack = False
 
                 self.finish_install_new_soundpack()
@@ -3135,7 +3135,7 @@ class SoundpacksTab(QTabWidget):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
 
                 self.move_new_soundpack()
 
@@ -3192,7 +3192,7 @@ class SoundpacksTab(QTabWidget):
         if soundpack_dir is None:
             status_bar.showMessage('Soundpack installation cancelled - There '
                 'is no soundpack in the downloaded archive')
-            shutil.rmtree(self.extract_dir)
+            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
             self.moving_new_soundpack = False
 
             self.finish_install_new_soundpack()
@@ -3274,16 +3274,16 @@ class SoundpacksTab(QTabWidget):
         confirm_msgbox.setIcon(QMessageBox.Warning)
 
         if confirm_msgbox.exec() == 0:
-            try:
-                shutil.rmtree(selected_info['path'])
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
 
+            if not retry_rmtree(selected_info['path']):
+                status_bar.showMessage('Soundpack deletion cancelled')
+            else:
                 self.soundpacks_model.removeRows(selected.row(), 1)
                 self.soundpacks.remove(selected_info)
-            except OSError as e:
-                main_window = self.get_main_window()
-                status_bar = main_window.statusBar()
 
-                status_bar.showMessage(str(e))
+                status_bar.showMessage('Soundpack deleted')
 
     def installed_selection(self, selected, previous):
         self.installed_clicked()
