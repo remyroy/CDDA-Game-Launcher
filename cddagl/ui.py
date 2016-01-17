@@ -2564,6 +2564,8 @@ class LauncherUpdateDialog(QDialog):
                 self.download_speed_count = 0
                 self.download_aborted = False
 
+                self.progress_bar.setValue(0)
+
                 self.http_reply = self.qnam.get(QNetworkRequest(redirect))
                 self.http_reply.finished.connect(self.http_finished)
                 self.http_reply.readyRead.connect(self.http_ready_read)
