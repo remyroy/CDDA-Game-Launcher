@@ -1397,7 +1397,7 @@ class UpdateGroupBox(QGroupBox):
                 entry_path = os.path.join(previous_version_dir, entry)
                 shutil.move(entry_path, game_dir)
 
-            shutil.rmtree(previous_version_dir)
+            shutil.rmtree(previous_version_dir, onerror=remove_readonly)
 
     def get_main_tab(self):
         return self.parentWidget()
