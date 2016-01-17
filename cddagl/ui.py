@@ -331,12 +331,22 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         update_group_box = self.central_widget.main_tab.update_group_box
+        soundpacks_tab = self.central_widget.soundpacks_tab
 
         if update_group_box.updating:
             update_group_box.close_after_update = True
             update_group_box.update_game()
 
             if not update_group_box.updating:
+                self.save_geometry()
+                event.accept()
+            else:
+                event.ignore()
+        elif soundpacks_tab.installing_new_soundpack:
+            soundpacks_tab.close_after_install = True
+            soundpacks_tab.install_new()
+
+            if not soundpacks_tab.installing_new_soundpack:
                 self.save_geometry()
                 event.accept()
             else:
@@ -2644,6 +2654,8 @@ class SoundpacksTab(QTabWidget):
         self.downloading_new_soundpack = False
         self.extracting_new_soundpack = False
 
+        self.close_after_install = False
+
         self.game_dir = None
         self.soundpacks_dir = None
 
@@ -3061,6 +3073,9 @@ class SoundpacksTab(QTabWidget):
         self.install_new_button.setText('Install this soundpack')
 
         self.get_main_tab().enable_tab()
+
+        if self.close_after_install:
+            self.get_main_window().close()
 
     def download_http_ready_read(self):
         self.downloading_file.write(self.download_http_reply.readAll())
