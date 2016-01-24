@@ -29,8 +29,9 @@ from urllib.parse import urljoin, urlencode
 from distutils.version import LooseVersion
 
 from PyQt5.QtCore import (
-    Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel)
-from PyQt5.QtGui import QIcon, QPalette
+    Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel,
+    QSize, QRect)
+from PyQt5.QtGui import QIcon, QPalette, QPainter, QColor, QFont
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
@@ -364,6 +365,7 @@ class CentralWidget(QTabWidget):
         #self.create_mods_tab()
         #self.create_tilesets_tab()
         self.create_soundpacks_tab()
+        #self.create_fonts_tab()
         self.create_settings_tab()
 
     def create_main_tab(self):
@@ -385,6 +387,11 @@ class CentralWidget(QTabWidget):
         soundpacks_tab = SoundpacksTab()
         self.addTab(soundpacks_tab, 'Soundpacks')
         self.soundpacks_tab = soundpacks_tab
+
+    def create_fonts_tab(self):
+        fonts_tab = FontsTab()
+        self.addTab(fonts_tab, 'Fonts')
+        self.fonts_tab = fonts_tab
 
     def create_settings_tab(self):
         settings_tab = SettingsTab()
@@ -2792,6 +2799,18 @@ class SoundpacksTab(QTabWidget):
         details_gb_layout.addWidget(size_le, 3, 1)
         self.size_le = size_le
 
+        homepage_label = QLabel()
+        homepage_label.setText('Home page:')
+        details_gb_layout.addWidget(homepage_label, 4, 0, Qt.AlignRight)
+        self.homepage_label = homepage_label
+
+        homepage_tb = QTextBrowser()
+        homepage_tb.setReadOnly(True)
+        homepage_tb.setOpenExternalLinks(True)
+        homepage_tb.setMaximumHeight(20)
+        details_gb_layout.addWidget(homepage_tb, 4, 1)
+        self.homepage_tb = homepage_tb
+
         details_gb.setLayout(details_gb_layout)
         self.details_gb_layout = details_gb_layout
 
@@ -3557,6 +3576,77 @@ class TilesetsTab(QTabWidget):
     def get_main_tab(self):
         return self.parentWidget().parentWidget().main_tab
 
+
+class FontsTab(QTabWidget):
+    def __init__(self):
+        super(FontsTab, self).__init__()
+
+        layout = QGridLayout()
+
+        font_window = CataWindow(4, 4, QFont('Consolas'), 18, 9, 18, False)
+        layout.addWidget(font_window, 0, 0)
+        self.font_window = font_window
+
+        self.setLayout(layout)
+
+    def get_main_window(self):
+        return self.parentWidget().parentWidget().parentWidget()
+
+    def get_main_tab(self):
+        return self.parentWidget().parentWidget().main_tab
+
+
+class CataWindow(QWidget):
+    def __init__(self, terminalwidth, terminalheight, font, fontsize, fontwidth,
+            fontheight, fontblending):
+        super(CataWindow, self).__init__()
+
+        self.terminalwidth = terminalwidth
+        self.terminalheight = terminalheight
+
+        self.cfont = font
+        self.fontsize = fontsize
+        self.cfont.setPixelSize(fontsize)
+        self.cfont.setStyle(QFont.StyleNormal)
+        self.fontwidth = fontwidth
+        self.fontheight = fontheight
+        self.fontblending = fontblending
+
+        #self.text = '@@@\nBBB\n@@@\nCCC'
+        self.text = '####\n####\n####\n####\n'
+
+    def sizeHint(self):
+        return QSize(self.terminalwidth * self.fontwidth,
+            self.terminalheight * self.fontheight)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.fillRect(0, 0, self.width(), self.height(), QColor(0, 0, 0))
+        painter.setPen(QColor(99, 99, 99));
+        painter.setFont(self.cfont)
+
+        term_x = 0
+        term_y = 0
+        for char in self.text:
+            if char == '\n':
+                term_y += 1
+                term_x = 0
+                continue
+            x = self.fontwidth * term_x
+            y = self.fontheight * term_y
+
+            rect = QRect(x, y, self.fontwidth, self.fontheight)
+            painter.drawText(rect, 0, char)
+
+            term_x += 1
+
+        x = self.fontwidth * term_x
+        y = self.fontheight * term_y
+
+        rect = QRect(x, y, self.fontwidth, self.fontheight)
+
+        painter.fillRect(rect, Qt.green)
+            
 
 # Recursively copy an entire directory tree while showing progress in a
 # status bar.
