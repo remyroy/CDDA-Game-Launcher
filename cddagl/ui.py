@@ -2732,7 +2732,7 @@ class SoundpacksTab(QTabWidget):
             'body': '''* Name: [Enter the name of the soundpack]
 * Url: [Enter the Url where we can find the soundpack]
 * Author: [Enter the name of the author]
-* Website: [Enter the Url of the author website or where the soundpack was published]
+* Homepage: [Enter the Url of the author website or where the soundpack was published]
 * Soundpack not found in version: {version}
 '''.format(version=version)
         })
@@ -2807,7 +2807,7 @@ class SoundpacksTab(QTabWidget):
         homepage_tb = QTextBrowser()
         homepage_tb.setReadOnly(True)
         homepage_tb.setOpenExternalLinks(True)
-        homepage_tb.setMaximumHeight(20)
+        homepage_tb.setMaximumHeight(23)
         details_gb_layout.addWidget(homepage_tb, 4, 1)
         self.homepage_tb = homepage_tb
 
@@ -3335,6 +3335,7 @@ class SoundpacksTab(QTabWidget):
             self.path_label.setText('Path:')
             self.path_le.setText(selected_info['path'])
             self.size_le.setText(sizeof_fmt(selected_info['size']))
+            self.homepage_tb.setText('')
 
             if selected_info['enabled']:
                 self.disable_existing_button.setText('Disable')
@@ -3364,6 +3365,8 @@ class SoundpacksTab(QTabWidget):
             if selected_info['type'] == 'direct_download':
                 self.path_label.setText('Url:')
                 self.path_le.setText(selected_info['url'])
+                self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
+                    url=html.escape(selected_info['homepage'])))
                 if 'size' not in selected_info:
                     if not (self.current_repo_info is not None
                         and self.http_reply is not None
@@ -3484,6 +3487,7 @@ class SoundpacksTab(QTabWidget):
         self.name_le.setText('')
         self.path_le.setText('')
         self.size_le.setText('')
+        self.homepage_tb.setText('')
 
     def game_dir_changed(self, new_dir):
         self.game_dir = new_dir
@@ -3506,6 +3510,7 @@ class SoundpacksTab(QTabWidget):
         self.name_le.setText('')
         self.path_le.setText('')
         self.size_le.setText('')
+        self.homepage_tb.setText('')
 
         soundpacks_dir = os.path.join(new_dir, 'data', 'sound')
         if os.path.isdir(soundpacks_dir):
