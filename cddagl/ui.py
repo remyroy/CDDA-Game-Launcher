@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
     QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
-    QSpinBox, QListView, QAbstractItemView)
+    QSpinBox, QListView, QAbstractItemView, QTextEdit)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -362,7 +362,7 @@ class CentralWidget(QTabWidget):
         super(CentralWidget, self).__init__()
 
         self.create_main_tab()
-        #self.create_mods_tab()
+        self.create_mods_tab()
         #self.create_tilesets_tab()
         self.create_soundpacks_tab()
         #self.create_fonts_tab()
@@ -669,6 +669,14 @@ class GameDirGroupBox(QGroupBox):
         directory = self.dir_edit.text()
         soundpacks_tab.game_dir_changed(directory)
 
+    def update_mods(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        mods_tab = central_widget.mods_tab
+
+        directory = self.dir_edit.text()
+        mods_tab.game_dir_changed(directory)
+
     def clear_soundpacks(self):
         main_window = self.get_main_window()
         central_widget = main_window.central_widget
@@ -720,6 +728,7 @@ class GameDirGroupBox(QGroupBox):
                     self.update_version()
                     self.update_saves()
                     self.update_soundpacks()
+                    self.update_mods()
 
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
@@ -1750,6 +1759,8 @@ class UpdateGroupBox(QGroupBox):
 
     def mod_ident(self, path):
         json_file = os.path.join(path, 'modinfo.json')
+        if not os.path.isfile(json_file):
+            json_file = os.path.join(path, 'modinfo.json.disabled')
         if os.path.isfile(json_file):
             with open(json_file, 'r') as f:
                 try:
@@ -2018,6 +2029,7 @@ class UpdateGroupBox(QGroupBox):
         self.enable_controls(True)
 
         game_dir_group_box.update_soundpacks()
+        game_dir_group_box.update_mods()
 
         soundpacks_tab = main_tab.get_soundpacks_tab()
         soundpacks_tab.enable_tab()
@@ -2808,6 +2820,8 @@ class SoundpacksTab(QTabWidget):
         homepage_tb.setReadOnly(True)
         homepage_tb.setOpenExternalLinks(True)
         homepage_tb.setMaximumHeight(23)
+        homepage_tb.setLineWrapMode(QTextEdit.NoWrap)
+        homepage_tb.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         details_gb_layout.addWidget(homepage_tb, 4, 1)
         self.homepage_tb = homepage_tb
 
@@ -3390,6 +3404,15 @@ class SoundpacksTab(QTabWidget):
                             self.size_query_finished)
                 else:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
+            elif selected_info['type'] == 'browser_download':
+                self.path_label.setText('Url:')
+                self.path_le.setText(selected_info['url'])
+                self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
+                    url=html.escape(selected_info['homepage'])))
+                if 'size' in selected_info:
+                    self.size_le.setText(sizeof_fmt(selected_info['size']))
+                else:
+                    self.size_le.setText('Unknown')
 
         if (self.soundpacks_dir is not None
             and os.path.isdir(self.soundpacks_dir)):
@@ -3564,11 +3587,957 @@ class ModsTab(QTabWidget):
     def __init__(self):
         super(ModsTab, self).__init__()
 
+        self.qnam = QNetworkAccessManager()
+
+        self.http_reply = None
+        self.current_repo_info = None
+
+        self.mods = []
+        self.mods_model = None
+
+        self.installing_new_mod = False
+        self.downloading_new_mod = False
+        self.extracting_new_mod = False
+
+        self.close_after_install = False
+
+        self.game_dir = None
+        self.mods_dir = None
+
+        layout = QVBoxLayout()
+
+        top_part = QWidget()
+        tp_layout = QHBoxLayout()
+        tp_layout.setContentsMargins(0, 0, 0, 0)
+        self.tp_layout = tp_layout
+
+        installed_gb = QGroupBox()
+        installed_gb.setTitle('Installed')
+        tp_layout.addWidget(installed_gb)
+        self.installed_gb = installed_gb
+
+        installed_gb_layout = QVBoxLayout()
+        installed_gb.setLayout(installed_gb_layout)
+        self.installed_gb_layout = installed_gb_layout
+
+        installed_lv = QListView()
+        installed_lv.clicked.connect(self.installed_clicked)
+        installed_lv.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        installed_gb_layout.addWidget(installed_lv)
+        self.installed_lv = installed_lv
+
+        installed_buttons = QWidget()
+        ib_layout = QHBoxLayout()
+        installed_buttons.setLayout(ib_layout)
+        ib_layout.setContentsMargins(0, 0, 0, 0)
+        self.ib_layout = ib_layout
+        self.installed_buttons = installed_buttons
+        installed_gb_layout.addWidget(installed_buttons)
+
+        disable_existing_button = QPushButton()
+        disable_existing_button.clicked.connect(self.disable_existing)
+        disable_existing_button.setEnabled(False)
+        disable_existing_button.setText('Disable')
+        ib_layout.addWidget(disable_existing_button)
+        self.disable_existing_button = disable_existing_button
+
+        delete_existing_button = QPushButton()
+        delete_existing_button.clicked.connect(self.delete_existing)
+        delete_existing_button.setEnabled(False)
+        delete_existing_button.setText('Delete')
+        ib_layout.addWidget(delete_existing_button)
+        self.delete_existing_button = delete_existing_button
+
+        repository_gb = QGroupBox()
+        repository_gb.setTitle('Repository')
+        tp_layout.addWidget(repository_gb)
+        self.repository_gb = repository_gb
+
+        repository_gb_layout = QVBoxLayout()
+        repository_gb.setLayout(repository_gb_layout)
+        self.repository_gb_layout = repository_gb_layout
+
+        repository_lv = QListView()
+        repository_lv.clicked.connect(self.repository_clicked)
+        repository_lv.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        repository_gb_layout.addWidget(repository_lv)
+        self.repository_lv = repository_lv
+
+        suggest_new_label = QLabel()
+        suggest_new_label.setOpenExternalLinks(True)
+        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
+            'title': 'Add this new mod to the repository',
+            'body': '''* Name: [Enter the name of the mod]
+* Url: [Enter the Url where we can find the mod]
+* Author: [Enter the name of the author]
+* Homepage: [Enter the Url of the author website or where the mod was published]
+* Mod not found in version: {version}
+'''.format(version=version)
+        })
+        suggest_new_label.setText('<a href="{url}">Suggest a new mod '
+            'on GitHub</a>'.format(url=suggest_url))
+        repository_gb_layout.addWidget(suggest_new_label)
+        self.suggest_new_label = suggest_new_label
+
+        install_new_button = QPushButton()
+        install_new_button.clicked.connect(self.install_new)
+        install_new_button.setEnabled(False)
+        install_new_button.setText('Install this mod')
+        repository_gb_layout.addWidget(install_new_button)
+        self.install_new_button = install_new_button
+
+        top_part.setLayout(tp_layout)
+        layout.addWidget(top_part)
+        self.top_part = top_part
+
+        details_gb = QGroupBox()
+        details_gb.setTitle('Details')
+        layout.addWidget(details_gb)
+        self.details_gb = details_gb
+
+        details_gb_layout = QGridLayout()
+
+        name_label = QLabel()
+        name_label.setText('Name:')
+        details_gb_layout.addWidget(name_label, 0, 0, Qt.AlignRight)
+        self.name_label = name_label
+
+        name_le = QLineEdit()
+        name_le.setReadOnly(True)
+        details_gb_layout.addWidget(name_le, 0, 1)
+        self.name_le = name_le
+
+        ident_label = QLabel()
+        ident_label.setText('Ident:')
+        details_gb_layout.addWidget(ident_label, 1, 0, Qt.AlignRight)
+        self.ident_label = ident_label
+
+        ident_le = QLineEdit()
+        ident_le.setReadOnly(True)
+        details_gb_layout.addWidget(ident_le, 1, 1)
+        self.ident_le = ident_le
+
+        author_label = QLabel()
+        author_label.setText('Author:')
+        details_gb_layout.addWidget(author_label, 2, 0, Qt.AlignRight)
+        self.author_label = author_label
+
+        author_le = QLineEdit()
+        author_le.setReadOnly(True)
+        details_gb_layout.addWidget(author_le, 2, 1)
+        self.author_le = author_le
+
+        description_label = QLabel()
+        description_label.setText('Description:')
+        details_gb_layout.addWidget(description_label, 3, 0, Qt.AlignRight)
+        self.description_label = description_label
+
+        description_le = QLineEdit()
+        description_le.setReadOnly(True)
+        details_gb_layout.addWidget(description_le, 3, 1)
+        self.description_le = description_le
+
+        category_label = QLabel()
+        category_label.setText('Category:')
+        details_gb_layout.addWidget(category_label, 4, 0, Qt.AlignRight)
+        self.category_label = category_label
+
+        category_le = QLineEdit()
+        category_le.setReadOnly(True)
+        details_gb_layout.addWidget(category_le, 4, 1)
+        self.category_le = category_le
+
+        path_label = QLabel()
+        path_label.setText('Path:')
+        details_gb_layout.addWidget(path_label, 5, 0, Qt.AlignRight)
+        self.path_label = path_label
+
+        path_le = QLineEdit()
+        path_le.setReadOnly(True)
+        details_gb_layout.addWidget(path_le, 5, 1)
+        self.path_le = path_le
+
+        size_label = QLabel()
+        size_label.setText('Size:')
+        details_gb_layout.addWidget(size_label, 6, 0, Qt.AlignRight)
+        self.size_label = size_label
+
+        size_le = QLineEdit()
+        size_le.setReadOnly(True)
+        details_gb_layout.addWidget(size_le, 6, 1)
+        self.size_le = size_le
+
+        homepage_label = QLabel()
+        homepage_label.setText('Home page:')
+        details_gb_layout.addWidget(homepage_label, 7, 0, Qt.AlignRight)
+        self.homepage_label = homepage_label
+
+        homepage_tb = QTextBrowser()
+        homepage_tb.setReadOnly(True)
+        homepage_tb.setOpenExternalLinks(True)
+        homepage_tb.setMaximumHeight(23)
+        homepage_tb.setLineWrapMode(QTextEdit.NoWrap)
+        homepage_tb.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        details_gb_layout.addWidget(homepage_tb, 7, 1)
+        self.homepage_tb = homepage_tb
+
+        details_gb.setLayout(details_gb_layout)
+        self.details_gb_layout = details_gb_layout
+
+        self.setLayout(layout)
+
+        self.load_repository()
+
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
     def get_main_tab(self):
         return self.parentWidget().parentWidget().main_tab
+
+    def disable_tab(self):
+        self.installed_lv.setEnabled(False)
+        self.repository_lv.setEnabled(False)
+
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+
+        self.install_new_button.setEnabled(False)
+
+        installed_selection = self.installed_lv.selectionModel()
+        if installed_selection is not None:
+            installed_selection.clearSelection()
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
+
+    def enable_tab(self):
+        self.installed_lv.setEnabled(True)
+        self.repository_lv.setEnabled(True)
+
+        installed_selection = self.installed_lv.selectionModel()
+        if installed_selection is None:
+            installed_selected = False
+        else:
+            installed_selected = installed_selection.hasSelection()
+
+        self.disable_existing_button.setEnabled(installed_selected)
+        self.delete_existing_button.setEnabled(installed_selected)
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is None:
+            repository_selected = False
+        else:
+            repository_selected = repository_selection.hasSelection()
+
+        self.install_new_button.setEnabled(repository_selected)
+
+    def load_repository(self):
+        self.repo_mods = []
+
+        self.install_new_button.setEnabled(False)
+
+        self.repo_mods_model = QStringListModel()
+        self.repository_lv.setModel(self.repo_mods_model)
+        self.repository_lv.selectionModel().currentChanged.connect(
+            self.repository_selection)
+
+        json_file = os.path.join(get_data_path(), 'mods.json')
+
+        if os.path.isfile(json_file):
+            with open(json_file, 'r') as f:
+                try:
+                    values = json.load(f)
+                    if isinstance(values, list):
+                        self.repo_mods = values
+
+                        self.repo_mods_model.insertRows(
+                            self.repo_mods_model.rowCount(),
+                            len(self.repo_mods))
+                        for index, mod_info in enumerate(
+                            self.repo_mods):
+                            self.repo_mods_model.setData(
+                                self.repo_mods_model.index(index),
+                                mod_info['viewname'])
+                except ValueError:
+                    pass
+
+    def install_new(self):
+        if not self.installing_new_mod:
+            selection_model = self.repository_lv.selectionModel()
+            if selection_model is None or not selection_model.hasSelection():
+                return
+
+            selected = selection_model.currentIndex()
+            selected_info = self.repo_mods[selected.row()]
+
+            # Is it already installed?
+            for mod in self.mods:
+                if mod['NAME'] == selected_info['name']:
+                    confirm_msgbox = QMessageBox()
+                    confirm_msgbox.setWindowTitle('Soundpack already present')
+                    confirm_msgbox.setText('It seems this mod is '
+                        'already installed. The launcher will not overwrite '
+                        'the mod if it has the same directory name. You '
+                        'might want to delete the mod first if you want '
+                        'to update it. Also, there can only be a single '
+                        'mod with the same name value available in the '
+                        'game.')
+                    confirm_msgbox.setInformativeText('Are you sure you want '
+                        'to install the {view} mod?'.format(
+                            view=selected_info['viewname']))
+                    confirm_msgbox.addButton('Install the mod',
+                        QMessageBox.YesRole)
+                    confirm_msgbox.addButton('Do not install the mod '
+                        'again',
+                        QMessageBox.NoRole)
+                    confirm_msgbox.setIcon(QMessageBox.Warning)
+
+                    if confirm_msgbox.exec() == 1:
+                        return
+                    break
+
+            if selected_info['type'] == 'direct_download':
+                if self.http_reply is not None and self.http_reply.isRunning():
+                    self.http_reply_aborted = True
+                    self.http_reply.abort()
+
+                self.installing_new_mod = True
+                self.download_aborted = False
+
+                temp_dir = os.path.join(os.environ['TEMP'],
+                    'CDDA Game Launcher')
+                if not os.path.exists(temp_dir):
+                    os.makedirs(temp_dir)
+                
+                download_dir = os.path.join(temp_dir, 'newmod')
+                while os.path.exists(download_dir):
+                    download_dir = os.path.join(temp_dir,
+                        'newmod-{0}'.format(
+                        '%08x' % random.randrange(16**8)))
+                os.makedirs(download_dir)
+
+                download_url = selected_info['url']
+                
+                url = QUrl(download_url)
+                file_info = QFileInfo(url.path())
+                file_name = file_info.fileName()
+
+                self.downloaded_file = os.path.join(download_dir, file_name)
+                self.downloading_file = open(self.downloaded_file, 'wb')
+
+                main_window = self.get_main_window()
+
+                status_bar = main_window.statusBar()
+                status_bar.clearMessage()
+
+                status_bar.busy += 1
+
+                downloading_label = QLabel()
+                downloading_label.setText('Downloading: {0}'.format(
+                    selected_info['url']))
+                status_bar.addWidget(downloading_label, 100)
+                self.downloading_label = downloading_label
+
+                dowloading_speed_label = QLabel()
+                status_bar.addWidget(dowloading_speed_label)
+                self.dowloading_speed_label = dowloading_speed_label
+
+                downloading_size_label = QLabel()
+                status_bar.addWidget(downloading_size_label)
+                self.downloading_size_label = downloading_size_label
+
+                progress_bar = QProgressBar()
+                status_bar.addWidget(progress_bar)
+                self.downloading_progress_bar = progress_bar
+                progress_bar.setMinimum(0)
+
+                self.download_last_read = datetime.utcnow()
+                self.download_last_bytes_read = 0
+                self.download_speed_count = 0
+
+                self.downloading_new_mod = True
+
+                request = QNetworkRequest(QUrl(url))
+                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+
+                self.download_http_reply = self.qnam.get(request)
+                self.download_http_reply.finished.connect(
+                    self.download_http_finished)
+                self.download_http_reply.readyRead.connect(
+                    self.download_http_ready_read)
+                self.download_http_reply.downloadProgress.connect(
+                    self.download_dl_progress)
+
+                self.install_new_button.setText('Cancel mod installation')
+                self.installed_lv.setEnabled(False)
+                self.repository_lv.setEnabled(False)
+
+                self.get_main_tab().disable_tab()
+        else:
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            # Cancel installation
+            if self.downloading_new_mod:
+                self.download_aborted = True
+                self.download_http_reply.abort()
+            elif self.extracting_new_mod:
+                self.extracting_timer.stop()
+
+                status_bar.removeWidget(self.extracting_label)
+                status_bar.removeWidget(self.extracting_progress_bar)
+
+                status_bar.busy -= 1
+
+                self.extracting_new_mod = False
+
+                self.extracting_zipfile.close()
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
+
+                if os.path.isdir(self.extract_dir):
+                    shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            
+            status_bar.showMessage('Soundpack installation cancelled')
+
+            self.finish_install_new_mod()
+
+    def download_http_finished(self):
+        self.downloading_file.close()
+
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.removeWidget(self.downloading_label)
+        status_bar.removeWidget(self.dowloading_speed_label)
+        status_bar.removeWidget(self.downloading_size_label)
+        status_bar.removeWidget(self.downloading_progress_bar)
+
+        status_bar.busy -= 1
+
+        if self.download_aborted:
+            download_dir = os.path.dirname(self.downloaded_file)
+            shutil.rmtree(download_dir, onerror=remove_readonly)
+
+            self.downloading_new_mod = False
+        else:
+            # Test downloaded file
+            status_bar.showMessage('Testing downloaded file archive')
+
+            try:
+                with zipfile.ZipFile(self.downloaded_file) as z:
+                    if z.testzip() is not None:
+                        status_bar.clearMessage()
+                        status_bar.showMessage('Downloaded archive is invalid')
+
+                        download_dir = os.path.dirname(self.downloaded_file)
+                        shutil.rmtree(download_dir, onerror=remove_readonly)
+                        self.downloading_new_mod = False
+
+                        self.finish_install_new_mod()
+                        return
+            except zipfile.BadZipFile:
+                status_bar.clearMessage()
+                status_bar.showMessage('Could not download mod')
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
+                self.downloading_new_mod = False
+
+                self.finish_install_new_mod()
+                return
+
+            status_bar.clearMessage()
+            self.downloading_new_mod = False
+            self.extract_new_mod()
+
+    def finish_install_new_mod(self):
+        self.installing_new_mod = False
+
+        self.installed_lv.setEnabled(True)
+        self.repository_lv.setEnabled(True)
+
+        self.install_new_button.setText('Install this mod')
+
+        self.get_main_tab().enable_tab()
+
+        if self.close_after_install:
+            self.get_main_window().close()
+
+    def download_http_ready_read(self):
+        self.downloading_file.write(self.download_http_reply.readAll())
+
+    def download_dl_progress(self, bytes_read, total_bytes):
+        self.downloading_progress_bar.setMaximum(total_bytes)
+        self.downloading_progress_bar.setValue(bytes_read)
+
+        self.download_speed_count += 1
+
+        self.downloading_size_label.setText('{0}/{1}'.format(
+            sizeof_fmt(bytes_read), sizeof_fmt(total_bytes)))
+
+        if self.download_speed_count % 5 == 0:
+            delta_bytes = bytes_read - self.download_last_bytes_read
+            delta_time = datetime.utcnow() - self.download_last_read
+
+            bytes_secs = delta_bytes / delta_time.total_seconds()
+            self.dowloading_speed_label.setText('{0}/s'.format(
+                sizeof_fmt(bytes_secs)))
+
+            self.download_last_bytes_read = bytes_read
+            self.download_last_read = datetime.utcnow()
+
+    def extract_new_mod(self):
+        self.extracting_new_mod = True
+        
+        z = zipfile.ZipFile(self.downloaded_file)
+        self.extracting_zipfile = z
+
+        self.extract_dir = os.path.join(self.game_dir, 'newmod')
+        while os.path.exists(self.extract_dir):
+            self.extract_dir = os.path.join(self.game_dir,
+                'newmod-{0}'.format('%08x' % random.randrange(16**8)))
+        os.makedirs(self.extract_dir)
+
+        self.extracting_infolist = z.infolist()
+        self.extracting_index = 0
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.busy += 1
+
+        extracting_label = QLabel()
+        status_bar.addWidget(extracting_label, 100)
+        self.extracting_label = extracting_label
+
+        progress_bar = QProgressBar()
+        status_bar.addWidget(progress_bar)
+        self.extracting_progress_bar = progress_bar
+
+        timer = QTimer(self)
+        self.extracting_timer = timer
+
+        progress_bar.setRange(0, len(self.extracting_infolist))
+
+        def timeout():
+            self.extracting_progress_bar.setValue(self.extracting_index)
+
+            if self.extracting_index == len(self.extracting_infolist):
+                self.extracting_timer.stop()
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.removeWidget(self.extracting_label)
+                status_bar.removeWidget(self.extracting_progress_bar)
+
+                status_bar.busy -= 1
+
+                self.extracting_new_mod = False
+
+                self.extracting_zipfile.close()
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                shutil.rmtree(download_dir, onerror=remove_readonly)
+
+                self.move_new_mod()
+
+            else:
+                extracting_element = self.extracting_infolist[
+                    self.extracting_index]
+                self.extracting_label.setText('Extracting {0}'.format(
+                    extracting_element.filename))
+                
+                self.extracting_zipfile.extract(extracting_element,
+                    self.extract_dir)
+
+                self.extracting_index += 1
+
+        timer.timeout.connect(timeout)
+        timer.start(0)
+
+    def move_new_mod(self):
+        # Find the mod in the self.extract_dir
+        # Move the mod from that location into self.mods_dir
+
+        self.moving_new_mod = True
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.showMessage('Finding the mod')
+
+        next_scans = deque()
+        current_scan = scandir(self.extract_dir)
+
+        mod_dir = None
+
+        while True:
+            try:
+                entry = next(current_scan)
+                if entry.is_dir():
+                    next_scans.append(entry.path)
+                elif entry.is_file():
+                    dirname, basename = os.path.split(entry.path)
+                    if basename == 'mod.txt':
+                        mod_dir = dirname
+                        entry = None
+                        break
+            except StopIteration:
+                if len(next_scans) > 0:
+                    current_scan = scandir(next_scans.popleft())
+                else:
+                    break
+
+        for item in current_scan:
+            pass
+
+        if mod_dir is None:
+            status_bar.showMessage('Soundpack installation cancelled - There '
+                'is no mod in the downloaded archive')
+            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            self.moving_new_mod = False
+
+            self.finish_install_new_mod()
+        else:
+            mod_dir_name = os.path.basename(mod_dir)
+            target_dir = os.path.join(self.mods_dir, mod_dir_name)
+            if os.path.exists(target_dir):
+                status_bar.showMessage('Soundpack installation cancelled - '
+                    'There is already a {basename} directory in '
+                    '{mods_dir}'.format(basename=mod_dir_name,
+                        mods_dir=self.mods_dir))
+            else:
+                shutil.move(mod_dir, self.mods_dir)
+                status_bar.showMessage('Soundpack installation completed')
+
+            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            self.moving_new_mod = False
+
+            self.game_dir_changed(self.game_dir)
+            self.finish_install_new_mod()
+
+    def disable_existing(self):
+        selection_model = self.installed_lv.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
+            return
+
+        selected = selection_model.currentIndex()
+        selected_info = self.mods[selected.row()]
+
+        if selected_info['enabled']:
+            config_file = os.path.join(selected_info['path'], 'modinfo.json')
+            new_config_file = os.path.join(selected_info['path'],
+                'modinfo.json.disabled')
+            try:
+                shutil.move(config_file, new_config_file)
+                selected_info['enabled'] = False
+                self.mods_model.setData(selected, selected_info.get('name',
+                    selected_info.get('ident', '*Error*')) + ' (Disabled)')
+                self.disable_existing_button.setText('Enable')
+            except OSError as e:
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(str(e))
+        else:
+            config_file = os.path.join(selected_info['path'],
+                'modinfo.json.disabled')
+            new_config_file = os.path.join(selected_info['path'],
+                'modinfo.json')
+            try:
+                shutil.move(config_file, new_config_file)
+                selected_info['enabled'] = True
+                self.mods_model.setData(selected, selected_info.get('name',
+                    selected_info.get('ident', '*Error*')))
+                self.disable_existing_button.setText('Disable')
+            except OSError as e:
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(str(e))
+
+    def delete_existing(self):
+        selection_model = self.installed_lv.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
+            return
+
+        selected = selection_model.currentIndex()
+        selected_info = self.mods[selected.row()]
+
+        confirm_msgbox = QMessageBox()
+        confirm_msgbox.setWindowTitle('Delete mod')
+        confirm_msgbox.setText('This will delete the mod directory. It '
+            'cannot be undone.')
+        confirm_msgbox.setInformativeText('Are you sure you want to '
+            'delete the {view} mod?'.format(view=selected_info['name']))
+        confirm_msgbox.addButton('Delete the mod',
+            QMessageBox.YesRole)
+        confirm_msgbox.addButton('I want to keep the mod',
+            QMessageBox.NoRole)
+        confirm_msgbox.setIcon(QMessageBox.Warning)
+
+        if confirm_msgbox.exec() == 0:
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            if not retry_rmtree(selected_info['path']):
+                status_bar.showMessage('Mod deletion cancelled')
+            else:
+                self.mods_model.removeRows(selected.row(), 1)
+                self.mods.remove(selected_info)
+
+                status_bar.showMessage('Mod deleted')
+
+    def installed_selection(self, selected, previous):
+        self.installed_clicked()
+
+    def installed_clicked(self):
+        selection_model = self.installed_lv.selectionModel()
+        if selection_model is not None and selection_model.hasSelection():
+            selected = selection_model.currentIndex()
+            selected_info = self.mods[selected.row()]
+            
+            self.name_le.setText(selected_info.get('name', ''))
+            self.ident_le.setText(selected_info.get('ident', ''))
+            self.author_le.setText(selected_info.get('author', ''))
+            self.description_le.setText(selected_info.get('description', ''))
+            self.category_le.setText(selected_info.get('category', ''))
+            self.path_le.setText(selected_info['path'])
+            self.size_le.setText(sizeof_fmt(selected_info['size']))
+            self.homepage_tb.setText('')
+
+            if selected_info['enabled']:
+                self.disable_existing_button.setText('Disable')
+            else:
+                self.disable_existing_button.setText('Enable')
+
+        self.disable_existing_button.setEnabled(True)
+        self.delete_existing_button.setEnabled(True)
+        self.install_new_button.setEnabled(False)
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
+
+    def repository_selection(self, selected, previous):
+        self.repository_clicked()
+
+    def repository_clicked(self):
+        selection_model = self.repository_lv.selectionModel()
+        if selection_model is not None and selection_model.hasSelection():
+            selected = selection_model.currentIndex()
+            selected_info = self.repo_mods[selected.row()]
+
+            '''self.viewname_le.setText(selected_info['viewname'])
+            self.name_le.setText(selected_info['name'])'''
+
+            if selected_info['type'] == 'direct_download':
+                self.path_label.setText('Url:')
+                self.path_le.setText(selected_info['url'])
+                self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
+                    url=html.escape(selected_info['homepage'])))
+                if 'size' not in selected_info:
+                    if not (self.current_repo_info is not None
+                        and self.http_reply is not None
+                        and self.http_reply.isRunning()
+                        and self.current_repo_info is selected_info):
+                        if (self.http_reply is not None
+                            and self.http_reply.isRunning()):
+                            self.http_reply_aborted = True
+                            self.http_reply.abort()
+                        
+                        self.http_reply_aborted = False
+                        self.size_le.setText('Getting remote size')
+                        self.current_repo_info = selected_info
+
+                        request = QNetworkRequest(QUrl(selected_info['url']))
+                        request.setRawHeader(b'User-Agent',
+                            b'Mozilla /5.0 (linux-gnu)')
+
+                        self.http_reply = self.qnam.head(request)
+                        self.http_reply.finished.connect(
+                            self.size_query_finished)
+                else:
+                    self.size_le.setText(sizeof_fmt(selected_info['size']))
+
+        if (self.mods_dir is not None
+            and os.path.isdir(self.mods_dir)):
+            self.install_new_button.setEnabled(True)
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+
+        installed_selection = self.installed_lv.selectionModel()
+        if installed_selection is not None:
+            installed_selection.clearSelection()
+
+    def size_query_finished(self):
+        if (not self.http_reply_aborted
+            and self.http_reply.attribute(
+                QNetworkRequest.HttpStatusCodeAttribute) == 200
+            and self.http_reply.hasRawHeader(b'Content-Length')):
+
+            content_length = int(self.http_reply.rawHeader(b'Content-Length'))
+            self.current_repo_info['size'] = content_length
+            self.size_le.setText(sizeof_fmt(content_length))
+        else:
+            selection_model = self.repository_lv.selectionModel()
+            if selection_model is not None and selection_model.hasSelection():
+                selected = selection_model.currentIndex()
+                selected_info = self.repo_mods[selected.row()]
+
+                if selected_info is self.current_repo_info:
+                    self.size_le.setText('Unknown')
+
+    def config_info(self, config_file):
+        val = {}
+        keys = ('ident', 'name', 'author', 'description', 'category')
+        with open(config_file, 'r') as f:
+            try:
+                values = json.load(f)
+                if isinstance(values, dict):
+                    if values.get('type', '') == 'MOD_INFO':
+                        for key in keys:
+                            val[key] = values.get(key, None)
+                elif isinstance(values, list):
+                    for item in values:
+                        if (isinstance(item, dict)
+                            and item.get('type', '') == 'MOD_INFO'):
+                                for key in keys:
+                                    val[key] = item.get(key, None)
+                                break
+            except ValueError:
+                pass
+        return val
+
+    def scan_size(self, mod_info):
+        next_scans = deque()
+        current_scan = scandir(mod_info['path'])
+
+        total_size = 0
+
+        while True:
+            try:
+                entry = next(current_scan)
+                if entry.is_dir():
+                    next_scans.append(entry.path)
+                elif entry.is_file():
+                    total_size += entry.stat().st_size
+            except StopIteration:
+                if len(next_scans) > 0:
+                    current_scan = scandir(next_scans.popleft())
+                else:
+                    break
+
+        return total_size
+
+    def add_mod(self, mod_info):
+        index = self.mods_model.rowCount()
+        self.mods_model.insertRows(self.mods_model.rowCount(), 1)
+        disabled_text = ''
+        if not mod_info['enabled']:
+            disabled_text = ' (Disabled)'
+        self.mods_model.setData(self.mods_model.index(index),
+            mod_info.get('name', mod_info.get('ident', '*Error*')) +
+            disabled_text)
+
+    def clear_details(self):
+        self.name_le.setText('')
+        self.ident_le.setText('')
+        self.author_le.setText('')
+        self.description_le.setText('')
+        self.category_le.setText('')
+        self.path_le.setText('')
+        self.size_le.setText('')
+        self.homepage_tb.setText('')
+
+    def clear_mods(self):
+        self.game_dir = None
+        self.mods = []
+
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+        self.install_new_button.setEnabled(False)
+
+        if self.mods_model is not None:
+            self.mods_model.setStringList([])
+        self.mods_model = None
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
+
+        self.clear_details()
+
+    def game_dir_changed(self, new_dir):
+        self.game_dir = new_dir
+        self.mods = []
+
+        self.disable_existing_button.setEnabled(False)
+        self.delete_existing_button.setEnabled(False)
+
+        self.mods_model = QStringListModel()
+        self.installed_lv.setModel(self.mods_model)
+        self.installed_lv.selectionModel().currentChanged.connect(
+            self.installed_selection)
+
+        repository_selection = self.repository_lv.selectionModel()
+        if repository_selection is not None:
+            repository_selection.clearSelection()
+        self.install_new_button.setEnabled(False)
+
+        self.clear_details()
+
+        mods_dir = os.path.join(new_dir, 'data', 'mods')
+        if os.path.isdir(mods_dir):
+            self.mods_dir = mods_dir
+
+            dir_scan = scandir(mods_dir)
+
+            while True:
+                try:
+                    entry = next(dir_scan)
+                    if entry.is_dir():
+                        mod_path = entry.path
+                        config_file = os.path.join(mod_path,
+                            'modinfo.json')
+                        if os.path.isfile(config_file):
+                            info = self.config_info(config_file)
+                            if 'ident' in info:
+                                mod_info = {
+                                    'path': mod_path,
+                                    'enabled': True
+                                }
+                                mod_info.update(info)
+
+                                self.mods.append(mod_info)
+                                mod_info['size'] = (
+                                    self.scan_size(mod_info))
+                                self.add_mod(mod_info)
+                                continue
+                        disabled_config_file = os.path.join(mod_path,
+                            'modinfo.json.disabled')
+                        if os.path.isfile(disabled_config_file):
+                            info = self.config_info(config_file)
+                            if 'ident' in info:
+                                mod_info = {
+                                    'path': mod_path,
+                                    'enabled': False
+                                }
+                                mod_info.update(info)
+
+                                self.mods.append(mod_info)
+                                mod_info['size'] = (
+                                    self.scan_size(mod_info))
+                                self.add_mod(mod_info)
+
+                except StopIteration:
+                    break
+        else:
+            self.mods_dir = None
 
 
 class TilesetsTab(QTabWidget):
