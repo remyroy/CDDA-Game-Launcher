@@ -54,16 +54,14 @@ READ_BUFFER_SIZE = 16 * 1024
 
 BASE_URLS = {
     'Tiles': {
-        'Windows x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+        'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
             'Windows_x64/Tiles/'),
-        'Windows x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
-            'Windows/Tiles/')
+        'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Tiles/')
     },
     'Console': {
-        'Windows x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+        'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
             'Windows_x64/Curses/'),
-        'Windows x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
-            'Windows/Curses/')
+        'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Curses/')
     }
 }
 
@@ -148,7 +146,7 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super(MainWindow, self).__init__()
 
-        self.setMinimumSize(400, 0)
+        self.setMinimumSize(440, 500)
         
         self.create_status_bar()
         self.create_central_widget()
@@ -1099,7 +1097,7 @@ class UpdateGroupBox(QGroupBox):
         self.platform_button_group = platform_button_group
 
         x64_radio_button = QRadioButton()
-        x64_radio_button.setText('Windows x64')
+        x64_radio_button.setText('Windows x64 (64-bit)')
         layout.addWidget(x64_radio_button, 1, 1)
         self.x64_radio_button = x64_radio_button
         platform_button_group.addButton(x64_radio_button)
@@ -1110,7 +1108,7 @@ class UpdateGroupBox(QGroupBox):
             x64_radio_button.setEnabled(False)
 
         x86_radio_button = QRadioButton()
-        x86_radio_button.setText('Windows x86')
+        x86_radio_button.setText('Windows x86 (32-bit)')
         layout.addWidget(x86_radio_button, 1, 2)
         self.x86_radio_button = x86_radio_button
         platform_button_group.addButton(x86_radio_button)
@@ -1153,20 +1151,26 @@ class UpdateGroupBox(QGroupBox):
                 graphics = 'Tiles'
 
             platform = get_config_value('platform')
-            if platform is None:
+
+            if platform == 'Windows x64':
+                platform = 'x64'
+            elif platform == 'Windows x86':
+                platform = 'x86'
+
+            if platform is None or platform not in ('x64', 'x86'):
                 if is_64_windows():
-                    platform = 'Windows x64'
+                    platform = 'x64'
                 else:
-                    platform = 'Windows x86'
+                    platform = 'x86'
 
             if graphics == 'Tiles':
                 self.tiles_radio_button.setChecked(True)
             elif graphics == 'Console':
                 self.console_radio_button.setChecked(True)
 
-            if platform == 'Windows x64':
+            if platform == 'x64':
                 self.x64_radio_button.setChecked(True)
-            elif platform == 'Windows x86':
+            elif platform == 'x86':
                 self.x86_radio_button.setChecked(True)
 
             self.start_lb_request(BASE_URLS[graphics][platform])
@@ -2203,7 +2207,13 @@ class UpdateGroupBox(QGroupBox):
 
     def refresh_builds(self):
         selected_graphics = self.graphics_button_group.checkedButton().text()
-        selected_platform = self.platform_button_group.checkedButton().text()
+        selected_platform = self.platform_button_group.checkedButton()
+
+        if selected_platform is self.x64_radio_button:
+            selected_platform = 'x64'
+        elif selected_platform is self.x86_radio_button:
+            selected_platform = 'x86'
+
         url = BASE_URLS[selected_graphics][selected_platform]
 
         self.start_lb_request(url)
@@ -2214,7 +2224,12 @@ class UpdateGroupBox(QGroupBox):
         self.refresh_builds()
 
     def platform_clicked(self, button):
-        set_config_value('platform', button.text())
+        if button is self.x64_radio_button:
+            config_value = 'x64'
+        elif button is self.x86_radio_button:
+            config_value = 'x86'
+
+        set_config_value('platform', config_value)
 
         self.refresh_builds()
 
