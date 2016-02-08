@@ -43,7 +43,7 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build)
-from cddagl.win32 import find_process_with_file_handle
+from cddagl.win32 import find_process_with_file_handle, get_downloads_directory
 
 from .__version__ import version
 
@@ -2657,6 +2657,106 @@ class LauncherUpdateDialog(QDialog):
             self.close()
 
 
+class BrowserDownloadDialog(QDialog):
+    def __init__(self, name, url, expected_filename):
+        super(BrowserDownloadDialog, self).__init__()
+
+        self.name = name
+        self.url = url
+        self.expected_filename = expected_filename
+        self.downloaded_path = None
+
+        layout = QGridLayout()
+
+        info_label = QLabel()
+        info_label.setText(('This {name} cannot be directly downloaded by the '
+            'launcher. You have to use your browser to download it.').format(
+            name=name))
+        layout.addWidget(info_label, 0, 0, 1, 2)
+        self.info_label = info_label
+
+        step1_label = QLabel()
+        step1_label.setText('1. Open the URL in your browser.')
+        layout.addWidget(step1_label, 1, 0, 1, 2)
+        self.step1_label = step1_label
+
+        url_tb = QTextBrowser()
+        url_tb.setText('<a href="{url}">{url}</a>'.format(url=html.escape(url)))
+        url_tb.setReadOnly(True)
+        url_tb.setOpenExternalLinks(True)
+        url_tb.setMaximumHeight(23)
+        url_tb.setLineWrapMode(QTextEdit.NoWrap)
+        url_tb.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        layout.addWidget(url_tb, 2, 0, 1, 2)
+        self.url_tb = url_tb
+
+        step2_label = QLabel()
+        step2_label.setText(('2. Download the {name} on that page and wait '
+            'for the download to complete.').format(name=name))
+        layout.addWidget(step2_label, 3, 0, 1, 2)
+        self.step2_label = step2_label
+
+        step3_label = QLabel()
+        step3_label.setText('3. Select the downloaded archive.')
+        layout.addWidget(step3_label, 4, 0, 1, 2)
+        self.step3_label = step3_label
+
+        path = get_downloads_directory()
+        if expected_filename is not None:
+            path = os.path.join(path, expected_filename)
+
+        download_path_le = QLineEdit()
+        download_path_le.setText(path)
+        layout.addWidget(download_path_le, 5, 0)
+        self.download_path_le = download_path_le
+
+        download_path_button = QToolButton()
+        download_path_button.setText('...')
+        download_path_button.clicked.connect(self.set_download_path)
+        layout.addWidget(download_path_button, 5, 1)
+        self.download_path_button = download_path_button
+
+        buttons_container = QWidget()
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_container.setLayout(buttons_layout)
+
+        install_button = QPushButton()
+        install_button.setText('Install this {name}'.format(name=name))
+        install_button.clicked.connect(self.install_clicked)
+        buttons_layout.addWidget(install_button)
+        self.install_button = install_button
+
+        do_not_install_button = QPushButton()
+        do_not_install_button.setText('Do not install')
+        do_not_install_button.clicked.connect(self.do_not_install_clicked)
+        buttons_layout.addWidget(do_not_install_button)
+        self.do_not_install_button = do_not_install_button
+
+        layout.addWidget(buttons_container, 6, 0, 1, 2, Qt.AlignRight)
+        self.buttons_container = buttons_container
+        self.buttons_layout = buttons_layout
+
+        self.setLayout(layout)
+
+        self.setWindowTitle('Browser download')
+
+    def set_download_path(self):
+        options = QFileDialog.DontResolveSymlinks
+        selected_file, selected_filter = QFileDialog.getOpenFileName(self,
+            'Downloaded archive', self.download_path_le.text(),
+            'Zip files (*.zip);;All files (*.*)', options=options)
+        if selected_file:
+            self.download_path_le.setText(clean_qt_path(selected_file))
+
+    def install_clicked(self):
+        self.downloaded_path = self.download_path_le.text()
+        self.done(1)
+
+    def do_not_install_clicked(self):
+        self.done(0)
+
+
 class SoundpacksTab(QTabWidget):
     def __init__(self):
         super(SoundpacksTab, self).__init__()
@@ -2941,6 +3041,8 @@ class SoundpacksTab(QTabWidget):
                         return
                     break
 
+            self.install_type = selected_info['type']
+
             if selected_info['type'] == 'direct_download':
                 if self.http_reply is not None and self.http_reply.isRunning():
                     self.http_reply_aborted = True
@@ -3018,6 +3120,49 @@ class SoundpacksTab(QTabWidget):
                 self.repository_lv.setEnabled(False)
 
                 self.get_main_tab().disable_tab()
+            elif selected_info['type'] == 'browser_download':
+                bd_dialog = BrowserDownloadDialog('soundpack',
+                    selected_info['url'], selected_info.get('expected_filename',
+                        None))
+                bd_dialog.exec()
+                
+                if bd_dialog.downloaded_path is not None:
+                    self.installing_new_soundpack = True
+                    self.downloaded_file = bd_dialog.downloaded_path
+
+                    self.install_new_button.setText('Cancel soundpack '
+                        'installation')
+                    self.installed_lv.setEnabled(False)
+                    self.repository_lv.setEnabled(False)
+
+                    self.get_main_tab().disable_tab()
+
+                    main_window = self.get_main_window()
+                    status_bar = main_window.statusBar()
+
+                    # Test downloaded file
+                    status_bar.showMessage('Testing downloaded file archive')
+
+                    try:
+                        with zipfile.ZipFile(self.downloaded_file) as z:
+                            if z.testzip() is not None:
+                                status_bar.clearMessage()
+                                status_bar.showMessage(
+                                    'Downloaded archive is invalid')
+
+                                self.finish_install_new_soundpack()
+                                return
+                    except zipfile.BadZipFile:
+                        status_bar.clearMessage()
+                        status_bar.showMessage('Selected archive is a bad zip '
+                            'file')
+
+                        self.finish_install_new_soundpack()
+                        return
+
+                    status_bar.clearMessage()
+                    self.extract_new_soundpack()
+
         else:
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
@@ -3184,8 +3329,9 @@ class SoundpacksTab(QTabWidget):
 
                 self.extracting_zipfile.close()
 
-                download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                if self.install_type == 'direct_download':
+                    download_dir = os.path.dirname(self.downloaded_file)
+                    shutil.rmtree(download_dir, onerror=remove_readonly)
 
                 self.move_new_soundpack()
 
