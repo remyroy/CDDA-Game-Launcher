@@ -7,11 +7,10 @@
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10390.msg260491#msg260491"
     },
     {
-        "type": "browser_download",
+        "type": "direct_download",
         "viewname": "RRFSounds",
         "name": "RRFSounds",
-        "url": "https://www.dropbox.com/s/d8dfmb2facvkdh6/RRFSounds.zip?dl=0",
-        "expected_filename": "RRFSounds.zip",
+        "url": "https://www.dropbox.com/s/d8dfmb2facvkdh6/RRFSounds.zip?dl=1",
         "size": 80933991,
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10390.msg264264#msg264264"
     }

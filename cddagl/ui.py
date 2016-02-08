@@ -2764,6 +2764,7 @@ class SoundpacksTab(QTabWidget):
         self.qnam = QNetworkAccessManager()
 
         self.http_reply = None
+        self.download_http_reply = None
         self.current_repo_info = None
 
         self.soundpacks = []
@@ -3212,35 +3213,81 @@ class SoundpacksTab(QTabWidget):
 
             self.downloading_new_soundpack = False
         else:
-            # Test downloaded file
-            status_bar.showMessage('Testing downloaded file archive')
-
-            try:
-                with zipfile.ZipFile(self.downloaded_file) as z:
-                    if z.testzip() is not None:
-                        status_bar.clearMessage()
-                        status_bar.showMessage('Downloaded archive is invalid')
-
-                        download_dir = os.path.dirname(self.downloaded_file)
-                        shutil.rmtree(download_dir, onerror=remove_readonly)
-                        self.downloading_new_soundpack = False
-
-                        self.finish_install_new_soundpack()
-                        return
-            except zipfile.BadZipFile:
-                status_bar.clearMessage()
-                status_bar.showMessage('Could not download soundpack')
-
+            redirect = self.download_http_reply.attribute(
+                QNetworkRequest.RedirectionTargetAttribute)
+            if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
                 shutil.rmtree(download_dir, onerror=remove_readonly)
+                os.makedirs(download_dir)
+
+                self.downloading_file = open(self.downloaded_file, 'wb')
+
+                status_bar.busy += 1
+
+                downloading_label = QLabel()
+                downloading_label.setText('Downloading: {0}'.format(
+                    redirect.toString()))
+                status_bar.addWidget(downloading_label, 100)
+                self.downloading_label = downloading_label
+
+                dowloading_speed_label = QLabel()
+                status_bar.addWidget(dowloading_speed_label)
+                self.dowloading_speed_label = dowloading_speed_label
+
+                downloading_size_label = QLabel()
+                status_bar.addWidget(downloading_size_label)
+                self.downloading_size_label = downloading_size_label
+
+                progress_bar = QProgressBar()
+                status_bar.addWidget(progress_bar)
+                self.downloading_progress_bar = progress_bar
+                progress_bar.setMinimum(0)
+
+                self.download_last_read = datetime.utcnow()
+                self.download_last_bytes_read = 0
+                self.download_speed_count = 0
+
+                progress_bar.setValue(0)
+
+                self.download_http_reply = self.qnam.get(QNetworkRequest(
+                    redirect))
+                self.download_http_reply.finished.connect(
+                    self.download_http_finished)
+                self.download_http_reply.readyRead.connect(
+                    self.download_http_ready_read)
+                self.download_http_reply.downloadProgress.connect(
+                    self.download_dl_progress)
+            else:
+                # Test downloaded file
+                status_bar.showMessage('Testing downloaded file archive')
+
+                try:
+                    with zipfile.ZipFile(self.downloaded_file) as z:
+                        if z.testzip() is not None:
+                            status_bar.clearMessage()
+                            status_bar.showMessage('Downloaded archive is '
+                                'invalid')
+
+                            download_dir = os.path.dirname(self.downloaded_file)
+                            shutil.rmtree(download_dir, onerror=remove_readonly)
+                            self.downloading_new_soundpack = False
+
+                            self.finish_install_new_soundpack()
+                            return
+                except zipfile.BadZipFile:
+                    status_bar.clearMessage()
+                    status_bar.showMessage('Could not download soundpack')
+
+                    download_dir = os.path.dirname(self.downloaded_file)
+                    shutil.rmtree(download_dir, onerror=remove_readonly)
+                    self.downloading_new_soundpack = False
+
+                    self.finish_install_new_soundpack()
+                    return
+
+                status_bar.clearMessage()
                 self.downloading_new_soundpack = False
-
-                self.finish_install_new_soundpack()
-                return
-
-            status_bar.clearMessage()
-            self.downloading_new_soundpack = False
-            self.extract_new_soundpack()
+                self.extract_new_soundpack()
 
     def finish_install_new_soundpack(self):
         self.installing_new_soundpack = False
