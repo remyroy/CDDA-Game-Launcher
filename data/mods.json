@@ -1,2 +1,24 @@
 [
+    {
+        "type": "browser_download",
+        "ident": "ext",
+        "name": "Extended Buildings",
+        "description": "Adds More Buildings",
+        "author": "Whaley",
+        "size": 36596,
+        "url": "http://www.mediafire.com/download/38ob0m5hyeayiw5/EXTENDED_BUILDINGS.zip",
+        "expected_filename": "EXTENDED_BUILDINGS.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=8579.0"
+    },
+    {
+        "type": "browser_download",
+        "ident": "Arts' Guns",
+        "name": "Artyoms' Gun Emporium",
+        "description": "Adds all the guns that YOU need to survive the Cataclysm",
+        "author": "Artyom177",
+        "size": 20598,
+        "url": "http://www.mediafire.com/download/37a841zck2xhr4b/Artyoms%27_Gun_Emporium.rar",
+        "expected_filename": "Artyoms Gun Emporium.rar",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=10759.0"
+    }
 ]

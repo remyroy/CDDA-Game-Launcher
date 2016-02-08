@@ -3,7 +3,7 @@
 from distutils.core import setup
 from distutils.cmd import Command
 
-from subprocess import call
+from subprocess import call, check_output, CalledProcessError
 
 class Installer(Command):
     user_options = []
@@ -18,6 +18,14 @@ class Installer(Command):
 
         added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
           ('data', 'data')]
+
+        # Let's find and add unrar if available
+        try:
+          unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
+            'utf8')
+          added_files.append((unrar_path, '.'))
+        except CalledProcessError:
+          pass
 
         spec_content = None
         with open('launcher.spec', 'r') as f:

@@ -26,6 +26,8 @@ import html5lib
 from lxml import etree
 from urllib.parse import urljoin, urlencode
 
+import rarfile
+
 from distutils.version import LooseVersion
 
 from PyQt5.QtCore import (
@@ -2760,7 +2762,8 @@ class BrowserDownloadDialog(QDialog):
         options = QFileDialog.DontResolveSymlinks
         selected_file, selected_filter = QFileDialog.getOpenFileName(self,
             'Downloaded archive', self.download_path_le.text(),
-            'Zip files (*.zip);;All files (*.*)', options=options)
+            'Zip files (*.zip);;Rar files (*.rar);;All files (*.*)',
+            options=options)
         if selected_file:
             self.download_path_le.setText(clean_qt_path(selected_file))
 
@@ -3048,8 +3051,7 @@ class SoundpacksTab(QTabWidget):
                             view=selected_info['viewname']))
                     confirm_msgbox.addButton('Install the soundpack',
                         QMessageBox.YesRole)
-                    confirm_msgbox.addButton('Do not install the soundpack '
-                        'again',
+                    confirm_msgbox.addButton('Do not install again',
                         QMessageBox.NoRole)
                     confirm_msgbox.setIcon(QMessageBox.Warning)
 
@@ -3159,19 +3161,29 @@ class SoundpacksTab(QTabWidget):
                     # Test downloaded file
                     status_bar.showMessage('Testing downloaded file archive')
 
+                    if self.downloaded_file.lower().endswith('.zip'):
+                        archive_class = zipfile.ZipFile
+                        archive_exception = zipfile.BadZipFile
+                        test_method = 'testzip'
+                    elif self.downloaded_file.lower().endswith('.rar'):
+                        archive_class = rarfile.RarFile
+                        archive_exception = rarfile.BadRarFile
+                        test_method = 'testrar'
+
                     try:
-                        with zipfile.ZipFile(self.downloaded_file) as z:
-                            if z.testzip() is not None:
+                        with archive_class(self.downloaded_file) as z:
+                            test = getattr(z, test_method)
+                            if test() is not None:
                                 status_bar.clearMessage()
                                 status_bar.showMessage(
                                     'Downloaded archive is invalid')
 
                                 self.finish_install_new_soundpack()
                                 return
-                    except zipfile.BadZipFile:
+                    except archive_exception:
                         status_bar.clearMessage()
-                        status_bar.showMessage('Selected archive is a bad zip '
-                            'file')
+                        status_bar.showMessage('Selected file is a bad '
+                            'archive file')
 
                         self.finish_install_new_soundpack()
                         return
@@ -3264,8 +3276,10 @@ class SoundpacksTab(QTabWidget):
 
                 progress_bar.setValue(0)
 
-                self.download_http_reply = self.qnam.get(QNetworkRequest(
-                    redirect))
+                request = QNetworkRequest(redirect)
+                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+
+                self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
                     self.download_http_finished)
                 self.download_http_reply.readyRead.connect(
@@ -4066,7 +4080,7 @@ class ModsTab(QTabWidget):
                             self.repo_mods):
                             self.repo_mods_model.setData(
                                 self.repo_mods_model.index(index),
-                                mod_info['viewname'])
+                                mod_info['name'])
                 except ValueError:
                     pass
 
@@ -4081,9 +4095,9 @@ class ModsTab(QTabWidget):
 
             # Is it already installed?
             for mod in self.mods:
-                if mod['NAME'] == selected_info['name']:
+                if mod['ident'] == selected_info['ident']:
                     confirm_msgbox = QMessageBox()
-                    confirm_msgbox.setWindowTitle('Soundpack already present')
+                    confirm_msgbox.setWindowTitle('Mod already present')
                     confirm_msgbox.setText('It seems this mod is '
                         'already installed. The launcher will not overwrite '
                         'the mod if it has the same directory name. You '
@@ -4092,18 +4106,19 @@ class ModsTab(QTabWidget):
                         'mod with the same name value available in the '
                         'game.')
                     confirm_msgbox.setInformativeText('Are you sure you want '
-                        'to install the {view} mod?'.format(
-                            view=selected_info['viewname']))
+                        'to install the {name} mod?'.format(
+                            name=selected_info['name']))
                     confirm_msgbox.addButton('Install the mod',
                         QMessageBox.YesRole)
-                    confirm_msgbox.addButton('Do not install the mod '
-                        'again',
+                    confirm_msgbox.addButton('Do not install again',
                         QMessageBox.NoRole)
                     confirm_msgbox.setIcon(QMessageBox.Warning)
 
                     if confirm_msgbox.exec() == 1:
                         return
                     break
+
+            self.install_type = selected_info['type']
 
             if selected_info['type'] == 'direct_download':
                 if self.http_reply is not None and self.http_reply.isRunning():
@@ -4182,6 +4197,64 @@ class ModsTab(QTabWidget):
                 self.repository_lv.setEnabled(False)
 
                 self.get_main_tab().disable_tab()
+            elif selected_info['type'] == 'browser_download':
+                bd_dialog = BrowserDownloadDialog('mod',
+                    selected_info['url'], selected_info.get('expected_filename',
+                        None))
+                bd_dialog.exec()
+                
+                if bd_dialog.downloaded_path is not None:
+
+                    main_window = self.get_main_window()
+                    status_bar = main_window.statusBar()
+
+                    if not os.path.isfile(bd_dialog.downloaded_path):
+                        status_bar.showMessage('Could not find downloaded file '
+                            'archive')
+                    else:
+                        self.installing_new_mod = True
+                        self.downloaded_file = bd_dialog.downloaded_path
+
+                        self.install_new_button.setText('Cancel mod '
+                            'installation')
+                        self.installed_lv.setEnabled(False)
+                        self.repository_lv.setEnabled(False)
+
+                        self.get_main_tab().disable_tab()
+
+                        # Test downloaded file
+                        status_bar.showMessage('Testing downloaded file '
+                            'archive')
+
+                        if self.downloaded_file.lower().endswith('.zip'):
+                            archive_class = zipfile.ZipFile
+                            archive_exception = zipfile.BadZipFile
+                            test_method = 'testzip'
+                        elif self.downloaded_file.lower().endswith('.rar'):
+                            archive_class = rarfile.RarFile
+                            archive_exception = rarfile.BadRarFile
+                            test_method = 'testrar'
+
+                        try:
+                            with archive_class(self.downloaded_file) as z:
+                                test = getattr(z, test_method)
+                                if test() is not None:
+                                    status_bar.clearMessage()
+                                    status_bar.showMessage(
+                                        'Downloaded archive is invalid')
+
+                                    self.finish_install_new_mod()
+                                    return
+                        except archive_exception:
+                            status_bar.clearMessage()
+                            status_bar.showMessage('Selected file is a bad '
+                                'archive file')
+
+                            self.finish_install_new_mod()
+                            return
+
+                        status_bar.clearMessage()
+                        self.extract_new_mod()
         else:
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
@@ -4231,35 +4304,83 @@ class ModsTab(QTabWidget):
 
             self.downloading_new_mod = False
         else:
-            # Test downloaded file
-            status_bar.showMessage('Testing downloaded file archive')
-
-            try:
-                with zipfile.ZipFile(self.downloaded_file) as z:
-                    if z.testzip() is not None:
-                        status_bar.clearMessage()
-                        status_bar.showMessage('Downloaded archive is invalid')
-
-                        download_dir = os.path.dirname(self.downloaded_file)
-                        shutil.rmtree(download_dir, onerror=remove_readonly)
-                        self.downloading_new_mod = False
-
-                        self.finish_install_new_mod()
-                        return
-            except zipfile.BadZipFile:
-                status_bar.clearMessage()
-                status_bar.showMessage('Could not download mod')
-
+            redirect = self.download_http_reply.attribute(
+                QNetworkRequest.RedirectionTargetAttribute)
+            if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
                 shutil.rmtree(download_dir, onerror=remove_readonly)
+                os.makedirs(download_dir)
+
+                self.downloading_file = open(self.downloaded_file, 'wb')
+
+                status_bar.busy += 1
+
+                downloading_label = QLabel()
+                downloading_label.setText('Downloading: {0}'.format(
+                    redirect.toString()))
+                status_bar.addWidget(downloading_label, 100)
+                self.downloading_label = downloading_label
+
+                dowloading_speed_label = QLabel()
+                status_bar.addWidget(dowloading_speed_label)
+                self.dowloading_speed_label = dowloading_speed_label
+
+                downloading_size_label = QLabel()
+                status_bar.addWidget(downloading_size_label)
+                self.downloading_size_label = downloading_size_label
+
+                progress_bar = QProgressBar()
+                status_bar.addWidget(progress_bar)
+                self.downloading_progress_bar = progress_bar
+                progress_bar.setMinimum(0)
+
+                self.download_last_read = datetime.utcnow()
+                self.download_last_bytes_read = 0
+                self.download_speed_count = 0
+
+                progress_bar.setValue(0)
+
+                request = QNetworkRequest(redirect)
+                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+
+                self.download_http_reply = self.qnam.get(request)
+                self.download_http_reply.finished.connect(
+                    self.download_http_finished)
+                self.download_http_reply.readyRead.connect(
+                    self.download_http_ready_read)
+                self.download_http_reply.downloadProgress.connect(
+                    self.download_dl_progress)
+            else:
+                # Test downloaded file
+                status_bar.showMessage('Testing downloaded file archive')
+
+                try:
+                    with zipfile.ZipFile(self.downloaded_file) as z:
+                        if z.testzip() is not None:
+                            status_bar.clearMessage()
+                            status_bar.showMessage('Downloaded archive is '
+                                'invalid')
+
+                            download_dir = os.path.dirname(self.downloaded_file)
+                            shutil.rmtree(download_dir, onerror=remove_readonly)
+                            self.downloading_new_mod = False
+
+                            self.finish_install_new_mod()
+                            return
+                except zipfile.BadZipFile:
+                    status_bar.clearMessage()
+                    status_bar.showMessage('Could not download mod')
+
+                    download_dir = os.path.dirname(self.downloaded_file)
+                    shutil.rmtree(download_dir, onerror=remove_readonly)
+                    self.downloading_new_mod = False
+
+                    self.finish_install_new_mod()
+                    return
+
+                status_bar.clearMessage()
                 self.downloading_new_mod = False
-
-                self.finish_install_new_mod()
-                return
-
-            status_bar.clearMessage()
-            self.downloading_new_mod = False
-            self.extract_new_mod()
+                self.extract_new_mod()
 
     def finish_install_new_mod(self):
         self.installing_new_mod = False
@@ -4300,7 +4421,12 @@ class ModsTab(QTabWidget):
     def extract_new_mod(self):
         self.extracting_new_mod = True
         
-        z = zipfile.ZipFile(self.downloaded_file)
+        if self.downloaded_file.lower().endswith('.zip'):
+            archive_class = zipfile.ZipFile
+        elif self.downloaded_file.lower().endswith('.rar'):
+            archive_class = rarfile.RarFile
+
+        z = archive_class(self.downloaded_file)
         self.extracting_zipfile = z
 
         self.extract_dir = os.path.join(self.game_dir, 'newmod')
@@ -4348,8 +4474,9 @@ class ModsTab(QTabWidget):
 
                 self.extracting_zipfile.close()
 
-                download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                if self.install_type == 'direct_download':
+                    download_dir = os.path.dirname(self.downloaded_file)
+                    shutil.rmtree(download_dir, onerror=remove_readonly)
 
                 self.move_new_mod()
 
@@ -4390,7 +4517,7 @@ class ModsTab(QTabWidget):
                     next_scans.append(entry.path)
                 elif entry.is_file():
                     dirname, basename = os.path.split(entry.path)
-                    if basename == 'mod.txt':
+                    if basename == 'modinfo.json':
                         mod_dir = dirname
                         entry = None
                         break
@@ -4404,7 +4531,7 @@ class ModsTab(QTabWidget):
             pass
 
         if mod_dir is None:
-            status_bar.showMessage('Soundpack installation cancelled - There '
+            status_bar.showMessage('Mod installation cancelled - There '
                 'is no mod in the downloaded archive')
             shutil.rmtree(self.extract_dir, onerror=remove_readonly)
             self.moving_new_mod = False
@@ -4414,13 +4541,13 @@ class ModsTab(QTabWidget):
             mod_dir_name = os.path.basename(mod_dir)
             target_dir = os.path.join(self.mods_dir, mod_dir_name)
             if os.path.exists(target_dir):
-                status_bar.showMessage('Soundpack installation cancelled - '
+                status_bar.showMessage('Mod installation cancelled - '
                     'There is already a {basename} directory in '
                     '{mods_dir}'.format(basename=mod_dir_name,
                         mods_dir=self.mods_dir))
             else:
                 shutil.move(mod_dir, self.mods_dir)
-                status_bar.showMessage('Soundpack installation completed')
+                status_bar.showMessage('Mod installation completed')
 
             shutil.rmtree(self.extract_dir, onerror=remove_readonly)
             self.moving_new_mod = False
@@ -4540,8 +4667,11 @@ class ModsTab(QTabWidget):
             selected = selection_model.currentIndex()
             selected_info = self.repo_mods[selected.row()]
 
-            '''self.viewname_le.setText(selected_info['viewname'])
-            self.name_le.setText(selected_info['name'])'''
+            self.name_le.setText(selected_info.get('name', ''))
+            self.ident_le.setText(selected_info.get('ident', ''))
+            self.author_le.setText(selected_info.get('author', ''))
+            self.description_le.setText(selected_info.get('description', ''))
+            self.category_le.setText(selected_info.get('category', ''))
 
             if selected_info['type'] == 'direct_download':
                 self.path_label.setText('Url:')
@@ -4571,6 +4701,15 @@ class ModsTab(QTabWidget):
                             self.size_query_finished)
                 else:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
+            elif selected_info['type'] == 'browser_download':
+                self.path_label.setText('Url:')
+                self.path_le.setText(selected_info['url'])
+                self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
+                    url=html.escape(selected_info['homepage'])))
+                if 'size' in selected_info:
+                    self.size_le.setText(sizeof_fmt(selected_info['size']))
+                else:
+                    self.size_le.setText('Unknown')
 
         if (self.mods_dir is not None
             and os.path.isdir(self.mods_dir)):
@@ -5109,6 +5248,9 @@ def start_ui(bdir):
     global basedir
 
     basedir = bdir
+
+    if getattr(sys, 'frozen', False):
+        rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')
 
     main_app = QApplication(sys.argv)
     main_win = MainWindow('CDDA Game Launcher')

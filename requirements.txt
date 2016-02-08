@@ -7,3 +7,4 @@ lxml
 cssselect
 arrow
 scandir
+rarfile
