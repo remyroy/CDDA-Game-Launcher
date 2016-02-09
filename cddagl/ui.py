@@ -423,6 +423,9 @@ class MainTab(QWidget):
     def get_soundpacks_tab(self):
         return self.parentWidget().parentWidget().soundpacks_tab
 
+    def get_mods_tab(self):
+        return self.parentWidget().parentWidget().mods_tab
+
     def disable_tab(self):
         self.game_dir_group_box.disable_controls()
         self.update_group_box.disable_controls(True)
@@ -1214,7 +1217,10 @@ class UpdateGroupBox(QGroupBox):
             self.disable_controls()
 
             soundpacks_tab = main_tab.get_soundpacks_tab()
+            mods_tab = main_tab.get_mods_tab()
+
             soundpacks_tab.disable_tab()
+            mods_tab.disable_tab()
 
             game_dir = game_dir_group_box.dir_edit.text()
 
@@ -2038,7 +2044,10 @@ class UpdateGroupBox(QGroupBox):
         game_dir_group_box.update_mods()
 
         soundpacks_tab = main_tab.get_soundpacks_tab()
+        mods_tab = main_tab.get_mods_tab()
+
         soundpacks_tab.enable_tab()
+        mods_tab.enable_tab()
 
         if game_dir_group_box.exe_path is not None:
             self.update_button.setText('Update game')
@@ -2762,7 +2771,7 @@ class BrowserDownloadDialog(QDialog):
         options = QFileDialog.DontResolveSymlinks
         selected_file, selected_filter = QFileDialog.getOpenFileName(self,
             'Downloaded archive', self.download_path_le.text(),
-            'Zip files (*.zip);;Rar files (*.rar);;All files (*.*)',
+            'Archive files (*.zip *.rar)',
             options=options)
         if selected_file:
             self.download_path_le.setText(clean_qt_path(selected_file))
@@ -2957,6 +2966,9 @@ class SoundpacksTab(QTabWidget):
     def get_main_tab(self):
         return self.parentWidget().parentWidget().main_tab
 
+    def get_mods_tab(self):
+        return self.get_main_tab().get_mods_tab()
+
     def disable_tab(self):
         self.installed_lv.setEnabled(False)
         self.repository_lv.setEnabled(False)
@@ -3138,6 +3150,7 @@ class SoundpacksTab(QTabWidget):
                 self.repository_lv.setEnabled(False)
 
                 self.get_main_tab().disable_tab()
+                self.get_mods_tab().disable_tab()
             elif selected_info['type'] == 'browser_download':
                 bd_dialog = BrowserDownloadDialog('soundpack',
                     selected_info['url'], selected_info.get('expected_filename',
@@ -3154,6 +3167,7 @@ class SoundpacksTab(QTabWidget):
                     self.repository_lv.setEnabled(False)
 
                     self.get_main_tab().disable_tab()
+                    self.get_mods_tab().disable_tab()
 
                     main_window = self.get_main_window()
                     status_bar = main_window.statusBar()
@@ -3327,6 +3341,7 @@ class SoundpacksTab(QTabWidget):
         self.install_new_button.setText('Install this soundpack')
 
         self.get_main_tab().enable_tab()
+        self.get_mods_tab().enable_tab()
 
         if self.close_after_install:
             self.get_main_window().close()
@@ -4016,6 +4031,9 @@ class ModsTab(QTabWidget):
     def get_main_tab(self):
         return self.parentWidget().parentWidget().main_tab
 
+    def get_soundpacks_tab(self):
+        return self.get_main_tab().get_soundpacks_tab()
+
     def disable_tab(self):
         self.installed_lv.setEnabled(False)
         self.repository_lv.setEnabled(False)
@@ -4197,6 +4215,7 @@ class ModsTab(QTabWidget):
                 self.repository_lv.setEnabled(False)
 
                 self.get_main_tab().disable_tab()
+                self.get_soundpacks_tab().disable_tab()
             elif selected_info['type'] == 'browser_download':
                 bd_dialog = BrowserDownloadDialog('mod',
                     selected_info['url'], selected_info.get('expected_filename',
@@ -4221,6 +4240,7 @@ class ModsTab(QTabWidget):
                         self.repository_lv.setEnabled(False)
 
                         self.get_main_tab().disable_tab()
+                        self.get_soundpacks_tab().disable_tab()
 
                         # Test downloaded file
                         status_bar.showMessage('Testing downloaded file '
@@ -4391,6 +4411,7 @@ class ModsTab(QTabWidget):
         self.install_new_button.setText('Install this mod')
 
         self.get_main_tab().enable_tab()
+        self.get_soundpacks_tab().enable_tab()
 
         if self.close_after_install:
             self.get_main_window().close()
@@ -4641,6 +4662,7 @@ class ModsTab(QTabWidget):
             self.author_le.setText(selected_info.get('author', ''))
             self.description_le.setText(selected_info.get('description', ''))
             self.category_le.setText(selected_info.get('category', ''))
+            self.path_label.setText('Path:')
             self.path_le.setText(selected_info['path'])
             self.size_le.setText(sizeof_fmt(selected_info['size']))
             self.homepage_tb.setText('')

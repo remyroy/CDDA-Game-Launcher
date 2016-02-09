@@ -1,6 +1,28 @@
 [
     {
         "type": "browser_download",
+        "ident": "Arts' Guns",
+        "name": "Artyoms' Gun Emporium",
+        "description": "Adds all the guns that YOU need to survive the Cataclysm",
+        "author": "Artyom177",
+        "size": 20598,
+        "url": "http://www.mediafire.com/download/37a841zck2xhr4b/Artyoms%27_Gun_Emporium.rar",
+        "expected_filename": "Artyoms Gun Emporium.rar",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=10759.0"
+    },
+    {
+        "type": "browser_download",
+        "ident": "Bio_Weapon_Mod",
+        "name": "Bio-Weapon Mod",
+        "author": "Noctifer",
+        "description": "The Bio-Weapons have awoken...",
+        "size": 37435,
+        "url": "http://1drv.ms/1ZmQRiT",
+        "expected_filename": "Bio-Weapon Mod.rar",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11355.0"
+    },
+    {
+        "type": "browser_download",
         "ident": "ext",
         "name": "Extended Buildings",
         "description": "Adds More Buildings",
@@ -12,13 +34,59 @@
     },
     {
         "type": "browser_download",
-        "ident": "Arts' Guns",
-        "name": "Artyoms' Gun Emporium",
-        "description": "Adds all the guns that YOU need to survive the Cataclysm",
-        "author": "Artyom177",
-        "size": 20598,
-        "url": "http://www.mediafire.com/download/37a841zck2xhr4b/Artyoms%27_Gun_Emporium.rar",
-        "expected_filename": "Artyoms Gun Emporium.rar",
-        "homepage": "http://smf.cataclysmdda.com/index.php?topic=10759.0"
+        "ident": "cddaxp",
+        "name": "C:DDA Extra Professions",
+        "author": "Marte",
+        "description": "Adds a new set of professions and relative gears.",
+        "category": "rebalance",
+        "size": 6835,
+        "url": "http://www.mediafire.com/download/g54cnjrra1p5t2d/CDDAXP.zip",
+        "expected_filename": "CDDAXP.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11583.0"
+    },
+    {
+        "type": "browser_download",
+        "ident": "Weapon_Attachments_Mode",
+        "name": "Guns/Equipment/Weapons Expansion Mode",
+        "author": "AKnifeInTheDark",
+        "category": "items",
+        "description": "Here it comes !A mod that gives a lot of (most) UNIQUE firearms, gun mods, armors, crafting recipes etc.",
+        "size": 60076,
+        "url": "http://www.mediafire.com/download/jhm47wv6cuw2if2/Guns+Equipment+Mods+Expansion+Mode+v1.5+experimental.rar",
+        "expected_filename": "Guns Equipment Mods Expansion Mode v1.5 experimental.rar",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11823.0"
+    },
+    {
+        "type": "browser_download",
+        "ident": "Remove_Nether",
+        "name": "Removes Nether Creatures",
+        "author": "TheMightyHercules",
+        "description": "Having Difficulties With Those Nether Creatures?                With This Mod, Those Mi-gos Will Be Mi-gone!",
+        "size": 1240,
+        "url": "http://www.mediafire.com/download/xxck63jcwhbf1g0/Removes+Nether+Creatures+Mod.zip",
+        "expected_filename": "Removes Nether Creatures Mod.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11032.0"
+    },
+    {
+        "type": "direct_download",
+        "ident": "StatsThroughSkillsThree",
+        "name": "StatsThoughSkills III",
+        "author": "Plaidman",
+        "description": "Allows stats to raise logarithmically via skill progression. Designed to allow changing your starting stats.",
+        "category": "rebalance",
+        "size": 1934,
+        "url": "https://bitbucket.org/jrtomsic/cataclysm-dda/downloads/StatsThroughSkillsIII.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11353.msg261471#msg261471"
+    },
+    {
+        "type": "browser_download",
+        "ident": "Survivor_Mod",
+        "name": "Survivor Mod",
+        "author": "Noctifer",
+        "description": "A mod centered around the survivor.",
+        "size": 39242,
+        "url": "http://1drv.ms/1irDjmc",
+        "expected_filename": "Survivor_Mod.rar",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11248.0"
     }
 ]
