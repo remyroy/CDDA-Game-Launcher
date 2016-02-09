@@ -212,13 +212,12 @@ class MainWindow(QMainWindow):
         for release in document.getroot().cssselect('div.release.label-latest'):
             latest_version = None
             version_text = None
-            for index, span in enumerate(
-                release.cssselect('ul.tag-references li:first-child span')):
-                if index == 1:
-                    version_text = span.text
-                    if version_text.startswith('v'):
-                        version_text = version_text[1:]
-                    latest_version = LooseVersion(version_text)
+            for span in release.cssselect('ul.tag-references li:first-child '
+                'span'):
+                version_text = span.text
+                if version_text.startswith('v'):
+                    version_text = version_text[1:]
+                latest_version = LooseVersion(version_text)
 
             if latest_version is not None:
                 current_version = LooseVersion(version)
