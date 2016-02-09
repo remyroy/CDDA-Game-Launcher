@@ -14,18 +14,18 @@ class Installer(Command):
 
     def run(self):
         call(['pyi-makespec', '-F', '-w', '--noupx',
-          '--hidden-import=lxml.cssselect', 'cddagl\launcher.py'])
+            '--hidden-import=lxml.cssselect', 'cddagl\launcher.py'])
 
         added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
-          ('data', 'data')]
+            ('data', 'data')]
 
         # Let's find and add unrar if available
         try:
-          unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
-            'utf8')
-          added_files.append((unrar_path, '.'))
+            unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
+                'utf8')
+            added_files.append((unrar_path, '.'))
         except CalledProcessError:
-          pass
+            pass
 
         spec_content = None
         with open('launcher.spec', 'r') as f:
