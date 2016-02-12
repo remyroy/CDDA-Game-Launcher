@@ -17,6 +17,10 @@ A Cataclysm: Dark Days Ahead launcher with additional features.
 * Font presets
 * Regular save backups
 
+## Building
+
+You can learn how to run and build the launcher by checking our [building guide](BUILDING.md).
+
 ## Contributing to this project
 
 Anyone and everyone is welcome to contribute. Please take a moment to review the [guidelines for contributing](CONTRIBUTING.md).
