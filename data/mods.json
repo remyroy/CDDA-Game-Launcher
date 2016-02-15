@@ -88,5 +88,16 @@
         "url": "http://1drv.ms/1irDjmc",
         "expected_filename": "Survivor_Mod.rar",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11248.0"
+    },
+    {
+        "type": "direct_download",
+        "ident": "PK_REBALANCE",
+        "name": "PKs Rebalancing",
+        "description": "Rebalances zombie spawning and evolution.",
+        "category": "rebalance",
+        "author": "pisskop",
+        "size": 14800,
+        "url": "https://www.dropbox.com/s/ewnyku8qgcrlxbl/PK_Rebalance%20v0.64.zip?dl=1",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=12051.0"
     }
 ]
