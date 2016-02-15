@@ -1759,13 +1759,16 @@ class UpdateGroupBox(QGroupBox):
         else:
             asset_file_path = asset_file
 
-        with open(asset_file_path, 'r') as f:
-            for line in f:
-                if line.startswith('NAME'):
-                    space_index = line.find(' ')
-                    name = line[space_index:].strip().replace(
-                        ',', '')
-                    return name
+        try:
+            with open(asset_file_path, 'r') as f:
+                for line in f:
+                    if line.startswith('NAME'):
+                        space_index = line.find(' ')
+                        name = line[space_index:].strip().replace(
+                            ',', '')
+                        return name
+        except FileNotFoundError:
+            return None
         return None
 
     def mod_ident(self, path):
@@ -1773,19 +1776,22 @@ class UpdateGroupBox(QGroupBox):
         if not os.path.isfile(json_file):
             json_file = os.path.join(path, 'modinfo.json.disabled')
         if os.path.isfile(json_file):
-            with open(json_file, 'r') as f:
-                try:
-                    values = json.load(f)
-                    if isinstance(values, dict):
-                        if values.get('type', '') == 'MOD_INFO':
-                            return values.get('ident', None)
-                    elif isinstance(values, list):
-                        for item in values:
-                            if (isinstance(item, dict)
-                                and item.get('type', '') == 'MOD_INFO'):
-                                    return item.get('ident', None)
-                except ValueError:
-                    pass
+            try:
+                with open(json_file, 'r') as f:
+                    try:
+                        values = json.load(f)
+                        if isinstance(values, dict):
+                            if values.get('type', '') == 'MOD_INFO':
+                                return values.get('ident', None)
+                        elif isinstance(values, list):
+                            for item in values:
+                                if (isinstance(item, dict)
+                                    and item.get('type', '') == 'MOD_INFO'):
+                                        return item.get('ident', None)
+                    except ValueError:
+                        pass
+            except FileNotFoundError:
+                return None
 
         return None
 
@@ -3680,20 +3686,23 @@ class SoundpacksTab(QTabWidget):
 
     def config_info(self, config_file):
         val = {}
-        with open(config_file, 'r') as f:
-            for line in f:
-                if line.startswith('NAME'):
-                    space_index = line.find(' ')
-                    name = line[space_index:].strip().replace(
-                        ',', '')
-                    val['NAME'] = name
-                elif line.startswith('VIEW'):
-                    space_index = line.find(' ')
-                    view = line[space_index:].strip()
-                    val['VIEW'] = view
+        try:
+            with open(config_file, 'r') as f:
+                for line in f:
+                    if line.startswith('NAME'):
+                        space_index = line.find(' ')
+                        name = line[space_index:].strip().replace(
+                            ',', '')
+                        val['NAME'] = name
+                    elif line.startswith('VIEW'):
+                        space_index = line.find(' ')
+                        view = line[space_index:].strip()
+                        val['VIEW'] = view
 
-                if 'NAME' in val and 'VIEW' in val:
-                    break
+                    if 'NAME' in val and 'VIEW' in val:
+                        break
+        except FileNotFoundError:
+            return val
         return val
 
     def scan_size(self, soundpack_info):
@@ -4120,7 +4129,7 @@ class ModsTab(QTabWidget):
                         'the mod if it has the same directory name. You '
                         'might want to delete the mod first if you want '
                         'to update it. Also, there can only be a single '
-                        'mod with the same name value available in the '
+                        'mod with the same ident value available in the '
                         'game.')
                     confirm_msgbox.setInformativeText('Are you sure you want '
                         'to install the {name} mod?'.format(
@@ -4763,22 +4772,25 @@ class ModsTab(QTabWidget):
     def config_info(self, config_file):
         val = {}
         keys = ('ident', 'name', 'author', 'description', 'category')
-        with open(config_file, 'r') as f:
-            try:
-                values = json.load(f)
-                if isinstance(values, dict):
-                    if values.get('type', '') == 'MOD_INFO':
-                        for key in keys:
-                            val[key] = values.get(key, None)
-                elif isinstance(values, list):
-                    for item in values:
-                        if (isinstance(item, dict)
-                            and item.get('type', '') == 'MOD_INFO'):
-                                for key in keys:
-                                    val[key] = item.get(key, None)
-                                break
-            except ValueError:
-                pass
+        try:
+            with open(config_file, 'r') as f:
+                try:
+                    values = json.load(f)
+                    if isinstance(values, dict):
+                        if values.get('type', '') == 'MOD_INFO':
+                            for key in keys:
+                                val[key] = values.get(key, None)
+                    elif isinstance(values, list):
+                        for item in values:
+                            if (isinstance(item, dict)
+                                and item.get('type', '') == 'MOD_INFO'):
+                                    for key in keys:
+                                        val[key] = item.get(key, None)
+                                    break
+                except ValueError:
+                    pass
+        except FileNotFoundError:
+            return val
         return val
 
     def scan_size(self, mod_info):
