@@ -8,3 +8,4 @@ cssselect
 arrow
 scandir
 rarfile
+pylzma

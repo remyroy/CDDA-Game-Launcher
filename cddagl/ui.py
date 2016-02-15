@@ -27,6 +27,7 @@ from lxml import etree
 from urllib.parse import urljoin, urlencode
 
 import rarfile
+from py7zlib import Archive7z, NoPasswordGivenError, FormatError
 
 from distutils.version import LooseVersion
 
@@ -3682,7 +3683,14 @@ class SoundpacksTab(QTabWidget):
 
             content_length = int(self.http_reply.rawHeader(b'Content-Length'))
             self.current_repo_info['size'] = content_length
-            self.size_le.setText(sizeof_fmt(content_length))
+
+            selection_model = self.repository_lv.selectionModel()
+            if selection_model is not None and selection_model.hasSelection():
+                selected = selection_model.currentIndex()
+                selected_info = self.repo_soundpacks[selected.row()]
+
+                if selected_info is self.current_repo_info:
+                    self.size_le.setText(sizeof_fmt(content_length))
         else:
             selection_model = self.repository_lv.selectionModel()
             if selection_model is not None and selection_model.hasSelection():
@@ -3851,6 +3859,10 @@ class ModsTab(QTabWidget):
         self.installing_new_mod = False
         self.downloading_new_mod = False
         self.extracting_new_mod = False
+
+        self.install_type = None
+        self.extracting_file = None
+        self.extracting_zipfile = None
 
         self.close_after_install = False
 
@@ -4262,32 +4274,51 @@ class ModsTab(QTabWidget):
                         status_bar.showMessage('Testing downloaded file '
                             'archive')
 
-                        if self.downloaded_file.lower().endswith('.zip'):
-                            archive_class = zipfile.ZipFile
-                            archive_exception = zipfile.BadZipFile
-                            test_method = 'testzip'
-                        elif self.downloaded_file.lower().endswith('.rar'):
-                            archive_class = rarfile.RarFile
-                            archive_exception = rarfile.BadRarFile
-                            test_method = 'testrar'
+                        if self.downloaded_file.lower().endswith('.7z'):
+                            try:
+                                with open(self.downloaded_file, 'rb') as f:
+                                    archive = Archive7z(f)
+                            except FormatError:
+                                status_bar.clearMessage()
+                                status_bar.showMessage('Selected file is a bad '
+                                    'archive file')
 
-                        try:
-                            with archive_class(self.downloaded_file) as z:
-                                test = getattr(z, test_method)
-                                if test() is not None:
-                                    status_bar.clearMessage()
-                                    status_bar.showMessage(
-                                        'Downloaded archive is invalid')
+                                self.finish_install_new_mod()
+                                return
+                            except NoPasswordGivenError:
+                                status_bar.clearMessage()
+                                status_bar.showMessage('Selected file is a '
+                                    'password protected archive file')
 
-                                    self.finish_install_new_mod()
-                                    return
-                        except archive_exception:
-                            status_bar.clearMessage()
-                            status_bar.showMessage('Selected file is a bad '
-                                'archive file')
+                                self.finish_install_new_mod()
+                                return
+                        else:
+                            if self.downloaded_file.lower().endswith('.zip'):
+                                archive_class = zipfile.ZipFile
+                                archive_exception = zipfile.BadZipFile
+                                test_method = 'testzip'
+                            elif self.downloaded_file.lower().endswith('.rar'):
+                                archive_class = rarfile.RarFile
+                                archive_exception = rarfile.BadRarFile
+                                test_method = 'testrar'
 
-                            self.finish_install_new_mod()
-                            return
+                            try:
+                                with archive_class(self.downloaded_file) as z:
+                                    test = getattr(z, test_method)
+                                    if test() is not None:
+                                        status_bar.clearMessage()
+                                        status_bar.showMessage(
+                                            'Downloaded archive is invalid')
+
+                                        self.finish_install_new_mod()
+                                        return
+                            except archive_exception:
+                                status_bar.clearMessage()
+                                status_bar.showMessage('Selected file is a bad '
+                                    'archive file')
+
+                                self.finish_install_new_mod()
+                                return
 
                         status_bar.clearMessage()
                         self.extract_new_mod()
@@ -4309,10 +4340,12 @@ class ModsTab(QTabWidget):
 
                 self.extracting_new_mod = False
 
-                self.extracting_zipfile.close()
+                if self.extracting_zipfile is not None:
+                    self.extracting_zipfile.close()
 
-                download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                if self.install_type == 'direct_download':
+                    download_dir = os.path.dirname(self.downloaded_file)
+                    retry_rmtree(download_dir)
 
                 if os.path.isdir(self.extract_dir):
                     retry_rmtree(self.extract_dir)
@@ -4458,13 +4491,21 @@ class ModsTab(QTabWidget):
     def extract_new_mod(self):
         self.extracting_new_mod = True
         
-        if self.downloaded_file.lower().endswith('.zip'):
-            archive_class = zipfile.ZipFile
-        elif self.downloaded_file.lower().endswith('.rar'):
-            archive_class = rarfile.RarFile
+        if self.downloaded_file.lower().endswith('.7z'):
+            self.extracting_zipfile = open(self.downloaded_file, 'rb')
+            self.extracting_archive = Archive7z(self.extracting_zipfile)
 
-        z = archive_class(self.downloaded_file)
-        self.extracting_zipfile = z
+            self.extracting_infolist = self.extracting_archive.getmembers()
+        else:
+            if self.downloaded_file.lower().endswith('.zip'):
+                archive_class = zipfile.ZipFile
+            elif self.downloaded_file.lower().endswith('.rar'):
+                archive_class = rarfile.RarFile
+
+            z = archive_class(self.downloaded_file)
+            self.extracting_zipfile = z
+
+            self.extracting_infolist = z.infolist()
 
         self.extract_dir = os.path.join(self.game_dir, 'newmod')
         while os.path.exists(self.extract_dir):
@@ -4472,7 +4513,6 @@ class ModsTab(QTabWidget):
                 'newmod-{0}'.format('%08x' % random.randrange(16**8)))
         os.makedirs(self.extract_dir)
 
-        self.extracting_infolist = z.infolist()
         self.extracting_index = 0
 
         main_window = self.get_main_window()
@@ -4510,6 +4550,10 @@ class ModsTab(QTabWidget):
                 self.extracting_new_mod = False
 
                 self.extracting_zipfile.close()
+                self.extracting_zipfile = None
+
+                if self.downloaded_file.lower().endswith('.7z'):
+                    self.extracting_archive = None
 
                 if self.install_type == 'direct_download':
                     download_dir = os.path.dirname(self.downloaded_file)
@@ -4520,11 +4564,21 @@ class ModsTab(QTabWidget):
             else:
                 extracting_element = self.extracting_infolist[
                     self.extracting_index]
+
                 self.extracting_label.setText('Extracting {0}'.format(
                     extracting_element.filename))
-                
-                self.extracting_zipfile.extract(extracting_element,
-                    self.extract_dir)
+
+                if self.downloaded_file.lower().endswith('.7z'):
+                    destination = os.path.join(self.extract_dir,
+                        *extracting_element.filename.split('/'))
+                    dest_dir = os.path.dirname(destination)
+                    if not os.path.isdir(dest_dir):
+                        os.makedirs(dest_dir)
+                    with open(destination, 'wb') as f:
+                        f.write(extracting_element.read())
+                else:
+                    self.extracting_zipfile.extract(extracting_element,
+                        self.extract_dir)
 
                 self.extracting_index += 1
 
@@ -4767,7 +4821,14 @@ class ModsTab(QTabWidget):
 
             content_length = int(self.http_reply.rawHeader(b'Content-Length'))
             self.current_repo_info['size'] = content_length
-            self.size_le.setText(sizeof_fmt(content_length))
+
+            selection_model = self.repository_lv.selectionModel()
+            if selection_model is not None and selection_model.hasSelection():
+                selected = selection_model.currentIndex()
+                selected_info = self.repo_soundpacks[selected.row()]
+
+                if selected_info is self.current_repo_info:
+                    self.size_le.setText(sizeof_fmt(content_length))
         else:
             selection_model = self.repository_lv.selectionModel()
             if selection_model is not None and selection_model.hasSelection():

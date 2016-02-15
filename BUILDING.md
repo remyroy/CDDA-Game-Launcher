@@ -4,15 +4,16 @@ CDDA Game Launcher is developed using Python. In order to run or build the launc
 
 ## Requirements
 
-The full list of requirements is available in [requirements.txt](requirements.txt). Most of these requirements are Python packages that can be installed using [pip](https://en.wikipedia.org/wiki/Pip_%28package_manager%29). Unfortunately, there is no easy to use and easy to install build tools on Windows to compile and install a few of these requirements:
+The full list of requirements is available in [requirements.txt](requirements.txt). Most of these requirements are Python packages that can be installed using [pip](https://en.wikipedia.org/wiki/Pip_%28package_manager%29). Unfortunately, some of these requirements need build tools which are not easy to use nor easy to install on Windows. Here are those special requirements:
 
 * PyQt5
 * scandir
 * lxml
+* pylzma
 
 I suggest you download and install already compiled binaries for these. At this time of writing, [the PyQt5 binaries](https://www.riverbankcomputing.com/software/pyqt/download5) are only available for Python 3.4 which means you should be using that version of Python as well.
 
-Compiled binaries for lxml and scandir can be found on [Christoph Gohlke's Unofficial Windows Binaries](http://www.lfd.uci.edu/~gohlke/pythonlibs/). If you are using Python 3.5+, scandir should already be included.
+Compiled binaries for lxml, scandir and pylzma can be found on [Christoph Gohlke's Unofficial Windows Binaries](http://www.lfd.uci.edu/~gohlke/pythonlibs/). If you are using Python 3.5+, scandir should already be included.
 
 ## Running the launcher
 
@@ -32,7 +33,7 @@ The resulting launcher executable should be in the `dist` directory.
     * By default, Python 3.4 is installed in `C:\Python34`. To setup your PATH, type `set PATH=%PATH%;C:\Python34;C:\Python34\Scripts` in your command line window and press `↵ Enter`.
 3. Install most requirements by typing the following `pip` command in your command line window: `pip install SQLAlchemy alembic PyInstaller html5lib cssselect arrow rarfile` and press `↵ Enter`.
 4. Download and install the PyQt5 binaries from [Riverbank Computing's website](https://www.riverbankcomputing.com/software/pyqt/download5). Make sure to download the same platform version (either 32-bit or 64-bit). It should match the same platform version you got in Step 1.
-5. Download and install the scandir and lxml packages from [Christoph Gohlke's Unofficial Windows Binaries](http://www.lfd.uci.edu/~gohlke/pythonlibs/). It should match the same Python version and platform version you got in Step 1. `cp34` means CPython 3.4, `win32` means 32-bit and `win_amd64` means 64-bit in Christoph Gohlke's packages naming convention. To install `.whl` packages from Christoph Gohlke's Unofficial Windows Binaries page, you can using pip. In your command line window, type: `pip install [path to .whl]` and press `↵ Enter`.
+5. Download and install the scandir, the lxml and the pylzma packages from [Christoph Gohlke's Unofficial Windows Binaries](http://www.lfd.uci.edu/~gohlke/pythonlibs/). It should match the same Python version and platform version you got in Step 1. `cp34` means CPython 3.4, `win32` means 32-bit and `win_amd64` means 64-bit in Christoph Gohlke's packages naming convention. To install `.whl` packages from Christoph Gohlke's Unofficial Windows Binaries page, you can using pip. In your command line window, type: `pip install [path to .whl]` and press `↵ Enter`.
 6. Download the CDDA Game Launcher source code. If you have git installed, you can type the following command in your command line window: `git clone https://github.com/remyroy/CDDA-Game-Launcher.git`. You can also download the source code from [https://github.com/remyroy/CDDA-Game-Launcher/archive/master.zip](https://github.com/remyroy/CDDA-Game-Launcher/archive/master.zip). Make sure to extract the zip file somewhere before trying to run the code.
 7. In your command line window, change directory to the source code directory. Type `cd [path to source code]` and press `↵ Enter`.
 8. See if you can run the launcher by typing the following command in your command line window: `python cddagl\launcher.py` and press `↵ Enter`. If you have everything setuped correctly, you should see the launcher running.

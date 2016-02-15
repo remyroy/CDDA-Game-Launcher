@@ -58,6 +58,17 @@
     },
     {
         "type": "browser_download",
+        "ident": "jury_rigged_robots",
+        "name": "Jury-Rigged Robots",
+        "description": "Options for salvaging, jury rigging, and reprogramming broken robots.",
+        "author": "Sunshine",
+        "size": 10625,
+        "url": "https://mega.co.nz/#!rQkklSKQ!l_2XXv7YtnK8On668dqHH-MKA5THufUulGoXr-YRvjA",
+        "expected_filename": "Jury_Rigged_Robots.7z",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=10667.0"
+    },
+    {
+        "type": "browser_download",
         "ident": "Remove_Nether",
         "name": "Removes Nether Creatures",
         "author": "TheMightyHercules",
