@@ -628,7 +628,7 @@ class GameDirGroupBox(QGroupBox):
                     entry_path = os.path.join(temp_move_dir, entry)
                     shutil.move(entry_path, previous_version_dir)
 
-                shutil.rmtree(temp_move_dir, onerror=remove_readonly)
+                retry_rmtree(temp_move_dir)
 
                 self.restored_previous = True
         except OSError as e:
@@ -1317,7 +1317,7 @@ class UpdateGroupBox(QGroupBox):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
 
                 path = self.clean_game_dir()
                 self.restore_backup()
@@ -1434,7 +1434,7 @@ class UpdateGroupBox(QGroupBox):
                 entry_path = os.path.join(previous_version_dir, entry)
                 shutil.move(entry_path, game_dir)
 
-            shutil.rmtree(previous_version_dir, onerror=remove_readonly)
+            retry_rmtree(previous_version_dir)
 
     def get_main_tab(self):
         return self.parentWidget()
@@ -1532,7 +1532,7 @@ class UpdateGroupBox(QGroupBox):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            shutil.rmtree(download_dir, onerror=remove_readonly)
+            retry_rmtree(download_dir)
         else:
             # Test downloaded file
             status_bar.showMessage('Testing downloaded file archive')
@@ -1544,7 +1544,7 @@ class UpdateGroupBox(QGroupBox):
                         status_bar.showMessage('Downloaded archive is invalid')
 
                         download_dir = os.path.dirname(self.downloaded_file)
-                        shutil.rmtree(download_dir, onerror=remove_readonly)
+                        retry_rmtree(download_dir)
                         self.finish_updating()
 
                         return
@@ -1553,7 +1553,7 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.showMessage('Could not download game')
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
                 self.finish_updating()
 
                 return
@@ -1725,7 +1725,7 @@ class UpdateGroupBox(QGroupBox):
                         shutil.move(self.downloaded_file, archive_dir)
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
 
                 main_tab = self.get_main_tab()
                 game_dir_group_box = main_tab.game_dir_group_box
@@ -2608,13 +2608,13 @@ class LauncherUpdateDialog(QDialog):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            shutil.rmtree(download_dir, onerror=remove_readonly)
+            retry_rmtree(download_dir)
         else:
             redirect = self.http_reply.attribute(
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
                 os.makedirs(download_dir)
 
                 self.downloading_file = open(self.downloaded_file, 'wb')
@@ -3231,10 +3231,10 @@ class SoundpacksTab(QTabWidget):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
 
                 if os.path.isdir(self.extract_dir):
-                    shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+                    retry_rmtree(self.extract_dir)
             
             status_bar.showMessage('Soundpack installation cancelled')
 
@@ -3255,7 +3255,7 @@ class SoundpacksTab(QTabWidget):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            shutil.rmtree(download_dir, onerror=remove_readonly)
+            retry_rmtree(download_dir)
 
             self.downloading_new_soundpack = False
         else:
@@ -3263,7 +3263,7 @@ class SoundpacksTab(QTabWidget):
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
                 os.makedirs(download_dir)
 
                 self.downloading_file = open(self.downloaded_file, 'wb')
@@ -3317,7 +3317,7 @@ class SoundpacksTab(QTabWidget):
                                 'invalid')
 
                             download_dir = os.path.dirname(self.downloaded_file)
-                            shutil.rmtree(download_dir, onerror=remove_readonly)
+                            retry_rmtree(download_dir)
                             self.downloading_new_soundpack = False
 
                             self.finish_install_new_soundpack()
@@ -3327,7 +3327,7 @@ class SoundpacksTab(QTabWidget):
                     status_bar.showMessage('Could not download soundpack')
 
                     download_dir = os.path.dirname(self.downloaded_file)
-                    shutil.rmtree(download_dir, onerror=remove_readonly)
+                    retry_rmtree(download_dir)
                     self.downloading_new_soundpack = False
 
                     self.finish_install_new_soundpack()
@@ -3427,7 +3427,7 @@ class SoundpacksTab(QTabWidget):
 
                 if self.install_type == 'direct_download':
                     download_dir = os.path.dirname(self.downloaded_file)
-                    shutil.rmtree(download_dir, onerror=remove_readonly)
+                    retry_rmtree(download_dir)
 
                 self.move_new_soundpack()
 
@@ -3484,7 +3484,7 @@ class SoundpacksTab(QTabWidget):
         if soundpack_dir is None:
             status_bar.showMessage('Soundpack installation cancelled - There '
                 'is no soundpack in the downloaded archive')
-            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            retry_rmtree(self.extract_dir)
             self.moving_new_soundpack = False
 
             self.finish_install_new_soundpack()
@@ -3500,7 +3500,7 @@ class SoundpacksTab(QTabWidget):
                 shutil.move(soundpack_dir, self.soundpacks_dir)
                 status_bar.showMessage('Soundpack installation completed')
 
-            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            retry_rmtree(self.extract_dir)
             self.moving_new_soundpack = False
 
             self.game_dir_changed(self.game_dir)
@@ -4304,10 +4304,10 @@ class ModsTab(QTabWidget):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
 
                 if os.path.isdir(self.extract_dir):
-                    shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+                    retry_rmtree(self.extract_dir)
             
             status_bar.showMessage('Soundpack installation cancelled')
 
@@ -4328,7 +4328,7 @@ class ModsTab(QTabWidget):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            shutil.rmtree(download_dir, onerror=remove_readonly)
+            retry_rmtree(download_dir)
 
             self.downloading_new_mod = False
         else:
@@ -4336,7 +4336,7 @@ class ModsTab(QTabWidget):
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
-                shutil.rmtree(download_dir, onerror=remove_readonly)
+                retry_rmtree(download_dir)
                 os.makedirs(download_dir)
 
                 self.downloading_file = open(self.downloaded_file, 'wb')
@@ -4390,7 +4390,7 @@ class ModsTab(QTabWidget):
                                 'invalid')
 
                             download_dir = os.path.dirname(self.downloaded_file)
-                            shutil.rmtree(download_dir, onerror=remove_readonly)
+                            retry_rmtree(download_dir)
                             self.downloading_new_mod = False
 
                             self.finish_install_new_mod()
@@ -4400,7 +4400,7 @@ class ModsTab(QTabWidget):
                     status_bar.showMessage('Could not download mod')
 
                     download_dir = os.path.dirname(self.downloaded_file)
-                    shutil.rmtree(download_dir, onerror=remove_readonly)
+                    retry_rmtree(download_dir)
                     self.downloading_new_mod = False
 
                     self.finish_install_new_mod()
@@ -4505,7 +4505,7 @@ class ModsTab(QTabWidget):
 
                 if self.install_type == 'direct_download':
                     download_dir = os.path.dirname(self.downloaded_file)
-                    shutil.rmtree(download_dir, onerror=remove_readonly)
+                    retry_rmtree(download_dir)
 
                 self.move_new_mod()
 
@@ -4562,7 +4562,7 @@ class ModsTab(QTabWidget):
         if mod_dir is None:
             status_bar.showMessage('Mod installation cancelled - There '
                 'is no mod in the downloaded archive')
-            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            retry_rmtree(self.extract_dir)
             self.moving_new_mod = False
 
             self.finish_install_new_mod()
@@ -4578,7 +4578,7 @@ class ModsTab(QTabWidget):
                 shutil.move(mod_dir, self.mods_dir)
                 status_bar.showMessage('Mod installation completed')
 
-            shutil.rmtree(self.extract_dir, onerror=remove_readonly)
+            retry_rmtree(self.extract_dir)
             self.moving_new_mod = False
 
             self.game_dir_changed(self.game_dir)
