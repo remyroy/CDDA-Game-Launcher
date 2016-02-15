@@ -17,7 +17,7 @@ class Installer(Command):
             '--hidden-import=lxml.cssselect', 'cddagl\launcher.py'])
 
         added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
-            ('data', 'data')]
+            ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
 
         # Let's find and add unrar if available
         try:

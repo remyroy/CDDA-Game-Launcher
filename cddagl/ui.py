@@ -2259,6 +2259,10 @@ class AboutDialog(QDialog):
         text_content = QTextBrowser()
         text_content.setReadOnly(True)
         text_content.setOpenExternalLinks(True)
+
+        text_content.setSearchPaths([os.path.join(basedir, 'cddagl',
+            'resources')])
+
         text_content.setHtml('''
 <p>CDDA Game Launcher version {version}</p>
 
@@ -2268,6 +2272,10 @@ href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.</p>
 <p>Please report any issue <a 
 href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.
 </p>
+
+<p>If you like the CDDA Game Launcher, you can buy me a beer by donating
+bitcoins to <a href="bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ">
+15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> <img src="btc-qr.png">.</p>
 
 <p>Copyright (c) 2015 Rémy Roy</p>
 
@@ -2301,7 +2309,7 @@ SOFTWARE.</p>
 
         layout.setRowStretch(0, 100)
 
-        self.setMinimumSize(400, 250)
+        self.setMinimumSize(500, 400)
 
         self.setLayout(layout)
         self.setWindowTitle('About CDDA Game Launcher')
