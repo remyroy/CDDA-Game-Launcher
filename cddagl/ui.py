@@ -95,9 +95,6 @@ def sizeof_fmt(num, suffix=_('B')):
 def config_true(value):
     return value == 'True' or value == '1'
 
-def splurial(value):
-    return 's' if value > 1 else ''
-
 def get_data_path():
     return os.path.join(basedir, 'data')
 
@@ -127,21 +124,22 @@ following error: {error}</p>
     error=html.escape(e.strerror))
 
             if process is None:
-                text = text + '''
+                text = text + _('''
 <p>No process seems to be using that file or directory.</p>
-'''
+''')
             else:
-                text = text + '''
+                text = text + _('''
 <p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
 that file or directory. You might need to end it if you want to retry.</p>
-'''.format(image_file_name=process['image_file_name'], pid=process['pid'])
+''').format(image_file_name=process['image_file_name'], pid=process['pid'])
 
             retry_msgbox.setText(text)
-            retry_msgbox.setInformativeText('Do you want to retry removing '
-                'this directory?')
-            retry_msgbox.addButton('Retry removing the directory',
+            retry_msgbox.setInformativeText(_('Do you want to retry removing '
+                'this directory?'))
+            retry_msgbox.addButton(_('Retry removing the directory'),
                 QMessageBox.YesRole)
-            retry_msgbox.addButton('Cancel the operation', QMessageBox.NoRole)
+            retry_msgbox.addButton(_('Cancel the operation'),
+                QMessageBox.NoRole)
             retry_msgbox.setIcon(QMessageBox.Critical)
 
             if retry_msgbox.exec() == 1:
@@ -177,7 +175,7 @@ class MainWindow(QMainWindow):
         status_bar = self.statusBar()
         status_bar.busy = 0
 
-        status_bar.showMessage('Ready')
+        status_bar.showMessage(_('Ready'))
 
     def create_central_widget(self):
         central_widget = CentralWidget()
@@ -186,12 +184,12 @@ class MainWindow(QMainWindow):
 
     def create_menu(self):
         if getattr(sys, 'frozen', False):
-            update_action = QAction('&Check for launcher update', self,
+            update_action = QAction(_('&Check for launcher update'), self,
                 triggered=self.manual_update_check)
             self.update_action = update_action
             self.menuBar().addAction(update_action)
 
-        about_action = QAction('&About', self, triggered=self.show_about_dialog)
+        about_action = QAction(_('&About'), self, triggered=self.show_about_dialog)
         self.about_action = about_action
         self.menuBar().addAction(about_action)
 
@@ -256,8 +254,8 @@ class MainWindow(QMainWindow):
                     html_text = release_header + release_body
 
                     no_launcher_version_check_checkbox = QCheckBox()
-                    no_launcher_version_check_checkbox.setText('Do not check '
-                        'for new version of the CDDA Game Launcher on launch')
+                    no_launcher_version_check_checkbox.setText(_('Do not check '
+                        'for new version of the CDDA Game Launcher on launch'))
                     check_state = (Qt.Checked if config_true(get_config_value(
                         'prevent_version_check_launch', 'False'))
                         else Qt.Unchecked)
@@ -267,15 +265,15 @@ class MainWindow(QMainWindow):
                         check_state)
 
                     launcher_update_msgbox = QMessageBox()
-                    launcher_update_msgbox.setWindowTitle('Launcher update')
-                    launcher_update_msgbox.setText(('You are using version '
+                    launcher_update_msgbox.setWindowTitle(_('Launcher update'))
+                    launcher_update_msgbox.setText(_('You are using version '
                         '{version} but there is a new update for CDDA Game '
                         'Launcher. Would you like to update?').format(
                         version=version))
                     launcher_update_msgbox.setInformativeText(html_text)
-                    launcher_update_msgbox.addButton('Update the launcher',
+                    launcher_update_msgbox.addButton(_('Update the launcher'),
                         QMessageBox.YesRole)
-                    launcher_update_msgbox.addButton('Not right now',
+                    launcher_update_msgbox.addButton(_('Not right now'),
                         QMessageBox.NoRole)
                     launcher_update_msgbox.setCheckBox(
                         no_launcher_version_check_checkbox)
@@ -310,8 +308,9 @@ class MainWindow(QMainWindow):
     def no_launcher_update_found(self):
         if self.in_manual_update_check:
             up_to_date_msgbox = QMessageBox()
-            up_to_date_msgbox.setWindowTitle('Up to date')
-            up_to_date_msgbox.setText('The CDDA Game Launcher is up to date.')
+            up_to_date_msgbox.setWindowTitle(_('Up to date'))
+            up_to_date_msgbox.setText(_('The CDDA Game Launcher is up to date.'
+                ))
             up_to_date_msgbox.setIcon(QMessageBox.Information)
 
             up_to_date_msgbox.exec()
@@ -374,32 +373,32 @@ class CentralWidget(QTabWidget):
 
     def create_main_tab(self):
         main_tab = MainTab()
-        self.addTab(main_tab, 'Main')
+        self.addTab(main_tab, _('Main'))
         self.main_tab = main_tab
 
     def create_mods_tab(self):
         mods_tab = ModsTab()
-        self.addTab(mods_tab, 'Mods')
+        self.addTab(mods_tab, _('Mods'))
         self.mods_tab = mods_tab
 
     def create_tilesets_tab(self):
         tilesets_tab = TilesetsTab()
-        self.addTab(tilesets_tab, 'Tilesets')
+        self.addTab(tilesets_tab, _('Tilesets'))
         self.tilesets_tab = tilesets_tab
 
     def create_soundpacks_tab(self):
         soundpacks_tab = SoundpacksTab()
-        self.addTab(soundpacks_tab, 'Soundpacks')
+        self.addTab(soundpacks_tab, _('Soundpacks'))
         self.soundpacks_tab = soundpacks_tab
 
     def create_fonts_tab(self):
         fonts_tab = FontsTab()
-        self.addTab(fonts_tab, 'Fonts')
+        self.addTab(fonts_tab, _('Fonts'))
         self.fonts_tab = fonts_tab
 
     def create_settings_tab(self):
         settings_tab = SettingsTab()
-        self.addTab(settings_tab, 'Settings')
+        self.addTab(settings_tab, _('Settings'))
         self.settings_tab = settings_tab
 
 
@@ -474,7 +473,7 @@ class GameDirGroupBox(QGroupBox):
         layout = QGridLayout()
 
         dir_label = QLabel()
-        dir_label.setText('Directory:')
+        dir_label.setText(_('Directory:'))
         layout.addWidget(dir_label, 0, 0, Qt.AlignRight)
         self.dir_label = dir_label
 
@@ -490,7 +489,7 @@ class GameDirGroupBox(QGroupBox):
         self.dir_change_button = dir_change_button
 
         version_label = QLabel()
-        version_label.setText('Version:')
+        version_label.setText(_('Version:'))
         layout.addWidget(version_label, 1, 0, Qt.AlignRight)
         self.version_label = version_label
 
@@ -500,40 +499,40 @@ class GameDirGroupBox(QGroupBox):
         self.version_value_label = version_value_label
 
         build_label = QLabel()
-        build_label.setText('Build:')
+        build_label.setText(_('Build:'))
         layout.addWidget(build_label, 2, 0, Qt.AlignRight)
         self.build_label = build_label
 
         build_value_label = QLineEdit()
         build_value_label.setReadOnly(True)
-        build_value_label.setText('Unknown')
+        build_value_label.setText(_('Unknown'))
         layout.addWidget(build_value_label, 2, 1)
         self.build_value_label = build_value_label
 
         saves_label = QLabel()
-        saves_label.setText('Saves:')
+        saves_label.setText(_('Saves:'))
         layout.addWidget(saves_label, 3, 0, Qt.AlignRight)
         self.saves_label = saves_label
 
         saves_value_edit = QLineEdit()
         saves_value_edit.setReadOnly(True)
-        saves_value_edit.setText('Unknown')
+        saves_value_edit.setText(_('Unknown'))
         layout.addWidget(saves_value_edit, 3, 1)
         self.saves_value_edit = saves_value_edit
 
         saves_warning_label = QLabel()
         icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
         saves_warning_label.setPixmap(icon.pixmap(16, 16))
-        saves_warning_label.setToolTip('Your save directory might be large '
+        saves_warning_label.setToolTip(_('Your save directory might be large '
             'enough to cause significant delays during the update process.\n'
             'You might want to enable the "Do not copy or move the save '
-            'directory" option in the settings tab.')
+            'directory" option in the settings tab.'))
         saves_warning_label.hide()
         layout.addWidget(saves_warning_label, 3, 2)
         self.saves_warning_label = saves_warning_label
 
         launch_game_button = QPushButton()
-        launch_game_button.setText('Launch game')
+        launch_game_button.setText(_('Launch game'))
         launch_game_button.setEnabled(False)
         launch_game_button.setStyleSheet("font-size: 20px;")
         launch_game_button.clicked.connect(self.launch_game)
@@ -541,13 +540,13 @@ class GameDirGroupBox(QGroupBox):
         self.launch_game_button = launch_game_button
 
         restore_button = QPushButton()
-        restore_button.setText('Restore previous version')
+        restore_button.setText(_('Restore previous version'))
         restore_button.setEnabled(False)
         restore_button.clicked.connect(self.restore_previous)
         layout.addWidget(restore_button, 5, 0, 1, 3)
         self.restore_button = restore_button
 
-        self.setTitle('Game')
+        self.setTitle(_('Game'))
         self.setLayout(layout)
 
     def showEvent(self, event):
@@ -694,7 +693,7 @@ class GameDirGroupBox(QGroupBox):
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
-                'Game directory', self.dir_edit.text(), options=options)
+                _('Game directory'), self.dir_edit.text(), options=options)
         if directory:
             self.dir_edit.setText(clean_qt_path(directory))
             self.game_directory_changed()
@@ -707,7 +706,7 @@ class GameDirGroupBox(QGroupBox):
         update_group_box = main_tab.update_group_box
 
         if not os.path.isdir(directory):
-            self.version_value_label.setText('Not a valid directory')
+            self.version_value_label.setText(_('Not a valid directory'))
         else:
             # Check for previous version
             previous_version_dir = os.path.join(directory, 'previous_version')
@@ -727,7 +726,7 @@ class GameDirGroupBox(QGroupBox):
                 exe_path = tiles_exe
 
             if version_type is None:
-                self.version_value_label.setText('Not a CDDA directory')
+                self.version_value_label.setText(_('Not a CDDA directory'))
             else:
                 self.exe_path = exe_path
                 self.version_type = version_type
@@ -739,16 +738,16 @@ class GameDirGroupBox(QGroupBox):
 
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
-            update_group_box.update_button.setText('Install game')
+            update_group_box.update_button.setText(_('Install game'))
             self.restored_previous = False
 
             self.current_build = None
-            self.build_value_label.setText('Unknown')
-            self.saves_value_edit.setText('Unknown')
+            self.build_value_label.setText(_('Unknown'))
+            self.saves_value_edit.setText(_('Unknown'))
             self.clear_soundpacks()
         else:
             self.launch_game_button.setEnabled(True)
-            update_group_box.update_button.setText('Update game')
+            update_group_box.update_button.setText(_('Update game'))
 
         self.last_game_directory = directory
         set_config_value('game_directory', directory)
@@ -762,7 +761,7 @@ class GameDirGroupBox(QGroupBox):
         status_bar.busy += 1
 
         reading_label = QLabel()
-        reading_label.setText('Reading: {0}'.format(self.exe_path))
+        reading_label.setText(_('Reading: {0}').format(self.exe_path))
         status_bar.addWidget(reading_label, 100)
         self.reading_label = reading_label
 
@@ -792,10 +791,10 @@ class GameDirGroupBox(QGroupBox):
                 status_bar = main_window.statusBar()
 
                 if self.game_version == '':
-                    self.game_version = 'Unknown'
+                    self.game_version = _('Unknown')
 
                 self.version_value_label.setText(
-                    '{version} ({type})'.format(version=self.game_version,
+                    _('{version} ({type})').format(version=self.game_version,
                     type=self.version_type))
 
                 status_bar.removeWidget(self.reading_label)
@@ -804,9 +803,9 @@ class GameDirGroupBox(QGroupBox):
                 status_bar.busy -= 1
                 if status_bar.busy == 0:
                     if self.restored_previous:
-                        status_bar.showMessage('Previous version restored')
+                        status_bar.showMessage(_('Previous version restored'))
                     else:
-                        status_bar.showMessage('Ready')
+                        status_bar.showMessage(_('Ready'))
 
                 sha256 = self.exe_sha256.hexdigest()
 
@@ -817,8 +816,8 @@ class GameDirGroupBox(QGroupBox):
                 if build is not None:
                     build_date = arrow.get(build['released_on'], 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow())
-                    self.build_value_label.setText('{0} ({1})'.format(
-                        build['build'], human_delta))
+                    self.build_value_label.setText(_('{build} ({time_delta})'
+                        ).format(build=build['build'], time_delta=human_delta))
                     self.current_build = build['build']
 
                     main_tab = self.get_main_tab()
@@ -834,14 +833,14 @@ class GameDirGroupBox(QGroupBox):
                             message = message + ' - '
 
                         if last_build['number'] == self.current_build:
-                            message = message + 'Your game is up to date'
+                            message = message + _('Your game is up to date')
                         else:
-                            message = message + ('There is a new update '
+                            message = message + _('There is a new update '
                             'available')
                         status_bar.showMessage(message)
 
                 else:
-                    self.build_value_label.setText('Unknown')
+                    self.build_value_label.setText(_('Unknown'))
                     self.current_build = None
 
             else:
@@ -876,11 +875,11 @@ class GameDirGroupBox(QGroupBox):
         if (self.update_saves_timer is not None
             and self.update_saves_timer.isActive()):
             self.update_saves_timer.stop()
-            self.saves_value_edit.setText('Unknown')
+            self.saves_value_edit.setText(_('Unknown'))
 
         save_dir = os.path.join(self.game_dir, 'save')
         if not os.path.isdir(save_dir):
-            self.saves_value_edit.setText('Not found')
+            self.saves_value_edit.setText(_('Not found'))
             return
 
         timer = QTimer(self)
@@ -915,12 +914,19 @@ class GameDirGroupBox(QGroupBox):
                             self.world_dirs.add(world_dir)
                             self.saves_worlds += 1
 
-                self.saves_value_edit.setText('{worlds} World{wp} - '
-                    '{characters} Character{cp} ({size})'.format(
-                    worlds=self.saves_worlds, size=sizeof_fmt(self.saves_size),
-                    characters=self.saves_characters,
-                    wp=splurial(self.saves_worlds),
-                    cp=splurial(self.saves_characters)))
+                worlds_text = gettext.ngettext('World', 'Worlds',
+                    self.saves_worlds)
+
+                characters_text = gettext.ngettext('Character', 'Characters',
+                    self.saves_characters)
+
+                self.saves_value_edit.setText(_('{world_count} {worlds} - '
+                    '{character_count} {characters} ({size})').format(
+                    world_count=self.saves_worlds,
+                    character_count=self.saves_characters,
+                    size=sizeof_fmt(self.saves_size),
+                    worlds=worlds_text,
+                    characters=characters_text))
             except StopIteration:
                 if len(self.next_scans) > 0:
                     self.saves_scan = scandir(self.next_scans.pop())
@@ -960,8 +966,8 @@ class GameDirGroupBox(QGroupBox):
             exe_path = tiles_exe
 
         if version_type is None:
-            self.version_value_label.setText('Not a CDDA directory')
-            self.build_value_label.setText('Unknown')
+            self.version_value_label.setText(_('Not a CDDA directory'))
+            self.build_value_label.setText(_('Unknown'))
             self.current_build = None
         else:
             self.exe_path = exe_path
@@ -977,7 +983,7 @@ class GameDirGroupBox(QGroupBox):
             status_bar.busy += 1
 
             reading_label = QLabel()
-            reading_label.setText('Reading: {0}'.format(self.exe_path))
+            reading_label.setText(_('Reading: {0}'.format(self.exe_path)))
             status_bar.addWidget(reading_label, 100)
             self.reading_label = reading_label
 
@@ -1007,15 +1013,17 @@ class GameDirGroupBox(QGroupBox):
                     status_bar = main_window.statusBar()
 
                     if self.game_version == '':
-                        self.game_version = 'Unknown'
+                        self.game_version = _('Unknown')
                     self.version_value_label.setText(
-                        '{version} ({type})'.format(version=self.game_version,
-                        type=self.version_type))
+                        _('{version} ({type})').format(
+                            version=self.game_version,
+                            type=self.version_type))
 
                     build_date = arrow.get(self.build_date, 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow())
-                    self.build_value_label.setText('{0} ({1})'.format(
-                        self.build_number, human_delta))
+                    self.build_value_label.setText(_('{build} ({time_delta})'
+                        ).format(build=self.build_number,
+                            time_delta=human_delta))
                     self.current_build = self.build_number
 
                     status_bar.removeWidget(self.reading_label)
@@ -1076,7 +1084,7 @@ class UpdateGroupBox(QGroupBox):
         layout = QGridLayout()
 
         graphics_label = QLabel()
-        graphics_label.setText('Graphics:')
+        graphics_label.setText(_('Graphics:'))
         layout.addWidget(graphics_label, 0, 0, Qt.AlignRight)
         self.graphics_label = graphics_label
 
@@ -1084,13 +1092,13 @@ class UpdateGroupBox(QGroupBox):
         self.graphics_button_group = graphics_button_group
 
         tiles_radio_button = QRadioButton()
-        tiles_radio_button.setText('Tiles')
+        tiles_radio_button.setText(_('Tiles'))
         layout.addWidget(tiles_radio_button, 0, 1)
         self.tiles_radio_button = tiles_radio_button
         graphics_button_group.addButton(tiles_radio_button)
 
         console_radio_button = QRadioButton()
-        console_radio_button.setText('Console')
+        console_radio_button.setText(_('Console'))
         layout.addWidget(console_radio_button, 0, 2)
         self.console_radio_button = console_radio_button
         graphics_button_group.addButton(console_radio_button)
@@ -1098,7 +1106,7 @@ class UpdateGroupBox(QGroupBox):
         graphics_button_group.buttonClicked.connect(self.graphics_clicked)
 
         platform_label = QLabel()
-        platform_label.setText('Platform:')
+        platform_label.setText(_('Platform:'))
         layout.addWidget(platform_label, 1, 0, Qt.AlignRight)
         self.platform_label = platform_label
 
@@ -1106,7 +1114,7 @@ class UpdateGroupBox(QGroupBox):
         self.platform_button_group = platform_button_group
 
         x64_radio_button = QRadioButton()
-        x64_radio_button.setText('Windows x64 (64-bit)')
+        x64_radio_button.setText(_('Windows x64 (64-bit)'))
         layout.addWidget(x64_radio_button, 1, 1)
         self.x64_radio_button = x64_radio_button
         platform_button_group.addButton(x64_radio_button)
@@ -1117,30 +1125,30 @@ class UpdateGroupBox(QGroupBox):
             x64_radio_button.setEnabled(False)
 
         x86_radio_button = QRadioButton()
-        x86_radio_button.setText('Windows x86 (32-bit)')
+        x86_radio_button.setText(_('Windows x86 (32-bit)'))
         layout.addWidget(x86_radio_button, 1, 2)
         self.x86_radio_button = x86_radio_button
         platform_button_group.addButton(x86_radio_button)
 
         available_builds_label = QLabel()
-        available_builds_label.setText('Available builds:')
+        available_builds_label.setText(_('Available builds:'))
         layout.addWidget(available_builds_label, 2, 0, Qt.AlignRight)
         self.available_builds_label = available_builds_label
 
         builds_combo = QComboBox()
         builds_combo.setEnabled(False)
-        builds_combo.addItem('Unknown')
+        builds_combo.addItem(_('Unknown'))
         layout.addWidget(builds_combo, 2, 1, 1, 2)
         self.builds_combo = builds_combo
 
         refresh_builds_button = QToolButton()
-        refresh_builds_button.setText('Refresh')
+        refresh_builds_button.setText(_('Refresh'))
         refresh_builds_button.clicked.connect(self.refresh_builds)
         layout.addWidget(refresh_builds_button, 2, 3)
         self.refresh_builds_button = refresh_builds_button
 
         update_button = QPushButton()
-        update_button.setText('Update game')
+        update_button.setText(_('Update game'))
         update_button.setEnabled(False)
         update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
@@ -1150,7 +1158,7 @@ class UpdateGroupBox(QGroupBox):
         layout.setColumnStretch(1, 100)
         layout.setColumnStretch(2, 100)
 
-        self.setTitle('Update/Installation')
+        self.setTitle(_('Update/Installation'))
         self.setLayout(layout)
 
     def showEvent(self, event):
@@ -1203,14 +1211,15 @@ class UpdateGroupBox(QGroupBox):
             latest_build = self.builds[0]
             if game_dir_group_box.current_build == latest_build['number']:
                 confirm_msgbox = QMessageBox()
-                confirm_msgbox.setWindowTitle('Game is up to date')
-                confirm_msgbox.setText('You already have the latest version.')
-                confirm_msgbox.setInformativeText('Are you sure you want to '
-                    'update your game?')
-                confirm_msgbox.addButton('Update the game again',
+                confirm_msgbox.setWindowTitle(_('Game is up to date'))
+                confirm_msgbox.setText(_('You already have the latest version.'
+                    ))
+                confirm_msgbox.setInformativeText(_('Are you sure you want to '
+                    'update your game?'))
+                confirm_msgbox.addButton(_('Update the game again'),
                     QMessageBox.YesRole)
-                confirm_msgbox.addButton('I do not need to update the '
-                    'game again', QMessageBox.NoRole)
+                confirm_msgbox.addButton(_('I do not need to update the '
+                    'game again'), QMessageBox.NoRole)
                 confirm_msgbox.setIcon(QMessageBox.Question)
 
                 if confirm_msgbox.exec() == 1:
@@ -1235,7 +1244,7 @@ class UpdateGroupBox(QGroupBox):
                     main_window = self.get_main_window()
                     status_bar = main_window.statusBar()
 
-                    status_bar.showMessage('Cannot install game on a file')
+                    status_bar.showMessage(_('Cannot install game on a file'))
 
                     self.finish_updating()
                     return
@@ -1284,10 +1293,10 @@ class UpdateGroupBox(QGroupBox):
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Update cancelled')
+                        status_bar.showMessage(_('Update cancelled'))
                 else:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Installation cancelled')
+                        status_bar.showMessage(_('Installation cancelled'))
             elif self.backing_up_game:
                 self.backup_timer.stop()
 
@@ -1303,10 +1312,10 @@ class UpdateGroupBox(QGroupBox):
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Update cancelled')
+                        status_bar.showMessage(_('Update cancelled'))
                 else:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Installation cancelled')
+                        status_bar.showMessage(_('Installation cancelled'))
 
             elif self.extracting_new_build:
                 self.extracting_timer.stop()
@@ -1330,10 +1339,10 @@ class UpdateGroupBox(QGroupBox):
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Update cancelled')
+                        status_bar.showMessage(_('Update cancelled'))
                 else:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Installation cancelled')
+                        status_bar.showMessage(_('Installation cancelled'))
             elif self.analysing_new_build:
                 game_dir_group_box.opened_exe.close()
                 game_dir_group_box.exe_reading_timer.stop()
@@ -1352,10 +1361,10 @@ class UpdateGroupBox(QGroupBox):
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Update cancelled')
+                        status_bar.showMessage(_('Update cancelled'))
                 else:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Installation cancelled')
+                        status_bar.showMessage(_('Installation cancelled'))
             elif self.in_post_extraction:
                 self.in_post_extraction = False
 
@@ -1372,10 +1381,10 @@ class UpdateGroupBox(QGroupBox):
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Update cancelled')
+                        status_bar.showMessage(_('Update cancelled'))
                 else:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Installation cancelled')
+                        status_bar.showMessage(_('Installation cancelled'))
 
             self.finish_updating()
 
@@ -1486,7 +1495,7 @@ class UpdateGroupBox(QGroupBox):
         status_bar.busy += 1
 
         downloading_label = QLabel()
-        downloading_label.setText('Downloading: {0}'.format(url))
+        downloading_label.setText(_('Downloading: {0}').format(url))
         status_bar.addWidget(downloading_label, 100)
         self.downloading_label = downloading_label
 
@@ -1518,9 +1527,9 @@ class UpdateGroupBox(QGroupBox):
         game_dir_group_box = main_tab.game_dir_group_box
 
         if game_dir_group_box.exe_path is not None:
-            self.update_button.setText('Cancel update')
+            self.update_button.setText(_('Cancel update'))
         else:
-            self.update_button.setText('Cancel installation')
+            self.update_button.setText(_('Cancel installation'))
 
     def download_http_finished(self):
         self.downloading_file.close()
@@ -1540,13 +1549,14 @@ class UpdateGroupBox(QGroupBox):
             retry_rmtree(download_dir)
         else:
             # Test downloaded file
-            status_bar.showMessage('Testing downloaded file archive')
+            status_bar.showMessage(_('Testing downloaded file archive'))
 
             try:
                 with zipfile.ZipFile(self.downloaded_file) as z:
                     if z.testzip() is not None:
                         status_bar.clearMessage()
-                        status_bar.showMessage('Downloaded archive is invalid')
+                        status_bar.showMessage(_(
+                            'Downloaded archive is invalid'))
 
                         download_dir = os.path.dirname(self.downloaded_file)
                         retry_rmtree(download_dir)
@@ -1555,7 +1565,7 @@ class UpdateGroupBox(QGroupBox):
                         return
             except zipfile.BadZipFile:
                 status_bar.clearMessage()
-                status_bar.showMessage('Could not download game')
+                status_bar.showMessage(_('Could not download game'))
 
                 download_dir = os.path.dirname(self.downloaded_file)
                 retry_rmtree(download_dir)
@@ -1585,10 +1595,10 @@ class UpdateGroupBox(QGroupBox):
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Update cancelled')
+                        status_bar.showMessage(_('Update cancelled'))
                 else:
                     if status_bar.busy == 0:
-                        status_bar.showMessage('Installation cancelled')
+                        status_bar.showMessage(_('Installation cancelled'))
 
                 self.finish_updating()
                 return
@@ -1647,7 +1657,7 @@ class UpdateGroupBox(QGroupBox):
 
                 else:
                     backup_element = self.backup_dir_list[self.backup_index]
-                    self.backup_label.setText('Backing up {0}'.format(
+                    self.backup_label.setText(_('Backing up {0}').format(
                         backup_element))
                     try:
                         shutil.move(os.path.join(self.game_dir, backup_element),
@@ -1741,7 +1751,7 @@ class UpdateGroupBox(QGroupBox):
             else:
                 extracting_element = self.extracting_infolist[
                     self.extracting_index]
-                self.extracting_label.setText('Extracting {0}'.format(
+                self.extracting_label.setText(_('Extracting {0}').format(
                     extracting_element.filename))
                 
                 self.extracting_zipfile.extract(extracting_element,
@@ -1810,7 +1820,7 @@ class UpdateGroupBox(QGroupBox):
                 status_bar = main_window.statusBar()
 
                 progress_copy = ProgressCopyTree(src_path, dst_path, status_bar,
-                    '{0} directory'.format(next_dir))
+                    _('{0} directory').format(next_dir))
                 progress_copy.completed.connect(self.copy_next_dir)
                 self.progress_copy = progress_copy
                 progress_copy.start()
@@ -1860,7 +1870,7 @@ class UpdateGroupBox(QGroupBox):
 
         if (os.path.isdir(tilesets_dir) and os.path.isdir(previous_tilesets_dir)
             and self.in_post_extraction):
-            status_bar.showMessage('Restoring custom tilesets')
+            status_bar.showMessage(_('Restoring custom tilesets'))
 
             official_set = {}
             for entry in os.listdir(tilesets_dir):
@@ -1903,7 +1913,7 @@ class UpdateGroupBox(QGroupBox):
 
         if (os.path.isdir(soundpack_dir) and os.path.isdir(
             previous_soundpack_dir) and self.in_post_extraction):
-            status_bar.showMessage('Restoring custom soundpacks')
+            status_bar.showMessage(_('Restoring custom soundpacks'))
 
             official_set = {}
             for entry in os.listdir(soundpack_dir):
@@ -1946,7 +1956,7 @@ class UpdateGroupBox(QGroupBox):
 
         if (os.path.isdir(mods_dir) and os.path.isdir(previous_mods_dir) and
             self.in_post_extraction):
-            status_bar.showMessage('Restoring custom mods')
+            status_bar.showMessage(_('Restoring custom mods'))
 
             official_set = {}
             for entry in os.listdir(mods_dir):
@@ -1983,7 +1993,7 @@ class UpdateGroupBox(QGroupBox):
 
         if (not os.path.exists(user_default_mods_file)
             and os.path.isfile(previous_user_default_mods_file)):
-            status_bar.showMessage('Restoring user-default-mods.json')
+            status_bar.showMessage(_('Restoring user-default-mods.json'))
 
             shutil.copy2(previous_user_default_mods_file,
                 user_default_mods_file)
@@ -1997,7 +2007,7 @@ class UpdateGroupBox(QGroupBox):
 
         if (os.path.isdir(fonts_dir) and os.path.isdir(previous_fonts_dir) and
             self.in_post_extraction):
-            status_bar.showMessage('Restoring custom fonts')
+            status_bar.showMessage(_('Restoring custom fonts'))
 
             official_set = set(os.listdir(fonts_dir))
             previous_set = set(os.listdir(previous_fonts_dir))
@@ -2020,9 +2030,9 @@ class UpdateGroupBox(QGroupBox):
         game_dir_group_box = main_tab.game_dir_group_box
 
         if game_dir_group_box.previous_exe_path is not None:
-            status_bar.showMessage('Update completed')
+            status_bar.showMessage(_('Update completed'))
         else:
-            status_bar.showMessage('Installation completed')
+            status_bar.showMessage(_('Installation completed'))
 
         if (game_dir_group_box.current_build is not None
             and status_bar.busy == 0):
@@ -2033,9 +2043,9 @@ class UpdateGroupBox(QGroupBox):
                 message = message + ' - '
 
             if last_build['number'] == game_dir_group_box.current_build:
-                message = message + 'Your game is up to date'
+                message = message + _('Your game is up to date')
             else:
-                message = message + 'There is a new update available'
+                message = message + _('There is a new update available')
             status_bar.showMessage(message)
 
         self.in_post_extraction = False
@@ -2060,9 +2070,9 @@ class UpdateGroupBox(QGroupBox):
         mods_tab.enable_tab()
 
         if game_dir_group_box.exe_path is not None:
-            self.update_button.setText('Update game')
+            self.update_button.setText(_('Update game'))
         else:
-            self.update_button.setText('Install game')
+            self.update_button.setText(_('Install game'))
 
         if self.close_after_update:
             self.get_main_window().close()
@@ -2076,16 +2086,17 @@ class UpdateGroupBox(QGroupBox):
 
         self.download_speed_count += 1
 
-        self.downloading_size_label.setText('{0}/{1}'.format(
-            sizeof_fmt(bytes_read), sizeof_fmt(total_bytes)))
+        self.downloading_size_label.setText(_('{bytes_read}/{total_bytes}'
+            ).format(bytes_read=sizeof_fmt(bytes_read),
+                total_bytes=sizeof_fmt(total_bytes)))
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read
             delta_time = datetime.utcnow() - self.download_last_read
 
             bytes_secs = delta_bytes / delta_time.total_seconds()
-            self.dowloading_speed_label.setText('{0}/s'.format(
-                sizeof_fmt(bytes_secs)))
+            self.dowloading_speed_label.setText(_('{bytes_sec}/s').format(
+                bytes_sec=sizeof_fmt(bytes_secs)))
 
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
@@ -2101,10 +2112,10 @@ class UpdateGroupBox(QGroupBox):
         status_bar.busy += 1
 
         self.builds_combo.clear()
-        self.builds_combo.addItem('Fetching remote builds')
+        self.builds_combo.addItem(_('Fetching remote builds'))
 
         fetching_label = QLabel()
-        fetching_label.setText('Fetching: {0}'.format(url))
+        fetching_label.setText(_('Fetching: {url}'.format(url=url)))
         self.base_url = url
         status_bar.addWidget(fetching_label, 100)
         self.fetching_label = fetching_label
@@ -2130,7 +2141,7 @@ class UpdateGroupBox(QGroupBox):
 
         status_bar.busy -= 1
         if status_bar.busy == 0:
-            status_bar.showMessage('Ready')
+            status_bar.showMessage(_('Ready'))
 
         self.enable_controls()
 
@@ -2203,12 +2214,12 @@ class UpdateGroupBox(QGroupBox):
                         message = message + ' - '
 
                     if last_build['number'] == game_dir_group_box.current_build:
-                        message = message + 'Your game is up to date'
+                        message = message + _('Your game is up to date')
                     else:
-                        message = message + 'There is a new update available'
+                        message = message + _('There is a new update available')
                     status_bar.showMessage(message)
             else:
-                self.update_button.setText('Install game')
+                self.update_button.setText(_('Install game'))
 
             self.update_button.setEnabled(True)
 
@@ -2216,7 +2227,7 @@ class UpdateGroupBox(QGroupBox):
             self.builds = None
 
             self.builds_combo.clear()
-            self.builds_combo.addItem('Could not find remote builds')
+            self.builds_combo.addItem(_('Could not find remote builds'))
             self.builds_combo.setEnabled(False)
 
     def lb_http_ready_read(self):
@@ -2227,8 +2238,13 @@ class UpdateGroupBox(QGroupBox):
         self.fetching_progress_bar.setValue(bytes_read)
 
     def refresh_builds(self):
-        selected_graphics = self.graphics_button_group.checkedButton().text()
+        selected_graphics = self.graphics_button_group.checkedButton()
         selected_platform = self.platform_button_group.checkedButton()
+
+        if selected_graphics is self.tiles_radio_button:
+            selected_graphics = 'Tiles'
+        elif selected_graphics is self.console_radio_button:
+            selected_graphics = 'Console'
 
         if selected_platform is self.x64_radio_button:
             selected_platform = 'x64'
@@ -2240,7 +2256,12 @@ class UpdateGroupBox(QGroupBox):
         self.start_lb_request(url)
 
     def graphics_clicked(self, button):
-        set_config_value('graphics', button.text())
+        if button is self.tiles_radio_button:
+            config_value = 'Tiles'
+        elif button is self.console_radio_button:
+            config_value = 'Console'
+
+        set_config_value('graphics', config_value)
 
         self.refresh_builds()
 
@@ -2268,7 +2289,7 @@ class AboutDialog(QDialog):
         text_content.setSearchPaths([os.path.join(basedir, 'cddagl',
             'resources')])
 
-        text_content.setHtml('''
+        text_content.setHtml(_('''
 <p>CDDA Game Launcher version {version}</p>
 
 <p>Get the latest release <a 
@@ -2302,12 +2323,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</p>
 
-'''.format(version=version))
+''').format(version=version))
         layout.addWidget(text_content, 0, 0)
         self.text_content = text_content
 
         ok_button = QPushButton()
-        ok_button.setText('OK')
+        ok_button.setText(_('OK'))
         ok_button.clicked.connect(self.done)
         layout.addWidget(ok_button, 1, 0, Qt.AlignRight)
         self.ok_button = ok_button
@@ -2317,7 +2338,7 @@ SOFTWARE.</p>
         self.setMinimumSize(500, 400)
 
         self.setLayout(layout)
-        self.setWindowTitle('About CDDA Game Launcher')
+        self.setWindowTitle(_('About CDDA Game Launcher'))
 
 
 class LauncherSettingsGroupBox(QGroupBox):
@@ -2327,7 +2348,7 @@ class LauncherSettingsGroupBox(QGroupBox):
         layout = QGridLayout()
 
         command_line_parameters_label = QLabel()
-        command_line_parameters_label.setText('Command line parameters:')
+        command_line_parameters_label.setText(_('Command line parameters:'))
         layout.addWidget(command_line_parameters_label, 0, 0, Qt.AlignRight)
         self.command_line_parameters_label = command_line_parameters_label
 
@@ -2341,7 +2362,7 @@ class LauncherSettingsGroupBox(QGroupBox):
 
         keep_launcher_open_checkbox = QCheckBox()
         keep_launcher_open_checkbox.setText(
-            'Keep the launcher opened after launching the game')
+            _('Keep the launcher opened after launching the game'))
         check_state = (Qt.Checked if config_true(get_config_value(
             'keep_launcher_open', 'False')) else Qt.Unchecked)
         keep_launcher_open_checkbox.setCheckState(check_state)
@@ -2351,8 +2372,8 @@ class LauncherSettingsGroupBox(QGroupBox):
 
         if getattr(sys, 'frozen', False):
             no_launcher_version_check_checkbox = QCheckBox()
-            no_launcher_version_check_checkbox.setText('Do not check '
-                'for new version of the CDDA Game Launcher on launch')
+            no_launcher_version_check_checkbox.setText(_('Do not check '
+                'for new version of the CDDA Game Launcher on launch'))
             check_state = (Qt.Checked if config_true(get_config_value(
                 'prevent_version_check_launch', 'False'))
                 else Qt.Unchecked)
@@ -2364,7 +2385,7 @@ class LauncherSettingsGroupBox(QGroupBox):
             self.no_launcher_version_check_checkbox = (
                 no_launcher_version_check_checkbox)
 
-        self.setTitle('Launcher')
+        self.setTitle(_('Launcher'))
         self.setLayout(layout)
 
     def nlvcc_changed(self, state):
@@ -2387,11 +2408,11 @@ class UpdateSettingsGroupBox(QGroupBox):
 
         prevent_save_move_checkbox = QCheckBox()
         prevent_save_move_checkbox.setText(
-            'Do not copy or move the save directory')
-        prevent_save_move_checkbox.setToolTip('If your save directory size is '
+            _('Do not copy or move the save directory'))
+        prevent_save_move_checkbox.setToolTip(_('If your save directory size is '
             'large, it might take a long time to copy it during the update '
             'process.\nThis option might help you speed the whole thing but '
-            'your previous version will lack the save directory.')
+            'your previous version will lack the save directory.'))
         check_state = (Qt.Checked if config_true(get_config_value(
             'prevent_save_move', 'False')) else Qt.Unchecked)
         prevent_save_move_checkbox.setCheckState(check_state)
@@ -2400,8 +2421,8 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.prevent_save_move_checkbox = prevent_save_move_checkbox
 
         keep_archive_copy_checkbox = QCheckBox()
-        keep_archive_copy_checkbox.setText('Keep a copy of the downloaded '
-            'archive in the following directory:')
+        keep_archive_copy_checkbox.setText(_('Keep a copy of the downloaded '
+            'archive in the following directory:'))
         check_state = (Qt.Checked if config_true(get_config_value(
             'keep_archive_copy', 'False')) else Qt.Unchecked)
         keep_archive_copy_checkbox.setCheckState(check_state)
@@ -2437,7 +2458,7 @@ class UpdateSettingsGroupBox(QGroupBox):
 
         auto_refresh_builds_checkbox = QCheckBox()
         auto_refresh_builds_checkbox.setText(
-            'Automatically refresh builds list every')
+            _('Automatically refresh builds list every'))
         check_state = (Qt.Checked if config_true(get_config_value(
             'auto_refresh_builds', 'False')) else Qt.Unchecked)
         auto_refresh_builds_checkbox.setCheckState(check_state)
@@ -2454,16 +2475,16 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.arb_min_spinbox = arb_min_spinbox
 
         arb_min_label = QLabel()
-        arb_min_label.setText('minutes')
+        arb_min_label.setText(_('minutes'))
         arb_layout.addWidget(arb_min_label)
         self.arb_min_label = arb_min_label
 
         arb_group.setLayout(arb_layout)
         layout.addWidget(arb_group, 2, 0, 1, 3)
         self.arb_group = arb_group
-        self.arb_layout = arb_layout        
+        self.arb_layout = arb_layout
 
-        self.setTitle('Update/Installation')
+        self.setTitle(_('Update/Installation'))
         self.setLayout(layout)
 
     def get_settings_tab(self):
@@ -2508,7 +2529,7 @@ class UpdateSettingsGroupBox(QGroupBox):
     def set_ka_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
-                'Archive directory', self.keep_archive_directory_line.text(),
+                _('Archive directory'), self.keep_archive_directory_line.text(),
                 options=options)
         if directory:
             self.keep_archive_directory_line.setText(clean_qt_path(directory))
@@ -2533,7 +2554,7 @@ class LauncherUpdateDialog(QDialog):
         self.http_reply = None
 
         progress_label = QLabel()
-        progress_label.setText('Progress:')
+        progress_label.setText(_('Progress:'))
         layout.addWidget(progress_label, 0, 0, Qt.AlignRight)
         self.progress_label = progress_label
 
@@ -2542,7 +2563,7 @@ class LauncherUpdateDialog(QDialog):
         self.progress_bar = progress_bar
 
         url_label = QLabel()
-        url_label.setText('Url:')
+        url_label.setText(_('Url:'))
         layout.addWidget(url_label, 1, 0, Qt.AlignRight)
         self.url_label = url_label
 
@@ -2553,7 +2574,7 @@ class LauncherUpdateDialog(QDialog):
         self.url_lineedit = url_lineedit
 
         size_label = QLabel()
-        size_label.setText('Size:')
+        size_label.setText(_('Size:'))
         layout.addWidget(size_label, 2, 0, Qt.AlignRight)
         self.size_label = size_label
 
@@ -2562,7 +2583,7 @@ class LauncherUpdateDialog(QDialog):
         self.size_value_label = size_value_label
 
         speed_label = QLabel()
-        speed_label.setText('Speed:')
+        speed_label.setText(_('Speed:'))
         layout.addWidget(speed_label, 3, 0, Qt.AlignRight)
         self.speed_label = speed_label
 
@@ -2571,7 +2592,7 @@ class LauncherUpdateDialog(QDialog):
         self.speed_value_label = speed_value_label
 
         cancel_button = QPushButton()
-        cancel_button.setText('Cancel update')
+        cancel_button.setText(_('Cancel update'))
         cancel_button.setStyleSheet('font-size: 15px;')
         cancel_button.clicked.connect(self.cancel_update)
         layout.addWidget(cancel_button, 4, 0, 1, 2)
@@ -2581,7 +2602,7 @@ class LauncherUpdateDialog(QDialog):
 
         self.setLayout(layout)
         self.setMinimumSize(300, 0)
-        self.setWindowTitle('CDDA Game Launcher self-update')
+        self.setWindowTitle(_('CDDA Game Launcher self-update'))
 
     def showEvent(self, event):
         if not self.shown:
@@ -2678,16 +2699,17 @@ class LauncherUpdateDialog(QDialog):
 
         self.download_speed_count += 1
 
-        self.size_value_label.setText('{0}/{1}'.format(
-            sizeof_fmt(bytes_read), sizeof_fmt(total_bytes)))
+        self.size_value_label.setText('{bytes_read}/{total_bytes}'.format(
+            bytes_read=sizeof_fmt(bytes_read),
+            total_bytes=sizeof_fmt(total_bytes)))
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read
             delta_time = datetime.utcnow() - self.download_last_read
 
             bytes_secs = delta_bytes / delta_time.total_seconds()
-            self.speed_value_label.setText('{0}/s'.format(
-                sizeof_fmt(bytes_secs)))
+            self.speed_value_label.setText('{bytes_sec}/s'.format(
+                bytes_sec=sizeof_fmt(bytes_secs)))
 
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
@@ -2713,14 +2735,14 @@ class BrowserDownloadDialog(QDialog):
         layout = QGridLayout()
 
         info_label = QLabel()
-        info_label.setText(('This {name} cannot be directly downloaded by the '
+        info_label.setText(_('This {name} cannot be directly downloaded by the '
             'launcher. You have to use your browser to download it.').format(
             name=name))
         layout.addWidget(info_label, 0, 0, 1, 2)
         self.info_label = info_label
 
         step1_label = QLabel()
-        step1_label.setText('1. Open the URL in your browser.')
+        step1_label.setText(_('1. Open the URL in your browser.'))
         layout.addWidget(step1_label, 1, 0, 1, 2)
         self.step1_label = step1_label
 
@@ -2735,13 +2757,13 @@ class BrowserDownloadDialog(QDialog):
         self.url_tb = url_tb
 
         step2_label = QLabel()
-        step2_label.setText(('2. Download the {name} on that page and wait '
+        step2_label.setText(_('2. Download the {name} on that page and wait '
             'for the download to complete.').format(name=name))
         layout.addWidget(step2_label, 3, 0, 1, 2)
         self.step2_label = step2_label
 
         step3_label = QLabel()
-        step3_label.setText('3. Select the downloaded archive.')
+        step3_label.setText(_('3. Select the downloaded archive.'))
         layout.addWidget(step3_label, 4, 0, 1, 2)
         self.step3_label = step3_label
 
@@ -2766,13 +2788,13 @@ class BrowserDownloadDialog(QDialog):
         buttons_container.setLayout(buttons_layout)
 
         install_button = QPushButton()
-        install_button.setText('Install this {name}'.format(name=name))
+        install_button.setText(_('Install this {name}').format(name=name))
         install_button.clicked.connect(self.install_clicked)
         buttons_layout.addWidget(install_button)
         self.install_button = install_button
 
         do_not_install_button = QPushButton()
-        do_not_install_button.setText('Do not install')
+        do_not_install_button.setText(_('Do not install'))
         do_not_install_button.clicked.connect(self.do_not_install_clicked)
         buttons_layout.addWidget(do_not_install_button)
         self.do_not_install_button = do_not_install_button
@@ -2783,7 +2805,7 @@ class BrowserDownloadDialog(QDialog):
 
         self.setLayout(layout)
 
-        self.setWindowTitle('Browser download')
+        self.setWindowTitle(_('Browser download'))
 
     def set_download_path(self):
         options = QFileDialog.DontResolveSymlinks
@@ -2832,7 +2854,7 @@ class SoundpacksTab(QTabWidget):
         self.tp_layout = tp_layout
 
         installed_gb = QGroupBox()
-        installed_gb.setTitle('Installed')
+        installed_gb.setTitle(_('Installed'))
         tp_layout.addWidget(installed_gb)
         self.installed_gb = installed_gb
 
@@ -2857,19 +2879,19 @@ class SoundpacksTab(QTabWidget):
         disable_existing_button = QPushButton()
         disable_existing_button.clicked.connect(self.disable_existing)
         disable_existing_button.setEnabled(False)
-        disable_existing_button.setText('Disable')
+        disable_existing_button.setText(_('Disable'))
         ib_layout.addWidget(disable_existing_button)
         self.disable_existing_button = disable_existing_button
 
         delete_existing_button = QPushButton()
         delete_existing_button.clicked.connect(self.delete_existing)
         delete_existing_button.setEnabled(False)
-        delete_existing_button.setText('Delete')
+        delete_existing_button.setText(_('Delete'))
         ib_layout.addWidget(delete_existing_button)
         self.delete_existing_button = delete_existing_button
 
         repository_gb = QGroupBox()
-        repository_gb.setTitle('Repository')
+        repository_gb.setTitle(_('Repository'))
         tp_layout.addWidget(repository_gb)
         self.repository_gb = repository_gb
 
@@ -2886,23 +2908,23 @@ class SoundpacksTab(QTabWidget):
         suggest_new_label = QLabel()
         suggest_new_label.setOpenExternalLinks(True)
         suggest_url = NEW_ISSUE_URL + '?' + urlencode({
-            'title': 'Add this new soundpack to the repository',
-            'body': '''* Name: [Enter the name of the soundpack]
+            'title': _('Add this new soundpack to the repository'),
+            'body': _('''* Name: [Enter the name of the soundpack]
 * Url: [Enter the Url where we can find the soundpack]
 * Author: [Enter the name of the author]
 * Homepage: [Enter the Url of the author website or where the soundpack was published]
 * Soundpack not found in version: {version}
-'''.format(version=version)
+''').format(version=version)
         })
-        suggest_new_label.setText('<a href="{url}">Suggest a new soundpack '
-            'on GitHub</a>'.format(url=suggest_url))
+        suggest_new_label.setText(_('<a href="{url}">Suggest a new soundpack '
+            'on GitHub</a>').format(url=suggest_url))
         repository_gb_layout.addWidget(suggest_new_label)
         self.suggest_new_label = suggest_new_label
 
         install_new_button = QPushButton()
         install_new_button.clicked.connect(self.install_new)
         install_new_button.setEnabled(False)
-        install_new_button.setText('Install this soundpack')
+        install_new_button.setText(_('Install this soundpack'))
         repository_gb_layout.addWidget(install_new_button)
         self.install_new_button = install_new_button
 
@@ -2911,14 +2933,14 @@ class SoundpacksTab(QTabWidget):
         self.top_part = top_part
 
         details_gb = QGroupBox()
-        details_gb.setTitle('Details')
+        details_gb.setTitle(_('Details'))
         layout.addWidget(details_gb)
         self.details_gb = details_gb
 
         details_gb_layout = QGridLayout()
 
         viewname_label = QLabel()
-        viewname_label.setText('View name:')
+        viewname_label.setText(_('View name:'))
         details_gb_layout.addWidget(viewname_label, 0, 0, Qt.AlignRight)
         self.viewname_label = viewname_label
 
@@ -2928,7 +2950,7 @@ class SoundpacksTab(QTabWidget):
         self.viewname_le = viewname_le
 
         name_label = QLabel()
-        name_label.setText('Name:')
+        name_label.setText(_('Name:'))
         details_gb_layout.addWidget(name_label, 1, 0, Qt.AlignRight)
         self.name_label = name_label
 
@@ -2938,7 +2960,7 @@ class SoundpacksTab(QTabWidget):
         self.name_le = name_le
 
         path_label = QLabel()
-        path_label.setText('Path:')
+        path_label.setText(_('Path:'))
         details_gb_layout.addWidget(path_label, 2, 0, Qt.AlignRight)
         self.path_label = path_label
 
@@ -2948,7 +2970,7 @@ class SoundpacksTab(QTabWidget):
         self.path_le = path_le
 
         size_label = QLabel()
-        size_label.setText('Size:')
+        size_label.setText(_('Size:'))
         details_gb_layout.addWidget(size_label, 3, 0, Qt.AlignRight)
         self.size_label = size_label
 
@@ -2958,7 +2980,7 @@ class SoundpacksTab(QTabWidget):
         self.size_le = size_le
 
         homepage_label = QLabel()
-        homepage_label.setText('Home page:')
+        homepage_label.setText(_('Home page:'))
         details_gb_layout.addWidget(homepage_label, 4, 0, Qt.AlignRight)
         self.homepage_label = homepage_label
 
@@ -3068,20 +3090,21 @@ class SoundpacksTab(QTabWidget):
             for soundpack in self.soundpacks:
                 if soundpack['NAME'] == selected_info['name']:
                     confirm_msgbox = QMessageBox()
-                    confirm_msgbox.setWindowTitle('Soundpack already present')
-                    confirm_msgbox.setText('It seems this soundpack is '
+                    confirm_msgbox.setWindowTitle(_('Soundpack already present'
+                        ))
+                    confirm_msgbox.setText(_('It seems this soundpack is '
                         'already installed. The launcher will not overwrite '
                         'the soundpack if it has the same directory name. You '
                         'might want to delete the soundpack first if you want '
                         'to update it. Also, there can only be a single '
                         'soundpack with the same name value available in the '
-                        'game.')
-                    confirm_msgbox.setInformativeText('Are you sure you want '
-                        'to install the {view} soundpack?'.format(
+                        'game.'))
+                    confirm_msgbox.setInformativeText(_('Are you sure you want '
+                        'to install the {view} soundpack?').format(
                             view=selected_info['viewname']))
-                    confirm_msgbox.addButton('Install the soundpack',
+                    confirm_msgbox.addButton(_('Install the soundpack'),
                         QMessageBox.YesRole)
-                    confirm_msgbox.addButton('Do not install again',
+                    confirm_msgbox.addButton(_('Do not install again'),
                         QMessageBox.NoRole)
                     confirm_msgbox.setIcon(QMessageBox.Warning)
 
@@ -3128,7 +3151,7 @@ class SoundpacksTab(QTabWidget):
                 status_bar.busy += 1
 
                 downloading_label = QLabel()
-                downloading_label.setText('Downloading: {0}'.format(
+                downloading_label.setText(_('Downloading: {0}').format(
                     selected_info['url']))
                 status_bar.addWidget(downloading_label, 100)
                 self.downloading_label = downloading_label
@@ -3163,7 +3186,8 @@ class SoundpacksTab(QTabWidget):
                 self.download_http_reply.downloadProgress.connect(
                     self.download_dl_progress)
 
-                self.install_new_button.setText('Cancel soundpack installation')
+                self.install_new_button.setText(_('Cancel soundpack '
+                    'installation'))
                 self.installed_lv.setEnabled(False)
                 self.repository_lv.setEnabled(False)
 
@@ -3179,8 +3203,8 @@ class SoundpacksTab(QTabWidget):
                     self.installing_new_soundpack = True
                     self.downloaded_file = bd_dialog.downloaded_path
 
-                    self.install_new_button.setText('Cancel soundpack '
-                        'installation')
+                    self.install_new_button.setText(_('Cancel soundpack '
+                        'installation'))
                     self.installed_lv.setEnabled(False)
                     self.repository_lv.setEnabled(False)
 
@@ -3191,7 +3215,7 @@ class SoundpacksTab(QTabWidget):
                     status_bar = main_window.statusBar()
 
                     # Test downloaded file
-                    status_bar.showMessage('Testing downloaded file archive')
+                    status_bar.showMessage(_('Testing downloaded file archive'))
 
                     if self.downloaded_file.lower().endswith('.zip'):
                         archive_class = zipfile.ZipFile
@@ -3208,14 +3232,14 @@ class SoundpacksTab(QTabWidget):
                             if test() is not None:
                                 status_bar.clearMessage()
                                 status_bar.showMessage(
-                                    'Downloaded archive is invalid')
+                                    _('Downloaded archive is invalid'))
 
                                 self.finish_install_new_soundpack()
                                 return
                     except archive_exception:
                         status_bar.clearMessage()
-                        status_bar.showMessage('Selected file is a bad '
-                            'archive file')
+                        status_bar.showMessage(_('Selected file is a bad '
+                            'archive file'))
 
                         self.finish_install_new_soundpack()
                         return
@@ -3249,7 +3273,7 @@ class SoundpacksTab(QTabWidget):
                 if os.path.isdir(self.extract_dir):
                     retry_rmtree(self.extract_dir)
             
-            status_bar.showMessage('Soundpack installation cancelled')
+            status_bar.showMessage(_('Soundpack installation cancelled'))
 
             self.finish_install_new_soundpack()
 
@@ -3284,7 +3308,7 @@ class SoundpacksTab(QTabWidget):
                 status_bar.busy += 1
 
                 downloading_label = QLabel()
-                downloading_label.setText('Downloading: {0}'.format(
+                downloading_label.setText(_('Downloading: {0}').format(
                     redirect.toString()))
                 status_bar.addWidget(downloading_label, 100)
                 self.downloading_label = downloading_label
@@ -3320,14 +3344,14 @@ class SoundpacksTab(QTabWidget):
                     self.download_dl_progress)
             else:
                 # Test downloaded file
-                status_bar.showMessage('Testing downloaded file archive')
+                status_bar.showMessage(_('Testing downloaded file archive'))
 
                 try:
                     with zipfile.ZipFile(self.downloaded_file) as z:
                         if z.testzip() is not None:
                             status_bar.clearMessage()
-                            status_bar.showMessage('Downloaded archive is '
-                                'invalid')
+                            status_bar.showMessage(_('Downloaded archive is '
+                                'invalid'))
 
                             download_dir = os.path.dirname(self.downloaded_file)
                             retry_rmtree(download_dir)
@@ -3337,7 +3361,7 @@ class SoundpacksTab(QTabWidget):
                             return
                 except zipfile.BadZipFile:
                     status_bar.clearMessage()
-                    status_bar.showMessage('Could not download soundpack')
+                    status_bar.showMessage(_('Could not download soundpack'))
 
                     download_dir = os.path.dirname(self.downloaded_file)
                     retry_rmtree(download_dir)
@@ -3356,7 +3380,7 @@ class SoundpacksTab(QTabWidget):
         self.installed_lv.setEnabled(True)
         self.repository_lv.setEnabled(True)
 
-        self.install_new_button.setText('Install this soundpack')
+        self.install_new_button.setText(_('Install this soundpack'))
 
         self.get_main_tab().enable_tab()
         self.get_mods_tab().enable_tab()
@@ -3373,16 +3397,17 @@ class SoundpacksTab(QTabWidget):
 
         self.download_speed_count += 1
 
-        self.downloading_size_label.setText('{0}/{1}'.format(
-            sizeof_fmt(bytes_read), sizeof_fmt(total_bytes)))
+        self.downloading_size_label.setText(_('{bytes_read}/{total_bytes}'
+            ).format(bytes_read=sizeof_fmt(bytes_read),
+                total_bytes=sizeof_fmt(total_bytes)))
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read
             delta_time = datetime.utcnow() - self.download_last_read
 
             bytes_secs = delta_bytes / delta_time.total_seconds()
-            self.dowloading_speed_label.setText('{0}/s'.format(
-                sizeof_fmt(bytes_secs)))
+            self.dowloading_speed_label.setText(_('{bytes_sec}/s').format(
+                bytes_sec=sizeof_fmt(bytes_secs)))
 
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
@@ -3447,7 +3472,7 @@ class SoundpacksTab(QTabWidget):
             else:
                 extracting_element = self.extracting_infolist[
                     self.extracting_index]
-                self.extracting_label.setText('Extracting {0}'.format(
+                self.extracting_label.setText(_('Extracting {0}').format(
                     extracting_element.filename))
                 
                 self.extracting_zipfile.extract(extracting_element,
@@ -3467,7 +3492,7 @@ class SoundpacksTab(QTabWidget):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
-        status_bar.showMessage('Finding the soundpack')
+        status_bar.showMessage(_('Finding the soundpack'))
 
         next_scans = deque()
         current_scan = scandir(self.extract_dir)
@@ -3495,8 +3520,8 @@ class SoundpacksTab(QTabWidget):
             pass
 
         if soundpack_dir is None:
-            status_bar.showMessage('Soundpack installation cancelled - There '
-                'is no soundpack in the downloaded archive')
+            status_bar.showMessage(_('Soundpack installation cancelled - There '
+                'is no soundpack in the downloaded archive'))
             retry_rmtree(self.extract_dir)
             self.moving_new_soundpack = False
 
@@ -3505,13 +3530,13 @@ class SoundpacksTab(QTabWidget):
             soundpack_dir_name = os.path.basename(soundpack_dir)
             target_dir = os.path.join(self.soundpacks_dir, soundpack_dir_name)
             if os.path.exists(target_dir):
-                status_bar.showMessage('Soundpack installation cancelled - '
+                status_bar.showMessage(_('Soundpack installation cancelled - '
                     'There is already a {basename} directory in '
-                    '{soundpacks_dir}'.format(basename=soundpack_dir_name,
+                    '{soundpacks_dir}').format(basename=soundpack_dir_name,
                         soundpacks_dir=self.soundpacks_dir))
             else:
                 shutil.move(soundpack_dir, self.soundpacks_dir)
-                status_bar.showMessage('Soundpack installation completed')
+                status_bar.showMessage(_('Soundpack installation completed'))
 
             retry_rmtree(self.extract_dir)
             self.moving_new_soundpack = False
@@ -3535,8 +3560,8 @@ class SoundpacksTab(QTabWidget):
                 shutil.move(config_file, new_config_file)
                 selected_info['enabled'] = False
                 self.soundpacks_model.setData(selected, selected_info['VIEW'] +
-                    ' (Disabled)')
-                self.disable_existing_button.setText('Enable')
+                    _(' (Disabled)'))
+                self.disable_existing_button.setText(_('Enable'))
             except OSError as e:
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
@@ -3551,7 +3576,7 @@ class SoundpacksTab(QTabWidget):
                 shutil.move(config_file, new_config_file)
                 selected_info['enabled'] = True
                 self.soundpacks_model.setData(selected, selected_info['VIEW'])
-                self.disable_existing_button.setText('Disable')
+                self.disable_existing_button.setText(_('Disable'))
             except OSError as e:
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
@@ -3567,14 +3592,14 @@ class SoundpacksTab(QTabWidget):
         selected_info = self.soundpacks[selected.row()]
 
         confirm_msgbox = QMessageBox()
-        confirm_msgbox.setWindowTitle('Delete soundpack')
-        confirm_msgbox.setText('This will delete the soundpack directory. It '
-            'cannot be undone.')
-        confirm_msgbox.setInformativeText('Are you sure you want to '
-            'delete the {view} soundpack?'.format(view=selected_info['VIEW']))
-        confirm_msgbox.addButton('Delete the soundpack',
+        confirm_msgbox.setWindowTitle(_('Delete soundpack'))
+        confirm_msgbox.setText(_('This will delete the soundpack directory. It '
+            'cannot be undone.'))
+        confirm_msgbox.setInformativeText(_('Are you sure you want to '
+            'delete the {view} soundpack?').format(view=selected_info['VIEW']))
+        confirm_msgbox.addButton(_('Delete the soundpack'),
             QMessageBox.YesRole)
-        confirm_msgbox.addButton('I want to keep the soundpack',
+        confirm_msgbox.addButton(_('I want to keep the soundpack'),
             QMessageBox.NoRole)
         confirm_msgbox.setIcon(QMessageBox.Warning)
 
@@ -3583,12 +3608,12 @@ class SoundpacksTab(QTabWidget):
             status_bar = main_window.statusBar()
 
             if not retry_rmtree(selected_info['path']):
-                status_bar.showMessage('Soundpack deletion cancelled')
+                status_bar.showMessage(_('Soundpack deletion cancelled'))
             else:
                 self.soundpacks_model.removeRows(selected.row(), 1)
                 self.soundpacks.remove(selected_info)
 
-                status_bar.showMessage('Soundpack deleted')
+                status_bar.showMessage(_('Soundpack deleted'))
 
     def installed_selection(self, selected, previous):
         self.installed_clicked()
@@ -3601,15 +3626,15 @@ class SoundpacksTab(QTabWidget):
             
             self.viewname_le.setText(selected_info['VIEW'])
             self.name_le.setText(selected_info['NAME'])
-            self.path_label.setText('Path:')
+            self.path_label.setText(_('Path:'))
             self.path_le.setText(selected_info['path'])
             self.size_le.setText(sizeof_fmt(selected_info['size']))
             self.homepage_tb.setText('')
 
             if selected_info['enabled']:
-                self.disable_existing_button.setText('Disable')
+                self.disable_existing_button.setText(_('Disable'))
             else:
-                self.disable_existing_button.setText('Enable')
+                self.disable_existing_button.setText(_('Enable'))
 
         self.disable_existing_button.setEnabled(True)
         self.delete_existing_button.setEnabled(True)
@@ -3632,7 +3657,7 @@ class SoundpacksTab(QTabWidget):
             self.name_le.setText(selected_info['name'])
 
             if selected_info['type'] == 'direct_download':
-                self.path_label.setText('Url:')
+                self.path_label.setText(_('Url:'))
                 self.path_le.setText(selected_info['url'])
                 self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
                     url=html.escape(selected_info['homepage'])))
@@ -3647,7 +3672,7 @@ class SoundpacksTab(QTabWidget):
                             self.http_reply.abort()
                         
                         self.http_reply_aborted = False
-                        self.size_le.setText('Getting remote size')
+                        self.size_le.setText(_('Getting remote size'))
                         self.current_repo_info = selected_info
 
                         request = QNetworkRequest(QUrl(selected_info['url']))
@@ -3667,7 +3692,7 @@ class SoundpacksTab(QTabWidget):
                 if 'size' in selected_info:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
                 else:
-                    self.size_le.setText('Unknown')
+                    self.size_le.setText(_('Unknown'))
 
         if (self.soundpacks_dir is not None
             and os.path.isdir(self.soundpacks_dir)):
@@ -3702,7 +3727,7 @@ class SoundpacksTab(QTabWidget):
                 selected_info = self.repo_soundpacks[selected.row()]
 
                 if selected_info is self.current_repo_info:
-                    self.size_le.setText('Unknown')
+                    self.size_le.setText(_('Unknown'))
 
     def config_info(self, config_file):
         val = {}
@@ -3751,7 +3776,7 @@ class SoundpacksTab(QTabWidget):
         self.soundpacks_model.insertRows(self.soundpacks_model.rowCount(), 1)
         disabled_text = ''
         if not soundpack_info['enabled']:
-            disabled_text = ' (Disabled)'
+            disabled_text = _(' (Disabled)')
         self.soundpacks_model.setData(self.soundpacks_model.index(index),
             soundpack_info['VIEW'] + disabled_text)
 
@@ -3881,7 +3906,7 @@ class ModsTab(QTabWidget):
         self.tp_layout = tp_layout
 
         installed_gb = QGroupBox()
-        installed_gb.setTitle('Installed')
+        installed_gb.setTitle(_('Installed'))
         tp_layout.addWidget(installed_gb)
         self.installed_gb = installed_gb
 
@@ -3906,19 +3931,19 @@ class ModsTab(QTabWidget):
         disable_existing_button = QPushButton()
         disable_existing_button.clicked.connect(self.disable_existing)
         disable_existing_button.setEnabled(False)
-        disable_existing_button.setText('Disable')
+        disable_existing_button.setText(_('Disable'))
         ib_layout.addWidget(disable_existing_button)
         self.disable_existing_button = disable_existing_button
 
         delete_existing_button = QPushButton()
         delete_existing_button.clicked.connect(self.delete_existing)
         delete_existing_button.setEnabled(False)
-        delete_existing_button.setText('Delete')
+        delete_existing_button.setText(_('Delete'))
         ib_layout.addWidget(delete_existing_button)
         self.delete_existing_button = delete_existing_button
 
         repository_gb = QGroupBox()
-        repository_gb.setTitle('Repository')
+        repository_gb.setTitle(_('Repository'))
         tp_layout.addWidget(repository_gb)
         self.repository_gb = repository_gb
 
@@ -3935,23 +3960,23 @@ class ModsTab(QTabWidget):
         suggest_new_label = QLabel()
         suggest_new_label.setOpenExternalLinks(True)
         suggest_url = NEW_ISSUE_URL + '?' + urlencode({
-            'title': 'Add this new mod to the repository',
-            'body': '''* Name: [Enter the name of the mod]
+            'title': _('Add this new mod to the repository'),
+            'body': _('''* Name: [Enter the name of the mod]
 * Url: [Enter the Url where we can find the mod]
 * Author: [Enter the name of the author]
 * Homepage: [Enter the Url of the author website or where the mod was published]
 * Mod not found in version: {version}
-'''.format(version=version)
+''').format(version=version)
         })
-        suggest_new_label.setText('<a href="{url}">Suggest a new mod '
-            'on GitHub</a>'.format(url=suggest_url))
+        suggest_new_label.setText(_('<a href="{url}">Suggest a new mod '
+            'on GitHub</a>').format(url=suggest_url))
         repository_gb_layout.addWidget(suggest_new_label)
         self.suggest_new_label = suggest_new_label
 
         install_new_button = QPushButton()
         install_new_button.clicked.connect(self.install_new)
         install_new_button.setEnabled(False)
-        install_new_button.setText('Install this mod')
+        install_new_button.setText(_('Install this mod'))
         repository_gb_layout.addWidget(install_new_button)
         self.install_new_button = install_new_button
 
@@ -3960,14 +3985,14 @@ class ModsTab(QTabWidget):
         self.top_part = top_part
 
         details_gb = QGroupBox()
-        details_gb.setTitle('Details')
+        details_gb.setTitle(_('Details'))
         layout.addWidget(details_gb)
         self.details_gb = details_gb
 
         details_gb_layout = QGridLayout()
 
         name_label = QLabel()
-        name_label.setText('Name:')
+        name_label.setText(_('Name:'))
         details_gb_layout.addWidget(name_label, 0, 0, Qt.AlignRight)
         self.name_label = name_label
 
@@ -3977,7 +4002,7 @@ class ModsTab(QTabWidget):
         self.name_le = name_le
 
         ident_label = QLabel()
-        ident_label.setText('Ident:')
+        ident_label.setText(_('Ident:'))
         details_gb_layout.addWidget(ident_label, 1, 0, Qt.AlignRight)
         self.ident_label = ident_label
 
@@ -3987,7 +4012,7 @@ class ModsTab(QTabWidget):
         self.ident_le = ident_le
 
         author_label = QLabel()
-        author_label.setText('Author:')
+        author_label.setText(_('Author:'))
         details_gb_layout.addWidget(author_label, 2, 0, Qt.AlignRight)
         self.author_label = author_label
 
@@ -3997,7 +4022,7 @@ class ModsTab(QTabWidget):
         self.author_le = author_le
 
         description_label = QLabel()
-        description_label.setText('Description:')
+        description_label.setText(_('Description:'))
         details_gb_layout.addWidget(description_label, 3, 0, Qt.AlignRight)
         self.description_label = description_label
 
@@ -4007,7 +4032,7 @@ class ModsTab(QTabWidget):
         self.description_le = description_le
 
         category_label = QLabel()
-        category_label.setText('Category:')
+        category_label.setText(_('Category:'))
         details_gb_layout.addWidget(category_label, 4, 0, Qt.AlignRight)
         self.category_label = category_label
 
@@ -4017,7 +4042,7 @@ class ModsTab(QTabWidget):
         self.category_le = category_le
 
         path_label = QLabel()
-        path_label.setText('Path:')
+        path_label.setText(_('Path:'))
         details_gb_layout.addWidget(path_label, 5, 0, Qt.AlignRight)
         self.path_label = path_label
 
@@ -4027,7 +4052,7 @@ class ModsTab(QTabWidget):
         self.path_le = path_le
 
         size_label = QLabel()
-        size_label.setText('Size:')
+        size_label.setText(_('Size:'))
         details_gb_layout.addWidget(size_label, 6, 0, Qt.AlignRight)
         self.size_label = size_label
 
@@ -4037,7 +4062,7 @@ class ModsTab(QTabWidget):
         self.size_le = size_le
 
         homepage_label = QLabel()
-        homepage_label.setText('Home page:')
+        homepage_label.setText(_('Home page:'))
         details_gb_layout.addWidget(homepage_label, 7, 0, Qt.AlignRight)
         self.homepage_label = homepage_label
 
@@ -4147,20 +4172,20 @@ class ModsTab(QTabWidget):
             for mod in self.mods:
                 if mod['ident'] == selected_info['ident']:
                     confirm_msgbox = QMessageBox()
-                    confirm_msgbox.setWindowTitle('Mod already present')
-                    confirm_msgbox.setText('It seems this mod is '
+                    confirm_msgbox.setWindowTitle(_('Mod already present'))
+                    confirm_msgbox.setText(_('It seems this mod is '
                         'already installed. The launcher will not overwrite '
                         'the mod if it has the same directory name. You '
                         'might want to delete the mod first if you want '
                         'to update it. Also, there can only be a single '
                         'mod with the same ident value available in the '
-                        'game.')
-                    confirm_msgbox.setInformativeText('Are you sure you want '
-                        'to install the {name} mod?'.format(
+                        'game.'))
+                    confirm_msgbox.setInformativeText(_('Are you sure you want '
+                        'to install the {name} mod?').format(
                             name=selected_info['name']))
-                    confirm_msgbox.addButton('Install the mod',
+                    confirm_msgbox.addButton(_('Install the mod'),
                         QMessageBox.YesRole)
-                    confirm_msgbox.addButton('Do not install again',
+                    confirm_msgbox.addButton(_('Do not install again'),
                         QMessageBox.NoRole)
                     confirm_msgbox.setIcon(QMessageBox.Warning)
 
@@ -4207,7 +4232,7 @@ class ModsTab(QTabWidget):
                 status_bar.busy += 1
 
                 downloading_label = QLabel()
-                downloading_label.setText('Downloading: {0}'.format(
+                downloading_label.setText(_('Downloading: {0}').format(
                     selected_info['url']))
                 status_bar.addWidget(downloading_label, 100)
                 self.downloading_label = downloading_label
@@ -4242,7 +4267,7 @@ class ModsTab(QTabWidget):
                 self.download_http_reply.downloadProgress.connect(
                     self.download_dl_progress)
 
-                self.install_new_button.setText('Cancel mod installation')
+                self.install_new_button.setText(_('Cancel mod installation'))
                 self.installed_lv.setEnabled(False)
                 self.repository_lv.setEnabled(False)
 
@@ -4260,14 +4285,14 @@ class ModsTab(QTabWidget):
                     status_bar = main_window.statusBar()
 
                     if not os.path.isfile(bd_dialog.downloaded_path):
-                        status_bar.showMessage('Could not find downloaded file '
-                            'archive')
+                        status_bar.showMessage(_('Could not find downloaded '
+                            'file archive'))
                     else:
                         self.installing_new_mod = True
                         self.downloaded_file = bd_dialog.downloaded_path
 
-                        self.install_new_button.setText('Cancel mod '
-                            'installation')
+                        self.install_new_button.setText(_('Cancel mod '
+                            'installation'))
                         self.installed_lv.setEnabled(False)
                         self.repository_lv.setEnabled(False)
 
@@ -4275,8 +4300,8 @@ class ModsTab(QTabWidget):
                         self.get_soundpacks_tab().disable_tab()
 
                         # Test downloaded file
-                        status_bar.showMessage('Testing downloaded file '
-                            'archive')
+                        status_bar.showMessage(_('Testing downloaded file '
+                            'archive'))
 
                         if self.downloaded_file.lower().endswith('.7z'):
                             try:
@@ -4284,15 +4309,15 @@ class ModsTab(QTabWidget):
                                     archive = Archive7z(f)
                             except FormatError:
                                 status_bar.clearMessage()
-                                status_bar.showMessage('Selected file is a bad '
-                                    'archive file')
+                                status_bar.showMessage(_('Selected file is a '
+                                    'bad archive file'))
 
                                 self.finish_install_new_mod()
                                 return
                             except NoPasswordGivenError:
                                 status_bar.clearMessage()
-                                status_bar.showMessage('Selected file is a '
-                                    'password protected archive file')
+                                status_bar.showMessage(_('Selected file is a '
+                                    'password protected archive file'))
 
                                 self.finish_install_new_mod()
                                 return
@@ -4312,14 +4337,14 @@ class ModsTab(QTabWidget):
                                     if test() is not None:
                                         status_bar.clearMessage()
                                         status_bar.showMessage(
-                                            'Downloaded archive is invalid')
+                                            _('Downloaded archive is invalid'))
 
                                         self.finish_install_new_mod()
                                         return
                             except archive_exception:
                                 status_bar.clearMessage()
-                                status_bar.showMessage('Selected file is a bad '
-                                    'archive file')
+                                status_bar.showMessage(_('Selected file is a '
+                                    'bad archive file'))
 
                                 self.finish_install_new_mod()
                                 return
@@ -4354,7 +4379,7 @@ class ModsTab(QTabWidget):
                 if os.path.isdir(self.extract_dir):
                     retry_rmtree(self.extract_dir)
             
-            status_bar.showMessage('Soundpack installation cancelled')
+            status_bar.showMessage(_('Soundpack installation cancelled'))
 
             self.finish_install_new_mod()
 
@@ -4389,7 +4414,7 @@ class ModsTab(QTabWidget):
                 status_bar.busy += 1
 
                 downloading_label = QLabel()
-                downloading_label.setText('Downloading: {0}'.format(
+                downloading_label.setText(_('Downloading: {0}').format(
                     redirect.toString()))
                 status_bar.addWidget(downloading_label, 100)
                 self.downloading_label = downloading_label
@@ -4425,14 +4450,14 @@ class ModsTab(QTabWidget):
                     self.download_dl_progress)
             else:
                 # Test downloaded file
-                status_bar.showMessage('Testing downloaded file archive')
+                status_bar.showMessage(_('Testing downloaded file archive'))
 
                 try:
                     with zipfile.ZipFile(self.downloaded_file) as z:
                         if z.testzip() is not None:
                             status_bar.clearMessage()
-                            status_bar.showMessage('Downloaded archive is '
-                                'invalid')
+                            status_bar.showMessage(_('Downloaded archive is '
+                                'invalid'))
 
                             download_dir = os.path.dirname(self.downloaded_file)
                             retry_rmtree(download_dir)
@@ -4442,7 +4467,7 @@ class ModsTab(QTabWidget):
                             return
                 except zipfile.BadZipFile:
                     status_bar.clearMessage()
-                    status_bar.showMessage('Could not download mod')
+                    status_bar.showMessage(_('Could not download mod'))
 
                     download_dir = os.path.dirname(self.downloaded_file)
                     retry_rmtree(download_dir)
@@ -4461,7 +4486,7 @@ class ModsTab(QTabWidget):
         self.installed_lv.setEnabled(True)
         self.repository_lv.setEnabled(True)
 
-        self.install_new_button.setText('Install this mod')
+        self.install_new_button.setText(_('Install this mod'))
 
         self.get_main_tab().enable_tab()
         self.get_soundpacks_tab().enable_tab()
@@ -4478,16 +4503,18 @@ class ModsTab(QTabWidget):
 
         self.download_speed_count += 1
 
-        self.downloading_size_label.setText('{0}/{1}'.format(
-            sizeof_fmt(bytes_read), sizeof_fmt(total_bytes)))
+        self.downloading_size_label.setText(_('{bytes_read}/{total_bytes}'
+            ).format(
+            bytes_read=sizeof_fmt(bytes_read),
+            total_bytes=sizeof_fmt(total_bytes)))
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read
             delta_time = datetime.utcnow() - self.download_last_read
 
             bytes_secs = delta_bytes / delta_time.total_seconds()
-            self.dowloading_speed_label.setText('{0}/s'.format(
-                sizeof_fmt(bytes_secs)))
+            self.dowloading_speed_label.setText(_('{bytes_sec}/s').format(
+                bytes_sec=sizeof_fmt(bytes_secs)))
 
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
@@ -4569,7 +4596,7 @@ class ModsTab(QTabWidget):
                 extracting_element = self.extracting_infolist[
                     self.extracting_index]
 
-                self.extracting_label.setText('Extracting {0}'.format(
+                self.extracting_label.setText(_('Extracting {0}').format(
                     extracting_element.filename))
 
                 if self.downloaded_file.lower().endswith('.7z'):
@@ -4598,7 +4625,7 @@ class ModsTab(QTabWidget):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
-        status_bar.showMessage('Finding the mod')
+        status_bar.showMessage(_('Finding the mod'))
 
         next_scans = deque()
         current_scan = scandir(self.extract_dir)
@@ -4626,8 +4653,8 @@ class ModsTab(QTabWidget):
             pass
 
         if mod_dir is None:
-            status_bar.showMessage('Mod installation cancelled - There '
-                'is no mod in the downloaded archive')
+            status_bar.showMessage(_('Mod installation cancelled - There '
+                'is no mod in the downloaded archive'))
             retry_rmtree(self.extract_dir)
             self.moving_new_mod = False
 
@@ -4636,13 +4663,13 @@ class ModsTab(QTabWidget):
             mod_dir_name = os.path.basename(mod_dir)
             target_dir = os.path.join(self.mods_dir, mod_dir_name)
             if os.path.exists(target_dir):
-                status_bar.showMessage('Mod installation cancelled - '
+                status_bar.showMessage(_('Mod installation cancelled - '
                     'There is already a {basename} directory in '
-                    '{mods_dir}'.format(basename=mod_dir_name,
+                    '{mods_dir}').format(basename=mod_dir_name,
                         mods_dir=self.mods_dir))
             else:
                 shutil.move(mod_dir, self.mods_dir)
-                status_bar.showMessage('Mod installation completed')
+                status_bar.showMessage(_('Mod installation completed'))
 
             retry_rmtree(self.extract_dir)
             self.moving_new_mod = False
@@ -4666,8 +4693,9 @@ class ModsTab(QTabWidget):
                 shutil.move(config_file, new_config_file)
                 selected_info['enabled'] = False
                 self.mods_model.setData(selected, selected_info.get('name',
-                    selected_info.get('ident', '*Error*')) + ' (Disabled)')
-                self.disable_existing_button.setText('Enable')
+                    selected_info.get('ident', _('*Error*'))) +
+                    _(' (Disabled)'))
+                self.disable_existing_button.setText(_('Enable'))
             except OSError as e:
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
@@ -4682,8 +4710,8 @@ class ModsTab(QTabWidget):
                 shutil.move(config_file, new_config_file)
                 selected_info['enabled'] = True
                 self.mods_model.setData(selected, selected_info.get('name',
-                    selected_info.get('ident', '*Error*')))
-                self.disable_existing_button.setText('Disable')
+                    selected_info.get('ident', _('*Error*'))))
+                self.disable_existing_button.setText(_('Disable'))
             except OSError as e:
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
@@ -4699,14 +4727,14 @@ class ModsTab(QTabWidget):
         selected_info = self.mods[selected.row()]
 
         confirm_msgbox = QMessageBox()
-        confirm_msgbox.setWindowTitle('Delete mod')
-        confirm_msgbox.setText('This will delete the mod directory. It '
-            'cannot be undone.')
-        confirm_msgbox.setInformativeText('Are you sure you want to '
-            'delete the {view} mod?'.format(view=selected_info['name']))
-        confirm_msgbox.addButton('Delete the mod',
+        confirm_msgbox.setWindowTitle(_('Delete mod'))
+        confirm_msgbox.setText(_('This will delete the mod directory. It '
+            'cannot be undone.'))
+        confirm_msgbox.setInformativeText(_('Are you sure you want to '
+            'delete the {view} mod?').format(view=selected_info['name']))
+        confirm_msgbox.addButton(_('Delete the mod'),
             QMessageBox.YesRole)
-        confirm_msgbox.addButton('I want to keep the mod',
+        confirm_msgbox.addButton(_('I want to keep the mod'),
             QMessageBox.NoRole)
         confirm_msgbox.setIcon(QMessageBox.Warning)
 
@@ -4715,12 +4743,12 @@ class ModsTab(QTabWidget):
             status_bar = main_window.statusBar()
 
             if not retry_rmtree(selected_info['path']):
-                status_bar.showMessage('Mod deletion cancelled')
+                status_bar.showMessage(_('Mod deletion cancelled'))
             else:
                 self.mods_model.removeRows(selected.row(), 1)
                 self.mods.remove(selected_info)
 
-                status_bar.showMessage('Mod deleted')
+                status_bar.showMessage(_('Mod deleted'))
 
     def installed_selection(self, selected, previous):
         self.installed_clicked()
@@ -4742,9 +4770,9 @@ class ModsTab(QTabWidget):
             self.homepage_tb.setText('')
 
             if selected_info['enabled']:
-                self.disable_existing_button.setText('Disable')
+                self.disable_existing_button.setText(_('Disable'))
             else:
-                self.disable_existing_button.setText('Enable')
+                self.disable_existing_button.setText(_('Enable'))
 
         self.disable_existing_button.setEnabled(True)
         self.delete_existing_button.setEnabled(True)
@@ -4770,7 +4798,7 @@ class ModsTab(QTabWidget):
             self.category_le.setText(selected_info.get('category', ''))
 
             if selected_info['type'] == 'direct_download':
-                self.path_label.setText('Url:')
+                self.path_label.setText(_('Url:'))
                 self.path_le.setText(selected_info['url'])
                 self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
                     url=html.escape(selected_info['homepage'])))
@@ -4785,7 +4813,7 @@ class ModsTab(QTabWidget):
                             self.http_reply.abort()
                         
                         self.http_reply_aborted = False
-                        self.size_le.setText('Getting remote size')
+                        self.size_le.setText(_('Getting remote size'))
                         self.current_repo_info = selected_info
 
                         request = QNetworkRequest(QUrl(selected_info['url']))
@@ -4798,14 +4826,14 @@ class ModsTab(QTabWidget):
                 else:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
             elif selected_info['type'] == 'browser_download':
-                self.path_label.setText('Url:')
+                self.path_label.setText(_('Url:'))
                 self.path_le.setText(selected_info['url'])
                 self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
                     url=html.escape(selected_info['homepage'])))
                 if 'size' in selected_info:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
                 else:
-                    self.size_le.setText('Unknown')
+                    self.size_le.setText(_('Unknown'))
 
         if (self.mods_dir is not None
             and os.path.isdir(self.mods_dir)):
@@ -4840,7 +4868,7 @@ class ModsTab(QTabWidget):
                 selected_info = self.repo_mods[selected.row()]
 
                 if selected_info is self.current_repo_info:
-                    self.size_le.setText('Unknown')
+                    self.size_le.setText(_('Unknown'))
 
     def config_info(self, config_file):
         val = {}
@@ -4892,9 +4920,9 @@ class ModsTab(QTabWidget):
         self.mods_model.insertRows(self.mods_model.rowCount(), 1)
         disabled_text = ''
         if not mod_info['enabled']:
-            disabled_text = ' (Disabled)'
+            disabled_text = _(' (Disabled)')
         self.mods_model.setData(self.mods_model.index(index),
-            mod_info.get('name', mod_info.get('ident', '*Error*')) +
+            mod_info.get('name', mod_info.get('ident', _('*Error*'))) +
             disabled_text)
 
     def clear_details(self):
@@ -5083,9 +5111,9 @@ class ProgressCopyTree(QTimer):
 
     def __init__(self, src, dst, status_bar, name):
         if not os.path.isdir(src):
-            raise OSError("Source path '%s' is not a directory" % src)
+            raise OSError(_("Source path '%s' is not a directory") % src)
         if os.path.exists(dst):
-            raise OSError("Destination path '%s' already exists" % dst)
+            raise OSError(_("Destination path '%s' already exists") % dst)
 
         super(ProgressCopyTree, self).__init__()
 
@@ -5124,10 +5152,14 @@ class ProgressCopyTree(QTimer):
                         self.total_files += 1
                         self.total_copy_size += entry.stat().st_size
 
-                        self.status_label.setText('Analysing {name} - Found '
-                            '{files} file{fp} ({size})'.format(name=self.name,
-                                files=self.total_files,
-                                fp=splurial(self.total_files),
+                        files_text = gettext.ngettext('file', 'files',
+                            self.total_files)
+
+                        self.status_label.setText(_('Analysing {name} - Found '
+                            '{file_count} {files} ({size})').format(
+                                name=self.name,
+                                file_count=self.total_files,
+                                files=files_text,
                                 size=sizeof_fmt(self.total_copy_size)))
 
                 except StopIteration:
@@ -5146,9 +5178,10 @@ class ProgressCopyTree(QTimer):
                             self.copying_speed_label = copying_speed_label
 
                             copying_size_label = QLabel()
-                            copying_size_label.setText('{0}/{1}'.format(
-                                sizeof_fmt(0),
-                                sizeof_fmt(self.total_copy_size)))
+                            copying_size_label.setText(
+                                _('{bytes_read}/{total_bytes}').format(
+                                bytes_read=sizeof_fmt(0),
+                                total_bytes=sizeof_fmt(self.total_copy_size)))
                             self.status_bar.addWidget(copying_size_label)
                             self.copying_size_label = copying_size_label
 
@@ -5214,9 +5247,10 @@ class ProgressCopyTree(QTimer):
                     self.copy_speed_count += 1
 
                     if self.copy_speed_count % 10 == 0:
-                        self.copying_size_label.setText('{0}/{1}'.format(
-                            sizeof_fmt(self.copied_size),
-                            sizeof_fmt(self.total_copy_size)))
+                        self.copying_size_label.setText(
+                            _('{bytes_read}/{total_bytes}').format(
+                            bytes_read=sizeof_fmt(self.copied_size),
+                            total_bytes=sizeof_fmt(self.total_copy_size)))
 
                         delta_bytes = self.copied_size - self.last_copied_bytes
                         delta_time = datetime.utcnow() - self.last_copied
@@ -5224,8 +5258,8 @@ class ProgressCopyTree(QTimer):
                             delta_time = timedelta.resolution
 
                         bytes_secs = delta_bytes / delta_time.total_seconds()
-                        self.copying_speed_label.setText('{0}/s'.format(
-                            sizeof_fmt(bytes_secs)))
+                        self.copying_speed_label.setText(_('{bytes_sec}/s'
+                            ).format(bytes_sec=sizeof_fmt(bytes_secs)))
 
                         self.last_copied_bytes = self.copied_size
                         self.last_copied = datetime.utcnow()
@@ -5235,7 +5269,7 @@ class ProgressCopyTree(QTimer):
         if self.status_label is not None:
             entry_rel_path = os.path.relpath(entry.path, self.src)
             self.status_label.setText(
-                'Copying {name} - {entry}'.format(name=self.name,
+                _('Copying {name} - {entry}').format(name=self.name,
                     entry=entry_rel_path))
 
     def start(self):
@@ -5245,7 +5279,7 @@ class ProgressCopyTree(QTimer):
 
         self.analysing = True
         status_label = QLabel()
-        status_label.setText('Analysing {name}'.format(name=self.name))
+        status_label.setText(_('Analysing {name}').format(name=self.name))
         self.status_bar.addWidget(status_label, 100)
         self.status_label = status_label
 
@@ -5292,8 +5326,8 @@ class ExceptionWindow(QWidget):
         layout = QGridLayout()
 
         information_label = QLabel()
-        information_label.setText('The CDDA Game Launcher just crashed. An '
-            'unhandled exception was raised. Here are the details.')
+        information_label.setText(_('The CDDA Game Launcher just crashed. An '
+            'unhandled exception was raised. Here are the details.'))
         layout.addWidget(information_label, 0, 0)
         self.information_label = information_label
 
@@ -5304,13 +5338,13 @@ class ExceptionWindow(QWidget):
         text_content = QTextBrowser()
         text_content.setReadOnly(True)
         text_content.setOpenExternalLinks(True)
-        text_content.setHtml('''
+        text_content.setHtml(_('''
 <p>CDDA Game Launcher version: {version}</p>
 <p>Type: {extype}</p>
 <p>Value: {value}</p>
 <p>Traceback:</p>
 <code>{traceback}</code>
-'''.format(version=html.escape(version), extype=html.escape(str(extype)),
+''').format(version=html.escape(version), extype=html.escape(str(extype)),
     value=html.escape(str(value)),
     traceback=traceback_content))
 
@@ -5318,8 +5352,8 @@ class ExceptionWindow(QWidget):
         self.text_content = text_content
 
         report_url = NEW_ISSUE_URL + '?' + urlencode({
-            'title': 'Unhandled exception: [Enter a title]',
-            'body': '''* Description: [Enter what you did and what happened]
+            'title': _('Unhandled exception: [Enter a title]'),
+            'body': _('''* Description: [Enter what you did and what happened]
 * Version: {version}
 * Type: `{extype}`
 * Value: {value}
@@ -5327,26 +5361,26 @@ class ExceptionWindow(QWidget):
 ```
 {traceback}
 ```
-'''.format(version=version, extype=str(extype), value=str(value),
+''').format(version=version, extype=str(extype), value=str(value),
     traceback=tb_io.getvalue())
         })
 
         report_label = QLabel()
         report_label.setOpenExternalLinks(True)
-        report_label.setText('Please help up make a better launcher '
-            '<a href="{url}">by reporting this issue on GitHub</a>.'.format(
+        report_label.setText(_('Please help up make a better launcher '
+            '<a href="{url}">by reporting this issue on GitHub</a>.').format(
                 url=html.escape(report_url)))
         layout.addWidget(report_label, 2, 0)
         self.report_label = report_label
 
         exit_button = QPushButton()
-        exit_button.setText('Exit')
+        exit_button.setText(_('Exit'))
         exit_button.clicked.connect(self.close)
         layout.addWidget(exit_button, 3, 0, Qt.AlignRight)
         self.exit_button = exit_button
 
         self.setLayout(layout)
-        self.setWindowTitle('Something went wrong')
+        self.setWindowTitle(_('Something went wrong'))
         self.setMinimumSize(350, 0)
 
 def start_ui(bdir):
