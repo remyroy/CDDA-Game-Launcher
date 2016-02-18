@@ -3,6 +3,8 @@
 from distutils.core import setup
 from distutils.cmd import Command
 
+from babel.messages import frontend as babel
+
 from subprocess import call, check_output, CalledProcessError
 
 class Installer(Command):
@@ -49,5 +51,9 @@ setup(name='cddagl',
       author_email='remyroy@remyroy.com',
       url='https://github.com/remyroy/CDDA-Game-Launcher',
       packages=['cddagl'],
-      cmdclass={'installer': Installer},
-     )
+      cmdclass={'installer': Installer,
+          'compile_catalog': babel.compile_catalog,
+          'extract_messages': babel.extract_messages,
+          'init_catalog': babel.init_catalog,
+          'update_catalog': babel.update_catalog},
+)

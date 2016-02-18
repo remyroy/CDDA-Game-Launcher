@@ -9,3 +9,4 @@ arrow
 scandir
 rarfile
 pylzma
+Babel

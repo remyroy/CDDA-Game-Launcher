@@ -19,6 +19,9 @@ except ImportError:
 from datetime import datetime, timedelta
 import arrow
 
+import gettext
+_ = gettext.gettext
+
 from io import BytesIO, StringIO
 from collections import deque
 
@@ -81,12 +84,13 @@ def clean_qt_path(path):
 def is_64_windows():
     return 'PROGRAMFILES(X86)' in os.environ
 
-def sizeof_fmt(num, suffix='B'):
-    for unit in ['','Ki','Mi','Gi','Ti','Pi','Ei','Zi']:
+def sizeof_fmt(num, suffix=_('B')):
+    for unit in ['', _('Ki'), _('Mi'), _('Gi'), _('Ti'), _('Pi'), _('Ei'),
+        _('Zi')]:
         if abs(num) < 1024.0:
-            return "%3.1f %s%s" % (num, unit, suffix)
+            return _("%3.1f %s%s") % (num, unit, suffix)
         num /= 1024.0
-    return "%.1f %s%s" % (num, 'Yi', suffix)
+    return _("%.1f %s%s") % (num, _('Yi'), suffix)
 
 def config_true(value):
     return value == 'True' or value == '1'
@@ -107,17 +111,17 @@ def retry_rmtree(path):
             shutil.rmtree(path, onerror=remove_readonly)
         except OSError as e:
             retry_msgbox = QMessageBox()
-            retry_msgbox.setWindowTitle('Cannot remove directory')
+            retry_msgbox.setWindowTitle(_('Cannot remove directory'))
 
             process = None
             if e.filename is not None:
                 process = find_process_with_file_handle(e.filename)
 
-            text = '''
+            text = _('''
 <p>The launcher failed to remove the following directory: {directory}</p>
 <p>When trying to remove or access {filename}, the launcher raised the 
 following error: {error}</p>
-'''.format(
+''').format(
     directory=html.escape(path),
     filename=html.escape(e.filename),
     error=html.escape(e.strerror))
@@ -2784,8 +2788,8 @@ class BrowserDownloadDialog(QDialog):
     def set_download_path(self):
         options = QFileDialog.DontResolveSymlinks
         selected_file, selected_filter = QFileDialog.getOpenFileName(self,
-            'Downloaded archive', self.download_path_le.text(),
-            'Archive files (*.zip *.rar)',
+            _('Downloaded archive'), self.download_path_le.text(),
+            _('Archive files {formats}').format(formats='(*.zip *.rar *.7z)'),
             options=options)
         if selected_file:
             self.download_path_le.setText(clean_qt_path(selected_file))

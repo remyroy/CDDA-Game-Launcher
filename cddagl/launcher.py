@@ -5,6 +5,9 @@ import traceback
 import logging
 from logging.handlers import RotatingFileHandler
 
+import gettext
+_ = gettext.gettext
+
 from io import StringIO
 
 if getattr(sys, 'frozen', False):
@@ -22,6 +25,9 @@ from cddagl.__version__ import version
 
 MAX_LOG_SIZE = 1024 * 1024
 MAX_LOG_FILES = 5
+
+def init_gettext():
+    pass
 
 def init_logging():
     logger = logging.getLogger('cddagl')
@@ -49,7 +55,7 @@ def init_logging():
         handler = logging.StreamHandler()
         logger.addHandler(handler)
 
-    logger.info('Launcher started: {version}'.format(version=version))
+    logger.info(_('Launcher started: {version}').format(version=version))
 
 def handle_exception(extype, value, tb):
     logger = logging.getLogger('cddagl')
@@ -57,8 +63,8 @@ def handle_exception(extype, value, tb):
     tb_io = StringIO()
     traceback.print_tb(tb, file=tb_io)
 
-    logger.critical('Global error:\nLauncher version: {version}\nType: '
-        '{extype}\nValue: {value}\nTraceback:\n{traceback}'.format(
+    logger.critical(_('Global error:\nLauncher version: {version}\nType: '
+        '{extype}\nValue: {value}\nTraceback:\n{traceback}').format(
             version=version, extype=str(extype), value=str(value),
             traceback=tb_io.getvalue()))
 
@@ -68,6 +74,7 @@ def init_exception_catcher():
     sys.excepthook = handle_exception
 
 if __name__ == '__main__':
+    init_gettext()
     init_logging()
     init_exception_catcher()
 
