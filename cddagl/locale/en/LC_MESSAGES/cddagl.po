@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 0.8.5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-02-22 15:24-0500\n"
+"POT-Creation-Date: 2016-02-22 15:56-0500\n"
 "PO-Revision-Date: 2016-02-18 11:48-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -428,12 +428,13 @@ msgstr ""
 msgid "Installation completed"
 msgstr ""
 
-#: cddagl/ui.py:2102 cddagl/ui.py:3471 cddagl/ui.py:4577 cddagl/ui.py:5252
-#: cddagl/ui.py:5321
+#: cddagl/ui.py:2102 cddagl/ui.py:2773 cddagl/ui.py:3471 cddagl/ui.py:4577
+#: cddagl/ui.py:5252 cddagl/ui.py:5321
 msgid "{bytes_read}/{total_bytes}"
 msgstr ""
 
-#: cddagl/ui.py:2111 cddagl/ui.py:3480 cddagl/ui.py:4587 cddagl/ui.py:5331
+#: cddagl/ui.py:2111 cddagl/ui.py:2782 cddagl/ui.py:3480 cddagl/ui.py:4587
+#: cddagl/ui.py:5331
 msgid "{bytes_sec}/s"
 msgstr ""
 

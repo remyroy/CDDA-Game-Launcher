@@ -995,7 +995,7 @@ class GameDirGroupBox(QGroupBox):
             status_bar.busy += 1
 
             reading_label = QLabel()
-            reading_label.setText(_('Reading: {0}'.format(self.exe_path)))
+            reading_label.setText(_('Reading: {0}').format(self.exe_path))
             status_bar.addWidget(reading_label, 100)
             self.reading_label = reading_label
 
@@ -2770,7 +2770,7 @@ class LauncherUpdateDialog(QDialog):
 
         self.download_speed_count += 1
 
-        self.size_value_label.setText('{bytes_read}/{total_bytes}'.format(
+        self.size_value_label.setText(_('{bytes_read}/{total_bytes}').format(
             bytes_read=sizeof_fmt(bytes_read),
             total_bytes=sizeof_fmt(total_bytes)))
 
@@ -2779,7 +2779,7 @@ class LauncherUpdateDialog(QDialog):
             delta_time = datetime.utcnow() - self.download_last_read
 
             bytes_secs = delta_bytes / delta_time.total_seconds()
-            self.speed_value_label.setText('{bytes_sec}/s'.format(
+            self.speed_value_label.setText(_('{bytes_sec}/s').format(
                 bytes_sec=sizeof_fmt(bytes_secs)))
 
             self.download_last_bytes_read = bytes_read
