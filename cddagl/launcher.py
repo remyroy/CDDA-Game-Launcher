@@ -10,6 +10,13 @@ _ = gettext.gettext
 
 from io import StringIO
 
+from babel.core import Locale
+
+try:
+    from os import scandir
+except ImportError:
+    from scandir import scandir
+
 if getattr(sys, 'frozen', False):
     # we are running in a bundle
     basedir = sys._MEIPASS
@@ -18,16 +25,49 @@ else:
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     sys.path.append(basedir)
 
-from cddagl.config import init_config
+from cddagl.config import init_config, get_config_value
 from cddagl.ui import start_ui, ui_exception
+
+from cddagl.win32 import get_ui_locale
 
 from cddagl.__version__ import version
 
 MAX_LOG_SIZE = 1024 * 1024
 MAX_LOG_FILES = 5
 
+available_locales = []
+app_locale = None
+
 def init_gettext():
-    pass
+    locale_dir = os.path.join(basedir, 'cddagl', 'locale')
+    preferred_locales = []
+
+    selected_locale = get_config_value('locale', None)
+    if selected_locale == 'None':
+        selected_locale = None
+    if selected_locale is not None:
+        preferred_locales.append(selected_locale)
+
+    system_locale = get_ui_locale()
+    if system_locale is not None:
+        preferred_locales.append(system_locale)
+
+    if os.path.isdir(locale_dir):
+        entries = scandir(locale_dir)
+        for entry in entries:
+            if entry.is_dir():
+                available_locales.append(entry.name)
+
+    available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
+
+    app_locale = str(Locale.negotiate(preferred_locales, available_locales))
+
+    global _
+    t = gettext.translation('cddagl', localedir=locale_dir,
+        languages=[app_locale])
+    _ = t.gettext
+
+    return app_locale
 
 def init_logging():
     logger = logging.getLogger('cddagl')
@@ -74,9 +114,10 @@ def init_exception_catcher():
     sys.excepthook = handle_exception
 
 if __name__ == '__main__':
-    init_gettext()
+    init_config(basedir)
+
+    app_locale = init_gettext()
     init_logging()
     init_exception_catcher()
 
-    init_config(basedir)
-    start_ui(basedir)
+    start_ui(basedir, app_locale, available_locales)

@@ -10,6 +10,8 @@ from uuid import UUID
 import win32file
 from pywintypes import error as WinError
 
+import locale
+
 from win32com.shell import shell, shellcon
 
 ntdll = WinDLL('ntdll')
@@ -575,3 +577,6 @@ def find_process_with_file_handle(path):
         kernel32.CloseHandle(phandle)
 
     return found_process
+
+def get_ui_locale():
+    return locale.windows_locale.get(kernel32.GetUserDefaultUILanguage(), None)

@@ -56,7 +56,7 @@ class ExtractUpdateMessages(Command):
             '-F cddagl\locale\mapping.cfg')
 
         call('python setup.py update_catalog -i cddagl\locale\messages.pot -d '
-            'cddagl\locale')
+            'cddagl\locale -D cddagl')
 
 
 setup(name='cddagl',

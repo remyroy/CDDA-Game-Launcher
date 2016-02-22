@@ -21,6 +21,9 @@ import arrow
 
 import gettext
 _ = gettext.gettext
+ngettext = gettext.ngettext
+
+from babel.core import Locale
 
 from io import BytesIO, StringIO
 from collections import deque
@@ -43,18 +46,21 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
     QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
-    QSpinBox, QListView, QAbstractItemView, QTextEdit)
+    QSpinBox, QListView, QAbstractItemView, QTextEdit, QSizePolicy)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build)
-from cddagl.win32 import find_process_with_file_handle, get_downloads_directory
+from cddagl.win32 import (
+    find_process_with_file_handle, get_downloads_directory, get_ui_locale)
 
 from .__version__ import version
 
 main_app = None
 basedir = None
+available_locales = None
+app_locale = None
 
 READ_BUFFER_SIZE = 16 * 1024
 
@@ -170,6 +176,11 @@ class MainWindow(QMainWindow):
             self.restoreGeometry(qt_geometry)
 
         self.setWindowTitle(title)
+
+    def set_text(self):
+        if getattr(sys, 'frozen', False):
+            self.update_action.setText(_('&Check for launcher update'))
+        self.about_action.setText(_('&About'))
 
     def create_status_bar(self):
         status_bar = self.statusBar()
@@ -816,7 +827,8 @@ class GameDirGroupBox(QGroupBox):
 
                 if build is not None:
                     build_date = arrow.get(build['released_on'], 'UTC')
-                    human_delta = build_date.humanize(arrow.utcnow())
+                    human_delta = build_date.humanize(arrow.utcnow(),
+                        locale=app_locale)
                     self.build_value_label.setText(_('{build} ({time_delta})'
                         ).format(build=build['build'], time_delta=human_delta))
                     self.current_build = build['build']
@@ -915,10 +927,9 @@ class GameDirGroupBox(QGroupBox):
                             self.world_dirs.add(world_dir)
                             self.saves_worlds += 1
 
-                worlds_text = gettext.ngettext('World', 'Worlds',
-                    self.saves_worlds)
+                worlds_text = ngettext('World', 'Worlds', self.saves_worlds)
 
-                characters_text = gettext.ngettext('Character', 'Characters',
+                characters_text = ngettext('Character', 'Characters',
                     self.saves_characters)
 
                 self.saves_value_edit.setText(_('{world_count} {worlds} - '
@@ -1021,7 +1032,8 @@ class GameDirGroupBox(QGroupBox):
                             type=self.version_type))
 
                     build_date = arrow.get(self.build_date, 'UTC')
-                    human_delta = build_date.humanize(arrow.utcnow())
+                    human_delta = build_date.humanize(arrow.utcnow(),
+                        locale=app_locale)
                     self.build_value_label.setText(_('{build} ({time_delta})'
                         ).format(build=self.build_number,
                             time_delta=human_delta))
@@ -2116,7 +2128,7 @@ class UpdateGroupBox(QGroupBox):
         self.builds_combo.addItem(_('Fetching remote builds'))
 
         fetching_label = QLabel()
-        fetching_label.setText(_('Fetching: {url}'.format(url=url)))
+        fetching_label.setText(_('Fetching: {url}').format(url=url))
         self.base_url = url
         status_bar.addWidget(fetching_label, 100)
         self.fetching_label = fetching_label
@@ -2188,14 +2200,15 @@ class UpdateGroupBox(QGroupBox):
             self.builds_combo.clear()
             for index, build in enumerate(builds):
                 build_date = arrow.get(build['date'], 'UTC')
-                human_delta = build_date.humanize(arrow.utcnow())
+                human_delta = build_date.humanize(arrow.utcnow(),
+                    locale=app_locale)
 
                 if index == 0:
                     self.builds_combo.addItem(
-                        '{number} ({delta}) - latest'.format(
+                        _('{number} ({delta}) - latest').format(
                         number=build['number'], delta=human_delta))
                 else:
-                    self.builds_combo.addItem('{number} ({delta})'.format(
+                    self.builds_combo.addItem(_('{number} ({delta})').format(
                         number=build['number'], delta=human_delta))
 
             self.builds_combo.setEnabled(True)
@@ -2204,7 +2217,7 @@ class UpdateGroupBox(QGroupBox):
             game_dir_group_box = main_tab.game_dir_group_box
 
             if game_dir_group_box.exe_path is not None:
-                self.update_button.setText('Update game')
+                self.update_button.setText(_('Update game'))
 
                 if (game_dir_group_box.current_build is not None
                     and status_bar.busy == 0):
@@ -2371,6 +2384,44 @@ class LauncherSettingsGroupBox(QGroupBox):
         layout.addWidget(keep_launcher_open_checkbox, 1, 0, 1, 2)
         self.keep_launcher_open_checkbox = keep_launcher_open_checkbox
 
+        locale_group = QWidget()
+        locale_group.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        locale_layout = QHBoxLayout()
+        locale_layout.setContentsMargins(0, 0, 0, 0)
+
+        locale_label = QLabel()
+        locale_label.setText(_('Language:'))
+        locale_layout.addWidget(locale_label)
+        self.locale_label = locale_label
+
+        current_locale = get_config_value('locale', None)
+
+        locale_combo = QComboBox()
+        locale_combo.addItem(_('System language or best match ({locale})'
+            ).format(locale=get_ui_locale()), None)
+        selected_index = 0
+        for index, locale in enumerate(available_locales):
+            if locale == current_locale:
+                selected_index = index + 1
+            locale = Locale.parse(locale)
+            locale_name = locale.display_name
+            english_name = locale.english_name
+            if locale_name != english_name:
+                formatted_name = _('{locale_name} - {english_name}'
+                    ).format(locale_name=locale_name, english_name=english_name)
+            else:
+                formatted_name = locale_name
+            locale_combo.addItem(formatted_name, str(locale))
+        locale_combo.setCurrentIndex(selected_index)
+        locale_combo.currentIndexChanged.connect(self.locale_combo_changed)
+        locale_layout.addWidget(locale_combo)
+        self.locale_combo = locale_combo
+
+        locale_group.setLayout(locale_layout)
+        layout.addWidget(locale_group, 2, 0, 1, 2)
+        self.locale_group = locale_group
+        self.locale_layout = locale_layout
+
         if getattr(sys, 'frozen', False):
             no_launcher_version_check_checkbox = QCheckBox()
             no_launcher_version_check_checkbox.setText(_('Do not check '
@@ -2382,12 +2433,30 @@ class LauncherSettingsGroupBox(QGroupBox):
                 check_state)
             no_launcher_version_check_checkbox.stateChanged.connect(
                 self.nlvcc_changed)
-            layout.addWidget(no_launcher_version_check_checkbox, 2, 0, 1, 2)
+            layout.addWidget(no_launcher_version_check_checkbox, 3, 0, 1, 2)
             self.no_launcher_version_check_checkbox = (
                 no_launcher_version_check_checkbox)
 
         self.setTitle(_('Launcher'))
         self.setLayout(layout)
+
+    def locale_combo_changed(self, index):
+        locale = self.locale_combo.currentData()
+        set_config_value('locale', str(locale))
+
+        if locale is not None:
+            init_gettext(locale)
+        else:
+            preferred_locales = []
+
+            system_locale = get_ui_locale()
+            if system_locale is not None:
+                preferred_locales.append(system_locale)
+
+            locale = str(Locale.negotiate(preferred_locales, available_locales))
+            init_gettext(locale)
+
+        main_app.main_win.set_text()
 
     def nlvcc_changed(self, state):
         set_config_value('prevent_version_check_launch',
@@ -2454,6 +2523,7 @@ class UpdateSettingsGroupBox(QGroupBox):
             arb_timer.start()
 
         arb_group = QWidget()
+        arb_group.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         arb_layout = QHBoxLayout()
         arb_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -5153,8 +5223,7 @@ class ProgressCopyTree(QTimer):
                         self.total_files += 1
                         self.total_copy_size += entry.stat().st_size
 
-                        files_text = gettext.ngettext('file', 'files',
-                            self.total_files)
+                        files_text = ngettext('file', 'files', self.total_files)
 
                         self.status_label.setText(_('Analysing {name} - Found '
                             '{file_count} {files} ({size})').format(
@@ -5384,11 +5453,28 @@ class ExceptionWindow(QWidget):
         self.setWindowTitle(_('Something went wrong'))
         self.setMinimumSize(350, 0)
 
-def start_ui(bdir):
+def init_gettext(locale):
+    locale_dir = os.path.join(basedir, 'cddagl', 'locale')
+
+    global _
+    t = gettext.translation('cddagl', localedir=locale_dir,
+        languages=[locale])
+    _ = t.gettext
+    global ngettext
+    ngettext = t.ngettext
+
+    global app_locale
+    app_locale = locale
+
+def start_ui(bdir, locale, locales):
     global main_app
     global basedir
+    global available_locales
 
     basedir = bdir
+    available_locales = locales
+
+    init_gettext(locale)
 
     if getattr(sys, 'frozen', False):
         rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')

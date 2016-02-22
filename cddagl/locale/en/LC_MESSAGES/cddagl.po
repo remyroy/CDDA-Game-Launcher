@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 0.8.5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-02-22 09:46-0500\n"
+"POT-Creation-Date: 2016-02-22 12:30-0500\n"
 "PO-Revision-Date: 2016-02-18 11:48-0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.2.0\n"
 
-#: cddagl/launcher.py:58
+#: cddagl/launcher.py:94
 msgid "Launcher started: {version}"
 msgstr ""
 
-#: cddagl/launcher.py:66
+#: cddagl/launcher.py:102
 msgid ""
 "Global error:\n"
 "Launcher version: {version}\n"
