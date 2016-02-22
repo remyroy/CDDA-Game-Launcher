@@ -7,6 +7,12 @@ from babel.messages import frontend as babel
 
 from subprocess import call, check_output, CalledProcessError
 
+import os
+
+try:
+    from os import scandir
+except ImportError:
+    from scandir import scandir
 
 class Installer(Command):
     user_options = []
@@ -17,7 +23,8 @@ class Installer(Command):
 
     def run(self):
         call(['pyi-makespec', '-F', '-w', '--noupx',
-            '--hidden-import=lxml.cssselect', 'cddagl\launcher.py'])
+            '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
+            'cddagl\launcher.py'])
 
         added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
             ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
@@ -29,6 +36,22 @@ class Installer(Command):
             added_files.append((unrar_path, '.'))
         except CalledProcessError:
             pass
+
+        # Add mo files for localization
+        locale_dir = os.path.join('cddagl', 'locale')
+
+        call('python setup.py compile_catalog -D cddagl -d {locale_dir}'.format(
+            locale_dir=locale_dir))
+        
+        if os.path.isdir(locale_dir):
+            for entry in scandir(locale_dir):
+                if entry.is_dir():
+                    mo_path = os.path.join(entry.path, 'LC_MESSAGES',
+                        'cddagl.mo')
+                    if os.path.isfile(mo_path):
+                        mo_dir = os.path.dirname(mo_path).replace('\\', '/')
+                        mo_path = mo_path.replace('\\', '/')
+                        added_files.append((mo_path, mo_dir))
 
         spec_content = None
         with open('launcher.spec', 'r') as f:
