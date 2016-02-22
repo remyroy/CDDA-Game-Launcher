@@ -7,6 +7,7 @@ from babel.messages import frontend as babel
 
 from subprocess import call, check_output, CalledProcessError
 
+
 class Installer(Command):
     user_options = []
     def initialize_options(self):
@@ -43,6 +44,21 @@ class Installer(Command):
         call(['pyinstaller', 'launcher.spec'])
 
 
+class ExtractUpdateMessages(Command):
+    user_options = []
+    def initialize_options(self):
+        pass
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        call('python setup.py extract_messages -o cddagl\locale\messages.pot '
+            '-F cddagl\locale\mapping.cfg')
+
+        call('python setup.py update_catalog -i cddagl\locale\messages.pot -d '
+            'cddagl\locale')
+
+
 setup(name='cddagl',
       version='0.8.5',
       description=(
@@ -52,8 +68,9 @@ setup(name='cddagl',
       url='https://github.com/remyroy/CDDA-Game-Launcher',
       packages=['cddagl'],
       cmdclass={'installer': Installer,
-          'compile_catalog': babel.compile_catalog,
-          'extract_messages': babel.extract_messages,
-          'init_catalog': babel.init_catalog,
-          'update_catalog': babel.update_catalog},
+        'exup_messages': ExtractUpdateMessages,
+        'compile_catalog': babel.compile_catalog,
+        'extract_messages': babel.extract_messages,
+        'init_catalog': babel.init_catalog,
+        'update_catalog': babel.update_catalog},
 )

@@ -189,7 +189,8 @@ class MainWindow(QMainWindow):
             self.update_action = update_action
             self.menuBar().addAction(update_action)
 
-        about_action = QAction(_('&About'), self, triggered=self.show_about_dialog)
+        about_action = QAction(_('&About'), self,
+            triggered=self.show_about_dialog)
         self.about_action = about_action
         self.menuBar().addAction(about_action)
 
