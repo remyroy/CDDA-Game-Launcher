@@ -466,6 +466,9 @@ class MainTab(QWidget):
     def get_mods_tab(self):
         return self.parentWidget().parentWidget().mods_tab
 
+    def get_settings_tab(self):
+        return self.parentWidget().parentWidget().settings_tab
+
     def disable_tab(self):
         self.game_dir_group_box.disable_controls()
         self.update_group_box.disable_controls(True)
@@ -499,6 +502,14 @@ class SettingsTab(QWidget):
     def get_main_tab(self):
         return self.parentWidget().parentWidget().main_tab
 
+    def disable_tab(self):
+        self.launcher_settings_group_box.disable_controls()
+        self.update_settings_group_box.disable_controls()
+
+    def enable_tab(self):
+        self.launcher_settings_group_box.enable_controls()
+        self.update_settings_group_box.enable_controls()
+
 class GameDirGroupBox(QGroupBox):
     def __init__(self):
         super(GameDirGroupBox, self).__init__()
@@ -508,6 +519,7 @@ class GameDirGroupBox(QGroupBox):
         self.restored_previous = False
         self.current_build = None
 
+        self.exe_reading_timer = None
         self.update_saves_timer = None
         self.saves_size = 0
 
@@ -799,6 +811,16 @@ class GameDirGroupBox(QGroupBox):
         set_config_value('game_directory', directory)
 
     def update_version(self):
+        if (self.exe_reading_timer is not None
+            and self.exe_reading_timer.isActive()):
+            self.exe_reading_timer.stop()
+
+            status_bar = main_window.statusBar()
+            status_bar.removeWidget(self.reading_label)
+            status_bar.removeWidget(self.reading_progress_bar)
+
+            status_bar.busy -= 1
+
         main_window = self.get_main_window()
 
         status_bar = main_window.statusBar()
@@ -1016,6 +1038,16 @@ class GameDirGroupBox(QGroupBox):
             self.build_value_label.setText(_('Unknown'))
             self.current_build = None
         else:
+            if (self.exe_reading_timer is not None
+                and self.exe_reading_timer.isActive()):
+                self.exe_reading_timer.stop()
+
+                status_bar = main_window.statusBar()
+                status_bar.removeWidget(self.reading_label)
+                status_bar.removeWidget(self.reading_progress_bar)
+
+                status_bar.busy -= 1
+
             self.exe_path = exe_path
             self.version_type = version_type
             self.build_number = build['number']
@@ -1281,9 +1313,11 @@ class UpdateGroupBox(QGroupBox):
 
             soundpacks_tab = main_tab.get_soundpacks_tab()
             mods_tab = main_tab.get_mods_tab()
+            settings_tab = main_tab.get_settings_tab()
 
             soundpacks_tab.disable_tab()
             mods_tab.disable_tab()
+            settings_tab.disable_tab()
 
             game_dir = game_dir_group_box.dir_edit.text()
 
@@ -2115,9 +2149,11 @@ class UpdateGroupBox(QGroupBox):
 
         soundpacks_tab = main_tab.get_soundpacks_tab()
         mods_tab = main_tab.get_mods_tab()
+        settings_tab = main_tab.get_settings_tab()
 
         soundpacks_tab.enable_tab()
         mods_tab.enable_tab()
+        settings_tab.enable_tab()
 
         if game_dir_group_box.exe_path is not None:
             self.update_button.setText(_('Update game'))
@@ -2535,6 +2571,12 @@ class LauncherSettingsGroupBox(QGroupBox):
         set_config_value('command.params',
             self.command_line_parameters_edit.text())
 
+    def disable_controls(self):
+        self.locale_combo.setEnabled(False)
+
+    def enable_controls(self):
+        self.locale_combo.setEnabled(True)
+
 
 class UpdateSettingsGroupBox(QGroupBox):
     def __init__(self):
@@ -2680,6 +2722,12 @@ class UpdateSettingsGroupBox(QGroupBox):
     def ka_directory_changed(self):
         set_config_value('archive_directory',
             self.keep_archive_directory_line.text())
+
+    def disable_controls(self):
+        pass
+
+    def enable_controls(self):
+        pass
 
 
 class LauncherUpdateDialog(QDialog):
@@ -3161,6 +3209,9 @@ class SoundpacksTab(QTabWidget):
     def get_mods_tab(self):
         return self.get_main_tab().get_mods_tab()
 
+    def get_settings_tab(self):
+        return self.get_main_tab().get_settings_tab()
+
     def disable_tab(self):
         self.installed_lv.setEnabled(False)
         self.repository_lv.setEnabled(False)
@@ -3345,6 +3396,7 @@ class SoundpacksTab(QTabWidget):
 
                 self.get_main_tab().disable_tab()
                 self.get_mods_tab().disable_tab()
+                self.get_settings_tab().disable_tab()
             elif selected_info['type'] == 'browser_download':
                 bd_dialog = BrowserDownloadDialog('soundpack',
                     selected_info['url'], selected_info.get('expected_filename',
@@ -3362,6 +3414,7 @@ class SoundpacksTab(QTabWidget):
 
                     self.get_main_tab().disable_tab()
                     self.get_mods_tab().disable_tab()
+                    self.get_settings_tab().disable_tab()
 
                     main_window = self.get_main_window()
                     status_bar = main_window.statusBar()
@@ -3536,6 +3589,7 @@ class SoundpacksTab(QTabWidget):
 
         self.get_main_tab().enable_tab()
         self.get_mods_tab().enable_tab()
+        self.get_settings_tab().enable_tab()
 
         if self.close_after_install:
             self.get_main_window().close()
@@ -4252,6 +4306,9 @@ class ModsTab(QTabWidget):
     def get_soundpacks_tab(self):
         return self.get_main_tab().get_soundpacks_tab()
 
+    def get_settings_tab(self):
+        return self.get_main_tab().get_settings_tab()
+
     def disable_tab(self):
         self.installed_lv.setEnabled(False)
         self.repository_lv.setEnabled(False)
@@ -4434,6 +4491,7 @@ class ModsTab(QTabWidget):
 
                 self.get_main_tab().disable_tab()
                 self.get_soundpacks_tab().disable_tab()
+                self.get_settings_tab().disable_tab()
             elif selected_info['type'] == 'browser_download':
                 bd_dialog = BrowserDownloadDialog('mod',
                     selected_info['url'], selected_info.get('expected_filename',
@@ -4459,6 +4517,7 @@ class ModsTab(QTabWidget):
 
                         self.get_main_tab().disable_tab()
                         self.get_soundpacks_tab().disable_tab()
+                        self.get_settings_tab().disable_tab()
 
                         # Test downloaded file
                         status_bar.showMessage(_('Testing downloaded file '
@@ -4651,6 +4710,7 @@ class ModsTab(QTabWidget):
 
         self.get_main_tab().enable_tab()
         self.get_soundpacks_tab().enable_tab()
+        self.get_settings_tab().enable_tab()
 
         if self.close_after_install:
             self.get_main_window().close()
