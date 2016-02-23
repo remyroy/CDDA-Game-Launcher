@@ -90,7 +90,9 @@ def clean_qt_path(path):
 def is_64_windows():
     return 'PROGRAMFILES(X86)' in os.environ
 
-def sizeof_fmt(num, suffix=_('B')):
+def sizeof_fmt(num, suffix=None):
+    if suffix is None:
+        suffix = _('B')
     for unit in ['', _('Ki'), _('Mi'), _('Gi'), _('Ti'), _('Pi'), _('Ei'),
         _('Zi')]:
         if abs(num) < 1024.0:
@@ -2986,7 +2988,6 @@ class SoundpacksTab(QTabWidget):
         self.tp_layout = tp_layout
 
         installed_gb = QGroupBox()
-        installed_gb.setTitle(_('Installed'))
         tp_layout.addWidget(installed_gb)
         self.installed_gb = installed_gb
 
@@ -3011,19 +3012,16 @@ class SoundpacksTab(QTabWidget):
         disable_existing_button = QPushButton()
         disable_existing_button.clicked.connect(self.disable_existing)
         disable_existing_button.setEnabled(False)
-        disable_existing_button.setText(_('Disable'))
         ib_layout.addWidget(disable_existing_button)
         self.disable_existing_button = disable_existing_button
 
         delete_existing_button = QPushButton()
         delete_existing_button.clicked.connect(self.delete_existing)
         delete_existing_button.setEnabled(False)
-        delete_existing_button.setText(_('Delete'))
         ib_layout.addWidget(delete_existing_button)
         self.delete_existing_button = delete_existing_button
 
         repository_gb = QGroupBox()
-        repository_gb.setTitle(_('Repository'))
         tp_layout.addWidget(repository_gb)
         self.repository_gb = repository_gb
 
@@ -3039,24 +3037,12 @@ class SoundpacksTab(QTabWidget):
 
         suggest_new_label = QLabel()
         suggest_new_label.setOpenExternalLinks(True)
-        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
-            'title': _('Add this new soundpack to the repository'),
-            'body': _('''* Name: [Enter the name of the soundpack]
-* Url: [Enter the Url where we can find the soundpack]
-* Author: [Enter the name of the author]
-* Homepage: [Enter the Url of the author website or where the soundpack was published]
-* Soundpack not found in version: {version}
-''').format(version=version)
-        })
-        suggest_new_label.setText(_('<a href="{url}">Suggest a new soundpack '
-            'on GitHub</a>').format(url=suggest_url))
         repository_gb_layout.addWidget(suggest_new_label)
         self.suggest_new_label = suggest_new_label
 
         install_new_button = QPushButton()
         install_new_button.clicked.connect(self.install_new)
         install_new_button.setEnabled(False)
-        install_new_button.setText(_('Install this soundpack'))
         repository_gb_layout.addWidget(install_new_button)
         self.install_new_button = install_new_button
 
@@ -3065,14 +3051,12 @@ class SoundpacksTab(QTabWidget):
         self.top_part = top_part
 
         details_gb = QGroupBox()
-        details_gb.setTitle(_('Details'))
         layout.addWidget(details_gb)
         self.details_gb = details_gb
 
         details_gb_layout = QGridLayout()
 
         viewname_label = QLabel()
-        viewname_label.setText(_('View name:'))
         details_gb_layout.addWidget(viewname_label, 0, 0, Qt.AlignRight)
         self.viewname_label = viewname_label
 
@@ -3082,7 +3066,6 @@ class SoundpacksTab(QTabWidget):
         self.viewname_le = viewname_le
 
         name_label = QLabel()
-        name_label.setText(_('Name:'))
         details_gb_layout.addWidget(name_label, 1, 0, Qt.AlignRight)
         self.name_label = name_label
 
@@ -3092,7 +3075,6 @@ class SoundpacksTab(QTabWidget):
         self.name_le = name_le
 
         path_label = QLabel()
-        path_label.setText(_('Path:'))
         details_gb_layout.addWidget(path_label, 2, 0, Qt.AlignRight)
         self.path_label = path_label
 
@@ -3102,7 +3084,6 @@ class SoundpacksTab(QTabWidget):
         self.path_le = path_le
 
         size_label = QLabel()
-        size_label.setText(_('Size:'))
         details_gb_layout.addWidget(size_label, 3, 0, Qt.AlignRight)
         self.size_label = size_label
 
@@ -3112,7 +3093,6 @@ class SoundpacksTab(QTabWidget):
         self.size_le = size_le
 
         homepage_label = QLabel()
-        homepage_label.setText(_('Home page:'))
         details_gb_layout.addWidget(homepage_label, 4, 0, Qt.AlignRight)
         self.homepage_label = homepage_label
 
@@ -3131,9 +3111,38 @@ class SoundpacksTab(QTabWidget):
         self.setLayout(layout)
 
         self.load_repository()
+        self.set_text()
 
     def set_text(self):
-        pass
+        self.installed_gb.setTitle(_('Installed'))
+        self.disable_existing_button.setText(_('Disable'))
+        self.delete_existing_button.setText(_('Delete'))
+        self.repository_gb.setTitle(_('Repository'))
+        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
+            'title': _('Add this new soundpack to the repository'),
+            'body': _('''* Name: [Enter the name of the soundpack]
+* Url: [Enter the Url where we can find the soundpack]
+* Author: [Enter the name of the author]
+* Homepage: [Enter the Url of the author website or where the soundpack was published]
+* Soundpack not found in version: {version}
+''').format(version=version)
+        })
+        self.suggest_new_label.setText(
+            _('<a href="{url}">Suggest a new soundpack '
+            'on GitHub</a>').format(url=suggest_url))
+        self.install_new_button.setText(_('Install this soundpack'))
+        self.details_gb.setTitle(_('Details'))
+        self.viewname_label.setText(_('View name:'))
+        self.name_label.setText(_('Name:'))
+
+        selection_model = self.repository_lv.selectionModel()
+        if selection_model is not None and selection_model.hasSelection():
+            self.path_label.setText(_('Url:'))
+        else:
+            self.path_label.setText(_('Path:'))
+
+        self.size_label.setText(_('Size:'))
+        self.homepage_label.setText(_('Home page:'))
 
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
@@ -3820,7 +3829,7 @@ class SoundpacksTab(QTabWidget):
                 else:
                     self.size_le.setText(sizeof_fmt(selected_info['size']))
             elif selected_info['type'] == 'browser_download':
-                self.path_label.setText('Url:')
+                self.path_label.setText(_('Url:'))
                 self.path_le.setText(selected_info['url'])
                 self.homepage_tb.setText('<a href="{url}">{url}</a>'.format(
                     url=html.escape(selected_info['homepage'])))
@@ -4040,8 +4049,7 @@ class ModsTab(QTabWidget):
         tp_layout.setContentsMargins(0, 0, 0, 0)
         self.tp_layout = tp_layout
 
-        installed_gb = QGroupBox()
-        installed_gb.setTitle(_('Installed'))
+        installed_gb = QGroupBox()       
         tp_layout.addWidget(installed_gb)
         self.installed_gb = installed_gb
 
@@ -4065,20 +4073,17 @@ class ModsTab(QTabWidget):
 
         disable_existing_button = QPushButton()
         disable_existing_button.clicked.connect(self.disable_existing)
-        disable_existing_button.setEnabled(False)
-        disable_existing_button.setText(_('Disable'))
+        disable_existing_button.setEnabled(False)        
         ib_layout.addWidget(disable_existing_button)
         self.disable_existing_button = disable_existing_button
 
         delete_existing_button = QPushButton()
         delete_existing_button.clicked.connect(self.delete_existing)
         delete_existing_button.setEnabled(False)
-        delete_existing_button.setText(_('Delete'))
         ib_layout.addWidget(delete_existing_button)
         self.delete_existing_button = delete_existing_button
 
         repository_gb = QGroupBox()
-        repository_gb.setTitle(_('Repository'))
         tp_layout.addWidget(repository_gb)
         self.repository_gb = repository_gb
 
@@ -4094,24 +4099,12 @@ class ModsTab(QTabWidget):
 
         suggest_new_label = QLabel()
         suggest_new_label.setOpenExternalLinks(True)
-        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
-            'title': _('Add this new mod to the repository'),
-            'body': _('''* Name: [Enter the name of the mod]
-* Url: [Enter the Url where we can find the mod]
-* Author: [Enter the name of the author]
-* Homepage: [Enter the Url of the author website or where the mod was published]
-* Mod not found in version: {version}
-''').format(version=version)
-        })
-        suggest_new_label.setText(_('<a href="{url}">Suggest a new mod '
-            'on GitHub</a>').format(url=suggest_url))
         repository_gb_layout.addWidget(suggest_new_label)
         self.suggest_new_label = suggest_new_label
 
         install_new_button = QPushButton()
         install_new_button.clicked.connect(self.install_new)
         install_new_button.setEnabled(False)
-        install_new_button.setText(_('Install this mod'))
         repository_gb_layout.addWidget(install_new_button)
         self.install_new_button = install_new_button
 
@@ -4120,14 +4113,12 @@ class ModsTab(QTabWidget):
         self.top_part = top_part
 
         details_gb = QGroupBox()
-        details_gb.setTitle(_('Details'))
         layout.addWidget(details_gb)
         self.details_gb = details_gb
 
         details_gb_layout = QGridLayout()
 
         name_label = QLabel()
-        name_label.setText(_('Name:'))
         details_gb_layout.addWidget(name_label, 0, 0, Qt.AlignRight)
         self.name_label = name_label
 
@@ -4137,7 +4128,6 @@ class ModsTab(QTabWidget):
         self.name_le = name_le
 
         ident_label = QLabel()
-        ident_label.setText(_('Ident:'))
         details_gb_layout.addWidget(ident_label, 1, 0, Qt.AlignRight)
         self.ident_label = ident_label
 
@@ -4147,7 +4137,6 @@ class ModsTab(QTabWidget):
         self.ident_le = ident_le
 
         author_label = QLabel()
-        author_label.setText(_('Author:'))
         details_gb_layout.addWidget(author_label, 2, 0, Qt.AlignRight)
         self.author_label = author_label
 
@@ -4157,7 +4146,6 @@ class ModsTab(QTabWidget):
         self.author_le = author_le
 
         description_label = QLabel()
-        description_label.setText(_('Description:'))
         details_gb_layout.addWidget(description_label, 3, 0, Qt.AlignRight)
         self.description_label = description_label
 
@@ -4167,7 +4155,6 @@ class ModsTab(QTabWidget):
         self.description_le = description_le
 
         category_label = QLabel()
-        category_label.setText(_('Category:'))
         details_gb_layout.addWidget(category_label, 4, 0, Qt.AlignRight)
         self.category_label = category_label
 
@@ -4177,7 +4164,6 @@ class ModsTab(QTabWidget):
         self.category_le = category_le
 
         path_label = QLabel()
-        path_label.setText(_('Path:'))
         details_gb_layout.addWidget(path_label, 5, 0, Qt.AlignRight)
         self.path_label = path_label
 
@@ -4187,7 +4173,6 @@ class ModsTab(QTabWidget):
         self.path_le = path_le
 
         size_label = QLabel()
-        size_label.setText(_('Size:'))
         details_gb_layout.addWidget(size_label, 6, 0, Qt.AlignRight)
         self.size_label = size_label
 
@@ -4197,7 +4182,6 @@ class ModsTab(QTabWidget):
         self.size_le = size_le
 
         homepage_label = QLabel()
-        homepage_label.setText(_('Home page:'))
         details_gb_layout.addWidget(homepage_label, 7, 0, Qt.AlignRight)
         self.homepage_label = homepage_label
 
@@ -4216,9 +4200,40 @@ class ModsTab(QTabWidget):
         self.setLayout(layout)
 
         self.load_repository()
+        self.set_text()
 
     def set_text(self):
-        pass
+        self.installed_gb.setTitle(_('Installed'))
+        self.disable_existing_button.setText(_('Disable'))
+        self.delete_existing_button.setText(_('Delete'))
+        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
+            'title': _('Add this new mod to the repository'),
+            'body': _('''* Name: [Enter the name of the mod]
+* Url: [Enter the Url where we can find the mod]
+* Author: [Enter the name of the author]
+* Homepage: [Enter the Url of the author website or where the mod was published]
+* Mod not found in version: {version}
+''').format(version=version)
+        })
+        self.suggest_new_label.setText(_('<a href="{url}">Suggest a new mod '
+            'on GitHub</a>').format(url=suggest_url))
+        self.repository_gb.setTitle(_('Repository'))
+        self.install_new_button.setText(_('Install this mod'))
+        self.details_gb.setTitle(_('Details'))
+        self.name_label.setText(_('Name:'))
+        self.ident_label.setText(_('Ident:'))
+        self.author_label.setText(_('Author:'))
+        self.description_label.setText(_('Description:'))
+        self.category_label.setText(_('Category:'))
+
+        selection_model = self.repository_lv.selectionModel()
+        if selection_model is not None and selection_model.hasSelection():
+            self.path_label.setText(_('Url:'))
+        else:
+            self.path_label.setText(_('Path:'))
+
+        self.size_label.setText(_('Size:'))
+        self.homepage_label.setText(_('Home page:'))
 
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
@@ -4902,7 +4917,7 @@ class ModsTab(QTabWidget):
             self.author_le.setText(selected_info.get('author', ''))
             self.description_le.setText(selected_info.get('description', ''))
             self.category_le.setText(selected_info.get('category', ''))
-            self.path_label.setText('Path:')
+            self.path_label.setText(_('Path:'))
             self.path_le.setText(selected_info['path'])
             self.size_le.setText(sizeof_fmt(selected_info['size']))
             self.homepage_tb.setText('')
