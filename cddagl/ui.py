@@ -5525,7 +5525,7 @@ class ExceptionWindow(QWidget):
 
         report_label = QLabel()
         report_label.setOpenExternalLinks(True)
-        report_label.setText(_('Please help up make a better launcher '
+        report_label.setText(_('Please help us make a better launcher '
             '<a href="{url}">by reporting this issue on GitHub</a>.').format(
                 url=html.escape(report_url)))
         layout.addWidget(report_label, 2, 0)
