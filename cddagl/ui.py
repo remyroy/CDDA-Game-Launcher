@@ -2371,6 +2371,14 @@ href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.
 bitcoins to <a href="bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ">
 15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> <img src="btc-qr.png">.</p>
 
+<p>Thanks to the following people for their efforts in translating the CDDA Game
+Launcher</p>
+<ul>
+<li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a>
+</li>
+<li>French: Rémy Roy</li>
+</ul>
+
 <p>Copyright (c) 2015 Rémy Roy</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
