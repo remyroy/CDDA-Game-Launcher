@@ -182,6 +182,10 @@ class MainWindow(QMainWindow):
             self.update_action.setText(_('&Check for launcher update'))
         self.about_action.setText(_('&About'))
 
+        if self.about_dialog is not None:
+            self.about_dialog.set_text()
+        self.central_widget.set_text()
+
     def create_status_bar(self):
         status_bar = self.statusBar()
         status_bar.busy = 0
@@ -383,6 +387,21 @@ class CentralWidget(QTabWidget):
         #self.create_fonts_tab()
         self.create_settings_tab()
 
+    def set_text(self):
+        self.setTabText(self.indexOf(self.main_tab), _('Main'))
+        self.setTabText(self.indexOf(self.mods_tab), _('Mods'))
+        #self.setTabText(self.indexOf(self.tilesets_tab), _('Tilesets'))
+        self.setTabText(self.indexOf(self.soundpacks_tab), _('Soundpacks'))
+        #self.setTabText(self.indexOf(self.fonts_tab), _('Fonts'))
+        self.setTabText(self.indexOf(self.settings_tab), _('Settings'))
+
+        self.main_tab.set_text()
+        self.mods_tab.set_text()
+        #self.tilesets_tab.set_text()
+        self.soundpacks_tab.set_text()
+        #self.fonts_tab.set_text()
+        self.settings_tab.set_text()
+
     def create_main_tab(self):
         main_tab = MainTab()
         self.addTab(main_tab, _('Main'))
@@ -429,6 +448,10 @@ class MainTab(QWidget):
         layout.addWidget(update_group_box)
         self.setLayout(layout)
 
+    def set_text(self):
+        self.game_dir_group_box.set_text()
+        self.update_group_box.set_text()
+
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
@@ -464,6 +487,10 @@ class SettingsTab(QWidget):
         layout.addWidget(update_settings_group_box)
         self.setLayout(layout)
 
+    def set_text(self):
+        self.launcher_settings_group_box.set_text()
+        self.update_settings_group_box.set_text()
+
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
@@ -485,7 +512,6 @@ class GameDirGroupBox(QGroupBox):
         layout = QGridLayout()
 
         dir_label = QLabel()
-        dir_label.setText(_('Directory:'))
         layout.addWidget(dir_label, 0, 0, Qt.AlignRight)
         self.dir_label = dir_label
 
@@ -500,8 +526,7 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(dir_change_button, 0, 2)
         self.dir_change_button = dir_change_button
 
-        version_label = QLabel()
-        version_label.setText(_('Version:'))
+        version_label = QLabel()       
         layout.addWidget(version_label, 1, 0, Qt.AlignRight)
         self.version_label = version_label
 
@@ -511,7 +536,6 @@ class GameDirGroupBox(QGroupBox):
         self.version_value_label = version_value_label
 
         build_label = QLabel()
-        build_label.setText(_('Build:'))
         layout.addWidget(build_label, 2, 0, Qt.AlignRight)
         self.build_label = build_label
 
@@ -522,7 +546,6 @@ class GameDirGroupBox(QGroupBox):
         self.build_value_label = build_value_label
 
         saves_label = QLabel()
-        saves_label.setText(_('Saves:'))
         layout.addWidget(saves_label, 3, 0, Qt.AlignRight)
         self.saves_label = saves_label
 
@@ -535,16 +558,12 @@ class GameDirGroupBox(QGroupBox):
         saves_warning_label = QLabel()
         icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
         saves_warning_label.setPixmap(icon.pixmap(16, 16))
-        saves_warning_label.setToolTip(_('Your save directory might be large '
-            'enough to cause significant delays during the update process.\n'
-            'You might want to enable the "Do not copy or move the save '
-            'directory" option in the settings tab.'))
         saves_warning_label.hide()
         layout.addWidget(saves_warning_label, 3, 2)
         self.saves_warning_label = saves_warning_label
 
         launch_game_button = QPushButton()
-        launch_game_button.setText(_('Launch game'))
+        
         launch_game_button.setEnabled(False)
         launch_game_button.setStyleSheet("font-size: 20px;")
         launch_game_button.clicked.connect(self.launch_game)
@@ -552,14 +571,27 @@ class GameDirGroupBox(QGroupBox):
         self.launch_game_button = launch_game_button
 
         restore_button = QPushButton()
-        restore_button.setText(_('Restore previous version'))
         restore_button.setEnabled(False)
         restore_button.clicked.connect(self.restore_previous)
         layout.addWidget(restore_button, 5, 0, 1, 3)
         self.restore_button = restore_button
 
-        self.setTitle(_('Game'))
         self.setLayout(layout)
+        self.set_text()
+
+    def set_text(self):
+        self.dir_label.setText(_('Directory:'))
+        self.version_label.setText(_('Version:'))
+        self.build_label.setText(_('Build:'))
+        self.saves_label.setText(_('Saves:'))
+        self.saves_warning_label.setToolTip(
+            _('Your save directory might be large '
+            'enough to cause significant delays during the update process.\n'
+            'You might want to enable the "Do not copy or move the save '
+            'directory" option in the settings tab.'))
+        self.launch_game_button.setText(_('Launch game'))
+        self.restore_button.setText(_('Restore previous version'))
+        self.setTitle(_('Game'))
 
     def showEvent(self, event):
         if not self.shown:
@@ -731,10 +763,10 @@ class GameDirGroupBox(QGroupBox):
             exe_path = None
             version_type = None
             if os.path.isfile(console_exe):
-                version_type = 'console'
+                version_type = _('console')
                 exe_path = console_exe
             elif os.path.isfile(tiles_exe):
-                version_type = 'tiles'
+                version_type = _('tiles')
                 exe_path = tiles_exe
 
             if version_type is None:
@@ -971,10 +1003,10 @@ class GameDirGroupBox(QGroupBox):
         exe_path = None
         version_type = None
         if os.path.isfile(console_exe):
-            version_type = 'console'
+            version_type = _('console')
             exe_path = console_exe
         elif os.path.isfile(tiles_exe):
-            version_type = 'tiles'
+            version_type = _('tiles')
             exe_path = tiles_exe
 
         if version_type is None:
@@ -1097,7 +1129,6 @@ class UpdateGroupBox(QGroupBox):
         layout = QGridLayout()
 
         graphics_label = QLabel()
-        graphics_label.setText(_('Graphics:'))
         layout.addWidget(graphics_label, 0, 0, Qt.AlignRight)
         self.graphics_label = graphics_label
 
@@ -1105,13 +1136,11 @@ class UpdateGroupBox(QGroupBox):
         self.graphics_button_group = graphics_button_group
 
         tiles_radio_button = QRadioButton()
-        tiles_radio_button.setText(_('Tiles'))
         layout.addWidget(tiles_radio_button, 0, 1)
         self.tiles_radio_button = tiles_radio_button
         graphics_button_group.addButton(tiles_radio_button)
 
-        console_radio_button = QRadioButton()
-        console_radio_button.setText(_('Console'))
+        console_radio_button = QRadioButton()        
         layout.addWidget(console_radio_button, 0, 2)
         self.console_radio_button = console_radio_button
         graphics_button_group.addButton(console_radio_button)
@@ -1119,7 +1148,6 @@ class UpdateGroupBox(QGroupBox):
         graphics_button_group.buttonClicked.connect(self.graphics_clicked)
 
         platform_label = QLabel()
-        platform_label.setText(_('Platform:'))
         layout.addWidget(platform_label, 1, 0, Qt.AlignRight)
         self.platform_label = platform_label
 
@@ -1127,7 +1155,6 @@ class UpdateGroupBox(QGroupBox):
         self.platform_button_group = platform_button_group
 
         x64_radio_button = QRadioButton()
-        x64_radio_button.setText(_('Windows x64 (64-bit)'))
         layout.addWidget(x64_radio_button, 1, 1)
         self.x64_radio_button = x64_radio_button
         platform_button_group.addButton(x64_radio_button)
@@ -1138,13 +1165,11 @@ class UpdateGroupBox(QGroupBox):
             x64_radio_button.setEnabled(False)
 
         x86_radio_button = QRadioButton()
-        x86_radio_button.setText(_('Windows x86 (32-bit)'))
         layout.addWidget(x86_radio_button, 1, 2)
         self.x86_radio_button = x86_radio_button
         platform_button_group.addButton(x86_radio_button)
 
         available_builds_label = QLabel()
-        available_builds_label.setText(_('Available builds:'))
         layout.addWidget(available_builds_label, 2, 0, Qt.AlignRight)
         self.available_builds_label = available_builds_label
 
@@ -1155,13 +1180,11 @@ class UpdateGroupBox(QGroupBox):
         self.builds_combo = builds_combo
 
         refresh_builds_button = QToolButton()
-        refresh_builds_button.setText(_('Refresh'))
         refresh_builds_button.clicked.connect(self.refresh_builds)
         layout.addWidget(refresh_builds_button, 2, 3)
         self.refresh_builds_button = refresh_builds_button
 
         update_button = QPushButton()
-        update_button.setText(_('Update game'))
         update_button.setEnabled(False)
         update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
@@ -1171,8 +1194,20 @@ class UpdateGroupBox(QGroupBox):
         layout.setColumnStretch(1, 100)
         layout.setColumnStretch(2, 100)
 
-        self.setTitle(_('Update/Installation'))
         self.setLayout(layout)
+        self.set_text()
+
+    def set_text(self):
+        self.graphics_label.setText(_('Graphics:'))
+        self.tiles_radio_button.setText(_('Tiles'))
+        self.console_radio_button.setText(_('Console'))
+        self.platform_label.setText(_('Platform:'))
+        self.x64_radio_button.setText(_('Windows x64 (64-bit)'))
+        self.x86_radio_button.setText(_('Windows x86 (32-bit)'))
+        self.available_builds_label.setText(_('Available builds:'))
+        self.refresh_builds_button.setText(_('Refresh'))
+        self.update_button.setText(_('Update game'))
+        self.setTitle(_('Update/Installation'))
 
     def showEvent(self, event):
         if not self.shown:
@@ -2302,8 +2337,25 @@ class AboutDialog(QDialog):
 
         text_content.setSearchPaths([os.path.join(basedir, 'cddagl',
             'resources')])
+        layout.addWidget(text_content, 0, 0)
+        self.text_content = text_content
 
-        text_content.setHtml(_('''
+        ok_button = QPushButton()
+        ok_button.clicked.connect(self.done)
+        layout.addWidget(ok_button, 1, 0, Qt.AlignRight)
+        self.ok_button = ok_button
+
+        layout.setRowStretch(0, 100)
+
+        self.setMinimumSize(500, 400)
+
+        self.setLayout(layout)
+        self.set_text()
+
+    def set_text(self):
+        self.setWindowTitle(_('About CDDA Game Launcher'))
+        self.ok_button.setText(_('OK'))
+        self.text_content.setHtml(_('''
 <p>CDDA Game Launcher version {version}</p>
 
 <p>Get the latest release <a 
@@ -2338,21 +2390,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</p>
 
 ''').format(version=version))
-        layout.addWidget(text_content, 0, 0)
-        self.text_content = text_content
-
-        ok_button = QPushButton()
-        ok_button.setText(_('OK'))
-        ok_button.clicked.connect(self.done)
-        layout.addWidget(ok_button, 1, 0, Qt.AlignRight)
-        self.ok_button = ok_button
-
-        layout.setRowStretch(0, 100)
-
-        self.setMinimumSize(500, 400)
-
-        self.setLayout(layout)
-        self.setWindowTitle(_('About CDDA Game Launcher'))
 
 
 class LauncherSettingsGroupBox(QGroupBox):
@@ -2361,8 +2398,7 @@ class LauncherSettingsGroupBox(QGroupBox):
 
         layout = QGridLayout()
 
-        command_line_parameters_label = QLabel()
-        command_line_parameters_label.setText(_('Command line parameters:'))
+        command_line_parameters_label = QLabel()       
         layout.addWidget(command_line_parameters_label, 0, 0, Qt.AlignRight)
         self.command_line_parameters_label = command_line_parameters_label
 
@@ -2374,9 +2410,7 @@ class LauncherSettingsGroupBox(QGroupBox):
         layout.addWidget(command_line_parameters_edit, 0, 1)
         self.command_line_parameters_edit = command_line_parameters_edit
 
-        keep_launcher_open_checkbox = QCheckBox()
-        keep_launcher_open_checkbox.setText(
-            _('Keep the launcher opened after launching the game'))
+        keep_launcher_open_checkbox = QCheckBox()       
         check_state = (Qt.Checked if config_true(get_config_value(
             'keep_launcher_open', 'False')) else Qt.Unchecked)
         keep_launcher_open_checkbox.setCheckState(check_state)
@@ -2389,14 +2423,14 @@ class LauncherSettingsGroupBox(QGroupBox):
         locale_layout = QHBoxLayout()
         locale_layout.setContentsMargins(0, 0, 0, 0)
 
-        locale_label = QLabel()
-        locale_label.setText(_('Language:'))
+        locale_label = QLabel()       
         locale_layout.addWidget(locale_label)
         self.locale_label = locale_label
 
         current_locale = get_config_value('locale', None)
 
         locale_combo = QComboBox()
+        locale_combo.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         locale_combo.addItem(_('System language or best match ({locale})'
             ).format(locale=get_ui_locale()), None)
         selected_index = 0
@@ -2424,8 +2458,6 @@ class LauncherSettingsGroupBox(QGroupBox):
 
         if getattr(sys, 'frozen', False):
             no_launcher_version_check_checkbox = QCheckBox()
-            no_launcher_version_check_checkbox.setText(_('Do not check '
-                'for new version of the CDDA Game Launcher on launch'))
             check_state = (Qt.Checked if config_true(get_config_value(
                 'prevent_version_check_launch', 'False'))
                 else Qt.Unchecked)
@@ -2437,8 +2469,22 @@ class LauncherSettingsGroupBox(QGroupBox):
             self.no_launcher_version_check_checkbox = (
                 no_launcher_version_check_checkbox)
 
-        self.setTitle(_('Launcher'))
         self.setLayout(layout)
+        self.set_text()
+
+    def set_text(self):
+        self.command_line_parameters_label.setText(
+            _('Command line parameters:'))
+        self.keep_launcher_open_checkbox.setText(
+            _('Keep the launcher opened after launching the game'))
+        self.locale_label.setText(_('Language:'))
+        self.locale_combo.setItemText(0,
+            _('System language or best match ({locale})').format(
+                locale=get_ui_locale()))
+        if getattr(sys, 'frozen', False):
+            self.no_launcher_version_check_checkbox.setText(_('Do not check '
+                'for new version of the CDDA Game Launcher on launch'))
+        self.setTitle(_('Launcher'))
 
     def locale_combo_changed(self, index):
         locale = self.locale_combo.currentData()
@@ -2457,6 +2503,16 @@ class LauncherSettingsGroupBox(QGroupBox):
             init_gettext(locale)
 
         main_app.main_win.set_text()
+
+        central_widget = main_app.main_win.central_widget
+        main_tab = central_widget.main_tab
+        game_dir_group_box = main_tab.game_dir_group_box
+        update_group_box = main_tab.update_group_box
+
+        game_dir_group_box.last_game_directory = None
+        game_dir_group_box.game_directory_changed()
+
+        update_group_box.refresh_builds()
 
     def nlvcc_changed(self, state):
         set_config_value('prevent_version_check_launch',
@@ -2477,12 +2533,6 @@ class UpdateSettingsGroupBox(QGroupBox):
         layout = QGridLayout()
 
         prevent_save_move_checkbox = QCheckBox()
-        prevent_save_move_checkbox.setText(
-            _('Do not copy or move the save directory'))
-        prevent_save_move_checkbox.setToolTip(_('If your save directory size is '
-            'large, it might take a long time to copy it during the update '
-            'process.\nThis option might help you speed the whole thing but '
-            'your previous version will lack the save directory.'))
         check_state = (Qt.Checked if config_true(get_config_value(
             'prevent_save_move', 'False')) else Qt.Unchecked)
         prevent_save_move_checkbox.setCheckState(check_state)
@@ -2491,8 +2541,6 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.prevent_save_move_checkbox = prevent_save_move_checkbox
 
         keep_archive_copy_checkbox = QCheckBox()
-        keep_archive_copy_checkbox.setText(_('Keep a copy of the downloaded '
-            'archive in the following directory:'))
         check_state = (Qt.Checked if config_true(get_config_value(
             'keep_archive_copy', 'False')) else Qt.Unchecked)
         keep_archive_copy_checkbox.setCheckState(check_state)
@@ -2528,8 +2576,6 @@ class UpdateSettingsGroupBox(QGroupBox):
         arb_layout.setContentsMargins(0, 0, 0, 0)
 
         auto_refresh_builds_checkbox = QCheckBox()
-        auto_refresh_builds_checkbox.setText(
-            _('Automatically refresh builds list every'))
         check_state = (Qt.Checked if config_true(get_config_value(
             'auto_refresh_builds', 'False')) else Qt.Unchecked)
         auto_refresh_builds_checkbox.setCheckState(check_state)
@@ -2546,7 +2592,6 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.arb_min_spinbox = arb_min_spinbox
 
         arb_min_label = QLabel()
-        arb_min_label.setText(_('minutes'))
         arb_layout.addWidget(arb_min_label)
         self.arb_min_label = arb_min_label
 
@@ -2555,8 +2600,24 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.arb_group = arb_group
         self.arb_layout = arb_layout
 
-        self.setTitle(_('Update/Installation'))
         self.setLayout(layout)
+        self.set_text()
+
+    def set_text(self):
+        self.prevent_save_move_checkbox.setText(
+            _('Do not copy or move the save directory'))
+        self.prevent_save_move_checkbox.setToolTip(
+            _('If your save directory size is '
+            'large, it might take a long time to copy it during the update '
+            'process.\nThis option might help you speed the whole thing but '
+            'your previous version will lack the save directory.'))
+        self.keep_archive_copy_checkbox.setText(
+            _('Keep a copy of the downloaded '
+            'archive in the following directory:'))
+        self.auto_refresh_builds_checkbox.setText(
+            _('Automatically refresh builds list every'))
+        self.arb_min_label.setText(_('minutes'))
+        self.setTitle(_('Update/Installation'))
 
     def get_settings_tab(self):
         return self.parentWidget()
@@ -3070,6 +3131,9 @@ class SoundpacksTab(QTabWidget):
         self.setLayout(layout)
 
         self.load_repository()
+
+    def set_text(self):
+        pass
 
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
@@ -4153,6 +4217,9 @@ class ModsTab(QTabWidget):
 
         self.load_repository()
 
+    def set_text(self):
+        pass
+
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
@@ -5096,6 +5163,9 @@ class TilesetsTab(QTabWidget):
     def __init__(self):
         super(TilesetsTab, self).__init__()
 
+    def set_text(self):
+        pass
+
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
 
@@ -5114,6 +5184,9 @@ class FontsTab(QTabWidget):
         self.font_window = font_window
 
         self.setLayout(layout)
+
+    def set_text(self):
+        pass
 
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
