@@ -5623,8 +5623,9 @@ def init_gettext(locale):
         global ngettext
         ngettext = t.ngettext
     except FileNotFoundError as e:
-        logger.warning(_('Could not find translations ({info})').format(
-            info=str(e)))
+        logger.warning(_('Could not find translations for {locale} in '
+            '{locale_dir} ({info})'
+            ).format(locale=locale, locale_dir=locale_dir, info=str(e)))
 
     global app_locale
     app_locale = locale
