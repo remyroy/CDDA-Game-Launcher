@@ -5623,7 +5623,7 @@ def init_gettext(locale):
         global ngettext
         ngettext = t.ngettext
     except FileNotFoundError as e:
-        logger.warning('Could not find translations ({info})'.format(
+        logger.warning(_('Could not find translations ({info})').format(
             info=str(e)))
 
     global app_locale
