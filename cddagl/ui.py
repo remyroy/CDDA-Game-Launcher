@@ -10,6 +10,7 @@ import json
 import traceback
 import html
 import stat
+import logging
 
 try:
     from os import scandir
@@ -61,6 +62,8 @@ main_app = None
 basedir = None
 available_locales = None
 app_locale = None
+
+logger = logging.getLogger('cddagl')
 
 READ_BUFFER_SIZE = 16 * 1024
 
@@ -5612,12 +5615,16 @@ class ExceptionWindow(QWidget):
 def init_gettext(locale):
     locale_dir = os.path.join(basedir, 'cddagl', 'locale')
 
-    global _
-    t = gettext.translation('cddagl', localedir=locale_dir,
-        languages=[locale])
-    _ = t.gettext
-    global ngettext
-    ngettext = t.ngettext
+    try:
+        t = gettext.translation('cddagl', localedir=locale_dir,
+            languages=[locale])
+        global _
+        _ = t.gettext
+        global ngettext
+        ngettext = t.ngettext
+    except FileNotFoundError as e:
+        logger.warning('Could not find translations ({info})'.format(
+            info=str(e)))
 
     global app_locale
     app_locale = locale

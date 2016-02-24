@@ -62,10 +62,13 @@ def init_gettext():
 
     app_locale = str(Locale.negotiate(preferred_locales, available_locales))
 
-    global _
-    t = gettext.translation('cddagl', localedir=locale_dir,
-        languages=[app_locale])
-    _ = t.gettext
+    try:
+        t = gettext.translation('cddagl', localedir=locale_dir,
+            languages=[app_locale])
+        global _
+        _ = t.gettext
+    except FileNotFoundError as e:
+        pass
 
     return app_locale
 
@@ -94,6 +97,9 @@ def init_logging():
     if not getattr(sys, 'frozen', False):
         handler = logging.StreamHandler()
         logger.addHandler(handler)
+    else:
+        # TODO: Redirect stdout to logger.info and stderr to logger.error
+        pass
 
     logger.info(_('Launcher started: {version}').format(version=version))
 
