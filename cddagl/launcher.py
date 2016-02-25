@@ -58,12 +58,11 @@ def init_gettext():
             if entry.is_dir():
                 available_locales.append(entry.name)
 
-    if len(available_locales) == 0:
-        available_locales.append('en')
-
     available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
 
     app_locale = str(Locale.negotiate(preferred_locales, available_locales))
+    if app_locale is None:
+        app_locale = 'en'
 
     try:
         t = gettext.translation('cddagl', localedir=locale_dir,
