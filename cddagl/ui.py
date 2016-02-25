@@ -61,7 +61,7 @@ from .__version__ import version
 main_app = None
 basedir = None
 available_locales = None
-app_locale = None
+app_locale = 'en'
 
 logger = logging.getLogger('cddagl')
 
@@ -612,14 +612,26 @@ class GameDirGroupBox(QGroupBox):
 
     def showEvent(self, event):
         if not self.shown:
-            game_directory = get_config_value('game_directory')
-            if game_directory is None:
-                cddagl_path = os.path.dirname(os.path.realpath(sys.executable))
-                default_dir = os.path.join(cddagl_path, 'cdda')
-                game_directory = default_dir
+            if (getattr(sys, 'frozen', False)
+                and config_true(get_config_value('use_launcher_dir', 'False'))):
+                game_directory = os.path.dirname(os.path.abspath(
+                    os.path.realpath(sys.executable)))
+
+                self.dir_edit.setEnabled(False)
+                self.dir_change_button.setEnabled(False)
+
+                self.dir_edit.setText(game_directory)
+            else:
+                game_directory = get_config_value('game_directory')
+                if game_directory is None:
+                    cddagl_path = os.path.dirname(os.path.realpath(
+                        sys.executable))
+                    default_dir = os.path.join(cddagl_path, 'cdda')
+                    game_directory = default_dir
+
+                self.dir_edit.setText(game_directory)
 
             self.last_game_directory = None
-            self.dir_edit.setText(game_directory)
             self.game_directory_changed()
 
         self.shown = True
@@ -811,7 +823,9 @@ class GameDirGroupBox(QGroupBox):
             update_group_box.update_button.setText(_('Update game'))
 
         self.last_game_directory = directory
-        set_config_value('game_directory', directory)
+        if not (getattr(sys, 'frozen', False)
+            and config_true(get_config_value('use_launcher_dir', 'False'))):
+            set_config_value('game_directory', directory)
 
     def update_version(self):
         if (self.exe_reading_timer is not None
@@ -2447,7 +2461,7 @@ class LauncherSettingsGroupBox(QGroupBox):
 
         layout = QGridLayout()
 
-        command_line_parameters_label = QLabel()       
+        command_line_parameters_label = QLabel()
         layout.addWidget(command_line_parameters_label, 0, 0, Qt.AlignRight)
         self.command_line_parameters_label = command_line_parameters_label
 
@@ -2459,7 +2473,7 @@ class LauncherSettingsGroupBox(QGroupBox):
         layout.addWidget(command_line_parameters_edit, 0, 1)
         self.command_line_parameters_edit = command_line_parameters_edit
 
-        keep_launcher_open_checkbox = QCheckBox()       
+        keep_launcher_open_checkbox = QCheckBox()
         check_state = (Qt.Checked if config_true(get_config_value(
             'keep_launcher_open', 'False')) else Qt.Unchecked)
         keep_launcher_open_checkbox.setCheckState(check_state)
@@ -2506,6 +2520,14 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.locale_layout = locale_layout
 
         if getattr(sys, 'frozen', False):
+            use_launcher_dir_checkbox = QCheckBox()
+            check_state = (Qt.Checked if config_true(get_config_value(
+                'use_launcher_dir', 'False')) else Qt.Unchecked)
+            use_launcher_dir_checkbox.setCheckState(check_state)
+            use_launcher_dir_checkbox.stateChanged.connect(self.uld_changed)
+            layout.addWidget(use_launcher_dir_checkbox, 3, 0, 1, 2)
+            self.use_launcher_dir_checkbox = use_launcher_dir_checkbox
+        
             no_launcher_version_check_checkbox = QCheckBox()
             check_state = (Qt.Checked if config_true(get_config_value(
                 'prevent_version_check_launch', 'False'))
@@ -2514,7 +2536,7 @@ class LauncherSettingsGroupBox(QGroupBox):
                 check_state)
             no_launcher_version_check_checkbox.stateChanged.connect(
                 self.nlvcc_changed)
-            layout.addWidget(no_launcher_version_check_checkbox, 3, 0, 1, 2)
+            layout.addWidget(no_launcher_version_check_checkbox, 4, 0, 1, 2)
             self.no_launcher_version_check_checkbox = (
                 no_launcher_version_check_checkbox)
 
@@ -2529,8 +2551,10 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.locale_label.setText(_('Language:'))
         self.locale_combo.setItemText(0,
             _('System language or best match ({locale})').format(
-                locale=get_ui_locale()))
+                locale=get_ui_locale()))       
         if getattr(sys, 'frozen', False):
+            self.use_launcher_dir_checkbox.setText(_('Use the launcher '
+                'directory as the game directory'))
             self.no_launcher_version_check_checkbox.setText(_('Do not check '
                 'for new version of the CDDA Game Launcher on launch'))
         self.setTitle(_('Launcher'))
@@ -2576,11 +2600,44 @@ class LauncherSettingsGroupBox(QGroupBox):
         set_config_value('command.params',
             self.command_line_parameters_edit.text())
 
+    def uld_changed(self, state):
+        checked = state != Qt.Unchecked
+        set_config_value('use_launcher_dir', str(checked))
+
+        central_widget = main_app.main_win.central_widget
+        main_tab = central_widget.main_tab
+        game_dir_group_box = main_tab.game_dir_group_box
+
+        game_dir_group_box.dir_edit.setEnabled(not checked)
+        game_dir_group_box.dir_change_button.setEnabled(not checked)
+
+        if getattr(sys, 'frozen', False) and checked:
+            game_directory = os.path.dirname(os.path.abspath(
+                os.path.realpath(sys.executable)))
+
+            game_dir_group_box.dir_edit.setText(game_directory)
+        else:
+            game_directory = get_config_value('game_directory')
+            if game_directory is None:
+                cddagl_path = os.path.dirname(os.path.realpath(
+                    sys.executable))
+                default_dir = os.path.join(cddagl_path, 'cdda')
+                game_directory = default_dir
+
+            game_dir_group_box.dir_edit.setText(game_directory)
+
+        game_dir_group_box.last_game_directory = None
+        game_dir_group_box.game_directory_changed()
+
     def disable_controls(self):
         self.locale_combo.setEnabled(False)
+        if getattr(sys, 'frozen', False):
+            self.use_launcher_dir_checkbox.setEnabled(False)
 
     def enable_controls(self):
         self.locale_combo.setEnabled(True)
+        if getattr(sys, 'frozen', False):
+            self.use_launcher_dir_checkbox.setEnabled(True)
 
 
 class UpdateSettingsGroupBox(QGroupBox):
