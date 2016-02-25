@@ -2572,9 +2572,11 @@ class LauncherSettingsGroupBox(QGroupBox):
             if system_locale is not None:
                 preferred_locales.append(system_locale)
 
-            locale = str(Locale.negotiate(preferred_locales, available_locales))
+            locale = Locale.negotiate(preferred_locales, available_locales)
             if locale is None:
                 locale = 'en'
+            else:
+                locale = str(locale)
             init_gettext(locale)
 
         main_app.main_win.set_text()
