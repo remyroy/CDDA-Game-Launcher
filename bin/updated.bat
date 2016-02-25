@@ -1,4 +1,5 @@
 @echo off
+echo Updating CDDA Game Launcher
 rem Update batch file. %~1 is parent pid, %~2 is path to update, %~3 is path to update directory, %~4 is path to current and %~5 is path to current directory
 
 rem Wait for parent to exit
@@ -10,10 +11,15 @@ if %ERRORLEVEL%==0 (
 )
 
 rem Delete current executable
-del "%~4"
+:retrydel
+del /F "%~4"
+if exist "%~4" (
+  timeout /t 1 /nobreak >nul
+  goto :retrydel
+)
 
 rem Move update to current directory
-move "%~2" "%~5" >nul
+move /Y "%~2" "%~5" >nul
 
 rem Launch updated executable
 start "" "%~4"
