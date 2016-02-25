@@ -58,6 +58,9 @@ def init_gettext():
             if entry.is_dir():
                 available_locales.append(entry.name)
 
+    if len(available_locales) == 0:
+        available_locales.append('en')
+
     available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
 
     app_locale = str(Locale.negotiate(preferred_locales, available_locales))
@@ -98,8 +101,25 @@ def init_logging():
         handler = logging.StreamHandler()
         logger.addHandler(handler)
     else:
-        # TODO: Redirect stdout to logger.info and stderr to logger.error
-        pass
+        '''class LoggerWriter:
+            def __init__(self, logger, level, imp=None):
+                self.logger = logger
+                self.level = level
+                self.imp = imp
+
+            def __getattr__(self, attr):
+                return getattr(self.imp, attr)
+
+            def write(self, message):
+                if message != '\n':
+                    self.logger.log(self.level, message)
+
+
+        sys._stdout = sys.stdout
+        sys._stderr = sys.stderr
+
+        sys.stdout = LoggerWriter(logger, logging.INFO, sys._stdout)
+        sys.stderr = LoggerWriter(logger, logging.ERROR, sys._stderr)'''
 
     logger.info(_('Launcher started: {version}').format(version=version))
 
