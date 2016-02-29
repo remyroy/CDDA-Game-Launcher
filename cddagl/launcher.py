@@ -122,7 +122,8 @@ def init_logging():
         sys.stdout = LoggerWriter(logger, logging.INFO, sys._stdout)
         sys.stderr = LoggerWriter(logger, logging.ERROR, sys._stderr)'''
 
-    logger.info(_('Launcher started: {version}').format(version=version))
+    logger.info(_('CDDA Game Launcher started: {version}').format(
+        version=version))
 
 def handle_exception(extype, value, tb):
     logger = logging.getLogger('cddagl')
