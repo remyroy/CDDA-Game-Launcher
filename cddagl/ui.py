@@ -67,6 +67,8 @@ logger = logging.getLogger('cddagl')
 
 READ_BUFFER_SIZE = 16 * 1024
 
+MAX_GAME_DIRECTORIES = 6
+
 BASE_URLS = {
     'Tiles': {
         'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
@@ -157,6 +159,7 @@ that file or directory. You might need to end it if you want to retry.</p>
                 return False
 
     return True
+
 
 class MainWindow(QMainWindow):
     def __init__(self, title):
@@ -526,16 +529,25 @@ class GameDirGroupBox(QGroupBox):
         self.update_saves_timer = None
         self.saves_size = 0
 
+        self.dir_combo_inserting = False
+
         layout = QGridLayout()
 
         dir_label = QLabel()
         layout.addWidget(dir_label, 0, 0, Qt.AlignRight)
         self.dir_label = dir_label
 
-        dir_edit = QLineEdit()
-        dir_edit.editingFinished.connect(self.game_directory_changed)
-        layout.addWidget(dir_edit, 0, 1)
-        self.dir_edit = dir_edit
+        dir_combo = QComboBox()
+        dir_combo.setEditable(True)
+        dir_combo.setInsertPolicy(QComboBox.InsertAtTop)
+        dir_combo.currentIndexChanged.connect(self.dc_index_changed)
+        self.dir_combo = dir_combo
+        layout.addWidget(dir_combo, 0, 1)
+
+        dir_combo_model = QStringListModel(json.loads(get_config_value(
+            'game_directories', '[]')), self)
+        dir_combo.setModel(dir_combo_model)
+        self.dir_combo_model = dir_combo_model
 
         dir_change_button = QToolButton()
         dir_change_button.setText('...')
@@ -612,15 +624,17 @@ class GameDirGroupBox(QGroupBox):
 
     def showEvent(self, event):
         if not self.shown:
+            self.last_game_directory = None
+
             if (getattr(sys, 'frozen', False)
                 and config_true(get_config_value('use_launcher_dir', 'False'))):
                 game_directory = os.path.dirname(os.path.abspath(
                     os.path.realpath(sys.executable)))
 
-                self.dir_edit.setEnabled(False)
+                self.dir_combo.setEnabled(False)
                 self.dir_change_button.setEnabled(False)
 
-                self.dir_edit.setText(game_directory)
+                self.set_dir_combo_value(game_directory)
             else:
                 game_directory = get_config_value('game_directory')
                 if game_directory is None:
@@ -629,15 +643,28 @@ class GameDirGroupBox(QGroupBox):
                     default_dir = os.path.join(cddagl_path, 'cdda')
                     game_directory = default_dir
 
-                self.dir_edit.setText(game_directory)
+                self.set_dir_combo_value(game_directory)
 
-            self.last_game_directory = None
             self.game_directory_changed()
 
         self.shown = True
 
+    def set_dir_combo_value(self, value):
+        dir_model = self.dir_combo.model()
+
+        index_list = dir_model.match(dir_model.index(0, 0), Qt.DisplayRole,
+            value, 1, Qt.MatchFixedString)
+        if len(index_list) > 0:
+            self.dir_combo.setCurrentIndex(index_list[0].row())
+        else:
+            self.dir_combo_inserting = True
+            self.dir_combo.insertItem(0, value)
+            self.dir_combo_inserting = False
+
+            self.dir_combo.setCurrentIndex(0)
+
     def disable_controls(self):
-        self.dir_edit.setEnabled(False)
+        self.dir_combo.setEnabled(False)
         self.dir_change_button.setEnabled(False)
 
         self.previous_lgb_enabled = self.launch_game_button.isEnabled()
@@ -646,7 +673,7 @@ class GameDirGroupBox(QGroupBox):
         self.restore_button.setEnabled(False)
 
     def enable_controls(self):
-        self.dir_edit.setEnabled(True)
+        self.dir_combo.setEnabled(True)
         self.dir_change_button.setEnabled(True)
         self.launch_game_button.setEnabled(self.previous_lgb_enabled)
         self.restore_button.setEnabled(self.previous_rb_enabled)
@@ -661,7 +688,7 @@ class GameDirGroupBox(QGroupBox):
         self.restored_previous = False
 
         try:
-            game_dir = self.dir_edit.text()
+            game_dir = self.dir_combo.currentText()
             previous_version_dir = os.path.join(game_dir, 'previous_version')
 
             if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
@@ -745,7 +772,7 @@ class GameDirGroupBox(QGroupBox):
         central_widget = main_window.central_widget
         soundpacks_tab = central_widget.soundpacks_tab
 
-        directory = self.dir_edit.text()
+        directory = self.dir_combo.currentText()
         soundpacks_tab.game_dir_changed(directory)
 
     def update_mods(self):
@@ -753,7 +780,7 @@ class GameDirGroupBox(QGroupBox):
         central_widget = main_window.central_widget
         mods_tab = central_widget.mods_tab
 
-        directory = self.dir_edit.text()
+        directory = self.dir_combo.currentText()
         mods_tab.game_dir_changed(directory)
 
     def clear_soundpacks(self):
@@ -766,13 +793,22 @@ class GameDirGroupBox(QGroupBox):
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
-                _('Game directory'), self.dir_edit.text(), options=options)
+                _('Game directory'), self.dir_combo.currentText(),
+                options=options)
         if directory:
-            self.dir_edit.setText(clean_qt_path(directory))
+            self.set_dir_combo_value(clean_qt_path(directory))
+
+    def dc_index_changed(self, index):
+        if self.shown and not self.dir_combo_inserting:
             self.game_directory_changed()
 
     def game_directory_changed(self):
-        directory = self.dir_edit.text()
+        directory = self.dir_combo.currentText()
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+        status_bar.clearMessage()
+
         self.exe_path = None
         
         main_tab = self.get_main_tab()
@@ -877,6 +913,8 @@ class GameDirGroupBox(QGroupBox):
 
                 if self.game_version == '':
                     self.game_version = _('Unknown')
+                else:
+                    self.add_game_dir()
 
                 self.version_value_label.setText(
                     _('{version} ({type})').format(version=self.game_version,
@@ -955,8 +993,26 @@ class GameDirGroupBox(QGroupBox):
         import pdb; pdb.set_trace()
         pyqtRestoreInputHook()'''
 
+    def add_game_dir(self):
+        new_game_dir = self.dir_combo.currentText()
+
+        game_dirs = json.loads(get_config_value('game_directories', '[]'))
+
+        try:
+            index = game_dirs.index(new_game_dir)
+            if index > 0:
+                del game_dirs[index]
+                game_dirs.insert(0, new_game_dir)
+        except ValueError:
+            game_dirs.insert(0, new_game_dir)
+
+        if len(game_dirs) > MAX_GAME_DIRECTORIES:
+            del game_dirs[MAX_GAME_DIRECTORIES:]
+
+        set_config_value('game_directories', json.dumps(game_dirs))
+
     def update_saves(self):
-        self.game_dir = self.dir_edit.text()
+        self.game_dir = self.dir_combo.currentText()
         
         if (self.update_saves_timer is not None
             and self.update_saves_timer.isActive()):
@@ -1029,7 +1085,7 @@ class GameDirGroupBox(QGroupBox):
         timer.start(0)
 
     def analyse_new_build(self, build):
-        game_dir = self.dir_edit.text()
+        game_dir = self.dir_combo.currentText()
 
         self.previous_exe_path = self.exe_path
         self.exe_path = None
@@ -1336,7 +1392,7 @@ class UpdateGroupBox(QGroupBox):
             mods_tab.disable_tab()
             settings_tab.disable_tab()
 
-            game_dir = game_dir_group_box.dir_edit.text()
+            game_dir = game_dir_group_box.dir_combo.currentText()
 
             try:
                 if not os.path.exists(game_dir):
@@ -1683,7 +1739,7 @@ class UpdateGroupBox(QGroupBox):
         main_tab = self.get_main_tab()
         game_dir_group_box = main_tab.game_dir_group_box
 
-        game_dir = game_dir_group_box.dir_edit.text()
+        game_dir = game_dir_group_box.dir_combo.currentText()
         self.game_dir = game_dir
 
         main_window = self.get_main_window()
@@ -2610,14 +2666,16 @@ class LauncherSettingsGroupBox(QGroupBox):
         main_tab = central_widget.main_tab
         game_dir_group_box = main_tab.game_dir_group_box
 
-        game_dir_group_box.dir_edit.setEnabled(not checked)
+        game_dir_group_box.dir_combo.setEnabled(not checked)
         game_dir_group_box.dir_change_button.setEnabled(not checked)
+
+        game_dir_group_box.last_game_directory = None
 
         if getattr(sys, 'frozen', False) and checked:
             game_directory = os.path.dirname(os.path.abspath(
                 os.path.realpath(sys.executable)))
 
-            game_dir_group_box.dir_edit.setText(game_directory)
+            game_dir_group_box.set_dir_combo_value(game_directory)
         else:
             game_directory = get_config_value('game_directory')
             if game_directory is None:
@@ -2626,10 +2684,7 @@ class LauncherSettingsGroupBox(QGroupBox):
                 default_dir = os.path.join(cddagl_path, 'cdda')
                 game_directory = default_dir
 
-            game_dir_group_box.dir_edit.setText(game_directory)
-
-        game_dir_group_box.last_game_directory = None
-        game_dir_group_box.game_directory_changed()
+            game_dir_group_box.set_dir_combo_value(game_directory)
 
     def disable_controls(self):
         self.locale_combo.setEnabled(False)
