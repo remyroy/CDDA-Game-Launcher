@@ -12,7 +12,7 @@ if %ERRORLEVEL%==0 (
 
 rem Delete current executable
 :retrydel
-del /F "%~4"
+del /F "%~4" >nul 2>&1
 if exist "%~4" (
   timeout /t 1 /nobreak >nul
   goto :retrydel
