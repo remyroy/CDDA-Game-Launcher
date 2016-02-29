@@ -40,7 +40,7 @@ from distutils.version import LooseVersion
 
 from PyQt5.QtCore import (
     Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel,
-    QSize, QRect)
+    QSize, QRect, QThread)
 from PyQt5.QtGui import QIcon, QPalette, QPainter, QColor, QFont
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
@@ -1708,19 +1708,44 @@ class UpdateGroupBox(QGroupBox):
             # Test downloaded file
             status_bar.showMessage(_('Testing downloaded file archive'))
 
-            try:
-                with zipfile.ZipFile(self.downloaded_file) as z:
-                    if z.testzip() is not None:
-                        status_bar.clearMessage()
-                        status_bar.showMessage(_(
-                            'Downloaded archive is invalid'))
+            class TestingZipThread(QThread):
+                completed = pyqtSignal()
+                invalid = pyqtSignal()
+                not_downloaded = pyqtSignal()
 
-                        download_dir = os.path.dirname(self.downloaded_file)
-                        retry_rmtree(download_dir)
-                        self.finish_updating()
+                def __init__(self, downloaded_file):
+                    super(TestingZipThread, self).__init__()
 
+                    self.downloaded_file = downloaded_file                    
+
+                def __del__(self):
+                    self.wait()
+
+                def run(self):
+                    try:
+                        with zipfile.ZipFile(self.downloaded_file) as z:
+                            if z.testzip() is not None:
+                                self.invalid.emit()
+                                return
+                    except zipfile.BadZipFile:
+                        self.not_downloaded.emit()
                         return
-            except zipfile.BadZipFile:
+
+                    self.completed.emit()
+
+            def completed_test():
+                status_bar.clearMessage()
+                self.backup_current_game()
+
+            def invalid():
+                status_bar.clearMessage()
+                status_bar.showMessage(_('Downloaded archive is invalid'))
+
+                download_dir = os.path.dirname(self.downloaded_file)
+                retry_rmtree(download_dir)
+                self.finish_updating()
+
+            def not_downloaded():
                 status_bar.clearMessage()
                 status_bar.showMessage(_('Could not download game'))
 
@@ -1728,10 +1753,11 @@ class UpdateGroupBox(QGroupBox):
                 retry_rmtree(download_dir)
                 self.finish_updating()
 
-                return
-
-            status_bar.clearMessage()
-            self.backup_current_game()
+            test_thread = TestingZipThread(self.downloaded_file)
+            test_thread.completed.connect(completed_test)
+            test_thread.invalid.connect(invalid)
+            test_thread.not_downloaded.connect(not_downloaded)
+            test_thread.start()
 
     def backup_current_game(self):
         self.backing_up_game = True
@@ -1747,6 +1773,7 @@ class UpdateGroupBox(QGroupBox):
 
         backup_dir = os.path.join(game_dir, 'previous_version')
         if os.path.isdir(backup_dir):
+            status_bar.showMessage(_('Deleting previous_version directory'))
             if not retry_rmtree(backup_dir):
                 self.backing_up_game = False
 
@@ -1759,6 +1786,7 @@ class UpdateGroupBox(QGroupBox):
 
                 self.finish_updating()
                 return
+            status_bar.clearMessage()
 
         dir_list = os.listdir(game_dir)
         self.backup_dir_list = dir_list
@@ -1776,6 +1804,8 @@ class UpdateGroupBox(QGroupBox):
                     dir_list.remove(launcher_name)
 
         if len(dir_list) > 0:
+            status_bar.showMessage(_('Backing up current game'))
+
             status_bar.busy += 1
 
             backup_label = QLabel()
@@ -1794,6 +1824,7 @@ class UpdateGroupBox(QGroupBox):
             os.makedirs(backup_dir)
             self.backup_dir = backup_dir
             self.backup_index = 0
+            self.backup_current_display = True
 
             def timeout():
                 self.backup_progress_bar.setValue(self.backup_index)
@@ -1808,33 +1839,40 @@ class UpdateGroupBox(QGroupBox):
                     status_bar.removeWidget(self.backup_progress_bar)
 
                     status_bar.busy -= 1
+                    status_bar.clearMessage()
 
                     self.backing_up_game = False
                     self.extract_new_build()
 
                 else:
                     backup_element = self.backup_dir_list[self.backup_index]
-                    self.backup_label.setText(_('Backing up {0}').format(
-                        backup_element))
-                    try:
-                        shutil.move(os.path.join(self.game_dir, backup_element),
-                            self.backup_dir)
-                    except OSError as e:
-                        self.backup_timer.stop()
-                        
-                        main_window = self.get_main_window()
-                        status_bar = main_window.statusBar()
 
-                        status_bar.removeWidget(self.backup_label)
-                        status_bar.removeWidget(self.backup_progress_bar)
+                    if self.backup_current_display:
+                        self.backup_label.setText(_('Backing up {0}').format(
+                            backup_element))
+                        self.backup_current_display = False
+                    else:
+                        try:
+                            shutil.move(os.path.join(self.game_dir,
+                                backup_element), self.backup_dir)
+                        except OSError as e:
+                            self.backup_timer.stop()
+                            
+                            main_window = self.get_main_window()
+                            status_bar = main_window.statusBar()
 
-                        status_bar.busy -= 1
+                            status_bar.removeWidget(self.backup_label)
+                            status_bar.removeWidget(self.backup_progress_bar)
 
-                        self.finish_updating()
+                            status_bar.busy -= 1
+                            status_bar.clearMessage()
 
-                        status_bar.showMessage(str(e))
+                            self.finish_updating()
 
-                    self.backup_index += 1
+                            status_bar.showMessage(str(e))
+
+                        self.backup_index += 1
+                        self.backup_current_display = True
 
             timer.timeout.connect(timeout)
             timer.start(0)
