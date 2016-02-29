@@ -2133,17 +2133,52 @@ class UpdateGroupBox(QGroupBox):
                         previous_set[name] = entry_path
 
             custom_set = set(previous_set.keys()) - set(official_set.keys())
-            for item in custom_set:
-                if not self.in_post_extraction:
-                    break
+            if len(custom_set) > 0:
+                self.soundpack_dir = soundpack_dir
+                self.previous_soundpack_set = previous_set
+                self.custom_soundpacks = list(custom_set)
 
-                target_dir = os.path.join(soundpack_dir, os.path.basename(
-                    previous_set[item]))
-                if not os.path.exists(target_dir):
-                    shutil.copytree(previous_set[item], target_dir)
+                self.copy_next_soundpack()
+            else:
+                status_bar.clearMessage()
+                self.post_extraction_step3()
+            
+        else:
+            self.post_extraction_step3()
 
+    def copy_next_soundpack(self):
+        if self.in_post_extraction and len(self.custom_soundpacks) > 0:
+            next_item = self.custom_soundpacks.pop()
+            dst_path = os.path.join(self.soundpack_dir, os.path.basename(
+                self.previous_soundpack_set[next_item]))
+            src_path = self.previous_soundpack_set[next_item]
+            if os.path.isdir(src_path) and not os.path.exists(dst_path):
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                progress_copy = ProgressCopyTree(src_path, dst_path, status_bar,
+                    _('{name} soundpack').format(name=next_item))
+                progress_copy.completed.connect(self.copy_next_soundpack)
+                self.progress_copy = progress_copy
+                progress_copy.start()
+            else:
+                self.copy_next_soundpack()
+        elif self.in_post_extraction:
+            self.progress_copy = None
+
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
             status_bar.clearMessage()
-        
+
+            self.post_extraction_step3()
+    
+    def post_extraction_step3(self):
+        if not self.in_post_extraction:
+            return
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
         # mods
         mods_dir = os.path.join(self.game_dir, 'data', 'mods')
         previous_mods_dir = os.path.join(self.game_dir, 'previous_version',
