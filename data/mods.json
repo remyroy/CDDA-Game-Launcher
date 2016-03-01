@@ -5,9 +5,9 @@
         "name": "Artyoms' Gun Emporium",
         "description": "Adds all the guns that YOU need to survive the Cataclysm",
         "author": "Artyom177",
-        "size": 20598,
-        "url": "http://www.mediafire.com/download/37a841zck2xhr4b/Artyoms%27_Gun_Emporium.rar",
-        "expected_filename": "Artyoms Gun Emporium.rar",
+        "size": 20990,
+        "url": "http://www.mediafire.com/download/8n9m48kkbe33ma1/Artyoms%27+Gun+Emporium%282%29.rar",
+        "expected_filename": "Artyoms Gun Emporium(2).rar",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10759.0"
     },
     {
@@ -106,7 +106,7 @@
         "name": "Survivor Mod",
         "author": "Noctifer",
         "description": "A mod centered around the survivor.",
-        "size": 39242,
+        "size": 42278,
         "url": "http://1drv.ms/1irDjmc",
         "expected_filename": "Survivor_Mod.rar",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11248.0"
@@ -118,8 +118,8 @@
         "description": "Rebalances zombie spawning and evolution.",
         "category": "rebalance",
         "author": "pisskop",
-        "size": 14800,
-        "url": "https://www.dropbox.com/s/ewnyku8qgcrlxbl/PK_Rebalance%20v0.64.zip?dl=1",
+        "size": 41425,
+        "url": "https://www.dropbox.com/s/m54qay7csezf4tq/PK_Rebalance%20v0.70.zip?dl=1",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=12051.0"
     }
 ]
