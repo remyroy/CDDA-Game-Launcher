@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 0.8.5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-02-29 16:45-0500\n"
-"PO-Revision-Date: 2016-02-23 14:08+0600\n"
+"POT-Creation-Date: 2016-03-03 08:36-0500\n"
+"PO-Revision-Date: 2016-03-03 14:56+0600\n"
 "Last-Translator: \n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -20,7 +20,6 @@ msgstr ""
 "Generated-By: Babel 2.2.0\n"
 
 #: cddagl/launcher.py:125
-#, fuzzy
 msgid "CDDA Game Launcher started: {version}"
 msgstr "Версия лаунчера: {version}"
 
@@ -423,13 +422,12 @@ msgid "Could not download game"
 msgstr "Не могу скачать игру"
 
 #: cddagl/ui.py:1776
-#, fuzzy
 msgid "Deleting previous_version directory"
-msgstr "Предыдущая версия восстановлена"
+msgstr "Удаляем папку предыдущей версии"
 
 #: cddagl/ui.py:1807
 msgid "Backing up current game"
-msgstr ""
+msgstr "Бэкап текущей игры"
 
 #: cddagl/ui.py:1851
 msgid "Backing up {0}"
@@ -452,9 +450,8 @@ msgid "Restoring custom soundpacks"
 msgstr "Восстановление кастомных саундпаков"
 
 #: cddagl/ui.py:2160
-#, fuzzy
 msgid "{name} soundpack"
-msgstr ""
+msgstr "{name} саундпак"
 
 #: cddagl/ui.py:2189
 msgid "Restoring custom mods"
@@ -650,7 +647,7 @@ msgstr "Язык:"
 
 #: cddagl/ui.py:2685
 msgid "Use the launcher directory as the game directory"
-msgstr ""
+msgstr "Использовать директорию где расположен лаунчер как  директорию игры"
 
 #: cddagl/ui.py:2689
 msgid "Launcher"
@@ -1144,8 +1141,5 @@ msgstr "Что-то пошло не так"
 
 #: cddagl/ui.py:5815
 msgid "Could not find translations for {locale} in {locale_dir} ({info})"
-msgstr ""
-
-#~ msgid "Could not find translations ({info})"
-#~ msgstr ""
+msgstr "Не могу найти перевод для {locale} в {locale_dir} ({info})"
 
