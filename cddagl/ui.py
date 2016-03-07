@@ -54,7 +54,8 @@ from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build)
 from cddagl.win32 import (
-    find_process_with_file_handle, get_downloads_directory, get_ui_locale)
+    find_process_with_file_handle, get_downloads_directory, get_ui_locale,
+    activate_window)
 
 from .__version__ import version
 
@@ -531,6 +532,9 @@ class GameDirGroupBox(QGroupBox):
 
         self.dir_combo_inserting = False
 
+        self.game_process = None
+        self.game_started = False
+
         layout = QGridLayout()
 
         dir_label = QLabel()
@@ -746,7 +750,16 @@ class GameDirGroupBox(QGroupBox):
         update_group_box.enable_controls()
         self.game_directory_changed()
 
+    def focus_game(self):
+        if self.game_process is None:
+            return
+
+        activate_window(self.game_process.pid)
+
     def launch_game(self):
+        if self.game_started:
+            return self.focus_game()
+
         self.get_main_window().setWindowState(Qt.WindowMinimized)
         exe_dir = os.path.dirname(self.exe_path)
 
@@ -754,12 +767,80 @@ class GameDirGroupBox(QGroupBox):
         if params != '':
             params = ' ' + params
 
-        command = 'start /D "{app_path}" "" "{exe_path}"{params}'.format(
-            app_path=exe_dir, exe_path=self.exe_path, params=params)
-        subprocess.call(command, shell=True)
+        cmd = '"{exe_path}"{params}'.format(exe_path=self.exe_path,
+            params=params)
+
+        game_process = subprocess.Popen(cmd, cwd=exe_dir,
+            startupinfo=subprocess.CREATE_NEW_PROCESS_GROUP)
+        self.game_process = game_process
+        self.game_started = True
 
         if not config_true(get_config_value('keep_launcher_open', 'False')):
             self.get_main_window().close()
+        else:
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            status_bar.showMessage(_('Game process is running'))
+
+            main_tab = self.get_main_tab()
+            update_group_box = main_tab.update_group_box
+
+            self.disable_controls()
+            update_group_box.disable_controls(True)
+
+            soundpacks_tab = main_tab.get_soundpacks_tab()
+            mods_tab = main_tab.get_mods_tab()
+            settings_tab = main_tab.get_settings_tab()
+
+            soundpacks_tab.disable_tab()
+            mods_tab.disable_tab()
+            settings_tab.disable_tab()
+
+            self.launch_game_button.setText(_('Show current game'))
+            self.launch_game_button.setEnabled(True)
+            
+            class ProcessWaitThread(QThread):
+                ended = pyqtSignal()
+
+                def __init__(self, process):
+                    super(ProcessWaitThread, self).__init__()
+
+                    self.process = process                    
+
+                def __del__(self):
+                    self.wait()
+
+                def run(self):
+                    self.process.wait()
+                    self.ended.emit()
+
+            def process_ended():
+                self.process_wait_thread = None
+
+                self.game_process = None
+                self.game_started = False
+
+                status_bar.showMessage(_('Game process has ended'))
+
+                self.enable_controls()
+                update_group_box.enable_controls()
+
+                soundpacks_tab.enable_tab()
+                mods_tab.enable_tab()
+                settings_tab.enable_tab()
+
+                self.launch_game_button.setText(_('Launch game'))
+
+                self.get_main_window().setWindowState(Qt.WindowActive)
+
+                self.update_saves()
+
+            process_wait_thread = ProcessWaitThread(self.game_process)
+            process_wait_thread.ended.connect(process_ended)
+            process_wait_thread.start()
+
+            self.process_wait_thread = process_wait_thread
 
     def get_main_tab(self):
         return self.parentWidget()
@@ -1074,6 +1155,7 @@ class GameDirGroupBox(QGroupBox):
                 else:
                     # End of the tree
                     self.update_saves_timer.stop()
+                    self.update_saves_timer = None
 
                     # Warning about saves size
                     if (self.saves_size > SAVES_WARNING_SIZE and
@@ -1734,10 +1816,14 @@ class UpdateGroupBox(QGroupBox):
                     self.completed.emit()
 
             def completed_test():
+                self.test_thread = None
+
                 status_bar.clearMessage()
                 self.backup_current_game()
 
             def invalid():
+                self.test_thread = None
+
                 status_bar.clearMessage()
                 status_bar.showMessage(_('Downloaded archive is invalid'))
 
@@ -1746,6 +1832,8 @@ class UpdateGroupBox(QGroupBox):
                 self.finish_updating()
 
             def not_downloaded():
+                self.test_thread = None
+
                 status_bar.clearMessage()
                 status_bar.showMessage(_('Could not download game'))
 
@@ -1758,6 +1846,8 @@ class UpdateGroupBox(QGroupBox):
             test_thread.invalid.connect(invalid)
             test_thread.not_downloaded.connect(not_downloaded)
             test_thread.start()
+
+            self.test_thread = test_thread
 
     def backup_current_game(self):
         self.backing_up_game = True

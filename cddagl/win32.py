@@ -8,6 +8,8 @@ import functools
 from uuid import UUID
 
 import win32file
+import win32gui
+import win32process
 from pywintypes import error as WinError
 
 import locale
@@ -21,6 +23,8 @@ PVOID       = c_void_p
 PULONG      = POINTER(ULONG)
 ULONG_PTR   = WPARAM
 ACCESS_MASK = DWORD
+
+SW_SHOWNORMAL = 1
 
 VISTA_OR_LATER = sys.getwindowsversion()[0] >= 6
 
@@ -580,3 +584,24 @@ def find_process_with_file_handle(path):
 
 def get_ui_locale():
     return locale.windows_locale.get(kernel32.GetUserDefaultUILanguage(), None)
+
+def activate_window(pid):
+    handles = get_hwnds_for_pid(pid)
+    if len(handles) > 0:
+        wnd_handle = handles[0]
+        win32gui.ShowWindow(wnd_handle, SW_SHOWNORMAL)
+        win32gui.SetForegroundWindow(wnd_handle)
+        return True
+    return False
+
+def get_hwnds_for_pid(pid):
+    def callback (hwnd, hwnds):
+        if win32gui.IsWindowVisible(hwnd) and win32gui.IsWindowEnabled(hwnd):
+            _, found_pid = win32process.GetWindowThreadProcessId(hwnd)
+            if found_pid == pid:
+                hwnds.append(hwnd)
+        return True
+
+    hwnds = []
+    win32gui.EnumWindows(callback, hwnds)
+    return hwnds
