@@ -25,10 +25,10 @@ else:
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     sys.path.append(basedir)
 
-from cddagl.config import init_config, get_config_value
+from cddagl.config import init_config, get_config_value, config_true
 from cddagl.ui import start_ui, ui_exception
 
-from cddagl.win32 import get_ui_locale
+from cddagl.win32 import get_ui_locale, SingleInstance
 
 from cddagl.__version__ import version
 
@@ -37,6 +37,14 @@ MAX_LOG_FILES = 5
 
 available_locales = []
 app_locale = None
+
+def init_single_instance():
+    single_instance = SingleInstance()
+
+    if single_instance.aleradyrunning():
+        sys.exit(0)
+
+    return single_instance
 
 def init_gettext():
     locale_dir = os.path.join(basedir, 'cddagl', 'locale')
@@ -143,9 +151,10 @@ def init_exception_catcher():
 
 if __name__ == '__main__':
     init_config(basedir)
+    single_instance = init_single_instance()
 
     app_locale = init_gettext()
     init_logging()
     init_exception_catcher()
 
-    start_ui(basedir, app_locale, available_locales)
+    start_ui(basedir, app_locale, available_locales, single_instance)

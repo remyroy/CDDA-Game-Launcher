@@ -119,3 +119,6 @@ def get_build_from_sha256(sha256):
         }
 
     return None
+
+def config_true(value):
+    return value == 'True' or value == '1'

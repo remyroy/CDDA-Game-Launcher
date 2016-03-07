@@ -52,7 +52,7 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
-    new_build)
+    new_build, config_true)
 from cddagl.win32 import (
     find_process_with_file_handle, get_downloads_directory, get_ui_locale,
     activate_window)
@@ -105,9 +105,6 @@ def sizeof_fmt(num, suffix=None):
             return _("%3.1f %s%s") % (num, unit, suffix)
         num /= 1024.0
     return _("%.1f %s%s") % (num, _('Yi'), suffix)
-
-def config_true(value):
-    return value == 'True' or value == '1'
 
 def get_data_path():
     return os.path.join(basedir, 'data')
@@ -5909,7 +5906,7 @@ def init_gettext(locale):
     global app_locale
     app_locale = locale
 
-def start_ui(bdir, locale, locales):
+def start_ui(bdir, locale, locales, single_instance):
     global main_app
     global basedir
     global available_locales
@@ -5925,7 +5922,9 @@ def start_ui(bdir, locale, locales):
     main_app = QApplication(sys.argv)
     main_win = MainWindow('CDDA Game Launcher')
     main_win.show()
+
     main_app.main_win = main_win
+    main_app.single_instance = single_instance
     sys.exit(main_app.exec_())
 
 def ui_exception(extype, value, tb):

@@ -10,11 +10,16 @@ from uuid import UUID
 import win32file
 import win32gui
 import win32process
+import win32api
+import win32event
+
 from pywintypes import error as WinError
 
 import locale
 
 from win32com.shell import shell, shellcon
+
+from winerror import ERROR_ALREADY_EXISTS
 
 ntdll = WinDLL('ntdll')
 kernel32 = WinDLL('kernel32')
@@ -605,3 +610,17 @@ def get_hwnds_for_pid(pid):
     hwnds = []
     win32gui.EnumWindows(callback, hwnds)
     return hwnds
+
+
+class SingleInstance:
+    def __init__(self):
+        self.mutexname = 'cddagl_{64394E79-7931-49CB-B8CF-3F4ECAE16B6C}'
+        self.mutex = win32event.CreateMutex(None, False, self.mutexname)
+        self.lasterror = win32api.GetLastError()
+    
+    def aleradyrunning(self):
+        return (self.lasterror == ERROR_ALREADY_EXISTS)
+        
+    def __del__(self):
+        if self.mutex:
+            win32api.CloseHandle(self.mutex)
