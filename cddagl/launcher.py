@@ -39,13 +39,16 @@ available_locales = []
 app_locale = None
 
 def init_single_instance():
-    single_instance = SingleInstance()
+    if not config_true(get_config_value('allow_multiple_instances', 'False')):
+        single_instance = SingleInstance()
 
-    if single_instance.aleradyrunning():
-        write_named_pipe('cddagl_instance', b'dupe')
-        sys.exit(0)
+        if single_instance.aleradyrunning():
+            write_named_pipe('cddagl_instance', b'dupe')
+            sys.exit(0)
 
-    return single_instance
+        return single_instance
+
+    return None
 
 def init_gettext():
     locale_dir = os.path.join(basedir, 'cddagl', 'locale')

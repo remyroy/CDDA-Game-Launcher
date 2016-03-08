@@ -621,10 +621,14 @@ class SingleInstance:
     
     def aleradyrunning(self):
         return (self.lasterror == ERROR_ALREADY_EXISTS)
-        
-    def __del__(self):
+    
+    def close(self):
         if self.mutex:
             win32api.CloseHandle(self.mutex)
+            self.mutex = None
+
+    def __del__(self):
+        self.close()
 
 
 class SimpleNamedPipe:
@@ -649,11 +653,11 @@ class SimpleNamedPipe:
 
     def connect(self):
         try:
-            win32pipe.ConnectNamedPipe(self.pipe, None)
+            return win32pipe.ConnectNamedPipe(self.pipe, None) == 0
         except WinError as e:
             win32api.CloseHandle(self.pipe)
             self.create_pipe()
-            win32pipe.ConnectNamedPipe(self.pipe, None)
+            return win32pipe.ConnectNamedPipe(self.pipe, None) == 0
 
     def read(self, size):
         code, value = win32file.ReadFile(self.pipe, size)
@@ -662,9 +666,13 @@ class SimpleNamedPipe:
         
         return value
 
-    def __del__(self):
+    def close(self):
         if self.pipe:
             win32api.CloseHandle(self.pipe)
+            self.pipe = None
+
+    def __del__(self):
+        self.close()
 
 def write_named_pipe(name, value):
     fileh = None

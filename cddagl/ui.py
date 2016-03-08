@@ -57,7 +57,7 @@ from cddagl.config import (
     new_build, config_true)
 from cddagl.win32 import (
     find_process_with_file_handle, get_downloads_directory, get_ui_locale,
-    activate_window, SimpleNamedPipe)
+    activate_window, SimpleNamedPipe, SingleInstance)
 
 from .__version__ import version
 
@@ -185,7 +185,9 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle(title)
 
-        self.init_named_pipe()
+        if not config_true(get_config_value('allow_multiple_instances',
+            'False')):
+            self.init_named_pipe()
 
     def set_text(self):
         if getattr(sys, 'frozen', False):
@@ -353,19 +355,25 @@ class MainWindow(QMainWindow):
             def __init__(self):
                 super(PipeReadWaitThread, self).__init__()
 
-                self.pipe = SimpleNamedPipe('cddagl_instance')
+                try:
+                    self.pipe = SimpleNamedPipe('cddagl_instance')
+                except (OSError, PyWinError):
+                    self.pipe = None
 
             def __del__(self):
                 self.wait()
 
             def run(self):
-                while True:
-                    self.pipe.connect()
-                    try:
-                        value = self.pipe.read(1024)
-                        self.read.emit(value)
-                    except PyWinError:
-                        pass
+                if self.pipe is None:
+                    return
+
+                while self.pipe is not None:
+                    if self.pipe.connect() and self.pipe is not None:
+                        try:
+                            value = self.pipe.read(1024)
+                            self.read.emit(value)
+                        except (PyWinError, IOError):
+                            pass
 
         def instance_read(value):
             if value == b'dupe':
@@ -2772,13 +2780,21 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.locale_group = locale_group
         self.locale_layout = locale_layout
 
+        allow_mul_insts_checkbox = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'allow_multiple_instances', 'False')) else Qt.Unchecked)
+        allow_mul_insts_checkbox.setCheckState(check_state)
+        allow_mul_insts_checkbox.stateChanged.connect(self.ami_changed)
+        layout.addWidget(allow_mul_insts_checkbox, 3, 0, 1, 2)
+        self.allow_mul_insts_checkbox = allow_mul_insts_checkbox
+
         if getattr(sys, 'frozen', False):
             use_launcher_dir_checkbox = QCheckBox()
             check_state = (Qt.Checked if config_true(get_config_value(
                 'use_launcher_dir', 'False')) else Qt.Unchecked)
             use_launcher_dir_checkbox.setCheckState(check_state)
             use_launcher_dir_checkbox.stateChanged.connect(self.uld_changed)
-            layout.addWidget(use_launcher_dir_checkbox, 3, 0, 1, 2)
+            layout.addWidget(use_launcher_dir_checkbox, 4, 0, 1, 2)
             self.use_launcher_dir_checkbox = use_launcher_dir_checkbox
         
             no_launcher_version_check_checkbox = QCheckBox()
@@ -2789,7 +2805,7 @@ class LauncherSettingsGroupBox(QGroupBox):
                 check_state)
             no_launcher_version_check_checkbox.stateChanged.connect(
                 self.nlvcc_changed)
-            layout.addWidget(no_launcher_version_check_checkbox, 4, 0, 1, 2)
+            layout.addWidget(no_launcher_version_check_checkbox, 5, 0, 1, 2)
             self.no_launcher_version_check_checkbox = (
                 no_launcher_version_check_checkbox)
 
@@ -2804,7 +2820,9 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.locale_label.setText(_('Language:'))
         self.locale_combo.setItemText(0,
             _('System language or best match ({locale})').format(
-                locale=get_ui_locale()))       
+                locale=get_ui_locale()))
+        self.allow_mul_insts_checkbox.setText(_('Allow multiple instances of '
+            'the launcher to be started'))
         if getattr(sys, 'frozen', False):
             self.use_launcher_dir_checkbox.setText(_('Use the launcher '
                 'directory as the game directory'))
@@ -2854,6 +2872,10 @@ class LauncherSettingsGroupBox(QGroupBox):
     def clp_changed(self):
         set_config_value('command.params',
             self.command_line_parameters_edit.text())
+
+    def ami_changed(self, state):
+        checked = state != Qt.Unchecked
+        set_config_value('allow_multiple_instances', str(checked))
 
     def uld_changed(self, state):
         checked = state != Qt.Unchecked
