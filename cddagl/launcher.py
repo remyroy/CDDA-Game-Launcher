@@ -28,7 +28,7 @@ else:
 from cddagl.config import init_config, get_config_value, config_true
 from cddagl.ui import start_ui, ui_exception
 
-from cddagl.win32 import get_ui_locale, SingleInstance
+from cddagl.win32 import get_ui_locale, SingleInstance, write_named_pipe
 
 from cddagl.__version__ import version
 
@@ -42,6 +42,7 @@ def init_single_instance():
     single_instance = SingleInstance()
 
     if single_instance.aleradyrunning():
+        write_named_pipe('cddagl_instance', b'dupe')
         sys.exit(0)
 
     return single_instance

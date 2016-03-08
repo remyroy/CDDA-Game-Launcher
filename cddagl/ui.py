@@ -38,6 +38,8 @@ from py7zlib import Archive7z, NoPasswordGivenError, FormatError
 
 from distutils.version import LooseVersion
 
+from pywintypes import error as PyWinError
+
 from PyQt5.QtCore import (
     Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel,
     QSize, QRect, QThread)
@@ -55,7 +57,7 @@ from cddagl.config import (
     new_build, config_true)
 from cddagl.win32 import (
     find_process_with_file_handle, get_downloads_directory, get_ui_locale,
-    activate_window)
+    activate_window, SimpleNamedPipe)
 
 from .__version__ import version
 
@@ -182,6 +184,8 @@ class MainWindow(QMainWindow):
             self.restoreGeometry(qt_geometry)
 
         self.setWindowTitle(title)
+
+        self.init_named_pipe()
 
     def set_text(self):
         if getattr(sys, 'frozen', False):
@@ -341,6 +345,39 @@ class MainWindow(QMainWindow):
 
     def lv_http_ready_read(self):
         self.lv_html.write(self.http_reply.readAll())
+
+    def init_named_pipe(self):
+        class PipeReadWaitThread(QThread):
+            read = pyqtSignal(bytes)
+
+            def __init__(self):
+                super(PipeReadWaitThread, self).__init__()
+
+                self.pipe = SimpleNamedPipe('cddagl_instance')
+
+            def __del__(self):
+                self.wait()
+
+            def run(self):
+                while True:
+                    self.pipe.connect()
+                    try:
+                        value = self.pipe.read(1024)
+                        self.read.emit(value)
+                    except PyWinError:
+                        pass
+
+        def instance_read(value):
+            if value == b'dupe':
+                self.showNormal()
+                self.raise_()
+                self.activateWindow()
+
+        pipe_read_wait_thread = PipeReadWaitThread()
+        pipe_read_wait_thread.read.connect(instance_read)
+        pipe_read_wait_thread.start()
+
+        self.pipe_read_wait_thread = pipe_read_wait_thread
 
     def showEvent(self, event):
         if not self.shown:

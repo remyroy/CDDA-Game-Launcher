@@ -12,6 +12,7 @@ import win32gui
 import win32process
 import win32api
 import win32event
+import win32pipe
 
 from pywintypes import error as WinError
 
@@ -624,3 +625,55 @@ class SingleInstance:
     def __del__(self):
         if self.mutex:
             win32api.CloseHandle(self.mutex)
+
+
+class SimpleNamedPipe:
+    def __init__(self, name):
+        self.name = name
+        self.create_pipe()
+
+    def create_pipe(self):
+        self.pipe = win32pipe.CreateNamedPipe(r'\\.\pipe\{name}'.format(
+            name=self.name),
+            win32pipe.PIPE_ACCESS_INBOUND,
+            (win32pipe.PIPE_TYPE_MESSAGE | win32pipe.PIPE_READMODE_MESSAGE
+                | win32pipe.PIPE_WAIT),
+            1,
+            1024,
+            1024,
+            0,
+            None)
+        if self.pipe == win32file.INVALID_HANDLE_VALUE:
+            last_error = win32api.GetLastError()
+            raise OSError(last_error)
+
+    def connect(self):
+        try:
+            win32pipe.ConnectNamedPipe(self.pipe, None)
+        except WinError as e:
+            win32api.CloseHandle(self.pipe)
+            self.create_pipe()
+            win32pipe.ConnectNamedPipe(self.pipe, None)
+
+    def read(self, size):
+        code, value = win32file.ReadFile(self.pipe, size)
+        if code != 0:
+            raise IOError(win32api.FormatMessage(code))
+        
+        return value
+
+    def __del__(self):
+        if self.pipe:
+            win32api.CloseHandle(self.pipe)
+
+def write_named_pipe(name, value):
+    fileh = None
+    try:
+        fileh = win32file.CreateFile(r'\\.\pipe\{name}'.format(name=name),
+            win32file.GENERIC_WRITE, 0, None, win32file.OPEN_EXISTING, 0, None)
+        win32file.WriteFile(fileh, value)
+    except WinError:
+        pass
+    finally:
+        if fileh is not None:
+            win32api.CloseHandle(fileh)
