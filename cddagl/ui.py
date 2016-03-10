@@ -49,7 +49,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
     QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
-    QSpinBox, QListView, QAbstractItemView, QTextEdit, QSizePolicy)
+    QSpinBox, QListView, QAbstractItemView, QTextEdit, QSizePolicy,
+    QTableWidget, QTableWidgetItem)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -94,6 +95,28 @@ WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 
 def clean_qt_path(path):
     return path.replace('/', '\\')
+
+def safe_filename(filename):
+    keepcharacters = (' ', '.', '_', '-')
+    return ''.join(c for c in filename if c.isalnum() or c in keepcharacters
+        ).strip()
+
+def tryint(s):
+    try:
+        return int(s)
+    except:
+        return s
+
+def alphanum_key(s):
+    """ Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    return arstrip([tryint(c) for c in re.split('([0-9]+)', s)])
+
+def arstrip(value):
+    while len(value) > 1 and value[-1:] == ['']:
+        value = value[:-1]
+    return value
 
 def is_64_windows():
     return 'PROGRAMFILES(X86)' in os.environ
@@ -432,6 +455,7 @@ class CentralWidget(QTabWidget):
         super(CentralWidget, self).__init__()
 
         self.create_main_tab()
+        self.create_backups_tab()
         self.create_mods_tab()
         #self.create_tilesets_tab()
         self.create_soundpacks_tab()
@@ -440,6 +464,7 @@ class CentralWidget(QTabWidget):
 
     def set_text(self):
         self.setTabText(self.indexOf(self.main_tab), _('Main'))
+        self.setTabText(self.indexOf(self.backups_tab), _('Backups'))
         self.setTabText(self.indexOf(self.mods_tab), _('Mods'))
         #self.setTabText(self.indexOf(self.tilesets_tab), _('Tilesets'))
         self.setTabText(self.indexOf(self.soundpacks_tab), _('Soundpacks'))
@@ -447,6 +472,7 @@ class CentralWidget(QTabWidget):
         self.setTabText(self.indexOf(self.settings_tab), _('Settings'))
 
         self.main_tab.set_text()
+        self.backups_tab.set_text()
         self.mods_tab.set_text()
         #self.tilesets_tab.set_text()
         self.soundpacks_tab.set_text()
@@ -457,6 +483,11 @@ class CentralWidget(QTabWidget):
         main_tab = MainTab()
         self.addTab(main_tab, _('Main'))
         self.main_tab = main_tab
+
+    def create_backups_tab(self):
+        backups_tab = BackupsTab()
+        self.addTab(backups_tab, _('Backups'))
+        self.backups_tab = backups_tab
 
     def create_mods_tab(self):
         mods_tab = ModsTab()
@@ -525,6 +556,7 @@ class MainTab(QWidget):
     def enable_tab(self):
         self.game_dir_group_box.enable_controls()
         self.update_group_box.enable_controls()
+
 
 class SettingsTab(QWidget):
     def __init__(self):
@@ -906,6 +938,14 @@ class GameDirGroupBox(QGroupBox):
         directory = self.dir_combo.currentText()
         mods_tab.game_dir_changed(directory)
 
+    def update_backups(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        backups_tab = central_widget.backups_tab
+
+        directory = self.dir_combo.currentText()
+        backups_tab.game_dir_changed(directory)
+
     def clear_soundpacks(self):
         main_window = self.get_main_window()
         central_widget = main_window.central_widget
@@ -967,6 +1007,7 @@ class GameDirGroupBox(QGroupBox):
                     self.update_saves()
                     self.update_soundpacks()
                     self.update_mods()
+                    self.update_backups()
 
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
@@ -2424,6 +2465,7 @@ class UpdateGroupBox(QGroupBox):
 
         game_dir_group_box.update_soundpacks()
         game_dir_group_box.update_mods()
+        game_dir_group_box.update_backups()
 
         soundpacks_tab = main_tab.get_soundpacks_tab()
         mods_tab = main_tab.get_mods_tab()
@@ -4417,6 +4459,427 @@ class SoundpacksTab(QTabWidget):
         else:
             self.soundpacks_dir = None
 
+
+class BackupsTab(QTabWidget):
+    def __init__(self):
+        super(BackupsTab, self).__init__()
+
+        self.update_backups_timer = None
+
+        current_backups_gb = QGroupBox()
+        self.current_backups_gb = current_backups_gb
+
+        current_backups_gb_layout = QGridLayout()
+        current_backups_gb.setLayout(current_backups_gb_layout)
+        self.current_backups_gb_layout = current_backups_gb_layout
+
+        backups_table = QTableWidget()
+        backups_table.setColumnCount(5)
+        backups_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        backups_table.verticalHeader().setVisible(False)
+        current_backups_gb_layout.addWidget(backups_table, 0, 0, 1, 2)
+        self.backups_table = backups_table
+
+        restore_button = QPushButton()
+        restore_button.setEnabled(False)
+        current_backups_gb_layout.addWidget(restore_button, 1, 0)
+        self.restore_button = restore_button
+
+        delete_button = QPushButton()
+        delete_button.setEnabled(False)
+        current_backups_gb_layout.addWidget(delete_button, 1, 1)
+        self.delete_button = delete_button
+
+        do_not_backup_previous_cb = QCheckBox()
+        current_backups_gb_layout.addWidget(do_not_backup_previous_cb, 2, 0, 1,
+            2)
+        self.do_not_backup_previous_cb = do_not_backup_previous_cb
+
+        manual_backups_gb = QGroupBox()
+        self.manual_backups_gb = manual_backups_gb
+
+        manual_backups_layout = QGridLayout()
+        manual_backups_gb.setLayout(manual_backups_layout)
+        self.manual_backups_layout = manual_backups_layout
+
+        name_label = QLabel()
+        manual_backups_layout.addWidget(name_label, 0, 0, Qt.AlignRight)
+        self.name_label = name_label
+
+        name_le = QLineEdit()
+        manual_backups_layout.addWidget(name_le, 0, 1)
+        self.name_le = name_le
+
+        backup_current_button = QPushButton()
+        backup_current_button.clicked.connect(self.backup_current_clicked)
+        manual_backups_layout.addWidget(backup_current_button, 1, 0, 1, 2)
+        self.backup_current_button = backup_current_button
+
+        automatic_backups_gb = QGroupBox()
+        self.automatic_backups_gb = automatic_backups_gb
+
+        layout = QGridLayout()
+        layout.addWidget(current_backups_gb, 0, 0, 1, 2)
+        layout.addWidget(manual_backups_gb, 1, 0)
+        layout.addWidget(automatic_backups_gb, 1, 1)
+        self.setLayout(layout)
+
+        self.set_text()
+
+    def set_text(self):
+        self.current_backups_gb.setTitle(_('Current backups'))
+        self.manual_backups_gb.setTitle(_('Manual backup'))
+        self.automatic_backups_gb.setTitle(_('Automatic backups'))
+
+        self.restore_button.setText(_('Restore backup'))
+        self.delete_button.setText(_('Delete backup'))
+        self.do_not_backup_previous_cb.setText(_('Do not backup the current '
+            'saves before restoring a backup'))
+        self.backups_table.setHorizontalHeaderLabels((_('Name'),
+            _('Creation delta'), _('Created date'), _('Compressed size'),
+            _('Actual size')))
+
+        self.name_label.setText(_('Name:'))
+        self.backup_current_button.setText(_('Backup current saves'))
+
+    def get_main_window(self):
+        return self.parentWidget().parentWidget().parentWidget()
+
+    def get_main_tab(self):
+        return self.parentWidget().parentWidget().main_tab
+
+    def get_soundpacks_tab(self):
+        return self.get_main_tab().get_soundpacks_tab()
+
+    def get_settings_tab(self):
+        return self.get_main_tab().get_settings_tab()
+
+    def disable_tab(self):
+        pass
+
+    def enable_tab(self):
+        pass
+
+    def backup_current_clicked(self):
+        name = safe_filename(self.name_le.text())
+        if name == '':
+            name = _('manual_backup')
+        self.name_le.setText(name)
+        self.backup_saves(name)
+
+    def backup_saves(self, name):
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        save_dir = os.path.join(self.game_dir, 'save')
+        if not os.path.isdir(save_dir):
+            status_bar.showMessage(_('Save directory not found'))
+            return
+        self.save_dir = save_dir
+
+        backup_dir = os.path.join(self.game_dir, 'save_backups')
+        if not os.path.isdir(backup_dir):
+            if os.path.isfile(backup_dir):
+                os.remove(backup_dir)
+
+            os.makedirs(backup_dir)
+
+        '''
+        Finding a backup filename which does not already exists or is the next
+        backup name based on an incremental counter placed at the end of the
+        filename without the extension.
+        '''
+
+        name_lower = name.lower()
+        name_key = alphanum_key(name_lower)
+        if len(name_key) > 1 and isinstance(name_key[-1:][0], int):
+            name_key = name_key[:-1]
+
+        duplicate_name = False
+        duplicate_basename = False
+        max_counter = 0
+
+        for entry in scandir(backup_dir):
+            filename, ext = os.path.splitext(entry.name)
+            if ext.lower() == '.zip':
+                filename_lower = filename.lower()
+
+                if filename_lower == name_lower:
+                    duplicate_name = True
+                else:
+                    filename_key = alphanum_key(filename_lower)
+
+                    counter = filename_key[-1:][0]
+                    if len(filename_key) > 1 and isinstance(counter, int):
+                        filename_key = filename_key[:-1]
+
+                        if name_key == filename_key:
+                            duplicate_basename = True
+                            max_counter = max(max_counter, counter)
+
+        if duplicate_basename:
+            name_key = alphanum_key(name)
+            if len(name_key) > 1 and isinstance(name_key[-1:][0], int):
+                name_key = name_key[:-1]
+
+            name_key.append(max_counter + 1)
+            backup_filename = ''.join(map(lambda x: str(x), name_key))
+        elif duplicate_name:
+            backup_filename = name + '2'
+        else:
+            backup_filename = name
+
+        backup_filename = backup_filename + '.zip'
+
+        self.backup_path = os.path.join(backup_dir, backup_filename)
+
+        self.backup_file = None
+
+        status_bar.clearMessage()
+        status_bar.busy += 1
+
+        compressing_label = QLabel()
+        status_bar.addWidget(compressing_label, 100)
+        self.compressing_label = compressing_label
+
+        self.compressing_progress_bar = None
+        self.compressing_speed_label = None
+        self.compressing_size_label = None
+
+        timer = QTimer(self)
+        self.compressing_timer = timer
+
+        self.backup_searching = True
+        self.backup_compressing = False
+
+        self.backup_files = deque()
+        self.backup_file_sizes = {}
+
+        self.backup_scan = None
+        self.next_backup_scans = deque()
+
+        self.total_backup_size = 0
+        self.total_files = 0
+
+        compressing_label.setText(_('Searching for save files'))
+
+        def timeout():
+            if self.backup_scan is None:
+                self.backup_scan = scandir(self.save_dir)
+            else:
+                try:
+                    entry = next(self.backup_scan)
+
+                    if entry.is_file():
+                        self.compressing_label.setText(
+                            _('Found {filename} in {path}').format(
+                                filename=entry.name,
+                                path=os.path.dirname(entry.path)))
+                        self.backup_files.append(entry.path)
+                        self.total_backup_size += entry.stat().st_size
+                        self.backup_file_sizes[entry.path
+                            ] = entry.stat().st_size
+                        self.total_files += 1
+                    elif entry.is_dir():
+                        self.next_backup_scans.append(entry.path)
+                except StopIteration:
+                    try:
+                        self.backup_scan = scandir(
+                            self.next_backup_scans.popleft())
+                    except IndexError:
+                        self.backup_searching = False
+                        self.backup_compressing = True
+
+                        self.compressing_label.setText(
+                            _('Compressing save files'))
+
+                        compressing_speed_label = QLabel()
+                        compressing_speed_label.setText(_('{bytes_sec}/s'
+                            ).format(bytes_sec=sizeof_fmt(0)))
+                        status_bar.addWidget(compressing_speed_label)
+                        self.compressing_speed_label = (
+                            compressing_speed_label)
+
+                        compressing_size_label = QLabel()
+                        compressing_size_label.setText(
+                            _('{bytes_read}/{total_bytes}').format(
+                            bytes_read=sizeof_fmt(0),
+                            total_bytes=sizeof_fmt(self.total_backup_size)))
+                        status_bar.addWidget(compressing_size_label)
+                        self.compressing_size_label = (
+                            compressing_size_label)
+
+                        progress_bar = QProgressBar()
+                        progress_bar.setRange(0, self.total_backup_size)
+                        progress_bar.setValue(0)
+                        status_bar.addWidget(progress_bar)
+                        self.compressing_progress_bar = progress_bar
+
+                        self.comp_size = 0
+                        self.comp_files = 0
+                        self.last_comp_bytes = 0
+                        self.last_comp = datetime.utcnow()
+                        self.next_backup_file = None
+
+                        self.compressing_timer.stop()
+                        self.compressing_timer = None
+
+                        self.backup_saves_step2()
+
+        timer.timeout.connect(timeout)
+        timer.start(0)
+
+    def backup_saves_step2(self):
+
+        class CompressThread(QThread):
+            completed = pyqtSignal()
+
+            def __init__(self, zfile, filename, arcname):
+                super(CompressThread, self).__init__()
+
+                self.zfile = zfile
+                self.filename = filename
+                self.arcname = arcname
+
+            def __del__(self):
+                self.wait()
+
+            def run(self):
+                self.zfile.write(self.filename, self.arcname)
+                self.completed.emit()
+
+        def backup_next_file():
+            try:
+                next_file = self.backup_files.popleft()
+                relpath = os.path.relpath(next_file, self.game_dir)
+                self.next_backup_file = next_file
+
+                self.compressing_label.setText(
+                    _('Compressing {filename}').format(filename=relpath))
+
+                compress_thread = CompressThread(self.backup_file, next_file,
+                    relpath)
+                compress_thread.completed.connect(completed_compress)
+                self.compress_thread = compress_thread
+
+                compress_thread.start()
+                    
+            except IndexError:
+                self.finish_backup_saves()
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(_('Saves backup completed'))
+                self.update_backups_table()
+
+        def completed_compress():
+            self.comp_size += self.backup_file_sizes[self.next_backup_file]
+            self.compressing_progress_bar.setValue(self.comp_size)
+
+            self.compressing_size_label.setText(
+                _('{bytes_read}/{total_bytes}').format(
+                bytes_read=sizeof_fmt(self.comp_size),
+                total_bytes=sizeof_fmt(self.total_backup_size)))
+
+            delta_bytes = self.comp_size - self.last_comp_bytes
+            delta_time = datetime.utcnow() - self.last_comp
+            if delta_time.total_seconds() == 0:
+                delta_time = timedelta.resolution
+
+            bytes_secs = delta_bytes / delta_time.total_seconds()
+            self.compressing_speed_label.setText(_('{bytes_sec}/s'
+                ).format(bytes_sec=sizeof_fmt(bytes_secs)))
+
+            self.last_comp_bytes = self.comp_size
+            self.last_comp = datetime.utcnow()
+
+            backup_next_file()
+
+        self.backup_file = zipfile.ZipFile(self.backup_path, 'w',
+            zipfile.ZIP_DEFLATED)
+        backup_next_file()
+
+    def finish_backup_saves(self):
+        if self.backup_file is not None:
+            self.backup_file.close()
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.removeWidget(self.compressing_label)
+        if self.compressing_progress_bar is not None:
+            status_bar.removeWidget(self.compressing_progress_bar)
+        if self.compressing_speed_label is not None:
+            status_bar.removeWidget(self.compressing_speed_label)
+        if self.compressing_size_label is not None:
+            status_bar.removeWidget(self.compressing_size_label)
+
+        status_bar.busy -= 1
+
+    def game_dir_changed(self, new_dir):
+        self.game_dir = new_dir
+
+        self.update_backups_table()
+
+    def update_backups_table(self):
+        backup_dir = os.path.join(self.game_dir, 'save_backups')
+        if not os.path.isdir(backup_dir):
+            return
+
+        if (self.update_backups_timer is not None
+            and self.update_backups_timer.isActive()):
+            self.update_backups_timer.stop()
+
+        self.backups_table.clearContents()
+
+        timer = QTimer(self)
+        self.update_backups_timer = timer
+
+        self.backups_scan = scandir(backup_dir)
+
+        def timeout():
+            try:
+                entry = next(self.backups_scan)
+                filename, ext = os.path.splitext(entry.name)
+                if ext.lower() == '.zip':
+                    uncompressed_size = 0
+                    try:
+                        with zipfile.ZipFile(entry.path) as zfile:
+                            for info in zfile.infolist():
+                                if not info.filename.startswith('save/'):
+                                    return
+                                uncompressed_size += info.file_size
+                    except zipfile.BadZipFile:
+                        pass
+
+                    # We found a valid backup
+
+                    compressed_size = entry.stat().st_size
+                    creation_date = datetime.fromtimestamp(
+                        entry.stat().st_ctime)
+                    arrow_date = arrow.get(entry.stat().st_ctime)
+                    human_delta = arrow_date.humanize(arrow.utcnow(),
+                        locale=app_locale)
+
+                    row_index = self.backups_table.rowCount()
+                    self.backups_table.insertRow(row_index)
+
+                    flags = (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+
+                    for index, value in enumerate((filename, human_delta,
+                        str(creation_date), sizeof_fmt(compressed_size),
+                        sizeof_fmt(uncompressed_size))):
+                        item = QTableWidgetItem(value)
+                        item.setFlags(flags)
+                        self.backups_table.setItem(row_index, index, item)
+
+            except StopIteration:
+                self.update_backups_timer.stop()
+
+        timer.timeout.connect(timeout)
+        timer.start(0)
+
 class ModsTab(QTabWidget):
     def __init__(self):
         super(ModsTab, self).__init__()
@@ -5738,6 +6201,8 @@ class ProgressCopyTree(QTimer):
                             self.copying = True
 
                             copying_speed_label = QLabel()
+                            copying_speed_label.setText(_('{bytes_sec}/s'
+                                ).format(bytes_sec=sizeof_fmt(0)))
                             self.status_bar.addWidget(copying_speed_label)
                             self.copying_speed_label = copying_speed_label
 
