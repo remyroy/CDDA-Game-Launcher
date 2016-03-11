@@ -25,6 +25,8 @@ _ = gettext.gettext
 ngettext = gettext.ngettext
 
 from babel.core import Locale
+from babel.numbers import format_percent
+from babel.dates import format_datetime
 
 from io import BytesIO, StringIO
 from collections import deque
@@ -42,7 +44,7 @@ from pywintypes import error as PyWinError
 
 from PyQt5.QtCore import (
     Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel,
-    QSize, QRect, QThread)
+    QSize, QRect, QThread, QItemSelectionModel, QItemSelection)
 from PyQt5.QtGui import QIcon, QPalette, QPainter, QColor, QFont
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
@@ -173,6 +175,97 @@ that file or directory. You might need to end it if you want to retry.</p>
             retry_msgbox.setInformativeText(_('Do you want to retry removing '
                 'this directory?'))
             retry_msgbox.addButton(_('Retry removing the directory'),
+                QMessageBox.YesRole)
+            retry_msgbox.addButton(_('Cancel the operation'),
+                QMessageBox.NoRole)
+            retry_msgbox.setIcon(QMessageBox.Critical)
+
+            if retry_msgbox.exec() == 1:
+                return False
+
+    return True
+
+def retry_delfile(path):
+    while os.path.isfile(path):
+        try:
+            os.remove(path)
+        except OSError as e:
+            retry_msgbox = QMessageBox()
+            retry_msgbox.setWindowTitle(_('Cannot delete file'))
+
+            process = None
+            if e.filename is not None:
+                process = find_process_with_file_handle(e.filename)
+
+            text = _('''
+<p>The launcher failed to delete the following file: {path}</p>
+<p>When trying to remove or access {filename}, the launcher raised the 
+following error: {error}</p>
+''').format(
+    path=html.escape(path),
+    filename=html.escape(e.filename),
+    error=html.escape(e.strerror))
+
+            if process is None:
+                text = text + _('''
+<p>No process seems to be using that file.</p>
+''')
+            else:
+                text = text + _('''
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+that file. You might need to end it if you want to retry.</p>
+''').format(image_file_name=process['image_file_name'], pid=process['pid'])
+
+            retry_msgbox.setText(text)
+            retry_msgbox.setInformativeText(_('Do you want to retry deleting '
+                'this file?'))
+            retry_msgbox.addButton(_('Retry deleting the file'),
+                QMessageBox.YesRole)
+            retry_msgbox.addButton(_('Cancel the operation'),
+                QMessageBox.NoRole)
+            retry_msgbox.setIcon(QMessageBox.Critical)
+
+            if retry_msgbox.exec() == 1:
+                return False
+
+    return True
+
+def retry_rename(src, dst):
+    while os.path.exists(src):
+        try:
+            os.rename(src, dst)
+        except OSError as e:
+            retry_msgbox = QMessageBox()
+            retry_msgbox.setWindowTitle(_('Cannot rename file'))
+
+            process = None
+            if e.filename is not None:
+                process = find_process_with_file_handle(e.filename)
+
+            text = _('''
+<p>The launcher failed to rename the following file: {src} to {dst}</p>
+<p>When trying to rename or access {filename}, the launcher raised the 
+following error: {error}</p>
+''').format(
+    src=html.escape(src),
+    dst=html.escape(dst),
+    filename=html.escape(e.filename),
+    error=html.escape(e.strerror))
+
+            if process is None:
+                text = text + _('''
+<p>No process seems to be using that file.</p>
+''')
+            else:
+                text = text + _('''
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+that file. You might need to end it if you want to retry.</p>
+''').format(image_file_name=process['image_file_name'], pid=process['pid'])
+
+            retry_msgbox.setText(text)
+            retry_msgbox.setInformativeText(_('Do you want to retry renaming '
+                'this file?'))
+            retry_msgbox.addButton(_('Retry renaming the file'),
                 QMessageBox.YesRole)
             retry_msgbox.addButton(_('Cancel the operation'),
                 QMessageBox.NoRole)
@@ -422,6 +515,9 @@ class MainWindow(QMainWindow):
     def save_geometry(self):
         geometry = self.saveGeometry().toBase64().data().decode('utf8')
         set_config_value('window_geometry', geometry)
+
+        backups_tab = self.central_widget.backups_tab
+        backups_tab.save_geometry()
 
     def closeEvent(self, event):
         update_group_box = self.central_widget.main_tab.update_group_box
@@ -953,6 +1049,20 @@ class GameDirGroupBox(QGroupBox):
 
         soundpacks_tab.clear_soundpacks()
 
+    def clear_mods(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        mods_tab = central_widget.mods_tab
+
+        mods_tab.clear_mods()
+
+    def clear_backups(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        backups_tab = central_widget.backups_tab
+
+        backups_tab.clear_backups()
+
     def set_game_directory(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
@@ -1018,6 +1128,8 @@ class GameDirGroupBox(QGroupBox):
             self.build_value_label.setText(_('Unknown'))
             self.saves_value_edit.setText(_('Unknown'))
             self.clear_soundpacks()
+            self.clear_mods()
+            self.clear_backups()
         else:
             self.launch_game_button.setEnabled(True)
             update_group_box.update_button.setText(_('Update game'))
@@ -4464,7 +4576,10 @@ class BackupsTab(QTabWidget):
     def __init__(self):
         super(BackupsTab, self).__init__()
 
+        self.game_dir = None
         self.update_backups_timer = None
+        self.after_backup = None
+        self.after_update_backups = None
 
         current_backups_gb = QGroupBox()
         self.current_backups_gb = current_backups_gb
@@ -4474,25 +4589,50 @@ class BackupsTab(QTabWidget):
         self.current_backups_gb_layout = current_backups_gb_layout
 
         backups_table = QTableWidget()
-        backups_table.setColumnCount(5)
+        backups_table.setColumnCount(8)
         backups_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        backups_table.setSelectionMode(QAbstractItemView.SingleSelection)
         backups_table.verticalHeader().setVisible(False)
-        current_backups_gb_layout.addWidget(backups_table, 0, 0, 1, 2)
+        backups_table.horizontalHeader().sortIndicatorChanged.connect(
+            self.backups_table_header_sort)
+        backups_table.itemSelectionChanged.connect(
+            self.backups_table_selection_changed)
+        current_backups_gb_layout.addWidget(backups_table, 0, 0, 1, 3)
         self.backups_table = backups_table
 
+        columns_width = get_config_value('backups_columns_width', None)
+        if columns_width is not None:
+            columns_width = json.loads(columns_width)
+
+            for index, value in enumerate(columns_width):
+                if index < self.backups_table.columnCount():
+                    self.backups_table.setColumnWidth(index, value)
+
         restore_button = QPushButton()
+        restore_button.clicked.connect(self.restore_button_clicked)
         restore_button.setEnabled(False)
         current_backups_gb_layout.addWidget(restore_button, 1, 0)
         self.restore_button = restore_button
 
+        refresh_list_button = QPushButton()
+        refresh_list_button.setEnabled(False)
+        refresh_list_button.clicked.connect(self.refresh_list_button_clicked)
+        current_backups_gb_layout.addWidget(refresh_list_button, 1, 1)
+        self.refresh_list_button = refresh_list_button
+
         delete_button = QPushButton()
+        delete_button.clicked.connect(self.delete_button_clicked)
         delete_button.setEnabled(False)
-        current_backups_gb_layout.addWidget(delete_button, 1, 1)
+        current_backups_gb_layout.addWidget(delete_button, 1, 2)
         self.delete_button = delete_button
 
         do_not_backup_previous_cb = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'do_not_backup_previous', 'False')) else Qt.Unchecked)
+        do_not_backup_previous_cb.setCheckState(check_state)
+        do_not_backup_previous_cb.stateChanged.connect(self.dnbp_changed)
         current_backups_gb_layout.addWidget(do_not_backup_previous_cb, 2, 0, 1,
-            2)
+            3)
         self.do_not_backup_previous_cb = do_not_backup_previous_cb
 
         manual_backups_gb = QGroupBox()
@@ -4507,10 +4647,12 @@ class BackupsTab(QTabWidget):
         self.name_label = name_label
 
         name_le = QLineEdit()
+        name_le.setText(get_config_value('last_manual_backup_name', ''))
         manual_backups_layout.addWidget(name_le, 0, 1)
         self.name_le = name_le
 
         backup_current_button = QPushButton()
+        backup_current_button.setEnabled(False)
         backup_current_button.clicked.connect(self.backup_current_clicked)
         manual_backups_layout.addWidget(backup_current_button, 1, 0, 1, 2)
         self.backup_current_button = backup_current_button
@@ -4532,12 +4674,14 @@ class BackupsTab(QTabWidget):
         self.automatic_backups_gb.setTitle(_('Automatic backups'))
 
         self.restore_button.setText(_('Restore backup'))
+        self.refresh_list_button.setText(_('Refresh list'))
         self.delete_button.setText(_('Delete backup'))
         self.do_not_backup_previous_cb.setText(_('Do not backup the current '
             'saves before restoring a backup'))
         self.backups_table.setHorizontalHeaderLabels((_('Name'),
-            _('Creation delta'), _('Created date'), _('Compressed size'),
-            _('Actual size')))
+            _('Modified delta'), _('Worlds'), _('Characters'),
+            _('Actual size'), _('Compressed size'), _('Compression ratio'),
+            _('Modified date')))
 
         self.name_label.setText(_('Name:'))
         self.backup_current_button.setText(_('Backup current saves'))
@@ -4560,14 +4704,226 @@ class BackupsTab(QTabWidget):
     def enable_tab(self):
         pass
 
+    def save_geometry(self):
+        columns_width = []
+
+        for index in range(self.backups_table.columnCount()):
+            columns_width.append(self.backups_table.columnWidth(index))
+
+        set_config_value('backups_columns_width', json.dumps(columns_width))
+
+    def dnbp_changed(self, state):
+        set_config_value('do_not_backup_previous', str(state != Qt.Unchecked))
+
+    def restore_button_clicked(self):
+        selection_model = self.backups_table.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
+            return
+
+        selected = selection_model.currentIndex()
+        table_item = self.backups_table.item(selected.row(), 0)
+        selected_info = self.backups[table_item]
+
+        if not os.path.isfile(selected_info['path']):
+            return
+
+        backup_previous = not config_true(get_config_value(
+            'do_not_backup_previous', 'False'))
+
+        if backup_previous:
+            '''
+            If restoring the before_last_restore, we rename it to make sure we
+            make a proper backup first.
+            '''
+            model = selection_model.model()
+            backup_name = model.data(model.index(selected.row(), 0))
+
+            before_last_restore_name = _('before_last_restore')
+
+            if backup_name.lower() == before_last_restore_name.lower():
+                backup_dir = os.path.join(self.game_dir, 'save_backups')
+
+                name_lower = backup_name.lower()
+                name_key = alphanum_key(name_lower)
+                max_counter = 1
+
+                for entry in scandir(backup_dir):
+                    filename, ext = os.path.splitext(entry.name)
+                    if ext.lower() == '.zip':
+                        filename_lower = filename.lower()
+
+                        filename_key = alphanum_key(filename_lower)
+
+                        counter = filename_key[-1:][0]
+                        if len(filename_key) > 1 and isinstance(counter, int):
+                            filename_key = filename_key[:-1]
+
+                            if name_key == filename_key:
+                                max_counter = max(max_counter, counter)
+
+                new_backup_name = before_last_restore_name + str(max_counter +
+                    1)
+                new_backup_path = os.path.join(backup_dir,
+                    new_backup_name + '.zip')
+                
+                if not retry_rename(selected_info['path'], new_backup_path):
+                    return
+
+                selected_info['path'] = new_backup_path
+
+            def next_step():
+                self.restore_backup()
+
+            self.after_backup = next_step
+
+            self.backup_saves(before_last_restore_name, True)
+        else:
+            self.restore_backup()
+
+    def restore_backup(self):
+        selection_model = self.backups_table.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
+            return
+
+        selected = selection_model.currentIndex()
+        table_item = self.backups_table.item(selected.row(), 0)
+        selected_info = self.backups[table_item]
+
+        model = selection_model.model()
+        backup_name = model.data(model.index(selected.row(), 0))
+
+        if not os.path.isfile(selected_info['path']):
+            return
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        save_dir = os.path.join(self.game_dir, 'save')
+        if os.path.isdir(save_dir):
+            if not retry_rmtree(save_dir):
+                status_bar.showMessage(_('Could not remove the save directory'))
+                return
+        elif os.path.isfile(save_dir):
+            if not retry_delfile(save_dir):
+                status_bar.showMessage(_('Could not remove the save file'))
+                return
+
+        # Extract the backup archive
+
+        self.extracting_backup = True
+        
+        z = zipfile.ZipFile(selected_info['path'])
+        self.extracting_zipfile = z
+
+        self.extract_dir = self.game_dir
+
+        self.extracting_infolist = z.infolist()
+        self.extracting_index = 0
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.busy += 1
+
+        extracting_label = QLabel()
+        status_bar.addWidget(extracting_label, 100)
+        self.extracting_label = extracting_label
+
+        progress_bar = QProgressBar()
+        status_bar.addWidget(progress_bar)
+        self.extracting_progress_bar = progress_bar
+
+        timer = QTimer(self)
+        self.extracting_timer = timer
+
+        progress_bar.setRange(0, len(self.extracting_infolist))
+
+        def timeout():
+            self.extracting_progress_bar.setValue(self.extracting_index)
+
+            if self.extracting_index == len(self.extracting_infolist):
+                self.extracting_timer.stop()
+
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.removeWidget(self.extracting_label)
+                status_bar.removeWidget(self.extracting_progress_bar)
+
+                status_bar.busy -= 1
+
+                self.extracting_backup = False
+
+                self.extracting_zipfile.close()
+
+                status_bar.showMessage(_('{backup_name} backup restored'
+                    ).format(backup_name=backup_name))
+
+            else:
+                extracting_element = self.extracting_infolist[
+                    self.extracting_index]
+                self.extracting_label.setText(_('Extracting {0}').format(
+                    extracting_element.filename))
+                
+                self.extracting_zipfile.extract(extracting_element,
+                    self.extract_dir)
+
+                self.extracting_index += 1
+
+        timer.timeout.connect(timeout)
+        timer.start(0)
+
+    def refresh_list_button_clicked(self):
+        self.update_backups_table()
+
+    def delete_button_clicked(self):
+        selection_model = self.backups_table.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
+            return
+
+        selected = selection_model.currentIndex()
+        table_item = self.backups_table.item(selected.row(), 0)
+        selected_info = self.backups[table_item]
+
+        if not os.path.isfile(selected_info['path']):
+            return
+
+        confirm_msgbox = QMessageBox()
+        confirm_msgbox.setWindowTitle(_('Delete backup'))
+        confirm_msgbox.setText(_('This will delete the backup file. It '
+            'cannot be undone.'))
+        confirm_msgbox.setInformativeText(_('Are you sure you want to '
+            'delete the <strong>{filename}</strong> backup?').format(
+            filename=selected_info['path']))
+        confirm_msgbox.addButton(_('Delete the backup'),
+            QMessageBox.YesRole)
+        confirm_msgbox.addButton(_('I want to keep the backup'),
+            QMessageBox.NoRole)
+        confirm_msgbox.setIcon(QMessageBox.Warning)
+
+        if confirm_msgbox.exec() == 0:
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            if not retry_delfile(selected_info['path']):
+                status_bar.showMessage(_('Backup deletion cancelled'))
+            else:
+                self.backups_table.removeRow(selected.row())
+                del self.backups[table_item]
+
+                status_bar.showMessage(_('Backup deleted'))
+
     def backup_current_clicked(self):
         name = safe_filename(self.name_le.text())
         if name == '':
             name = _('manual_backup')
         self.name_le.setText(name)
+
+        set_config_value('last_manual_backup_name', name)
+
         self.backup_saves(name)
 
-    def backup_saves(self, name):
+    def backup_saves(self, name, single=False):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
@@ -4584,54 +4940,63 @@ class BackupsTab(QTabWidget):
 
             os.makedirs(backup_dir)
 
-        '''
-        Finding a backup filename which does not already exists or is the next
-        backup name based on an incremental counter placed at the end of the
-        filename without the extension.
-        '''
+        if single:
+            backup_filename = name + '.zip'
+            self.backup_path = os.path.join(backup_dir, backup_filename)
+            if os.path.isfile(self.backup_path):
+                if not retry_delfile(self.backup_path):
+                    status_bar.showMessage(_('Could not delete previous '
+                        'backup archive'))
+                    return
+        else:
+            '''
+            Finding a backup filename which does not already exists or is the
+            next backup name based on an incremental counter placed at the end
+            of the filename without the extension.
+            '''
 
-        name_lower = name.lower()
-        name_key = alphanum_key(name_lower)
-        if len(name_key) > 1 and isinstance(name_key[-1:][0], int):
-            name_key = name_key[:-1]
-
-        duplicate_name = False
-        duplicate_basename = False
-        max_counter = 0
-
-        for entry in scandir(backup_dir):
-            filename, ext = os.path.splitext(entry.name)
-            if ext.lower() == '.zip':
-                filename_lower = filename.lower()
-
-                if filename_lower == name_lower:
-                    duplicate_name = True
-                else:
-                    filename_key = alphanum_key(filename_lower)
-
-                    counter = filename_key[-1:][0]
-                    if len(filename_key) > 1 and isinstance(counter, int):
-                        filename_key = filename_key[:-1]
-
-                        if name_key == filename_key:
-                            duplicate_basename = True
-                            max_counter = max(max_counter, counter)
-
-        if duplicate_basename:
-            name_key = alphanum_key(name)
+            name_lower = name.lower()
+            name_key = alphanum_key(name_lower)
             if len(name_key) > 1 and isinstance(name_key[-1:][0], int):
                 name_key = name_key[:-1]
 
-            name_key.append(max_counter + 1)
-            backup_filename = ''.join(map(lambda x: str(x), name_key))
-        elif duplicate_name:
-            backup_filename = name + '2'
-        else:
-            backup_filename = name
+            duplicate_name = False
+            duplicate_basename = False
+            max_counter = 0
 
-        backup_filename = backup_filename + '.zip'
+            for entry in scandir(backup_dir):
+                filename, ext = os.path.splitext(entry.name)
+                if ext.lower() == '.zip':
+                    filename_lower = filename.lower()
 
-        self.backup_path = os.path.join(backup_dir, backup_filename)
+                    if filename_lower == name_lower:
+                        duplicate_name = True
+                    else:
+                        filename_key = alphanum_key(filename_lower)
+
+                        counter = filename_key[-1:][0]
+                        if len(filename_key) > 1 and isinstance(counter, int):
+                            filename_key = filename_key[:-1]
+
+                            if name_key == filename_key:
+                                duplicate_basename = True
+                                max_counter = max(max_counter, counter)
+
+            if duplicate_basename:
+                name_key = alphanum_key(name)
+                if len(name_key) > 1 and isinstance(name_key[-1:][0], int):
+                    name_key = name_key[:-1]
+
+                name_key.append(max_counter + 1)
+                backup_filename = ''.join(map(lambda x: str(x), name_key))
+            elif duplicate_name:
+                backup_filename = name + '2'
+            else:
+                backup_filename = name
+
+            backup_filename = backup_filename + '.zip'
+
+            self.backup_path = os.path.join(backup_dir, backup_filename)
 
         self.backup_file = None
 
@@ -4770,7 +5135,12 @@ class BackupsTab(QTabWidget):
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
 
-                status_bar.showMessage(_('Saves backup completed'))
+                if self.after_backup is not None:
+                    self.after_update_backups = self.after_backup
+                    self.after_backup = None
+                else:
+                    status_bar.showMessage(_('Saves backup completed'))
+                
                 self.update_backups_table()
 
         def completed_compress():
@@ -4820,18 +5190,71 @@ class BackupsTab(QTabWidget):
     def game_dir_changed(self, new_dir):
         self.game_dir = new_dir
 
+        save_dir = os.path.join(self.game_dir, 'save')
+        if os.path.isdir(save_dir):
+            self.backup_current_button.setEnabled(True)
+
         self.update_backups_table()
 
+    def backups_table_header_sort(self, index, order):
+        self.backups_table.sortItems(index, order)
+
+    def backups_table_selection_changed(self):
+        items = self.backups_table.selectedItems()
+        has_items = len(items) > 0
+        
+        self.restore_button.setEnabled(has_items)
+        self.delete_button.setEnabled(has_items)
+
+    def clear_backups(self):
+        self.game_dir = None
+        self.backups = {}
+
+        self.restore_button.setEnabled(False)
+        self.refresh_list_button.setEnabled(False)
+        self.delete_button.setEnabled(False)
+
+        self.backup_current_button.setEnabled(False)
+
+        self.backups_table.horizontalHeader().setSortIndicatorShown(False)
+
+        self.backups_table.clearContents()
+        for i in range(self.backups_table.rowCount()):
+            self.backups_table.removeRow(0)
+
     def update_backups_table(self):
+        selection_model = self.backups_table.selectionModel()
+        if selection_model is None or not selection_model.hasSelection():
+            self.previous_selection = None
+        else:
+            selected = selection_model.currentIndex()
+            table_item = self.backups_table.item(selected.row(), 0)
+            selected_info = self.backups[table_item]
+
+            self.previous_selection = selected_info['path']
+
+        self.previous_selection_index = None
+
+        self.backups_table.horizontalHeader().setSortIndicatorShown(False)
+
+        self.backups_table.clearContents()
+        for i in range(self.backups_table.rowCount()):
+            self.backups_table.removeRow(0)
+
+        self.backups = {}
+
+        if self.game_dir is None:
+            return
+
         backup_dir = os.path.join(self.game_dir, 'save_backups')
         if not os.path.isdir(backup_dir):
             return
 
+        self.refresh_list_button.setEnabled(True)
+
         if (self.update_backups_timer is not None
             and self.update_backups_timer.isActive()):
             self.update_backups_timer.stop()
-
-        self.backups_table.clearContents()
 
         timer = QTimer(self)
         self.update_backups_timer = timer
@@ -4844,21 +5267,35 @@ class BackupsTab(QTabWidget):
                 filename, ext = os.path.splitext(entry.name)
                 if ext.lower() == '.zip':
                     uncompressed_size = 0
+                    character_count = 0
+                    worlds_set = set()
                     try:
                         with zipfile.ZipFile(entry.path) as zfile:
                             for info in zfile.infolist():
                                 if not info.filename.startswith('save/'):
                                     return
+
                                 uncompressed_size += info.file_size
+                                
+                                path_items = info.filename.split('/')
+                                
+                                if len(path_items) == 3:
+                                    save_file = path_items[-1]
+                                    if save_file.endswith('.sav'):
+                                        character_count += 1
+                                    if save_file in WORLD_FILES:
+                                        worlds_set.add(path_items[1])
                     except zipfile.BadZipFile:
                         pass
 
                     # We found a valid backup
 
                     compressed_size = entry.stat().st_size
-                    creation_date = datetime.fromtimestamp(
-                        entry.stat().st_ctime)
-                    arrow_date = arrow.get(entry.stat().st_ctime)
+                    modified_date = datetime.fromtimestamp(
+                        entry.stat().st_mtime)
+                    formated_date = format_datetime(modified_date,
+                        format='short', locale=app_locale)
+                    arrow_date = arrow.get(entry.stat().st_mtime)
                     human_delta = arrow_date.humanize(arrow.utcnow(),
                         locale=app_locale)
 
@@ -4867,18 +5304,78 @@ class BackupsTab(QTabWidget):
 
                     flags = (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
-                    for index, value in enumerate((filename, human_delta,
-                        str(creation_date), sizeof_fmt(compressed_size),
-                        sizeof_fmt(uncompressed_size))):
-                        item = QTableWidgetItem(value)
+                    compression_ratio = 1.0 - (compressed_size /
+                        uncompressed_size)
+                    rounded_ratio = round(compression_ratio, 4)
+                    ratio_percent = format_percent(rounded_ratio,
+                        format='#.##%', locale=app_locale)
+
+                    if self.previous_selection is not None:
+                        if entry.path == self.previous_selection:
+                            self.previous_selection_index = row_index
+
+                    fields = (
+                        (filename, alphanum_key(filename)),
+                        (human_delta, modified_date),
+                        (str(len(worlds_set)), len(worlds_set)),
+                        (str(character_count), character_count),
+                        (sizeof_fmt(uncompressed_size), uncompressed_size),
+                        (sizeof_fmt(compressed_size), compressed_size),
+                        (ratio_percent, compression_ratio),
+                        (formated_date, modified_date)
+                        )
+
+                    for index, value in enumerate(fields):
+                        item = SortEnabledTableWidgetItem(value[0], value[1])
                         item.setFlags(flags)
                         self.backups_table.setItem(row_index, index, item)
+
+                        if index == 0:
+                            self.backups[item] = {
+                                'path': entry.path
+                            }
 
             except StopIteration:
                 self.update_backups_timer.stop()
 
+                if self.previous_selection_index is not None:
+                    selection_model = self.backups_table.selectionModel()
+                    model = selection_model.model()
+
+                    first_index = model.index(self.previous_selection_index, 0)
+                    last_index = model.index(self.previous_selection_index,
+                        self.backups_table.columnCount() - 1)
+                    row_selection = QItemSelection(first_index, last_index)
+
+                    selection_model.select(row_selection,
+                        QItemSelectionModel.Select)
+                    selection_model.setCurrentIndex(first_index,
+                        QItemSelectionModel.Select)
+
+                self.backups_table.sortItems(1, Qt.DescendingOrder)
+                self.backups_table.horizontalHeader().setSortIndicatorShown(
+                    True)
+
+                if self.after_update_backups is not None:
+                    self.after_update_backups()
+                    self.after_update_backups = None
+
         timer.timeout.connect(timeout)
         timer.start(0)
+
+
+class SortEnabledTableWidgetItem(QTableWidgetItem):
+    def __init__(self, value, sort_data):
+        super(SortEnabledTableWidgetItem, self).__init__(value)
+
+        self.sort_data = sort_data
+
+    def __lt__(self, other):
+        return self.sort_data < other.sort_data
+
+    def __hash__(self):
+        return id(self)
+
 
 class ModsTab(QTabWidget):
     def __init__(self):
