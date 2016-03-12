@@ -2975,6 +2975,9 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.setLayout(layout)
         self.set_text()
 
+    def get_main_tab(self):
+        return self.parentWidget().get_main_tab()
+
     def set_text(self):
         self.command_line_parameters_label.setText(
             _('Command line parameters:'))
@@ -3030,7 +3033,19 @@ class LauncherSettingsGroupBox(QGroupBox):
             str(state != Qt.Unchecked))
 
     def klo_changed(self, state):
-        set_config_value('keep_launcher_open', str(state != Qt.Unchecked))
+        checked = state != Qt.Unchecked
+
+        set_config_value('keep_launcher_open', str(checked))
+
+        backup_on_end = (Qt.Checked if config_true(get_config_value(
+            'backup_on_end', 'False')) else Qt.Unchecked)
+
+        backups_tab = self.get_main_tab().get_backups_tab()
+
+        if not (backup_on_end and not checked):
+            backups_tab.backup_on_end_warning_label.hide()
+        else:
+            backups_tab.backup_on_end_warning_label.show()
 
     def clp_changed(self):
         set_config_value('command.params',
@@ -4682,7 +4697,60 @@ class BackupsTab(QTabWidget):
         self.backup_current_button = backup_current_button
 
         automatic_backups_gb = QGroupBox()
+        automatic_backups_layout = QGridLayout()
+        automatic_backups_gb.setLayout(automatic_backups_layout)
+        self.automatic_backups_layout = automatic_backups_layout
         self.automatic_backups_gb = automatic_backups_gb
+
+        backup_on_launch_cb = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'backup_on_launch', 'False')) else Qt.Unchecked)
+        backup_on_launch_cb.setCheckState(check_state)
+        backup_on_launch_cb.stateChanged.connect(self.bol_changed)
+        automatic_backups_layout.addWidget(backup_on_launch_cb, 0, 0)
+        self.backup_on_launch_cb = backup_on_launch_cb
+
+        backup_on_end_cb = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'backup_on_end', 'False')) else Qt.Unchecked)
+        backup_on_end_cb.setCheckState(check_state)
+        backup_on_end_cb.stateChanged.connect(self.boe_changed)
+        automatic_backups_layout.addWidget(backup_on_end_cb, 1, 0)
+        self.backup_on_end_cb = backup_on_end_cb
+
+        backup_on_end = check_state
+        keep_launcher_open = config_true(get_config_value('keep_launcher_open',
+            'False'))
+
+        backup_on_end_warning_label = QLabel()
+        icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
+        backup_on_end_warning_label.setPixmap(icon.pixmap(16, 16))
+        if not (backup_on_end and not keep_launcher_open):
+            backup_on_end_warning_label.hide()
+        automatic_backups_layout.addWidget(backup_on_end_warning_label, 1, 1)
+        self.backup_on_end_warning_label = backup_on_end_warning_label
+
+        mab_group = QWidget()
+        mab_group.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        mab_layout = QHBoxLayout()
+        mab_layout.setContentsMargins(0, 0, 0, 0)
+
+        max_auto_backups_label = QLabel()
+        mab_layout.addWidget(max_auto_backups_label)
+        self.max_auto_backups_label = max_auto_backups_label
+
+        max_auto_backups_spinbox = QSpinBox()
+        max_auto_backups_spinbox.setMinimum(1)
+        max_auto_backups_spinbox.setValue(int(get_config_value(
+            'max_auto_backups', '6')))
+        max_auto_backups_spinbox.valueChanged.connect(self.mabs_changed)
+        mab_layout.addWidget(max_auto_backups_spinbox)
+        self.max_auto_backups_spinbox = max_auto_backups_spinbox
+
+        mab_group.setLayout(mab_layout)
+        automatic_backups_layout.addWidget(mab_group, 2, 0, 1, 2)
+        self.mab_group = mab_group
+        self.mab_layout = mab_layout
 
         layout = QGridLayout()
         layout.addWidget(current_backups_gb, 0, 0, 1, 2)
@@ -4708,6 +4776,16 @@ class BackupsTab(QTabWidget):
 
         self.name_label.setText(_('Name:'))
         self.backup_current_button.setText(_('Backup current saves'))
+
+        self.backup_on_launch_cb.setText(_('Backup saves before game launch'))
+        self.backup_on_end_cb.setText(_('Backup saves after game end'))
+
+        self.backup_on_end_warning_label.setToolTip(_('This option will only '
+            'work if you also have the option to keep the launcher opened '
+            'after launching the game in the settings tab.'))
+
+        self.max_auto_backups_label.setText(_('Automatic backups maximum '
+            'count:'))
 
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
@@ -4759,8 +4837,27 @@ class BackupsTab(QTabWidget):
 
         set_config_value('backups_columns_width', json.dumps(columns_width))
 
+    def mabs_changed(self, value):
+        set_config_value('max_auto_backups', value)
+
     def dnbp_changed(self, state):
         set_config_value('do_not_backup_previous', str(state != Qt.Unchecked))
+
+    def bol_changed(self, state):
+        set_config_value('backup_on_launch', str(state != Qt.Unchecked))
+
+    def boe_changed(self, state):
+        checked = state != Qt.Unchecked
+
+        set_config_value('backup_on_end', str(checked))
+
+        keep_launcher_open = config_true(get_config_value('keep_launcher_open',
+            'False'))
+
+        if not (checked and not keep_launcher_open):
+            self.backup_on_end_warning_label.hide()
+        else:
+            self.backup_on_end_warning_label.show()
 
     def restore_button_clicked(self):
         class WaitingThread(QThread):
