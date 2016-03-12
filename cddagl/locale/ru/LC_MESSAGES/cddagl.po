@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: cddagl 0.8.5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-03-12 01:56-0500\n"
-"PO-Revision-Date: 2016-03-09 08:25+0600\n"
+"PO-Revision-Date: 2016-03-12 18:12+0600\n"
 "Last-Translator: \n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 "
+"&& (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.2.0\n"
+"X-Generator: Poedit 1.8.7\n"
 
 #: cddagl/launcher.py:137
 msgid "CDDA Game Launcher started: {version}"
@@ -92,8 +93,7 @@ msgstr "Невозможно удалить директорию"
 #: cddagl/ui.py:155
 msgid ""
 "\n"
-"<p>The launcher failed to remove the following directory: {directory}</p>"
-"\n"
+"<p>The launcher failed to remove the following directory: {directory}</p>\n"
 "<p>When trying to remove or access {filename}, the launcher raised the \n"
 "following error: {error}</p>\n"
 msgstr ""
@@ -113,15 +113,12 @@ msgstr ""
 #: cddagl/ui.py:169
 msgid ""
 "\n"
-"<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
-"using \n"
-"that file or directory. You might need to end it if you want to "
-"retry.</p>\n"
+"<p>The process <strong>{image_file_name} ({pid})</strong> is currently using \n"
+"that file or directory. You might need to end it if you want to retry.</p>\n"
 msgstr ""
 "\n"
 "<p>Процесс <strong>{image_file_name} ({pid})</strong> сейчас использует \n"
-"этот файл или директорию. Закройте этот процесс если хотите "
-"продолжить</p>\n"
+"этот файл или директорию. Закройте этот процесс если хотите продолжить</p>\n"
 
 #: cddagl/ui.py:175
 msgid "Do you want to retry removing this directory?"
@@ -137,10 +134,9 @@ msgstr "Отменить операцию"
 
 #: cddagl/ui.py:194
 msgid "Cannot delete file"
-msgstr ""
+msgstr "Не могу удалить файл"
 
 #: cddagl/ui.py:200
-#, fuzzy
 msgid ""
 "\n"
 "<p>The launcher failed to delete the following file: {path}</p>\n"
@@ -148,49 +144,41 @@ msgid ""
 "following error: {error}</p>\n"
 msgstr ""
 "\n"
-"<p>Лаунчер не смог удалить следующую директорию: {directory}</p>\n"
+"<p>Лаунчер не смог удалить следующий файл: {directory}</p>\n"
 "<p>При попытке удаления или изменения файла {filename}, лаунчер получил \n"
 "следующую ошибку: {error}</p>\n"
 
 #: cddagl/ui.py:210 cddagl/ui.py:256
-#, fuzzy
 msgid ""
 "\n"
 "<p>No process seems to be using that file.</p>\n"
 msgstr ""
 "\n"
-"<p>Похоже что нет процессов, использующих этот файл или папку</p>\n"
+"<p>Похоже что нет процессов, использующих этот файл</p>\n"
 
 #: cddagl/ui.py:214 cddagl/ui.py:260
-#, fuzzy
 msgid ""
 "\n"
-"<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
-"using \n"
+"<p>The process <strong>{image_file_name} ({pid})</strong> is currently using \n"
 "that file. You might need to end it if you want to retry.</p>\n"
 msgstr ""
 "\n"
 "<p>Процесс <strong>{image_file_name} ({pid})</strong> сейчас использует \n"
-"этот файл или директорию. Закройте этот процесс если хотите "
-"продолжить</p>\n"
+"этот файл. Закройте этот процесс если хотите продолжить</p>\n"
 
 #: cddagl/ui.py:220
-#, fuzzy
 msgid "Do you want to retry deleting this file?"
-msgstr "Хотите попробовать удалить эту директорию еще раз?"
+msgstr "Хотите попробовать удалить этот файл еще раз?"
 
 #: cddagl/ui.py:222
-#, fuzzy
 msgid "Retry deleting the file"
-msgstr "Повторить удаление директории"
+msgstr "Повторить удаление файла"
 
 #: cddagl/ui.py:239
-#, fuzzy
 msgid "Cannot rename file"
-msgstr "Не могу установить игру"
+msgstr "Не могу переименовать файл"
 
 #: cddagl/ui.py:245
-#, fuzzy
 msgid ""
 "\n"
 "<p>The launcher failed to rename the following file: {src} to {dst}</p>\n"
@@ -198,19 +186,17 @@ msgid ""
 "following error: {error}</p>\n"
 msgstr ""
 "\n"
-"<p>Лаунчер не смог удалить следующую директорию: {directory}</p>\n"
+"<p>Лаунчер не смог удалить следующий файл: {directory}</p>\n"
 "<p>При попытке удаления или изменения файла {filename}, лаунчер получил \n"
 "следующую ошибку: {error}</p>\n"
 
 #: cddagl/ui.py:266
-#, fuzzy
 msgid "Do you want to retry renaming this file?"
-msgstr "Хотите попробовать удалить эту директорию еще раз?"
+msgstr "Хотите попробовать переименовать этот файл еще раз?"
 
 #: cddagl/ui.py:268
-#, fuzzy
 msgid "Retry renaming the file"
-msgstr "Повторить удаление директории"
+msgstr "Повторить переименование файла"
 
 #: cddagl/ui.py:310 cddagl/ui.py:330
 msgid "&Check for launcher update"
@@ -237,8 +223,8 @@ msgid ""
 "You are using version {version} but there is a new update for CDDA Game "
 "Launcher. Would you like to update?"
 msgstr ""
-"У вас установлена версия {version}, однако есть более свежая версия "
-"лаунчера. Установить обновление?"
+"У вас установлена версия {version}, однако есть более свежая версия лаунчера. "
+"Установить обновление?"
 
 #: cddagl/ui.py:418
 msgid "Update the launcher"
@@ -262,7 +248,7 @@ msgstr "Основные настройки"
 
 #: cddagl/ui.py:563 cddagl/ui.py:585
 msgid "Backups"
-msgstr ""
+msgstr "Бэкапы"
 
 #: cddagl/ui.py:564 cddagl/ui.py:590
 msgid "Mods"
@@ -309,15 +295,15 @@ msgstr "Сохранения:"
 
 #: cddagl/ui.py:791
 msgid ""
-"Your save directory might be large enough to cause significant delays "
-"during the update process.\n"
-"You might want to enable the \"Do not copy or move the save directory\" "
-"option in the settings tab."
+"Your save directory might be large enough to cause significant delays during "
+"the update process.\n"
+"You might want to enable the \"Do not copy or move the save directory\" option "
+"in the settings tab."
 msgstr ""
-"Ваша папка с сохранениями имеет большой вес. Это может сильно замедлить "
-"процесс обновления.\n"
-"Возможно вам стоит включить опцию \"Не копировать и не переносить папку с"
-" сохранениями\" в настройках"
+"Ваша папка с сохранениями имеет большой вес. Это может сильно замедлить процесс "
+"обновления.\n"
+"Возможно вам стоит включить опцию \"Не копировать и не переносить папку с "
+"сохранениями\" в настройках"
 
 #: cddagl/ui.py:795 cddagl/ui.py:1006
 msgid "Launch game"
@@ -612,55 +598,49 @@ msgid ""
 "<p>CDDA Game Launcher version {version}</p>\n"
 "\n"
 "<p>Get the latest release <a \n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">on "
-"GitHub</a>.</p>\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">on GitHub</a>.</"
+"p>\n"
 "\n"
 "<p>Please report any issue <a \n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">on "
-"GitHub</a>.\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">on GitHub</"
+"a>.\n"
 "</p>\n"
 "\n"
 "<p>If you like the CDDA Game Launcher, you can buy me a beer by donating\n"
 "bitcoins to <a href=\"bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ\">\n"
 "15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> <img src=\"btc-qr.png\">.</p>\n"
 "\n"
-"<p>Thanks to the following people for their efforts in translating the "
-"CDDA Game\n"
+"<p>Thanks to the following people for their efforts in translating the CDDA "
+"Game\n"
 "Launcher</p>\n"
 "<ul>\n"
-"<li>Russian: Daniel from <a "
-"href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a>\n"
+"<li>Russian: Daniel from <a href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</"
+"a>\n"
 "</li>\n"
 "<li>French: Rémy Roy</li>\n"
 "</ul>\n"
 "\n"
 "<p>Copyright (c) 2015 Rémy Roy</p>\n"
 "\n"
-"<p>Permission is hereby granted, free of charge, to any person obtaining "
-"a copy\n"
-"of this software and associated documentation files (the \"Software\"), "
-"to deal\n"
-"in the Software without restriction, including without limitation the "
-"rights\n"
-"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell"
-"\n"
+"<p>Permission is hereby granted, free of charge, to any person obtaining a "
+"copy\n"
+"of this software and associated documentation files (the \"Software\"), to "
+"deal\n"
+"in the Software without restriction, including without limitation the rights\n"
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
 "copies of the Software, and to permit persons to whom the Software is\n"
 "furnished to do so, subject to the following conditions:</p>\n"
 "\n"
-"<p>The above copyright notice and this permission notice shall be "
-"included in \n"
+"<p>The above copyright notice and this permission notice shall be included in \n"
 "all copies or substantial portions of the Software.</p>\n"
 "\n"
-"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, "
-"EXPRESS OR\n"
+"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
+"OR\n"
 "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
-"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL "
-"THE\n"
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
 "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
-"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
-"FROM,\n"
-"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN"
-" THE\n"
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
 "SOFTWARE.</p>\n"
 "\n"
 msgstr ""
@@ -668,55 +648,49 @@ msgstr ""
 "<p>Версия CDDA Game Launcher {version}</p>\n"
 "\n"
 "<p>Обновления <a \n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">на  "
-"GitHub</a>.</p>\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">на  GitHub</a>."
+"</p>\n"
 "\n"
 "<p>Сообщить о проблеме <a \n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">на "
-"GitHub</a>.\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">на GitHub</"
+"a>.\n"
 "</p>\n"
 "\n"
 "<p>If you like the CDDA Game Launcher, you can buy me a beer by donating\n"
 "bitcoins to <a href=\"bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ\">\n"
 "15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> <img src=\"btc-qr.png\">.</p>\n"
 "\n"
-"<p>Thanks to the following people for their efforts in translating the "
-"CDDA Game\n"
+"<p>Thanks to the following people for their efforts in translating the CDDA "
+"Game\n"
 "Launcher</p>\n"
 "<ul>\n"
-"<li>Russian: Daniel from <a "
-"href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a>\n"
+"<li>Russian: Daniel from <a href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</"
+"a>\n"
 "</li>\n"
 "<li>French: Rémy Roy</li>\n"
 "</ul>\n"
 "\n"
 "<p>Copyright (c) 2015 Rémy Roy</p>\n"
 "\n"
-"<p>Permission is hereby granted, free of charge, to any person obtaining "
-"a copy\n"
-"of this software and associated documentation files (the \"Software\"), "
-"to deal\n"
-"in the Software without restriction, including without limitation the "
-"rights\n"
-"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell"
-"\n"
+"<p>Permission is hereby granted, free of charge, to any person obtaining a "
+"copy\n"
+"of this software and associated documentation files (the \"Software\"), to "
+"deal\n"
+"in the Software without restriction, including without limitation the rights\n"
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
 "copies of the Software, and to permit persons to whom the Software is\n"
 "furnished to do so, subject to the following conditions:</p>\n"
 "\n"
-"<p>The above copyright notice and this permission notice shall be "
-"included in \n"
+"<p>The above copyright notice and this permission notice shall be included in \n"
 "all copies or substantial portions of the Software.</p>\n"
 "\n"
-"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, "
-"EXPRESS OR\n"
+"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
+"OR\n"
 "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
-"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL "
-"THE\n"
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
 "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
-"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
-"FROM,\n"
-"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN"
-" THE\n"
+"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
 "SOFTWARE.</p>\n"
 "\n"
 
@@ -758,15 +732,15 @@ msgstr "Не копировать и не переносить папку с с�
 
 #: cddagl/ui.py:3178
 msgid ""
-"If your save directory size is large, it might take a long time to copy "
-"it during the update process.\n"
-"This option might help you speed the whole thing but your previous "
-"version will lack the save directory."
+"If your save directory size is large, it might take a long time to copy it "
+"during the update process.\n"
+"This option might help you speed the whole thing but your previous version will "
+"lack the save directory."
 msgstr ""
-"Если папка с сохранениями имеет большой вес, обновление может занять "
-"много времени.\n"
-"Эта опция ускорит процесс восстановления, однако вы не сможете "
-"восстановить сохранения в случае сбоя."
+"Если папка с сохранениями имеет большой вес, обновление может занять много "
+"времени.\n"
+"Эта опция ускорит процесс восстановления, однако вы не сможете восстановить "
+"сохранения в случае сбоя."
 
 #: cddagl/ui.py:3183
 msgid "Keep a copy of the downloaded archive in the following directory:"
@@ -807,11 +781,10 @@ msgstr "Самостоятельное обновление лаунчера"
 
 #: cddagl/ui.py:3446
 msgid ""
-"This {name} cannot be directly downloaded by the launcher. You have to "
-"use your browser to download it."
+"This {name} cannot be directly downloaded by the launcher. You have to use your "
+"browser to download it."
 msgstr ""
-"Лаунчр не может самостоятельно скачать {name}. Используйте браузер для "
-"этого."
+"Лаунчр не может самостоятельно скачать {name}. Используйте браузер для этого."
 
 #: cddagl/ui.py:3453
 msgid "1. Open the URL in your browser."
@@ -871,8 +844,8 @@ msgid ""
 "* Name: [Enter the name of the soundpack]\n"
 "* Url: [Enter the Url where we can find the soundpack]\n"
 "* Author: [Enter the name of the author]\n"
-"* Homepage: [Enter the Url of the author website or where the soundpack "
-"was published]\n"
+"* Homepage: [Enter the Url of the author website or where the soundpack was "
+"published]\n"
 "* Soundpack not found in version: {version}\n"
 msgstr ""
 "* Имя: [Введите имя саундпака]\n"
@@ -915,14 +888,13 @@ msgstr "Саундпак уже установлен"
 
 #: cddagl/ui.py:3819
 msgid ""
-"It seems this soundpack is already installed. The launcher will not "
-"overwrite the soundpack if it has the same directory name. You might want"
-" to delete the soundpack first if you want to update it. Also, there can "
-"only be a single soundpack with the same name value available in the "
-"game."
+"It seems this soundpack is already installed. The launcher will not overwrite "
+"the soundpack if it has the same directory name. You might want to delete the "
+"soundpack first if you want to update it. Also, there can only be a single "
+"soundpack with the same name value available in the game."
 msgstr ""
-"Похоже что саундпак уже установлен. Вам нужно вручную удалить старые "
-"файлы саундпака, если вы хотите обновить его. "
+"Похоже что саундпак уже установлен. Вам нужно вручную удалить старые файлы "
+"саундпака, если вы хотите обновить его. "
 
 #: cddagl/ui.py:3826
 msgid "Are you sure you want to install the {view} soundpack?"
@@ -958,16 +930,15 @@ msgstr "Поиск саундпака"
 
 #: cddagl/ui.py:4253
 msgid ""
-"Soundpack installation cancelled - There is no soundpack in the "
-"downloaded archive"
+"Soundpack installation cancelled - There is no soundpack in the downloaded "
+"archive"
 msgstr ""
-"Установка саундпака прервана - Не найдены файлы саундпака в скачанном "
-"архиве"
+"Установка саундпака прервана - Не найдены файлы саундпака в скачанном архиве"
 
 #: cddagl/ui.py:4263
 msgid ""
-"Soundpack installation cancelled - There is already a {basename} "
-"directory in {soundpacks_dir}"
+"Soundpack installation cancelled - There is already a {basename} directory in "
+"{soundpacks_dir}"
 msgstr ""
 "Установка саундпака прервана - Уже присутствует {basename} в директории "
 "{soundpacks_dir}"
@@ -1018,200 +989,183 @@ msgstr "Получение размера файла"
 
 #: cddagl/ui.py:4764
 msgid "Backups available"
-msgstr ""
+msgstr "Доступные бэкапы"
 
 #: cddagl/ui.py:4765
 msgid "Manual backup"
-msgstr ""
+msgstr "Ручной бэкап"
 
 #: cddagl/ui.py:4766
 msgid "Automatic backups"
-msgstr ""
+msgstr "Автоматические бэкапы"
 
 #: cddagl/ui.py:4768 cddagl/ui.py:4892 cddagl/ui.py:4921 cddagl/ui.py:5208
 msgid "Restore backup"
-msgstr ""
+msgstr "Восстановить бэкап"
 
 #: cddagl/ui.py:4769
-#, fuzzy
 msgid "Refresh list"
-msgstr "Обновить"
+msgstr "Обновить список"
 
 #: cddagl/ui.py:4770 cddagl/ui.py:5228
-#, fuzzy
 msgid "Delete backup"
-msgstr "Удалить саундпак"
+msgstr "Удалить бэкап"
 
 #: cddagl/ui.py:4771
 msgid "Do not backup the current saves before restoring a backup"
-msgstr ""
+msgstr "Не делать копию текущих сохранений перед восстановлением бэкапа"
 
 #: cddagl/ui.py:4773
-#, fuzzy
 msgid "Name"
-msgstr "Игра"
+msgstr "Имя"
 
 #: cddagl/ui.py:4774
 msgid "Modified"
-msgstr ""
+msgstr "Изменено"
 
 #: cddagl/ui.py:4774
-#, fuzzy
 msgid "Worlds"
-msgstr "Мир"
+msgstr "Миры"
 
 #: cddagl/ui.py:4774
-#, fuzzy
 msgid "Characters"
-msgstr "Персонаж"
+msgstr "Персонажи"
 
 #: cddagl/ui.py:4774
 msgid "Actual size"
-msgstr ""
+msgstr "Размер"
 
 #: cddagl/ui.py:4775
 msgid "Compressed size"
-msgstr ""
+msgstr "Сжатый размер"
 
 #: cddagl/ui.py:4775
 msgid "Compression ratio"
-msgstr ""
+msgstr "Степень сжатия"
 
 #: cddagl/ui.py:4775
 msgid "Modified date"
-msgstr ""
+msgstr "Дата изменения"
 
 #: cddagl/ui.py:4778 cddagl/ui.py:5608
-#, fuzzy
 msgid "Backup current saves"
-msgstr "Бэкап текущей игры"
+msgstr "Сохранить текущие сейвы"
 
 #: cddagl/ui.py:4780
 msgid "Backup saves before game launch"
-msgstr ""
+msgstr "Создать бэкап сейвов перед запуском игры"
 
 #: cddagl/ui.py:4781
 msgid "Backup saves after game end"
-msgstr ""
+msgstr "Создать бэкап сейвов после закрытия игры"
 
 #: cddagl/ui.py:4783
 msgid ""
-"This option will only work if you also have the option to keep the "
-"launcher opened after launching the game in the settings tab."
+"This option will only work if you also have the option to keep the launcher "
+"opened after launching the game in the settings tab."
 msgstr ""
+"Опция будет работать только в том случае если вы разрешили оставаться лаунчеру "
+"открытым после запуска игры."
 
 #: cddagl/ui.py:4787
 msgid "Automatic backups maximum count:"
-msgstr ""
+msgstr "Максимальное количество автоматических бекапов:"
 
 #: cddagl/ui.py:4890 cddagl/ui.py:4919 cddagl/ui.py:4951
 msgid "Restore backup cancelled"
-msgstr ""
+msgstr "Восстановление бэкапа отменено"
 
 #: cddagl/ui.py:4975
 msgid "before_last_restore"
-msgstr ""
+msgstr "before_last_restore"
 
 #: cddagl/ui.py:5017 cddagl/ui.py:5108
 msgid "Cancel restore backup"
-msgstr ""
+msgstr "Отменить восстановление бэкапа"
 
 #: cddagl/ui.py:5049
-#, fuzzy
 msgid "Could not rename the save directory"
-msgstr "Не копировать и не переносить папку с сохранениями"
+msgstr "Не могу копировать или перенести папку с сохранениями"
 
 #: cddagl/ui.py:5054
-#, fuzzy
 msgid "Could not remove the save file"
-msgstr "Не копировать и не переносить папку с сохранениями"
+msgstr "Не могу удалить файл сохранения"
 
 #: cddagl/ui.py:5069
-#, fuzzy
 msgid "Extracting backup"
-msgstr "Извлечение {0}"
+msgstr "Извлечение бэкапа"
 
 #: cddagl/ui.py:5131
-#, fuzzy
 msgid "Extracting {filename}"
-msgstr "Извлечение {0}"
+msgstr "Извлечение {filename}"
 
 #: cddagl/ui.py:5152
 msgid "{backup_name} backup restored"
-msgstr ""
+msgstr "{backup_name} бэкап восстановлен"
 
 #: cddagl/ui.py:5229
-#, fuzzy
 msgid "This will delete the backup file. It cannot be undone."
-msgstr "Это действие удалит директорию с саундпаком."
+msgstr "Это действие удалит файл бэкапа."
 
 #: cddagl/ui.py:5231
-#, fuzzy
 msgid "Are you sure you want to delete the <strong>{filename}</strong> backup?"
-msgstr "Вы уверены что хотите удалить саундпак {view}?"
+msgstr "Вы уверены что хотите удалить файл <strong>{filename}</strong>?"
 
 #: cddagl/ui.py:5234
-#, fuzzy
 msgid "Delete the backup"
-msgstr "Удалить саундпак"
+msgstr "Удалить бэкап"
 
 #: cddagl/ui.py:5236
-#, fuzzy
 msgid "I want to keep the backup"
-msgstr "Я хочу оставить саундпак"
+msgstr "Я хочу оставить бэкап"
 
 #: cddagl/ui.py:5245
-#, fuzzy
 msgid "Backup deletion cancelled"
-msgstr "Удаление саундпака отменено"
+msgstr "Удаление бэкапа отменено"
 
 #: cddagl/ui.py:5250
-#, fuzzy
 msgid "Backup deleted"
-msgstr "Саундпак удален"
+msgstr "Бэкап удален"
 
 #: cddagl/ui.py:5265 cddagl/ui.py:5307
-#, fuzzy
 msgid "Manual backup cancelled"
-msgstr "Установка прервана"
+msgstr "Ручной бэкап отменен"
 
 #: cddagl/ui.py:5313
 msgid "manual_backup"
-msgstr ""
+msgstr "manual_backup"
 
 #: cddagl/ui.py:5326
-#, fuzzy
 msgid "Save directory not found"
-msgstr "Директория игры"
+msgstr "Папка с сохранениями не найдена"
 
 #: cddagl/ui.py:5342
 msgid "Could not delete previous backup archive"
-msgstr ""
+msgstr "Не могу удалить предыдущий бэкап"
 
 #: cddagl/ui.py:5431
-#, fuzzy
 msgid "Cancel backup"
-msgstr "Отменить обновление"
+msgstr "Отменить бэкап"
 
 #: cddagl/ui.py:5434
 msgid "Searching for save files"
-msgstr ""
+msgstr "Поиск файлов с сохранениями"
 
 #: cddagl/ui.py:5445
 msgid "Found {filename} in {path}"
-msgstr ""
+msgstr "Найден {filename} в {path}"
 
 #: cddagl/ui.py:5464
 msgid "Compressing save files"
-msgstr ""
+msgstr "Сжатие файлов с сохранениями"
 
 #: cddagl/ui.py:5529
 msgid "Compressing {filename}"
-msgstr ""
+msgstr "Сжатие {filename}"
 
 #: cddagl/ui.py:5551
 msgid "Saves backup completed"
-msgstr ""
+msgstr "Сейвы успешно сохранены"
 
 #: cddagl/ui.py:5994
 msgid "Add this new mod to the repository"
@@ -1262,13 +1216,13 @@ msgstr "Мод уже установлен"
 
 #: cddagl/ui.py:6119
 msgid ""
-"It seems this mod is already installed. The launcher will not overwrite "
-"the mod if it has the same directory name. You might want to delete the "
-"mod first if you want to update it. Also, there can only be a single mod "
-"with the same ident value available in the game."
+"It seems this mod is already installed. The launcher will not overwrite the mod "
+"if it has the same directory name. You might want to delete the mod first if "
+"you want to update it. Also, there can only be a single mod with the same ident "
+"value available in the game."
 msgstr ""
-"Похоже что этот мод уже установлен. Удалите файлы мода вручную если вы "
-"хотите обновить его."
+"Похоже что этот мод уже установлен. Удалите файлы мода вручную если вы хотите "
+"обновить его."
 
 #: cddagl/ui.py:6126
 msgid "Are you sure you want to install the {name} mod?"
@@ -1375,8 +1329,8 @@ msgstr "Анализирую {name}"
 
 #: cddagl/ui.py:7285
 msgid ""
-"The CDDA Game Launcher just crashed. An unhandled exception was raised. "
-"Here are the details."
+"The CDDA Game Launcher just crashed. An unhandled exception was raised. Here "
+"are the details."
 msgstr "Лаунчер только что завершился с ошибкой. Подробности ниже."
 
 #: cddagl/ui.py:7297
@@ -1421,11 +1375,11 @@ msgstr ""
 
 #: cddagl/ui.py:7326
 msgid ""
-"Please help us make a better launcher <a href=\"{url}\">by reporting this"
-" issue on GitHub</a>."
+"Please help us make a better launcher <a href=\"{url}\">by reporting this issue "
+"on GitHub</a>."
 msgstr ""
-"Пожалуйста, помогите сделать этот лаунчер лучше, <a "
-"href=\"{url}\">написав об ошибке на GitHub</a>."
+"Пожалуйста, помогите сделать этот лаунчер лучше, <a href=\"{url}\">написав об "
+"ошибке на GitHub</a>."
 
 #: cddagl/ui.py:7333
 msgid "Exit"
@@ -1438,4 +1392,3 @@ msgstr "Что-то пошло не так"
 #: cddagl/ui.py:7353
 msgid "Could not find translations for {locale} in {locale_dir} ({info})"
 msgstr "Не могу найти перевод для {locale} в {locale_dir} ({info})"
-
