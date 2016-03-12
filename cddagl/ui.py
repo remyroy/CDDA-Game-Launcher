@@ -962,10 +962,12 @@ class GameDirGroupBox(QGroupBox):
             soundpacks_tab = main_tab.get_soundpacks_tab()
             mods_tab = main_tab.get_mods_tab()
             settings_tab = main_tab.get_settings_tab()
+            backups_tab = main_tab.get_backups_tab()
 
             soundpacks_tab.disable_tab()
             mods_tab.disable_tab()
             settings_tab.disable_tab()
+            backups_tab.disable_tab()
 
             self.launch_game_button.setText(_('Show current game'))
             self.launch_game_button.setEnabled(True)
@@ -999,6 +1001,7 @@ class GameDirGroupBox(QGroupBox):
                 soundpacks_tab.enable_tab()
                 mods_tab.enable_tab()
                 settings_tab.enable_tab()
+                backups_tab.enable_tab()
 
                 self.launch_game_button.setText(_('Launch game'))
 
@@ -1357,6 +1360,8 @@ class GameDirGroupBox(QGroupBox):
                         not config_true(get_config_value('prevent_save_move',
                             'False'))):
                         self.saves_warning_label.show()
+                    else:
+                        self.saves_warning_label.hide()
 
         timer.timeout.connect(timeout)
         timer.start(0)
@@ -1664,10 +1669,12 @@ class UpdateGroupBox(QGroupBox):
             soundpacks_tab = main_tab.get_soundpacks_tab()
             mods_tab = main_tab.get_mods_tab()
             settings_tab = main_tab.get_settings_tab()
+            backups_tab = main_tab.get_backups_tab()
 
             soundpacks_tab.disable_tab()
             mods_tab.disable_tab()
             settings_tab.disable_tab()
+            backups_tab.disable_tab()
 
             game_dir = game_dir_group_box.dir_combo.currentText()
 
@@ -2323,7 +2330,7 @@ class UpdateGroupBox(QGroupBox):
         if os.path.isdir(previous_version_dir) and self.in_post_extraction:
 
             previous_dirs = ['config', 'save', 'templates', 'memorial',
-                'graveyard']
+                'graveyard', 'save_backups']
             if (config_true(get_config_value('prevent_save_move', 'False')) and
                 'save' in previous_dirs):
                 previous_dirs.remove('save')
@@ -2582,10 +2589,12 @@ class UpdateGroupBox(QGroupBox):
         soundpacks_tab = main_tab.get_soundpacks_tab()
         mods_tab = main_tab.get_mods_tab()
         settings_tab = main_tab.get_settings_tab()
+        backups_tab = main_tab.get_backups_tab()
 
         soundpacks_tab.enable_tab()
         mods_tab.enable_tab()
         settings_tab.enable_tab()
+        backups_tab.enable_tab()
 
         if game_dir_group_box.exe_path is not None:
             self.update_button.setText(_('Update game'))
@@ -3198,6 +3207,8 @@ class UpdateSettingsGroupBox(QGroupBox):
         else:
             if game_dir_group_box.saves_size > SAVES_WARNING_SIZE:
                 saves_warning_label.show()
+            else:
+                saves_warning_label.hide()
 
     def kacc_changed(self, state):
         set_config_value('keep_archive_copy', str(state != Qt.Unchecked))
@@ -3704,6 +3715,9 @@ class SoundpacksTab(QTabWidget):
     def get_settings_tab(self):
         return self.get_main_tab().get_settings_tab()
 
+    def get_backups_tab(self):
+        return self.get_main_tab().get_backups_tab()
+
     def disable_tab(self):
         self.installed_lv.setEnabled(False)
         self.repository_lv.setEnabled(False)
@@ -3889,6 +3903,7 @@ class SoundpacksTab(QTabWidget):
                 self.get_main_tab().disable_tab()
                 self.get_mods_tab().disable_tab()
                 self.get_settings_tab().disable_tab()
+                self.get_backups_tab().disable_tab()
             elif selected_info['type'] == 'browser_download':
                 bd_dialog = BrowserDownloadDialog('soundpack',
                     selected_info['url'], selected_info.get('expected_filename',
@@ -3907,6 +3922,7 @@ class SoundpacksTab(QTabWidget):
                     self.get_main_tab().disable_tab()
                     self.get_mods_tab().disable_tab()
                     self.get_settings_tab().disable_tab()
+                    self.get_backups_tab().disable_tab()
 
                     main_window = self.get_main_window()
                     status_bar = main_window.statusBar()
@@ -4082,6 +4098,7 @@ class SoundpacksTab(QTabWidget):
         self.get_main_tab().enable_tab()
         self.get_mods_tab().enable_tab()
         self.get_settings_tab().enable_tab()
+        self.get_backups_tab().enable_tab()
 
         if self.close_after_install:
             self.get_main_window().close()
@@ -4707,6 +4724,9 @@ class BackupsTab(QTabWidget):
     def get_mods_tab(self):
         return self.get_main_tab().get_mods_tab()
 
+    def get_backups_tab(self):
+        return self.get_main_tab().get_backups_tab()
+
     def disable_tab(self):
         self.backups_table.setEnabled(False)
         self.restore_button.setEnabled(False)
@@ -4870,6 +4890,7 @@ class BackupsTab(QTabWidget):
         self.get_soundpacks_tab().disable_tab()
         self.get_settings_tab().disable_tab()
         self.get_mods_tab().disable_tab()
+        self.get_backups_tab().disable_tab()
 
         def timeout():
             self.extracting_progress_bar.setValue(self.extracting_index)
@@ -4897,6 +4918,7 @@ class BackupsTab(QTabWidget):
                 self.get_soundpacks_tab().enable_tab()
                 self.get_settings_tab().enable_tab()
                 self.get_mods_tab().enable_tab()
+                self.get_backups_tab().enable_tab()
 
             else:
                 extracting_element = self.extracting_infolist[
@@ -5128,6 +5150,7 @@ class BackupsTab(QTabWidget):
         self.get_soundpacks_tab().disable_tab()
         self.get_settings_tab().disable_tab()
         self.get_mods_tab().disable_tab()
+        self.get_backups_tab().disable_tab()
 
         if self.manual_backup:
             self.backup_current_button.setText(_('Cancel backup'))
@@ -5303,6 +5326,7 @@ class BackupsTab(QTabWidget):
         self.get_soundpacks_tab().enable_tab()
         self.get_settings_tab().enable_tab()
         self.get_mods_tab().enable_tab()
+        self.get_backups_tab().enable_tab()
 
         if self.manual_backup:
             self.manual_backup = False
@@ -5731,6 +5755,9 @@ class ModsTab(QTabWidget):
     def get_settings_tab(self):
         return self.get_main_tab().get_settings_tab()
 
+    def get_backups_tab(self):
+        return self.get_main_tab().get_backups_tab()
+
     def disable_tab(self):
         self.installed_lv.setEnabled(False)
         self.repository_lv.setEnabled(False)
@@ -5914,6 +5941,7 @@ class ModsTab(QTabWidget):
                 self.get_main_tab().disable_tab()
                 self.get_soundpacks_tab().disable_tab()
                 self.get_settings_tab().disable_tab()
+                self.get_backups_tab().disable_tab()
             elif selected_info['type'] == 'browser_download':
                 bd_dialog = BrowserDownloadDialog('mod',
                     selected_info['url'], selected_info.get('expected_filename',
@@ -5940,6 +5968,7 @@ class ModsTab(QTabWidget):
                         self.get_main_tab().disable_tab()
                         self.get_soundpacks_tab().disable_tab()
                         self.get_settings_tab().disable_tab()
+                        self.get_backups_tab().disable_tab()
 
                         # Test downloaded file
                         status_bar.showMessage(_('Testing downloaded file '
@@ -6133,6 +6162,7 @@ class ModsTab(QTabWidget):
         self.get_main_tab().enable_tab()
         self.get_soundpacks_tab().enable_tab()
         self.get_settings_tab().enable_tab()
+        self.get_backups_tab().enable_tab()
 
         if self.close_after_install:
             self.get_main_window().close()
