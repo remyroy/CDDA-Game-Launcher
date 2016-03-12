@@ -642,8 +642,8 @@ class MainTab(QWidget):
     def get_mods_tab(self):
         return self.parentWidget().parentWidget().mods_tab
 
-    def get_settings_tab(self):
-        return self.parentWidget().parentWidget().settings_tab
+    def get_backups_tab(self):
+        return self.parentWidget().parentWidget().backups_tab
 
     def disable_tab(self):
         self.game_dir_group_box.disable_controls()
@@ -4581,6 +4581,12 @@ class BackupsTab(QTabWidget):
         self.after_backup = None
         self.after_update_backups = None
 
+        self.manual_backup = False
+        self.backup_searching = False
+        self.backup_compressing = False
+
+        self.compressing_timer = None
+
         current_backups_gb = QGroupBox()
         self.current_backups_gb = current_backups_gb
 
@@ -4669,7 +4675,7 @@ class BackupsTab(QTabWidget):
         self.set_text()
 
     def set_text(self):
-        self.current_backups_gb.setTitle(_('Current backups'))
+        self.current_backups_gb.setTitle(_('Backups available'))
         self.manual_backups_gb.setTitle(_('Manual backup'))
         self.automatic_backups_gb.setTitle(_('Automatic backups'))
 
@@ -4698,11 +4704,32 @@ class BackupsTab(QTabWidget):
     def get_settings_tab(self):
         return self.get_main_tab().get_settings_tab()
 
+    def get_mods_tab(self):
+        return self.get_main_tab().get_mods_tab()
+
     def disable_tab(self):
-        pass
+        self.backups_table.setEnabled(False)
+        self.restore_button.setEnabled(False)
+        self.refresh_list_button.setEnabled(False)
+        self.delete_button.setEnabled(False)
+
+        self.backup_current_button.setEnabled(False)
 
     def enable_tab(self):
-        pass
+        self.backups_table.setEnabled(True)
+
+        if (self.game_dir is not None and os.path.isdir(
+            os.path.join(self.game_dir, 'save_backups'))):
+            self.refresh_list_button.setEnabled(True)
+        
+        if (self.game_dir is not None and os.path.isdir(
+            os.path.join(self.game_dir, 'save'))):
+            self.backup_current_button.setEnabled(True)
+
+        selection_model = self.backups_table.selectionModel()
+        if not (selection_model is None or not selection_model.hasSelection()):
+            self.restore_button.setEnabled(True)
+            self.delete_button.setEnabled(True)
 
     def save_geometry(self):
         columns_width = []
@@ -4838,6 +4865,12 @@ class BackupsTab(QTabWidget):
 
         progress_bar.setRange(0, len(self.extracting_infolist))
 
+        self.disable_tab()
+        self.get_main_tab().disable_tab()
+        self.get_soundpacks_tab().disable_tab()
+        self.get_settings_tab().disable_tab()
+        self.get_mods_tab().disable_tab()
+
         def timeout():
             self.extracting_progress_bar.setValue(self.extracting_index)
 
@@ -4858,6 +4891,12 @@ class BackupsTab(QTabWidget):
 
                 status_bar.showMessage(_('{backup_name} backup restored'
                     ).format(backup_name=backup_name))
+
+                self.enable_tab()
+                self.get_main_tab().enable_tab()
+                self.get_soundpacks_tab().enable_tab()
+                self.get_settings_tab().enable_tab()
+                self.get_mods_tab().enable_tab()
 
             else:
                 extracting_element = self.extracting_infolist[
@@ -4914,14 +4953,72 @@ class BackupsTab(QTabWidget):
                 status_bar.showMessage(_('Backup deleted'))
 
     def backup_current_clicked(self):
-        name = safe_filename(self.name_le.text())
-        if name == '':
-            name = _('manual_backup')
-        self.name_le.setText(name)
+        if self.manual_backup and self.backup_searching:
+            if (self.compressing_timer is not None and
+                self.compressing_timer.isActive()):
+                self.compressing_timer.stop()
 
-        set_config_value('last_manual_backup_name', name)
+            self.backup_searching = False
 
-        self.backup_saves(name)
+            self.finish_backup_saves()
+
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            status_bar.showMessage(_('Manual backup cancelled'))
+
+        elif self.manual_backup and self.backup_compressing:
+            class WaitingThread(QThread):
+                completed = pyqtSignal()
+
+                def __init__(self, wthread):
+                    super(WaitingThread, self).__init__()
+
+                    self.wthread = wthread
+
+                def __del__(self):
+                    self.wait()
+
+                def run(self):
+                    self.wthread.wait()
+                    self.completed.emit()
+
+            if self.compress_thread is not None:
+                self.backup_current_button.setEnabled(False)
+                self.compress_thread.quit()
+
+                def completed():
+                    self.finish_backup_saves()
+                    retry_delfile(self.backup_path)
+                    self.compress_thread = None
+
+                waiting_thread = WaitingThread(self.compress_thread)
+                waiting_thread.completed.connect(completed)
+                self.waiting_thread = waiting_thread
+
+                waiting_thread.start()
+            else:
+                self.finish_backup_saves()
+                retry_delfile(self.backup_path)
+                self.compress_thread = None
+
+            self.backup_compressing = False
+
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            status_bar.showMessage(_('Manual backup cancelled'))
+        else:
+            self.manual_backup = True
+
+            name = safe_filename(self.name_le.text())
+            if name == '':
+                name = _('manual_backup')
+            self.name_le.setText(name)
+
+            set_config_value('last_manual_backup_name', name)
+
+            self.backup_saves(name)
 
     def backup_saves(self, name, single=False):
         main_window = self.get_main_window()
@@ -5026,6 +5123,16 @@ class BackupsTab(QTabWidget):
         self.total_backup_size = 0
         self.total_files = 0
 
+        self.disable_tab()
+        self.get_main_tab().disable_tab()
+        self.get_soundpacks_tab().disable_tab()
+        self.get_settings_tab().disable_tab()
+        self.get_mods_tab().disable_tab()
+
+        if self.manual_backup:
+            self.backup_current_button.setText(_('Cancel backup'))
+            self.backup_current_button.setEnabled(True)
+
         compressing_label.setText(_('Searching for save files'))
 
         def timeout():
@@ -5115,21 +5222,25 @@ class BackupsTab(QTabWidget):
 
         def backup_next_file():
             try:
-                next_file = self.backup_files.popleft()
-                relpath = os.path.relpath(next_file, self.game_dir)
-                self.next_backup_file = next_file
+                if self.backup_compressing:
+                    next_file = self.backup_files.popleft()
+                    relpath = os.path.relpath(next_file, self.game_dir)
+                    self.next_backup_file = next_file
 
-                self.compressing_label.setText(
-                    _('Compressing {filename}').format(filename=relpath))
+                    self.compressing_label.setText(
+                        _('Compressing {filename}').format(filename=relpath))
 
-                compress_thread = CompressThread(self.backup_file, next_file,
-                    relpath)
-                compress_thread.completed.connect(completed_compress)
-                self.compress_thread = compress_thread
+                    compress_thread = CompressThread(self.backup_file,
+                        next_file, relpath)
+                    compress_thread.completed.connect(completed_compress)
+                    self.compress_thread = compress_thread
 
-                compress_thread.start()
+                    compress_thread.start()
                     
             except IndexError:
+                self.backup_compressing = False
+                self.compress_thread = None
+
                 self.finish_backup_saves()
 
                 main_window = self.get_main_window()
@@ -5186,6 +5297,16 @@ class BackupsTab(QTabWidget):
             status_bar.removeWidget(self.compressing_size_label)
 
         status_bar.busy -= 1
+
+        self.enable_tab()
+        self.get_main_tab().enable_tab()
+        self.get_soundpacks_tab().enable_tab()
+        self.get_settings_tab().enable_tab()
+        self.get_mods_tab().enable_tab()
+
+        if self.manual_backup:
+            self.manual_backup = False
+            self.backup_current_button.setText(_('Backup current saves'))
 
     def game_dir_changed(self, new_dir):
         self.game_dir = new_dir
@@ -5304,8 +5425,11 @@ class BackupsTab(QTabWidget):
 
                     flags = (Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
-                    compression_ratio = 1.0 - (compressed_size /
-                        uncompressed_size)
+                    if uncompressed_size == 0:
+                        compression_ratio = 0
+                    else:
+                        compression_ratio = 1.0 - (compressed_size /
+                            uncompressed_size)
                     rounded_ratio = round(compression_ratio, 4)
                     ratio_percent = format_percent(rounded_ratio,
                         format='#.##%', locale=app_locale)
