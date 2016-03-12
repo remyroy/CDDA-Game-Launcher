@@ -4598,6 +4598,7 @@ class BackupsTab(QTabWidget):
         self.after_backup = None
         self.after_update_backups = None
 
+        self.extracting_backup = False
         self.manual_backup = False
         self.backup_searching = False
         self.backup_compressing = False
@@ -4702,9 +4703,8 @@ class BackupsTab(QTabWidget):
         self.do_not_backup_previous_cb.setText(_('Do not backup the current '
             'saves before restoring a backup'))
         self.backups_table.setHorizontalHeaderLabels((_('Name'),
-            _('Modified delta'), _('Worlds'), _('Characters'),
-            _('Actual size'), _('Compressed size'), _('Compression ratio'),
-            _('Modified date')))
+            _('Modified'), _('Worlds'), _('Characters'), _('Actual size'),
+            _('Compressed size'), _('Compression ratio'), _('Modified date')))
 
         self.name_label.setText(_('Name:'))
         self.backup_current_button.setText(_('Backup current saves'))
@@ -4763,69 +4763,163 @@ class BackupsTab(QTabWidget):
         set_config_value('do_not_backup_previous', str(state != Qt.Unchecked))
 
     def restore_button_clicked(self):
-        selection_model = self.backups_table.selectionModel()
-        if selection_model is None or not selection_model.hasSelection():
-            return
+        class WaitingThread(QThread):
+            completed = pyqtSignal()
 
-        selected = selection_model.currentIndex()
-        table_item = self.backups_table.item(selected.row(), 0)
-        selected_info = self.backups[table_item]
+            def __init__(self, wthread):
+                super(WaitingThread, self).__init__()
 
-        if not os.path.isfile(selected_info['path']):
-            return
+                self.wthread = wthread
 
-        backup_previous = not config_true(get_config_value(
-            'do_not_backup_previous', 'False'))
+            def __del__(self):
+                self.wait()
 
-        if backup_previous:
-            '''
-            If restoring the before_last_restore, we rename it to make sure we
-            make a proper backup first.
-            '''
-            model = selection_model.model()
-            backup_name = model.data(model.index(selected.row(), 0))
+            def run(self):
+                self.wthread.wait()
+                self.completed.emit()
 
-            before_last_restore_name = _('before_last_restore')
+        if self.backup_searching:
+            if (self.compressing_timer is not None and
+                self.compressing_timer.isActive()):
+                self.compressing_timer.stop()
 
-            if backup_name.lower() == before_last_restore_name.lower():
-                backup_dir = os.path.join(self.game_dir, 'save_backups')
+            self.backup_searching = False
 
-                name_lower = backup_name.lower()
-                name_key = alphanum_key(name_lower)
-                max_counter = 1
+            self.finish_backup_saves()
 
-                for entry in scandir(backup_dir):
-                    filename, ext = os.path.splitext(entry.name)
-                    if ext.lower() == '.zip':
-                        filename_lower = filename.lower()
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
 
-                        filename_key = alphanum_key(filename_lower)
+            status_bar.showMessage(_('Restore backup cancelled'))
 
-                        counter = filename_key[-1:][0]
-                        if len(filename_key) > 1 and isinstance(counter, int):
-                            filename_key = filename_key[:-1]
+            self.restore_button.setText(_('Restore backup'))
 
-                            if name_key == filename_key:
-                                max_counter = max(max_counter, counter)
+        elif self.backup_compressing:
+            if self.compress_thread is not None:
+                self.backup_current_button.setEnabled(False)
+                self.compress_thread.quit()
 
-                new_backup_name = before_last_restore_name + str(max_counter +
-                    1)
-                new_backup_path = os.path.join(backup_dir,
-                    new_backup_name + '.zip')
-                
-                if not retry_rename(selected_info['path'], new_backup_path):
-                    return
+                def completed():
+                    self.finish_backup_saves()
+                    retry_delfile(self.backup_path)
+                    self.compress_thread = None
 
-                selected_info['path'] = new_backup_path
+                waiting_thread = WaitingThread(self.compress_thread)
+                waiting_thread.completed.connect(completed)
+                self.waiting_thread = waiting_thread
 
-            def next_step():
-                self.restore_backup()
+                waiting_thread.start()
+            else:
+                self.finish_backup_saves()
+                retry_delfile(self.backup_path)
+                self.compress_thread = None
 
-            self.after_backup = next_step
+            self.backup_compressing = False
 
-            self.backup_saves(before_last_restore_name, True)
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            status_bar.showMessage(_('Restore backup cancelled'))
+
+            self.restore_button.setText(_('Restore backup'))
+        elif self.extracting_backup:
+            if self.extracting_thread is not None:
+                self.restore_button.setEnabled(False)
+                self.extracting_thread.quit()
+
+                def completed():
+                    save_dir = os.path.join(self.game_dir, 'save')
+                    retry_rmtree(save_dir)
+                    if self.temp_save_dir is not None:
+                        retry_rename(self.temp_save_dir, save_dir)
+                    self.temp_save_dir = None
+
+                    self.finish_restore_backup()
+                    self.extracting_thread = None
+
+                waiting_thread = WaitingThread(self.extracting_thread)
+                waiting_thread.completed.connect(completed)
+                self.waiting_thread = waiting_thread
+
+                waiting_thread.start()
+            else:
+                self.finish_restore_backup()
+                self.extracting_thread = None
+
+            self.extracting_backup = False
+
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            status_bar.showMessage(_('Restore backup cancelled'))
         else:
-            self.restore_backup()
+            selection_model = self.backups_table.selectionModel()
+            if selection_model is None or not selection_model.hasSelection():
+                return
+
+            selected = selection_model.currentIndex()
+            table_item = self.backups_table.item(selected.row(), 0)
+            selected_info = self.backups[table_item]
+
+            if not os.path.isfile(selected_info['path']):
+                return
+
+            backup_previous = not config_true(get_config_value(
+                'do_not_backup_previous', 'False'))
+
+            if backup_previous:
+                '''
+                If restoring the before_last_restore, we rename it to make sure
+                we make a proper backup first.
+                '''
+                model = selection_model.model()
+                backup_name = model.data(model.index(selected.row(), 0))
+
+                before_last_restore_name = _('before_last_restore')
+
+                if backup_name.lower() == before_last_restore_name.lower():
+                    backup_dir = os.path.join(self.game_dir, 'save_backups')
+
+                    name_lower = backup_name.lower()
+                    name_key = alphanum_key(name_lower)
+                    max_counter = 1
+
+                    for entry in scandir(backup_dir):
+                        filename, ext = os.path.splitext(entry.name)
+                        if ext.lower() == '.zip':
+                            filename_lower = filename.lower()
+
+                            filename_key = alphanum_key(filename_lower)
+
+                            counter = filename_key[-1:][0]
+                            if len(filename_key) > 1 and isinstance(counter,
+                                int):
+                                filename_key = filename_key[:-1]
+
+                                if name_key == filename_key:
+                                    max_counter = max(max_counter, counter)
+
+                    new_backup_name = (before_last_restore_name +
+                        str(max_counter + 1))
+                    new_backup_path = os.path.join(backup_dir,
+                        new_backup_name + '.zip')
+                    
+                    if not retry_rename(selected_info['path'], new_backup_path):
+                        return
+
+                    selected_info['path'] = new_backup_path
+
+                def next_step():
+                    self.restore_backup()
+
+                self.after_backup = next_step
+
+                self.backup_saves(before_last_restore_name, True)
+
+                self.restore_button.setEnabled(True)
+                self.restore_button.setText(_('Cancel restore backup'))
+            else:
+                self.restore_backup()
 
     def restore_backup(self):
         selection_model = self.backups_table.selectionModel()
@@ -4845,11 +4939,19 @@ class BackupsTab(QTabWidget):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
+        self.temp_save_dir = None
         save_dir = os.path.join(self.game_dir, 'save')
         if os.path.isdir(save_dir):
-            if not retry_rmtree(save_dir):
-                status_bar.showMessage(_('Could not remove the save directory'))
+            temp_save_dir = os.path.join(self.game_dir, 'save-{0}'.format(
+                '%08x' % random.randrange(16**8)))
+            while os.path.exists(temp_save_dir):
+                temp_save_dir = os.path.join(self.game_dir, 'save-{0}'.format(
+                    '%08x' % random.randrange(16**8)))
+
+            if not retry_rename(save_dir, temp_save_dir):
+                status_bar.showMessage(_('Could not rename the save directory'))
                 return
+            self.temp_save_dir = temp_save_dir
         elif os.path.isfile(save_dir):
             if not retry_delfile(save_dir):
                 status_bar.showMessage(_('Could not remove the save file'))
@@ -4858,32 +4960,45 @@ class BackupsTab(QTabWidget):
         # Extract the backup archive
 
         self.extracting_backup = True
-        
-        z = zipfile.ZipFile(selected_info['path'])
-        self.extracting_zipfile = z
 
         self.extract_dir = self.game_dir
 
-        self.extracting_infolist = z.infolist()
-        self.extracting_index = 0
-
-        main_window = self.get_main_window()
-        status_bar = main_window.statusBar()
-
+        status_bar.clearMessage()
         status_bar.busy += 1
 
+        self.total_extract_size = selected_info['actual_size']
+
         extracting_label = QLabel()
+        extracting_label.setText(_('Extracting backup'))
         status_bar.addWidget(extracting_label, 100)
         self.extracting_label = extracting_label
 
+        extracting_speed_label = QLabel()
+        extracting_speed_label.setText(_('{bytes_sec}/s'
+            ).format(bytes_sec=sizeof_fmt(0)))
+        status_bar.addWidget(extracting_speed_label)
+        self.extracting_speed_label = extracting_speed_label
+
+        extracting_size_label = QLabel()
+        extracting_size_label.setText(
+            _('{bytes_read}/{total_bytes}').format(
+            bytes_read=sizeof_fmt(0),
+            total_bytes=sizeof_fmt(self.total_extract_size)))
+        status_bar.addWidget(extracting_size_label)
+        self.extracting_size_label = (
+            extracting_size_label)
+
         progress_bar = QProgressBar()
+        progress_bar.setRange(0, self.total_extract_size)
+        progress_bar.setValue(0)
         status_bar.addWidget(progress_bar)
         self.extracting_progress_bar = progress_bar
 
-        timer = QTimer(self)
-        self.extracting_timer = timer
-
-        progress_bar.setRange(0, len(self.extracting_infolist))
+        self.extract_size = 0
+        self.extract_files = 0
+        self.last_extract_bytes = 0
+        self.last_extract = datetime.utcnow()
+        self.next_backup_file = None
 
         self.disable_tab()
         self.get_main_tab().disable_tab()
@@ -4892,47 +5007,110 @@ class BackupsTab(QTabWidget):
         self.get_mods_tab().disable_tab()
         self.get_backups_tab().disable_tab()
 
-        def timeout():
-            self.extracting_progress_bar.setValue(self.extracting_index)
+        self.restore_button.setEnabled(True)
+        self.restore_button.setText(_('Cancel restore backup'))
 
-            if self.extracting_index == len(self.extracting_infolist):
-                self.extracting_timer.stop()
+        class ExtractingThread(QThread):
+            completed = pyqtSignal()
+
+            def __init__(self, zfile, element, dir):
+                super(ExtractingThread, self).__init__()
+
+                self.zfile = zfile
+                self.element = element
+                self.dir = dir
+
+            def __del__(self):
+                self.wait()
+
+            def run(self):
+                self.zfile.extract(self.element, self.dir)
+                self.completed.emit()
+
+        def extract_next_file():
+            try:
+                if self.extracting_backup:
+                    extracting_element = self.extracting_infolist.popleft()
+                    self.extracting_label.setText(_('Extracting {filename}'
+                        ).format(filename=extracting_element.filename))
+                    self.next_extract_file = extracting_element
+
+                    extracting_thread = ExtractingThread(
+                        self.extracting_zipfile, extracting_element,
+                        self.extract_dir)
+                    extracting_thread.completed.connect(completed_extract)
+                    self.extracting_thread = extracting_thread
+
+                    extracting_thread.start()
+                    
+            except IndexError:
+                self.extracting_backup = False
+                self.extracting_thread = None
+
+                self.finish_restore_backup()
 
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
 
-                status_bar.removeWidget(self.extracting_label)
-                status_bar.removeWidget(self.extracting_progress_bar)
-
-                status_bar.busy -= 1
-
-                self.extracting_backup = False
-
-                self.extracting_zipfile.close()
-
                 status_bar.showMessage(_('{backup_name} backup restored'
                     ).format(backup_name=backup_name))
 
-                self.enable_tab()
-                self.get_main_tab().enable_tab()
-                self.get_soundpacks_tab().enable_tab()
-                self.get_settings_tab().enable_tab()
-                self.get_mods_tab().enable_tab()
-                self.get_backups_tab().enable_tab()
+        def completed_extract():
+            self.extract_size += self.next_extract_file.file_size
+            self.extracting_progress_bar.setValue(self.extract_size)
 
-            else:
-                extracting_element = self.extracting_infolist[
-                    self.extracting_index]
-                self.extracting_label.setText(_('Extracting {0}').format(
-                    extracting_element.filename))
-                
-                self.extracting_zipfile.extract(extracting_element,
-                    self.extract_dir)
+            self.extracting_size_label.setText(
+                _('{bytes_read}/{total_bytes}').format(
+                bytes_read=sizeof_fmt(self.extract_size),
+                total_bytes=sizeof_fmt(self.total_extract_size)))
 
-                self.extracting_index += 1
+            delta_bytes = self.extract_size - self.last_extract_bytes
+            delta_time = datetime.utcnow() - self.last_extract
+            if delta_time.total_seconds() == 0:
+                delta_time = timedelta.resolution
 
-        timer.timeout.connect(timeout)
-        timer.start(0)
+            bytes_secs = delta_bytes / delta_time.total_seconds()
+            self.extracting_speed_label.setText(_('{bytes_sec}/s'
+                ).format(bytes_sec=sizeof_fmt(bytes_secs)))
+
+            self.last_extract_bytes = self.extract_size
+            self.last_extract = datetime.utcnow()
+
+            extract_next_file()
+
+        self.extracting_zipfile = zipfile.ZipFile(selected_info['path'])
+        self.extracting_infolist = deque(self.extracting_zipfile.infolist())
+        extract_next_file()
+
+    def finish_restore_backup(self):
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.removeWidget(self.extracting_label)
+        status_bar.removeWidget(self.extracting_speed_label)
+        status_bar.removeWidget(self.extracting_size_label)
+        status_bar.removeWidget(self.extracting_progress_bar)
+
+        status_bar.busy -= 1
+
+        self.extracting_backup = False
+
+        if self.extracting_zipfile is not None:
+            self.extracting_zipfile.close()
+
+        if self.temp_save_dir is not None:
+            retry_rmtree(self.temp_save_dir)
+
+        self.enable_tab()
+        self.get_main_tab().enable_tab()
+        self.get_soundpacks_tab().enable_tab()
+        self.get_settings_tab().enable_tab()
+        self.get_mods_tab().enable_tab()
+        self.get_backups_tab().enable_tab()
+
+        self.restore_button.setText(_('Restore backup'))
+
+        self.get_main_tab().game_dir_group_box.update_saves()
 
     def refresh_list_button_clicked(self):
         self.update_backups_table()
@@ -5480,7 +5658,8 @@ class BackupsTab(QTabWidget):
 
                         if index == 0:
                             self.backups[item] = {
-                                'path': entry.path
+                                'path': entry.path,
+                                'actual_size': uncompressed_size
                             }
 
             except StopIteration:
