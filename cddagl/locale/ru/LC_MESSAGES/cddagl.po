@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 0.8.5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-13 16:05-0400\n"
+"POT-Creation-Date: 2016-03-13 17:38-0400\n"
 "PO-Revision-Date: 2016-03-12 18:12+0600\n"
 "Last-Translator: \n"
 "Language: ru\n"
@@ -1087,7 +1087,7 @@ msgstr ""
 "лаунчеру открытым после запуска игры."
 
 #: cddagl/ui.py:4787
-msgid "Automatic backups maximum count:"
+msgid "Maximum automatic backups count:"
 msgstr "Максимальное количество автоматических бекапов:"
 
 #: cddagl/ui.py:4890 cddagl/ui.py:4919 cddagl/ui.py:4951

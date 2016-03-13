@@ -4784,7 +4784,7 @@ class BackupsTab(QTabWidget):
             'work if you also have the option to keep the launcher opened '
             'after launching the game in the settings tab.'))
 
-        self.max_auto_backups_label.setText(_('Automatic backups maximum '
+        self.max_auto_backups_label.setText(_('Maximum automatic backups '
             'count:'))
 
     def get_main_window(self):

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 0.8.5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-13 16:05-0400\n"
-"PO-Revision-Date: 2016-02-23 15:09-0500\n"
+"POT-Creation-Date: 2016-03-13 17:38-0400\n"
+"PO-Revision-Date: 2016-03-13 17:32-0400\n"
 "Last-Translator: \n"
 "Language: fr\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -139,10 +139,9 @@ msgstr "Annuler l'opération"
 
 #: cddagl/ui.py:194
 msgid "Cannot delete file"
-msgstr ""
+msgstr "Impossible de supprimer le fichier"
 
 #: cddagl/ui.py:200
-#, fuzzy
 msgid ""
 "\n"
 "<p>The launcher failed to delete the following file: {path}</p>\n"
@@ -150,23 +149,21 @@ msgid ""
 "following error: {error}</p>\n"
 msgstr ""
 "\n"
-"<p>Le lanceur a été incapable de supprimer le répertoire suivant : "
-"{directory}</p>\n"
+"<p>Le lanceur a été incapable de supprimer le fichier suivant : "
+"{path}</p>\n"
 "<p>Lorsque le lanceur a tenté de supprimer ou d'accéder à {filename}, il "
 "a lancé \n"
 "l'erreur suivante : {error}</p>\n"
 
 #: cddagl/ui.py:210 cddagl/ui.py:256
-#, fuzzy
 msgid ""
 "\n"
 "<p>No process seems to be using that file.</p>\n"
 msgstr ""
 "\n"
-"<p>Aucun processus ne semble utiliser ce fichier ou ce répertoire.</p>\n"
+"<p>Aucun processus ne semble utiliser ce fichier.</p>\n"
 
 #: cddagl/ui.py:214 cddagl/ui.py:260
-#, fuzzy
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
@@ -176,26 +173,22 @@ msgstr ""
 "\n"
 "<p>Le processus <strong>{image_file_name} ({pid})</strong> utilise "
 "présentement \n"
-"ce fichier ou ce répertoire. Vous aurez probablement besoin d'y metre fin"
-" pour rééessayer.</p>\n"
+"ce fichier. Vous aurez probablement besoin d'y metre fin pour "
+"rééessayer.</p>\n"
 
 #: cddagl/ui.py:220
-#, fuzzy
 msgid "Do you want to retry deleting this file?"
-msgstr "Voulez-vous réessayer de supprimer ce répertoire ?"
+msgstr "Voulez-vous réessayer de supprimer ce fichier ?"
 
 #: cddagl/ui.py:222
-#, fuzzy
 msgid "Retry deleting the file"
-msgstr "Réessayer la suppression du répertoire"
+msgstr "Réessayer la suppression du fichier"
 
 #: cddagl/ui.py:239
-#, fuzzy
 msgid "Cannot rename file"
-msgstr "Impossible d'installer le jeu dans un fichier"
+msgstr "Impossible de renommer ce fichier"
 
 #: cddagl/ui.py:245
-#, fuzzy
 msgid ""
 "\n"
 "<p>The launcher failed to rename the following file: {src} to {dst}</p>\n"
@@ -203,21 +196,19 @@ msgid ""
 "following error: {error}</p>\n"
 msgstr ""
 "\n"
-"<p>Le lanceur a été incapable de supprimer le répertoire suivant : "
-"{directory}</p>\n"
-"<p>Lorsque le lanceur a tenté de supprimer ou d'accéder à {filename}, il "
-"a lancé \n"
+"<p>Le lanceur a été incapable de renommer le fichier suivant : de {src} à"
+" {dst}</p>\n"
+"<p>Lorsque le lanceur a tenté de renommer ou d'accéder à {filename}, il a"
+" lancé \n"
 "l'erreur suivante : {error}</p>\n"
 
 #: cddagl/ui.py:266
-#, fuzzy
 msgid "Do you want to retry renaming this file?"
-msgstr "Voulez-vous réessayer de supprimer ce répertoire ?"
+msgstr "Voulez-vous réessayer de renommer ce fichier ?"
 
 #: cddagl/ui.py:268
-#, fuzzy
 msgid "Retry renaming the file"
-msgstr "Réessayer la suppression du répertoire"
+msgstr "Réessayer de renommer le fichier"
 
 #: cddagl/ui.py:310 cddagl/ui.py:330
 msgid "&Check for launcher update"
@@ -269,7 +260,7 @@ msgstr "Jeu"
 
 #: cddagl/ui.py:563 cddagl/ui.py:585
 msgid "Backups"
-msgstr ""
+msgstr "Sauvegardes"
 
 #: cddagl/ui.py:564 cddagl/ui.py:590
 msgid "Mods"
@@ -1027,202 +1018,188 @@ msgstr "Obtention de la taille"
 
 #: cddagl/ui.py:4764
 msgid "Backups available"
-msgstr ""
+msgstr "Sauvegardes disponibles"
 
 #: cddagl/ui.py:4765
 msgid "Manual backup"
-msgstr ""
+msgstr "Sauvegarde manuelle"
 
 #: cddagl/ui.py:4766
 msgid "Automatic backups"
-msgstr ""
+msgstr "Sauvegardes automatiques"
 
 #: cddagl/ui.py:4768 cddagl/ui.py:4892 cddagl/ui.py:4921 cddagl/ui.py:5208
 msgid "Restore backup"
-msgstr ""
+msgstr "Restaurer la sauvegarde"
 
 #: cddagl/ui.py:4769
-#, fuzzy
 msgid "Refresh list"
-msgstr "Rafraîchir"
+msgstr "Rafraîchir la liste"
 
 #: cddagl/ui.py:4770 cddagl/ui.py:5228
-#, fuzzy
 msgid "Delete backup"
-msgstr "Supprimer le pack sonore"
+msgstr "Supprimer la sauvegarde"
 
 #: cddagl/ui.py:4771
 msgid "Do not backup the current saves before restoring a backup"
 msgstr ""
+"Ne pas effectuer de sauvegarde des parties courantes avant la restoration"
+" d'une sauvegarde"
 
 #: cddagl/ui.py:4773
-#, fuzzy
 msgid "Name"
-msgstr "Le jeu"
+msgstr "Nom"
 
 #: cddagl/ui.py:4774
 msgid "Modified"
-msgstr ""
+msgstr "Modifiée"
 
 #: cddagl/ui.py:4774
-#, fuzzy
 msgid "Worlds"
-msgstr "Monde"
+msgstr "Mondes"
 
 #: cddagl/ui.py:4774
-#, fuzzy
 msgid "Characters"
-msgstr "Personnage"
+msgstr "Personnages"
 
 #: cddagl/ui.py:4774
 msgid "Actual size"
-msgstr ""
+msgstr "Taille actuelle"
 
 #: cddagl/ui.py:4775
 msgid "Compressed size"
-msgstr ""
+msgstr "Taille compressée"
 
 #: cddagl/ui.py:4775
 msgid "Compression ratio"
-msgstr ""
+msgstr "Taux de compression"
 
 #: cddagl/ui.py:4775
 msgid "Modified date"
-msgstr ""
+msgstr "Date de modification"
 
 #: cddagl/ui.py:4778 cddagl/ui.py:5608
-#, fuzzy
 msgid "Backup current saves"
-msgstr "Sauvegarde du jeu existant"
+msgstr "Sauvegarder les parties courantes"
 
 #: cddagl/ui.py:4780
 msgid "Backup saves before game launch"
-msgstr ""
+msgstr "Sauvegarder les parties avant de démarrer le jeu"
 
 #: cddagl/ui.py:4781
 msgid "Backup saves after game end"
-msgstr ""
+msgstr "Sauvegarder les parties après la fin du jeu"
 
 #: cddagl/ui.py:4783
 msgid ""
 "This option will only work if you also have the option to keep the "
 "launcher opened after launching the game in the settings tab."
 msgstr ""
+"Cette option ne peut fonctionner que si vous avez également l'option de "
+"conserver le lanceur ouvert après le lancement du jeu dans l'onglet des "
+"configurations."
 
 #: cddagl/ui.py:4787
-msgid "Automatic backups maximum count:"
-msgstr ""
+msgid "Maximum automatic backups count:"
+msgstr "Maximum de sauvegardes automatiques :"
 
 #: cddagl/ui.py:4890 cddagl/ui.py:4919 cddagl/ui.py:4951
 msgid "Restore backup cancelled"
-msgstr ""
+msgstr "Restoration de la sauvegarde annullée"
 
 #: cddagl/ui.py:4975
 msgid "before_last_restore"
-msgstr ""
+msgstr "avant_derniere_restoration"
 
 #: cddagl/ui.py:5017 cddagl/ui.py:5108
 msgid "Cancel restore backup"
-msgstr ""
+msgstr "Annuler la restoration de la sauvegarde"
 
 #: cddagl/ui.py:5049
-#, fuzzy
 msgid "Could not rename the save directory"
-msgstr "Ne pas copier ou déplacer le répertoire des parties"
+msgstr "Impossible de renommer le répertoire save"
 
 #: cddagl/ui.py:5054
-#, fuzzy
 msgid "Could not remove the save file"
-msgstr "Ne pas copier ou déplacer le répertoire des parties"
+msgstr "Impossible de renommer le fichier save"
 
 #: cddagl/ui.py:5069
-#, fuzzy
 msgid "Extracting backup"
-msgstr "Extraction de {0}"
+msgstr "Extraction de la sauvegarde"
 
 #: cddagl/ui.py:5131
-#, fuzzy
 msgid "Extracting {filename}"
-msgstr "Extraction de {0}"
+msgstr "Extraction de {filename}"
 
 #: cddagl/ui.py:5152
 msgid "{backup_name} backup restored"
-msgstr ""
+msgstr "Sauvegarde {backup_name} restaurée"
 
 #: cddagl/ui.py:5229
-#, fuzzy
 msgid "This will delete the backup file. It cannot be undone."
 msgstr ""
-"Ceci supprimera le répertoire du pack sonore. Il ne sera pas possible de "
-"revenir en arrière."
+"Ceci supprimera la sauvegarde. Il ne sera pas possible de revenir en "
+"arrière."
 
 #: cddagl/ui.py:5231
-#, fuzzy
 msgid "Are you sure you want to delete the <strong>{filename}</strong> backup?"
-msgstr "Voulez-vous vraiment supprimer le pack sonore {view} ?"
+msgstr "Voulez-vous vraiment supprimer la sauvegarde <strong>{filename}</strong> ?"
 
 #: cddagl/ui.py:5234
-#, fuzzy
 msgid "Delete the backup"
-msgstr "Supprimer le pack sonore"
+msgstr "Supprimer la sauvegarde"
 
 #: cddagl/ui.py:5236
-#, fuzzy
 msgid "I want to keep the backup"
-msgstr "Je veux conserver le pack sonore"
+msgstr "Je veux conserver la sauvegarde"
 
 #: cddagl/ui.py:5245
-#, fuzzy
 msgid "Backup deletion cancelled"
-msgstr "Annulation de la suppression du pack sonore"
+msgstr "Annulation de la suppression de la sauvegarde"
 
 #: cddagl/ui.py:5250
-#, fuzzy
 msgid "Backup deleted"
-msgstr "Pack sonore supprimé"
+msgstr "Sauvegarde supprimée"
 
 #: cddagl/ui.py:5265 cddagl/ui.py:5307
-#, fuzzy
 msgid "Manual backup cancelled"
-msgstr "Installation annulée"
+msgstr "Sauvegarde manuelle annulée"
 
 #: cddagl/ui.py:5313
 msgid "manual_backup"
-msgstr ""
+msgstr "sauvegarde_manuelle"
 
 #: cddagl/ui.py:5326
-#, fuzzy
 msgid "Save directory not found"
-msgstr "Le répertoire du jeu"
+msgstr "Le répertoire save est introuvable"
 
 #: cddagl/ui.py:5342
 msgid "Could not delete previous backup archive"
-msgstr ""
+msgstr "Impossible de supprimer la dernière sauvegarde"
 
 #: cddagl/ui.py:5431
-#, fuzzy
 msgid "Cancel backup"
-msgstr "Annuler la mise à jour"
+msgstr "Annuler la sauvegarde"
 
 #: cddagl/ui.py:5434
 msgid "Searching for save files"
-msgstr ""
+msgstr "Recherche des fichiers des parties"
 
 #: cddagl/ui.py:5445
 msgid "Found {filename} in {path}"
-msgstr ""
+msgstr "{filename} trouvé dans {path}"
 
 #: cddagl/ui.py:5464
 msgid "Compressing save files"
-msgstr ""
+msgstr "Compression des fichiers des parties"
 
 #: cddagl/ui.py:5529
 msgid "Compressing {filename}"
-msgstr ""
+msgstr "Compression de {filename}"
 
 #: cddagl/ui.py:5551
 msgid "Saves backup completed"
-msgstr ""
+msgstr "Sauvegarde des parties complétée"
 
 #: cddagl/ui.py:5994
 msgid "Add this new mod to the repository"
@@ -1459,7 +1436,4 @@ msgid "Could not find translations for {locale} in {locale_dir} ({info})"
 msgstr ""
 "Impossible de trouver les traductions pour {locale} dans {locale_dir} "
 "({info})"
-
-#~ msgid "Could not find translations ({info})"
-#~ msgstr ""
 
