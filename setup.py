@@ -83,7 +83,7 @@ class ExtractUpdateMessages(Command):
 
 
 setup(name='cddagl',
-      version='0.9.6',
+      version='1.0',
       description=(
           'A Cataclysm: Dark Days Ahead launcher with additional features'),
       author='Rémy Roy',
