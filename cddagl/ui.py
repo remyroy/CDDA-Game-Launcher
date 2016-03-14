@@ -930,6 +930,21 @@ class GameDirGroupBox(QGroupBox):
         if self.game_started:
             return self.focus_game()
 
+        if config_true(get_config_value('backup_on_launch', 'False')):
+            main_tab = self.get_main_tab()
+            backups_tab = main_tab.get_backups_tab()
+
+            backups_tab.prune_auto_backups()
+
+            name = '{auto}_{name}'.format(auto=_('auto'),
+                name=_('before_launch'))
+
+            backups_tab.after_backup = self.launch_game_process
+            backups_tab.backup_saves(name)
+        else:
+            self.launch_game_process()
+
+    def launch_game_process(self):
         self.get_main_window().setWindowState(Qt.WindowMinimized)
         exe_dir = os.path.dirname(self.exe_path)
 
@@ -1008,6 +1023,14 @@ class GameDirGroupBox(QGroupBox):
                 self.get_main_window().setWindowState(Qt.WindowActive)
 
                 self.update_saves()
+
+                if config_true(get_config_value('backup_on_end', 'False')):
+                    backups_tab.prune_auto_backups()
+
+                    name = '{auto}_{name}'.format(auto=_('auto'),
+                        name=_('after_end'))
+
+                    backups_tab.backup_saves(name)
 
             process_wait_thread = ProcessWaitThread(self.game_process)
             process_wait_thread.ended.connect(process_ended)
@@ -4741,6 +4764,7 @@ class BackupsTab(QTabWidget):
 
         max_auto_backups_spinbox = QSpinBox()
         max_auto_backups_spinbox.setMinimum(1)
+        max_auto_backups_spinbox.setMaximum(100)
         max_auto_backups_spinbox.setValue(int(get_config_value(
             'max_auto_backups', '6')))
         max_auto_backups_spinbox.valueChanged.connect(self.mabs_changed)
@@ -5317,6 +5341,40 @@ class BackupsTab(QTabWidget):
 
             self.backup_saves(name)
 
+    def prune_auto_backups(self):
+        max_auto_backups = max(int(get_config_value('max_auto_backups', '6'))
+            , 1)
+
+        search_start = (_('auto') + '_').lower()
+
+        backup_dir = os.path.join(self.game_dir, 'save_backups')
+        if not os.path.isdir(backup_dir):
+            return
+
+        auto_backups = []
+
+        for entry in scandir(backup_dir):
+            filename, ext = os.path.splitext(entry.name)
+            if entry.is_file() and ext.lower() == '.zip':
+                filename_lower = filename.lower()
+
+                if filename_lower.startswith(search_start):
+                    auto_backups.append({
+                        'path': entry.path,
+                        'modified': datetime.fromtimestamp(
+                            entry.stat().st_mtime)
+                    })
+
+        if len(auto_backups) >= max_auto_backups:
+            # Remove backups to have a total of max_auto_backups - 1
+            auto_backups.sort(key=lambda x: x['modified'])            
+            remove_count = len(auto_backups) - max_auto_backups + 1
+
+            to_remove = auto_backups[:remove_count]
+
+            for backup in to_remove:
+                retry_delfile(backup['path'])
+
     def backup_saves(self, name, single=False):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
@@ -5360,7 +5418,7 @@ class BackupsTab(QTabWidget):
 
             for entry in scandir(backup_dir):
                 filename, ext = os.path.splitext(entry.name)
-                if ext.lower() == '.zip':
+                if entry.is_file() and ext.lower() == '.zip':
                     filename_lower = filename.lower()
 
                     if filename_lower == name_lower:
