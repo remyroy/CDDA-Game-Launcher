@@ -10,12 +10,12 @@ A Cataclysm: Dark Days Ahead launcher with additional features.
 * Automatically updating the game while preserving the user modifications
 * Soundpack manager
 * Mod manager
+* Save backups and automatic backups
 
 ## Planned features
 
 * Tileset manager
 * Font presets
-* Regular save backups
 
 ## Building
 
