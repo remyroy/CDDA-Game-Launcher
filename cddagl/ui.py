@@ -7009,7 +7009,7 @@ class ModsTab(QTabWidget):
                         disabled_config_file = os.path.join(mod_path,
                             'modinfo.json.disabled')
                         if os.path.isfile(disabled_config_file):
-                            info = self.config_info(config_file)
+                            info = self.config_info(disabled_config_file)
                             if 'ident' in info:
                                 mod_info = {
                                     'path': mod_path,
