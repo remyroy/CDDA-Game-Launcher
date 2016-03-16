@@ -2874,8 +2874,8 @@ bitcoins to <a href="bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ">
 <p>Thanks to the following people for their efforts in translating the CDDA Game
 Launcher</p>
 <ul>
-<li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a>
-</li>
+<li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a> 
+and Night_Pryanik</li>
 <li>French: Rémy Roy</li>
 </ul>
 
