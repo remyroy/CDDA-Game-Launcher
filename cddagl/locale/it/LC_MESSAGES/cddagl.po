@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 0.9.6\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-03-19 14:51-0400\n"
-"PO-Revision-Date: 2016-03-15 12:30+0000\n"
+"POT-Creation-Date: 2016-03-19 15:13-0400\n"
+"PO-Revision-Date: 2016-03-17 08:33+0000\n"
 "Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
@@ -255,7 +255,7 @@ msgstr "Principale"
 
 #: cddagl/ui.py:563 cddagl/ui.py:585
 msgid "Backups"
-msgstr "Backup"
+msgstr "Salvataggi"
 
 #: cddagl/ui.py:564 cddagl/ui.py:590
 msgid "Mods"
@@ -450,7 +450,7 @@ msgstr "Versioni disponibili:"
 
 #: cddagl/ui.py:1620
 msgid "Refresh"
-msgstr "Aggiorna"
+msgstr "Controlla nuove versioni"
 
 #: cddagl/ui.py:1622 cddagl/ui.py:3213
 msgid "Update/Installation"
@@ -909,7 +909,7 @@ msgstr "Dettagli"
 
 #: cddagl/ui.py:3734
 msgid "View name:"
-msgstr "Vedi il nome:"
+msgstr "Titolo:"
 
 #: cddagl/ui.py:3735 cddagl/ui.py:4803 cddagl/ui.py:6067
 msgid "Name:"
@@ -1214,7 +1214,7 @@ msgstr "Copia della partita salvata completata"
 
 #: cddagl/ui.py:6054
 msgid "Add this new mod to the repository"
-msgstr "Aggiungere il mod al repository"
+msgstr "Aggiungere il mod all'elenco"
 
 #: cddagl/ui.py:6055
 msgid ""
@@ -1438,4 +1438,3 @@ msgstr "Qualcosa è andato storto"
 #: cddagl/ui.py:7413
 msgid "Could not find translations for {locale} in {locale_dir} ({info})"
 msgstr "Impossibile trovare le traduzioni per {locale} in {locale_dir} ({info})"
-
