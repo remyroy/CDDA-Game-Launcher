@@ -2876,6 +2876,8 @@ Launcher</p>
 <ul>
 <li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a> 
 and Night_Pryanik</li>
+<li>Italian: Rettiliano Verace from <a 
+href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a></li>
 <li>French: Rémy Roy</li>
 </ul>
 
