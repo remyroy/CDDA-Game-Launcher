@@ -385,10 +385,11 @@ _CoTaskMemFree = windll.ole32.CoTaskMemFree
 _CoTaskMemFree.restype= None
 _CoTaskMemFree.argtypes = [c_void_p]
 
-_SHGetKnownFolderPath = windll.shell32.SHGetKnownFolderPath
-_SHGetKnownFolderPath.argtypes = [
-    POINTER(GUID), DWORD, HANDLE, POINTER(c_wchar_p)
-]
+if VISTA_OR_LATER:
+    _SHGetKnownFolderPath = windll.shell32.SHGetKnownFolderPath
+    _SHGetKnownFolderPath.argtypes = [
+        POINTER(GUID), DWORD, HANDLE, POINTER(c_wchar_p)
+    ]
 
 
 class PathNotFoundException(Exception): pass

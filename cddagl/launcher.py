@@ -92,8 +92,8 @@ def init_logging():
     logger = logging.getLogger('cddagl')
     logger.setLevel(logging.INFO)
 
-    local_app_data = os.environ['LOCALAPPDATA']
-    if not os.path.isdir(local_app_data):
+    local_app_data = os.environ.get('LOCALAPPDATA', os.environ.get('APPDATA'))
+    if local_app_data is None or not os.path.isdir(local_app_data):
         local_app_data = sys.path
 
     logging_dir = os.path.join(local_app_data, 'CDDA Game Launcher')
