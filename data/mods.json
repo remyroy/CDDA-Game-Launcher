@@ -5,9 +5,9 @@
         "name": "Artyoms' Gun Emporium",
         "description": "Adds all the guns that YOU need to survive the Cataclysm",
         "author": "Artyom177",
-        "size": 22692,
-        "url": "http://www.mediafire.com/download/trctd0dlxwiifr9/Artyoms%27_Gun_Emporium.zip",
-        "expected_filename": "Artyoms Gun Emporium.zip",
+        "size": 20809,
+        "url": "http://www.mediafire.com/download/6kb92cmmtgxhjwx/Artyoms%27_Gun_Emporium.rar",
+        "expected_filename": "Artyoms Gun Emporium.rar",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10759.0"
     },
     {
@@ -101,25 +101,36 @@
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11353.msg261471#msg261471"
     },
     {
+        "type": "direct_download",
+        "ident": "StatsThroughSkillsFour",
+        "name": "StatsThoughSkills IV",
+        "author": "TaiGambol, Michaelmalus",
+        "description": "Allows stats to raise logarithmically via skill progression. Designed to allow changing your starting stats.",
+        "category": "rebalance",
+        "size": 1398,
+        "url": "https://www.dropbox.com/s/hjmus5en099b9eq/Stats%20Through%20Skills%20IV.7z?dl=1",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11353.msg270542#msg270542"
+    },
+    {
         "type": "browser_download",
-        "ident": "Survivor_Mod",
-        "name": "Survivor Mod",
+        "ident": "Cata++",
+        "name": "Cataclysm++",
         "author": "Noctifer",
-        "description": "A mod centered around the survivor.",
-        "size": 42317,
-        "url": "http://1drv.ms/1irDjmc",
-        "expected_filename": "Survivor_Mod.rar",
+        "description": "Adds many-a-thing to balance the survivor including a pesudo-story. Rewards investment.",
+        "size": 83070,
+        "url": "https://onedrive.live.com/redir?resid=138EAAE3DF23FB36!197&authkey=!ANzIQrk1xPbQHjU&ithint=file%2crar",
+        "expected_filename": "Cataclysm++.rar",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11248.0"
     },
     {
         "type": "direct_download",
         "ident": "PK_REBALANCE",
         "name": "PKs Rebalancing",
-        "description": "Rebalances zombie spawning and evolution.",
-        "category": "rebalance",
+        "description": "Rebalances spawning and adds critters",
+        "category": "creatures",
         "author": "pisskop",
-        "size": 56570,
-        "url": "https://www.dropbox.com/s/2h4diyzc8ddjkez/PK_Rebalance%20v0.75.zip?dl=1",
+        "size": 58764,
+        "url": "https://www.dropbox.com/s/kvhtixbkwqarr9t/PKs_Rebalance.zip?dl=1",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=12051.0"
     }
 ]
