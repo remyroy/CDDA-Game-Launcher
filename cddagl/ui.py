@@ -2881,6 +2881,9 @@ href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a></li>
 <li>French: Rémy Roy</li>
 </ul>
 
+<p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka
+Mattahan</a> for the permission to use his artwork for the launcher icon.</p>
+
 <p>Copyright (c) 2015 Rémy Roy</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -7431,6 +7434,11 @@ def start_ui(bdir, locale, locales, single_instance):
         rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')
 
     main_app = QApplication(sys.argv)
+
+    launcher_icon_path = os.path.join(basedir, 'cddagl', 'resources',
+        'launcher.ico')
+    main_app.setWindowIcon(QIcon(launcher_icon_path))
+
     main_win = MainWindow('CDDA Game Launcher')
     main_win.show()
 

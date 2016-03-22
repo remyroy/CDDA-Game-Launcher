@@ -21,6 +21,12 @@ A [Cataclysm: Dark Days Ahead](http://en.cataclysmdda.com/) launcher with additi
 
 You can learn how to run and build the launcher by checking our [building guide](BUILDING.md).
 
+## License
+
+This project is licensed under the terms of [the MIT license](LICENSE).
+
+Permission to use [the launcher icon](cddagl/resources/launcher.ico) was given by [Paul Davey aka Mattahan](http://mattahan.deviantart.com/).
+
 ## Contributing to this project
 
 Anyone and everyone is welcome to contribute. Please take a moment to review the [guidelines for contributing](CONTRIBUTING.md).

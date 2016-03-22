@@ -24,7 +24,7 @@ class Installer(Command):
     def run(self):
         call(['pyi-makespec', '-F', '-w', '--noupx',
             '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
-            'cddagl\launcher.py'])
+            'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico'])
 
         added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
             ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
