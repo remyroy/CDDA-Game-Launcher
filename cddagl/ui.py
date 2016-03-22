@@ -3928,7 +3928,9 @@ class SoundpacksTab(QTabWidget):
                 self.downloading_new_soundpack = True
 
                 request = QNetworkRequest(QUrl(url))
-                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+                request.setRawHeader(b'User-Agent', b'Mozilla/5.0 (Windows NT '
+                    b'6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                    b'Chrome/49.0.2623.87 Safari/537.36')
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -4089,7 +4091,9 @@ class SoundpacksTab(QTabWidget):
                 progress_bar.setValue(0)
 
                 request = QNetworkRequest(redirect)
-                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+                request.setRawHeader(b'User-Agent', b'Mozilla/5.0 (Windows NT '
+                    b'6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                    b'Chrome/49.0.2623.87 Safari/537.36')
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
