@@ -1,6 +1,6 @@
 # CDDA Game Launcher
 
-A Cataclysm: Dark Days Ahead launcher with additional features.
+A [Cataclysm: Dark Days Ahead](http://en.cataclysmdda.com/) launcher with additional features.
 
 ## Implemented features
 
