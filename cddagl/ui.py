@@ -6464,31 +6464,54 @@ class ModsTab(QTabWidget):
                     self.download_dl_progress)
             else:
                 # Test downloaded file
+
                 status_bar.showMessage(_('Testing downloaded file archive'))
 
-                try:
-                    with zipfile.ZipFile(self.downloaded_file) as z:
-                        if z.testzip() is not None:
-                            status_bar.clearMessage()
-                            status_bar.showMessage(_('Downloaded archive is '
-                                'invalid'))
+                if self.downloaded_file.lower().endswith('.7z'):
+                    try:
+                        with open(self.downloaded_file, 'rb') as f:
+                            archive = Archive7z(f)
+                    except FormatError:
+                        status_bar.clearMessage()
+                        status_bar.showMessage(_('Selected file is a '
+                            'bad archive file'))
 
-                            download_dir = os.path.dirname(self.downloaded_file)
-                            retry_rmtree(download_dir)
-                            self.downloading_new_mod = False
+                        self.finish_install_new_mod()
+                        return
+                    except NoPasswordGivenError:
+                        status_bar.clearMessage()
+                        status_bar.showMessage(_('Selected file is a '
+                            'password protected archive file'))
 
-                            self.finish_install_new_mod()
-                            return
-                except zipfile.BadZipFile:
-                    status_bar.clearMessage()
-                    status_bar.showMessage(_('Could not download mod'))
+                        self.finish_install_new_mod()
+                        return
+                else:
+                    if self.downloaded_file.lower().endswith('.zip'):
+                        archive_class = zipfile.ZipFile
+                        archive_exception = zipfile.BadZipFile
+                        test_method = 'testzip'
+                    elif self.downloaded_file.lower().endswith('.rar'):
+                        archive_class = rarfile.RarFile
+                        archive_exception = rarfile.BadRarFile
+                        test_method = 'testrar'
 
-                    download_dir = os.path.dirname(self.downloaded_file)
-                    retry_rmtree(download_dir)
-                    self.downloading_new_mod = False
+                    try:
+                        with archive_class(self.downloaded_file) as z:
+                            test = getattr(z, test_method)
+                            if test() is not None:
+                                status_bar.clearMessage()
+                                status_bar.showMessage(
+                                    _('Downloaded archive is invalid'))
 
-                    self.finish_install_new_mod()
-                    return
+                                self.finish_install_new_mod()
+                                return
+                    except archive_exception:
+                        status_bar.clearMessage()
+                        status_bar.showMessage(_('Selected file is a '
+                            'bad archive file'))
+
+                        self.finish_install_new_mod()
+                        return
 
                 status_bar.clearMessage()
                 self.downloading_new_mod = False
