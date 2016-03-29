@@ -52,7 +52,7 @@ from PyQt5.QtWidgets import (
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
     QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
     QSpinBox, QListView, QAbstractItemView, QTextEdit, QSizePolicy,
-    QTableWidget, QTableWidgetItem)
+    QTableWidget, QTableWidgetItem, QMenu)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from cddagl.config import (
@@ -306,9 +306,12 @@ class MainWindow(QMainWindow):
             self.init_named_pipe()
 
     def set_text(self):
+        self.file_menu.setText(_('&File'))
+        self.exit_action.setText(_('E&xit'))
+        self.help_menu.setText(_('&Help'))
         if getattr(sys, 'frozen', False):
-            self.update_action.setText(_('&Check for launcher update'))
-        self.about_action.setText(_('&About'))
+            self.update_action.setText(_('&Check for update'))
+        self.about_action.setText(_('&About CDDA Game Launcher'))
 
         if self.about_dialog is not None:
             self.about_dialog.set_text()
@@ -326,16 +329,29 @@ class MainWindow(QMainWindow):
         self.central_widget = central_widget
 
     def create_menu(self):
+        file_menu = QMenu(_('&File'))
+        self.menuBar().addMenu(file_menu)
+        self.file_menu = file_menu
+
+        exit_action = QAction(_('E&xit'), self, triggered=self.close)
+        file_menu.addAction(exit_action)
+        self.exit_action = exit_action
+
+        help_menu = QMenu(_('&Help'))
+        self.menuBar().addMenu(help_menu)
+        self.help_menu = help_menu
+
         if getattr(sys, 'frozen', False):
-            update_action = QAction(_('&Check for launcher update'), self,
+            update_action = QAction(_('&Check for update'), self,
                 triggered=self.manual_update_check)
             self.update_action = update_action
-            self.menuBar().addAction(update_action)
+            self.help_menu.addAction(update_action)
+            self.help_menu.addSeparator()
 
-        about_action = QAction(_('&About'), self,
+        about_action = QAction(_('&About CDDA Game Launcher'), self,
             triggered=self.show_about_dialog)
         self.about_action = about_action
-        self.menuBar().addAction(about_action)
+        self.help_menu.addAction(about_action)
 
     def show_about_dialog(self):
         if self.about_dialog is None:
