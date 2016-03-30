@@ -13,6 +13,8 @@ import win32process
 import win32api
 import win32event
 import win32pipe
+import win32con
+import win32
 
 from pywintypes import error as WinError
 
@@ -24,6 +26,7 @@ from winerror import ERROR_ALREADY_EXISTS
 
 ntdll = WinDLL('ntdll')
 kernel32 = WinDLL('kernel32')
+psapi = WinDLL('psapi.dll')
 
 PVOID       = c_void_p
 PULONG      = POINTER(ULONG)
@@ -31,6 +34,7 @@ ULONG_PTR   = WPARAM
 ACCESS_MASK = DWORD
 
 SW_SHOWNORMAL = 1
+MAX_PATH = 260
 
 VISTA_OR_LATER = sys.getwindowsversion()[0] >= 6
 
@@ -107,9 +111,13 @@ STATUS_OBJECT_TYPE_MISMATCH = NTSTATUS(0xC0000024)
 STATUS_INFO_LENGTH_MISMATCH = NTSTATUS(0xC0000004)
 STATUS_ACCESS_DENIED = NTSTATUS(0xC0000022)
 
+SYNCHRONIZE = DWORD(0x00100000)
 PROCESS_DUP_HANDLE = DWORD(0x0040)
 PROCESS_QUERY_INFORMATION = DWORD(0x0400)
 PROCESS_QUERY_LIMITED_INFORMATION = DWORD(0x1000)
+PROCESS_VM_READ = DWORD(0x0010)
+
+INFINITE = DWORD(0xFFFFFFFF)
 
 def WinErrorFromNtStatus(status):
     last_error = ntdll.RtlNtStatusToDosError(status)
@@ -260,12 +268,18 @@ kernel32.OpenProcess.restype = HANDLE
 kernel32.OpenProcess.argtypes = (
     DWORD,  # DesiredAccess
     BOOL,   # InheritHandle
-    DWORD   # ProcessId
-    )
+    DWORD)  # ProcessId
+    
+
+kernel32.WaitForSingleObject.restype = DWORD
+kernel32.WaitForSingleObject.argtypes = (
+    HANDLE, # hHandle
+    DWORD)  # dwMilliseconds
 
 kernel32.GetLastError.restype = DWORD
 kernel32.GetCurrentProcess.restype = HANDLE
 kernel32.CloseHandle.restype = BOOL
+
 
 class GUID(Structure):   # [1]
     _fields_ = [
@@ -377,19 +391,36 @@ class FOLDERID:     # [2]
     VideosLibrary           = UUID('{491E922F-5643-4AF4-A7EB-4E7A138D8174}')
     Windows                 = UUID('{F38BF404-1D43-42F2-9305-67DE0B28FC23}')
 
+
 class UserHandle:
     current = HANDLE(0)
     common  = HANDLE(-1)
 
 _CoTaskMemFree = windll.ole32.CoTaskMemFree
-_CoTaskMemFree.restype= None
-_CoTaskMemFree.argtypes = [c_void_p]
+_CoTaskMemFree.restype = None
+_CoTaskMemFree.argtypes = (c_void_p, )
 
 if VISTA_OR_LATER:
     _SHGetKnownFolderPath = windll.shell32.SHGetKnownFolderPath
-    _SHGetKnownFolderPath.argtypes = [
+    _SHGetKnownFolderPath.argtypes = (
         POINTER(GUID), DWORD, HANDLE, POINTER(c_wchar_p)
-    ]
+    )
+
+    QueryFullProcessImageName = kernel32.QueryFullProcessImageNameW
+    QueryFullProcessImageName.restype = BOOL
+    QueryFullProcessImageName.argtypes = (
+        HANDLE,     # hProcess
+        DWORD,      # dwFlags
+        LPWSTR,     # lpExeName
+        PDWORD)      # lpdwSize
+
+GetModuleFileNameEx = psapi.GetModuleFileNameExW
+GetModuleFileNameEx.restype = DWORD
+GetModuleFileNameEx.argtypes = (
+    HANDLE,     # hProcess
+    HMODULE,    # hModule
+    LPWSTR,     # lpFilename
+    DWORD)      # nSize
 
 
 class PathNotFoundException(Exception): pass
@@ -427,6 +458,68 @@ def list_handles():
     if status < 0:
         raise WinErrorFromNtStatus(status)
     return info.Handles
+
+def process_id_from_path(path):
+    lower_path = path.lower()
+
+    pids = win32process.EnumProcesses()
+
+    for pid in pids:
+        if VISTA_OR_LATER:
+            desired_access = PROCESS_QUERY_LIMITED_INFORMATION
+            phandle = kernel32.OpenProcess(desired_access, BOOL(False), pid)
+
+            if phandle is None:
+                continue
+
+            path = ctypes.create_unicode_buffer(MAX_PATH)
+            length = DWORD(MAX_PATH)
+            flags = DWORD(0)
+            ret = QueryFullProcessImageName(phandle, flags, path, byref(length))
+
+            if ret != 0:
+                found_path = path.value.lower()
+
+                if found_path == lower_path:
+                    kernel32.CloseHandle(phandle)
+
+                    return pid
+        else:
+            desired_access = DWORD(PROCESS_VM_READ.value |
+                PROCESS_QUERY_INFORMATION.value)
+            phandle = kernel32.OpenProcess(desired_access, BOOL(False), pid)
+
+            if phandle is None:
+                continue
+
+            path = ctypes.create_unicode_buffer(MAX_PATH)
+            length = DWORD(MAX_PATH)
+            ret = GetModuleFileNameEx(phandle, None, path, length)
+
+            if ret > 0:
+                found_path = path.value.lower()
+
+                if found_path == lower_path:
+                    kernel32.CloseHandle(phandle)
+
+                    return pid
+
+        kernel32.CloseHandle(phandle)
+
+    return None
+
+def wait_for_pid(pid):
+    desired_access = SYNCHRONIZE
+    phandle = kernel32.OpenProcess(desired_access, BOOL(False), pid)
+
+    if phandle is None:
+        return False
+
+    kernel32.WaitForSingleObject(phandle, INFINITE)
+
+    kernel32.CloseHandle(phandle)
+
+    return True
 
 # Find the process which is using the file handle
 def find_process_with_file_handle(path):

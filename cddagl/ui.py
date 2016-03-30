@@ -60,7 +60,8 @@ from cddagl.config import (
     new_build, config_true)
 from cddagl.win32 import (
     find_process_with_file_handle, get_downloads_directory, get_ui_locale,
-    activate_window, SimpleNamedPipe, SingleInstance)
+    activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
+    wait_for_pid)
 
 from .__version__ import version
 
@@ -719,6 +720,7 @@ class GameDirGroupBox(QGroupBox):
         self.dir_combo_inserting = False
 
         self.game_process = None
+        self.game_process_id = None
         self.game_started = False
 
         layout = QGridLayout()
@@ -937,10 +939,15 @@ class GameDirGroupBox(QGroupBox):
         self.game_directory_changed()
 
     def focus_game(self):
-        if self.game_process is None:
+        if self.game_process is None and self.game_process_id is None:
             return
 
-        activate_window(self.game_process.pid)
+        if self.game_process is not None:
+            pid = self.game_process.pid
+        elif self.game_process_id is not None:
+            pid = self.game_process_id
+
+        activate_window(pid)
 
     def launch_game(self):
         if self.game_started:
@@ -1176,6 +1183,8 @@ class GameDirGroupBox(QGroupBox):
             self.launch_game_button.setEnabled(True)
             update_group_box.update_button.setText(_('Update game'))
 
+            self.check_running_process(self.exe_path)
+
         self.last_game_directory = directory
         if not (getattr(sys, 'frozen', False)
             and config_true(get_config_value('use_launcher_dir', 'False'))):
@@ -1242,11 +1251,15 @@ class GameDirGroupBox(QGroupBox):
                 status_bar.removeWidget(self.reading_progress_bar)
 
                 status_bar.busy -= 1
-                if status_bar.busy == 0:
+                if status_bar.busy == 0 and not self.game_started:
                     if self.restored_previous:
-                        status_bar.showMessage(_('Previous version restored'))
+                        status_bar.showMessage(
+                            _('Previous version restored'))
                     else:
                         status_bar.showMessage(_('Ready'))
+
+                if status_bar.busy == 0 and self.game_started:
+                    status_bar.showMessage(_('Game process is running'))
 
                 sha256 = self.exe_sha256.hexdigest()
 
@@ -1267,7 +1280,8 @@ class GameDirGroupBox(QGroupBox):
 
                     if (update_group_box.builds is not None
                         and len(update_group_box.builds) > 0
-                        and status_bar.busy == 0):
+                        and status_bar.busy == 0
+                        and not self.game_started):
                         last_build = update_group_box.builds[0]
 
                         message = status_bar.currentMessage()
@@ -1310,6 +1324,89 @@ class GameDirGroupBox(QGroupBox):
         pyqtRemoveInputHook()
         import pdb; pdb.set_trace()
         pyqtRestoreInputHook()'''
+
+    def check_running_process(self, exe_path):
+        pid = process_id_from_path(exe_path)
+
+        if pid is not None:
+            self.game_started = True
+            self.game_process_id = pid
+
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            if status_bar.busy == 0:
+                status_bar.showMessage(_('Game process is running'))
+
+            main_tab = self.get_main_tab()
+            update_group_box = main_tab.update_group_box
+
+            self.disable_controls()
+            update_group_box.disable_controls(True)
+
+            soundpacks_tab = main_tab.get_soundpacks_tab()
+            mods_tab = main_tab.get_mods_tab()
+            settings_tab = main_tab.get_settings_tab()
+            backups_tab = main_tab.get_backups_tab()
+
+            soundpacks_tab.disable_tab()
+            mods_tab.disable_tab()
+            settings_tab.disable_tab()
+            backups_tab.disable_tab()
+
+            self.launch_game_button.setText(_('Show current game'))
+            self.launch_game_button.setEnabled(True)
+            
+            class ProcessWaitThread(QThread):
+                ended = pyqtSignal()
+
+                def __init__(self, pid):
+                    super(ProcessWaitThread, self).__init__()
+
+                    self.pid = pid
+
+                def __del__(self):
+                    self.wait()
+
+                def run(self):
+                    wait_for_pid(self.pid)
+                    self.ended.emit()
+
+            def process_ended():
+                self.process_wait_thread = None
+
+                self.game_process_id = None
+                self.game_started = False
+
+                status_bar.showMessage(_('Game process has ended'))
+
+                self.enable_controls()
+                update_group_box.enable_controls()
+
+                soundpacks_tab.enable_tab()
+                mods_tab.enable_tab()
+                settings_tab.enable_tab()
+                backups_tab.enable_tab()
+
+                self.launch_game_button.setText(_('Launch game'))
+
+                self.get_main_window().setWindowState(Qt.WindowActive)
+
+                self.update_saves()
+
+                if config_true(get_config_value('backup_on_end', 'False')):
+                    backups_tab.prune_auto_backups()
+
+                    name = '{auto}_{name}'.format(auto=_('auto'),
+                        name=_('after_end'))
+
+                    backups_tab.backup_saves(name)
+
+            process_wait_thread = ProcessWaitThread(self.game_process_id)
+            process_wait_thread.ended.connect(process_ended)
+            process_wait_thread.start()
+
+            self.process_wait_thread = process_wait_thread
 
     def add_game_dir(self):
         new_game_dir = self.dir_combo.currentText()
@@ -2705,11 +2802,19 @@ class UpdateGroupBox(QGroupBox):
         status_bar.removeWidget(self.fetching_label)
         status_bar.removeWidget(self.fetching_progress_bar)
 
-        status_bar.busy -= 1
-        if status_bar.busy == 0:
-            status_bar.showMessage(_('Ready'))
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
 
-        self.enable_controls()
+        status_bar.busy -= 1
+
+        if not game_dir_group_box.game_started:
+            if status_bar.busy == 0:
+                status_bar.showMessage(_('Ready'))
+
+            self.enable_controls()
+        else:
+            if status_bar.busy == 0:
+                status_bar.showMessage(_('Game process is running'))
 
         self.lb_html.seek(0)
         document = html5lib.parse(self.lb_html, treebuilder='lxml',
@@ -2764,16 +2869,19 @@ class UpdateGroupBox(QGroupBox):
                     self.builds_combo.addItem(_('{number} ({delta})').format(
                         number=build['number'], delta=human_delta))
 
-            self.builds_combo.setEnabled(True)
-
-            main_tab = self.get_main_tab()
-            game_dir_group_box = main_tab.game_dir_group_box
+            if not game_dir_group_box.game_started:
+                self.builds_combo.setEnabled(True)
+                self.update_button.setEnabled(True)
+            else:
+                self.previous_bc_enabled = True
+                self.previous_ub_enabled = True
 
             if game_dir_group_box.exe_path is not None:
                 self.update_button.setText(_('Update game'))
 
                 if (game_dir_group_box.current_build is not None
-                    and status_bar.busy == 0):
+                    and status_bar.busy == 0
+                    and not game_dir_group_box.game_started):
                     last_build = self.builds[0]
 
                     message = status_bar.currentMessage()
@@ -2787,8 +2895,6 @@ class UpdateGroupBox(QGroupBox):
                     status_bar.showMessage(message)
             else:
                 self.update_button.setText(_('Install game'))
-
-            self.update_button.setEnabled(True)
 
         else:
             self.builds = None
