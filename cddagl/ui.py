@@ -307,9 +307,9 @@ class MainWindow(QMainWindow):
             self.init_named_pipe()
 
     def set_text(self):
-        self.file_menu.setText(_('&File'))
+        self.file_menu.setTitle(_('&File'))
         self.exit_action.setText(_('E&xit'))
-        self.help_menu.setText(_('&Help'))
+        self.help_menu.setTitle(_('&Help'))
         if getattr(sys, 'frozen', False):
             self.update_action.setText(_('&Check for update'))
         self.about_action.setText(_('&About CDDA Game Launcher'))
