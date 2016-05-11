@@ -1,5 +1,7 @@
 # Building guide
 
+**Notes**: *At this time, it appears the building guide is outdated since the PyQt5 binaries are now only available for Python 3.5. The steps should be similar but you will need to adjust by downloading Python 3.5 and downloading the related Python 3.5 compiled binaries.*
+
 CDDA Game Launcher is developed using Python. In order to run or build the launcher, you will need to download a recent version of Python and install all the requirements.
 
 ## Requirements
