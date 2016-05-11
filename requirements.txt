@@ -10,3 +10,5 @@ scandir
 rarfile
 pylzma
 Babel
+pywin32
+pypiwin32
