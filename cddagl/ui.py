@@ -968,7 +968,12 @@ class GameDirGroupBox(QGroupBox):
             self.launch_game_process()
 
     def launch_game_process(self):
-        if self.exe_path is None:
+        if self.exe_path is None or not os.path.isfile(self.exe_path):
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            status_bar.showMessage(_('Game executable not found'))
+            
             self.launch_game_button.setEnabled(False)
             return
         
