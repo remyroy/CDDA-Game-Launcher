@@ -968,6 +968,10 @@ class GameDirGroupBox(QGroupBox):
             self.launch_game_process()
 
     def launch_game_process(self):
+        if self.exe_path is None:
+            self.launch_game_button.setEnabled(False)
+            return
+        
         self.get_main_window().setWindowState(Qt.WindowMinimized)
         exe_dir = os.path.dirname(self.exe_path)
 
@@ -1533,6 +1537,8 @@ class GameDirGroupBox(QGroupBox):
             update_group_box = main_tab.update_group_box
             update_group_box.finish_updating()
 
+            self.launch_game_button.setEnabled(False)
+            
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
             status_bar.showMessage(_('No executable found in the downloaded '
