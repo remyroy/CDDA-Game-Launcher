@@ -1528,6 +1528,16 @@ class GameDirGroupBox(QGroupBox):
             self.version_value_label.setText(_('Not a CDDA directory'))
             self.build_value_label.setText(_('Unknown'))
             self.current_build = None
+            
+            main_tab = self.get_main_tab()
+            update_group_box = main_tab.update_group_box
+            update_group_box.finish_updating()
+
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+            status_bar.showMessage(_('No executable found in the downloaded '
+                'archive. You might want to restore your previous version.'))
+            
         else:
             if (self.exe_reading_timer is not None
                 and self.exe_reading_timer.isActive()):
