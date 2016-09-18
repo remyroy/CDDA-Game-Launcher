@@ -2426,7 +2426,7 @@ class UpdateGroupBox(QGroupBox):
             asset_file_path = asset_file
 
         try:
-            with open(asset_file_path, 'r') as f:
+            with open(asset_file_path, 'r', encoding='latin1') as f:
                 for line in f:
                     if line.startswith('NAME'):
                         space_index = line.find(' ')
@@ -2443,7 +2443,7 @@ class UpdateGroupBox(QGroupBox):
             json_file = os.path.join(path, 'modinfo.json.disabled')
         if os.path.isfile(json_file):
             try:
-                with open(json_file, 'r') as f:
+                with open(json_file, 'r', encoding='utf8') as f:
                     try:
                         values = json.load(f)
                         if isinstance(values, dict):
@@ -3962,7 +3962,7 @@ class SoundpacksTab(QTabWidget):
         json_file = os.path.join(get_data_path(), 'soundpacks.json')
 
         if os.path.isfile(json_file):
-            with open(json_file, 'r') as f:
+            with open(json_file, 'r', encoding='utf8') as f:
                 try:
                     values = json.load(f)
                     if isinstance(values, list):
@@ -4644,7 +4644,7 @@ class SoundpacksTab(QTabWidget):
     def config_info(self, config_file):
         val = {}
         try:
-            with open(config_file, 'r') as f:
+            with open(config_file, 'r', encoding='latin1') as f:
                 for line in f:
                     if line.startswith('NAME'):
                         space_index = line.find(' ')
@@ -6302,7 +6302,7 @@ class ModsTab(QTabWidget):
         json_file = os.path.join(get_data_path(), 'mods.json')
 
         if os.path.isfile(json_file):
-            with open(json_file, 'r') as f:
+            with open(json_file, 'r', encoding='utf8') as f:
                 try:
                     values = json.load(f)
                     if isinstance(values, list):
@@ -7063,7 +7063,7 @@ class ModsTab(QTabWidget):
         val = {}
         keys = ('ident', 'name', 'author', 'description', 'category')
         try:
-            with open(config_file, 'r') as f:
+            with open(config_file, 'r', encoding='utf8') as f:
                 try:
                     values = json.load(f)
                     if isinstance(values, dict):
