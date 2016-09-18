@@ -11,6 +11,7 @@ import traceback
 import html
 import stat
 import logging
+import platform
 
 try:
     from os import scandir
@@ -123,6 +124,12 @@ def arstrip(value):
 
 def is_64_windows():
     return 'PROGRAMFILES(X86)' in os.environ
+
+def bitness():
+    if is_64_windows():
+        return _('64-bit')
+    else:
+        return _('32-bit')
 
 def sizeof_fmt(num, suffix=None):
     if suffix is None:
@@ -3027,7 +3034,7 @@ href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a></li>
 <p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka
 Mattahan</a> for the permission to use his artwork for the launcher icon.</p>
 
-<p>Copyright (c) 2015 Rémy Roy</p>
+<p>Copyright (c) 2015-2016 Rémy Roy</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -7529,13 +7536,14 @@ class ExceptionWindow(QWidget):
         text_content.setOpenExternalLinks(True)
         text_content.setHtml(_('''
 <p>CDDA Game Launcher version: {version}</p>
+<p>OS: {os} ({bitness})</p>
 <p>Type: {extype}</p>
 <p>Value: {value}</p>
 <p>Traceback:</p>
 <code>{traceback}</code>
 ''').format(version=html.escape(version), extype=html.escape(str(extype)),
-    value=html.escape(str(value)),
-    traceback=traceback_content))
+    value=html.escape(str(value)), os=html.escape(platform.platform()),
+    traceback=traceback_content, bitness=html.escape(bitness())))
 
         layout.addWidget(text_content, 1, 0)
         self.text_content = text_content
@@ -7544,6 +7552,7 @@ class ExceptionWindow(QWidget):
             'title': _('Unhandled exception: [Enter a title]'),
             'body': _('''* Description: [Enter what you did and what happened]
 * Version: {version}
+* OS: {os} ({bitness})
 * Type: `{extype}`
 * Value: {value}
 * Traceback:
@@ -7551,7 +7560,7 @@ class ExceptionWindow(QWidget):
 {traceback}
 ```
 ''').format(version=version, extype=str(extype), value=str(value),
-    traceback=tb_io.getvalue())
+    traceback=tb_io.getvalue(), os=platform.platform(), bitness=bitness())
         })
 
         report_label = QLabel()
