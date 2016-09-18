@@ -1032,7 +1032,7 @@ class GameDirGroupBox(QGroupBox):
                 def __init__(self, process):
                     super(ProcessWaitThread, self).__init__()
 
-                    self.process = process                    
+                    self.process = process
 
                 def __del__(self):
                     self.wait()
