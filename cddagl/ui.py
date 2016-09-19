@@ -994,8 +994,32 @@ class GameDirGroupBox(QGroupBox):
         cmd = '"{exe_path}"{params}'.format(exe_path=self.exe_path,
             params=params)
 
-        game_process = subprocess.Popen(cmd, cwd=exe_dir,
-            startupinfo=subprocess.CREATE_NEW_PROCESS_GROUP)
+        try:
+            game_process = subprocess.Popen(cmd, cwd=exe_dir,
+                startupinfo=subprocess.CREATE_NEW_PROCESS_GROUP)
+        except OSError as e:
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+            
+            status_bar.showMessage(_('Could not launch the game executable'))
+            
+            error_msgbox = QMessageBox()
+            error_msgbox.setWindowTitle(_('Cannot launch game'))
+            
+            text = _('''
+<p>The launcher failed to start the game executable in <strong>{filename}</strong> .</p>
+<p>It received the following error from the operating system: {error}</p>
+''').format(
+    filename=html.escape(e.filename),
+    error=html.escape(e.strerror))
+
+            error_msgbox.setText(text)
+            error_msgbox.addButton(_('OK'), QMessageBox.YesRole)
+            error_msgbox.setIcon(QMessageBox.Critical)
+
+            error_msgbox.exec()
+            return
+            
         self.game_process = game_process
         self.game_started = True
 
