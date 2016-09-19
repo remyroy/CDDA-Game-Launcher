@@ -1009,6 +1009,9 @@ class GameDirGroupBox(QGroupBox):
             text = _('''
 <p>The launcher failed to start the game executable in <strong>{filename}</strong> .</p>
 <p>It received the following error from the operating system: {error}</p>
+<p>Poor antivirus products are known to detect the game binary as a threat and
+block its execution. A simple workaround is to add the game binary in your
+antivirus whitelist or select the action to trust this binary when detected.</p>
 ''').format(
     filename=html.escape(e.filename),
     error=html.escape(e.strerror))
