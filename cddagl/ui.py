@@ -4950,7 +4950,7 @@ class BackupsTab(QTabWidget):
 
         max_auto_backups_spinbox = QSpinBox()
         max_auto_backups_spinbox.setMinimum(1)
-        max_auto_backups_spinbox.setMaximum(100)
+        max_auto_backups_spinbox.setMaximum(1000)
         max_auto_backups_spinbox.setValue(int(get_config_value(
             'max_auto_backups', '6')))
         max_auto_backups_spinbox.valueChanged.connect(self.mabs_changed)
