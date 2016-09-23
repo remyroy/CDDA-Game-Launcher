@@ -1,13 +1,12 @@
 [
     {
-        "type": "browser_download",
+        "type": "direct_download",
         "ident": "Arts' Guns",
         "name": "Artyoms' Gun Emporium",
         "description": "Adds all the guns that YOU need to survive the Cataclysm",
         "author": "Artyom177",
-        "size": 20818,
-        "url": "https://www.mediafire.com/?uyv0nc7pf8xvfrc",
-        "expected_filename": "Artyoms Gun Emporium(2).rar",
+        "size": 23616,
+        "url": "https://www.dropbox.com/s/woq8jdbr4ri7s4i/Artyoms%27%20Gun%20Emporium.rar?dl=1",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10759.0"
     },
     {
@@ -43,18 +42,6 @@
         "url": "http://www.mediafire.com/download/g54cnjrra1p5t2d/CDDAXP.zip",
         "expected_filename": "CDDAXP.zip",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11583.0"
-    },
-    {
-        "type": "browser_download",
-        "ident": "Weapon_Attachments_Mode",
-        "name": "Guns/Equipment/Weapons Expansion Mode",
-        "author": "AKnifeInTheDark",
-        "category": "items",
-        "description": "Here it comes !A mod that gives a lot of (most) UNIQUE firearms, gun mods, armors, crafting recipes etc.",
-        "size": 60076,
-        "url": "http://www.mediafire.com/download/jhm47wv6cuw2if2/Guns+Equipment+Mods+Expansion+Mode+v1.5+experimental.rar",
-        "expected_filename": "Guns Equipment Mods Expansion Mode v1.5 experimental.rar",
-        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11823.0"
     },
     {
         "type": "browser_download",
@@ -117,20 +104,9 @@
         "name": "Cataclysm++",
         "author": "Noctifer",
         "description": "Adds many-a-thing to balance the survivor including a pesudo-story. Rewards investment.",
-        "size": 83070,
-        "url": "https://onedrive.live.com/redir?resid=138EAAE3DF23FB36!197&authkey=!ANzIQrk1xPbQHjU&ithint=file%2crar",
+        "size": 87448,
+        "url": "https://1drv.ms/u/s!Ajb7I9_jqo4TgUXcyEK5NcT20B41",
         "expected_filename": "Cataclysm++.rar",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11248.0"
-    },
-    {
-        "type": "direct_download",
-        "ident": "PK_REBALANCE",
-        "name": "PKs Rebalancing",
-        "description": "Rebalances spawning and adds critters",
-        "category": "creatures",
-        "author": "pisskop",
-        "size": 58764,
-        "url": "https://www.dropbox.com/s/kvhtixbkwqarr9t/PKs_Rebalance.zip?dl=1",
-        "homepage": "http://smf.cataclysmdda.com/index.php?topic=12051.0"
     }
 ]
