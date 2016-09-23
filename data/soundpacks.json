@@ -8,6 +8,20 @@
     },
     {
         "type": "direct_download",
+        "viewname": "ChestOldTimey",
+        "name": "ChestOldTimey",
+        "url": "http://chezzo.com/cdda/ChestOldTimeyLessismore.zip",
+        "homepage": "https://www.reddit.com/r/cataclysmdda/comments/53ndzx/music_recommendations_to_listen_to_while_playing/d7vfd7w"
+    },
+    {
+        "type": "direct_download",
+        "viewname": "ChestHoleCC",
+        "name": "ChestHoleCC",
+        "url": "http://chezzo.com/cdda/ChestHoleCCSoundset.zip",
+        "homepage": "https://www.reddit.com/r/cataclysmdda/comments/53ndzx/music_recommendations_to_listen_to_while_playing/d7vfd7w"
+    },
+    {
+        "type": "direct_download",
         "viewname": "RRFSounds",
         "name": "RRFSounds",
         "url": "https://www.dropbox.com/s/d8dfmb2facvkdh6/RRFSounds.zip?dl=1",
