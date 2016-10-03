@@ -10,5 +10,11 @@ scandir
 rarfile
 pylzma
 Babel
+
+# for Windows
 pywin32
 pypiwin32
+
+# for posix systems
+posix_ipc
+psutil
