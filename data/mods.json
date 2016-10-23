@@ -11,17 +11,6 @@
     },
     {
         "type": "browser_download",
-        "ident": "Bio_Weapon_Mod",
-        "name": "Bio-Weapon Mod",
-        "author": "Noctifer",
-        "description": "The Bio-Weapons have awoken...",
-        "size": 37435,
-        "url": "http://1drv.ms/1ZmQRiT",
-        "expected_filename": "Bio-Weapon Mod.rar",
-        "homepage": "http://smf.cataclysmdda.com/index.php?topic=11355.0"
-    },
-    {
-        "type": "browser_download",
         "ident": "ext",
         "name": "Extended Buildings",
         "description": "Adds More Buildings",
