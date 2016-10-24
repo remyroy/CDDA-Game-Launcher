@@ -14,6 +14,10 @@ try:
 except ImportError:
     from scandir import scandir
 
+python = 'python'
+if 0 == call(['python3', '--version']):
+    python = 'python3'
+
 class Installer(Command):
     user_options = []
     def initialize_options(self):
@@ -24,15 +28,20 @@ class Installer(Command):
     def run(self):
         call(['pyi-makespec', '-F', '-w', '--noupx',
             '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
-            'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico'])
+            os.path.join('cddagl', 'launcher.py'), '-i', os.path.join('cddagl', 'resources', 'launcher.ico')])
 
         added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
             ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
 
         # Let's find and add unrar if available
         try:
-            unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
-                'utf8')
+            if os.name == 'nt':
+                unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
+                    'utf8') 
+            elif os.name == 'posix':
+                unrar_path = check_output(['which', 'unrar']).strip().decode(
+                    'utf8') 
+
             added_files.append((unrar_path, '.'))
         except CalledProcessError:
             pass
@@ -40,8 +49,8 @@ class Installer(Command):
         # Add mo files for localization
         locale_dir = os.path.join('cddagl', 'locale')
 
-        call('python setup.py compile_catalog -D cddagl -d {locale_dir}'.format(
-            locale_dir=locale_dir))
+        call([python, 'setup.py', 'compile_catalog','-D', 
+            'cddagl', '-d', 'locale_dir'])
         
         if os.path.isdir(locale_dir):
             for entry in scandir(locale_dir):
@@ -75,15 +84,15 @@ class ExtractUpdateMessages(Command):
         pass
 
     def run(self):
-        call('python setup.py extract_messages -o cddagl\locale\messages.pot '
-            '-F cddagl\locale\mapping.cfg')
+        call([python, 'setup.py', 'extract_messages', '-o', os.path.join('cddagl', 'locale', 'messages.pot'),
+            '-F', os.path.join('cddagl', 'locale', 'mapping.cfg')])
 
-        call('python setup.py update_catalog -i cddagl\locale\messages.pot -d '
-            'cddagl\locale -D cddagl')
+        call([python, 'setup.py', 'update_catalog', '-i', os.path.join('cddagl', 'locale', 'messages.pot'),
+            '-d', os.path.join('cddagl', 'locale'), '-D', 'cddagl'])
 
 
 setup(name='cddagl',
-      version='1.3.4',
+      version='1.3.3',
       description=(
           'A Cataclysm: Dark Days Ahead launcher with additional features'),
       author='Rémy Roy',

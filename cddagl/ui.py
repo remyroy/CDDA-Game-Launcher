@@ -12,6 +12,7 @@ import html
 import stat
 import logging
 import platform
+import tempfile
 
 try:
     from os import scandir
@@ -41,8 +42,6 @@ from py7zlib import Archive7z, NoPasswordGivenError, FormatError
 
 from distutils.version import LooseVersion
 
-from pywintypes import error as PyWinError
-
 from PyQt5.QtCore import (
     Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel,
     QSize, QRect, QThread, QItemSelectionModel, QItemSelection)
@@ -59,10 +58,19 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build, config_true)
-from cddagl.win32 import (
-    find_process_with_file_handle, get_downloads_directory, get_ui_locale,
-    activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
-    wait_for_pid)
+
+if os.name == 'nt':
+    from pywintypes import error as PyWinError
+    from cddagl.win32 import (
+        find_process_with_file_handle, get_downloads_directory, get_ui_locale,
+        activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
+        wait_for_pid)
+elif os.name == 'posix':
+    from cddagl.posix import (
+        find_process_with_file_handle, get_downloads_directory, get_ui_locale,
+        activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
+        wait_for_pid)
+
 
 from .__version__ import version
 
@@ -77,18 +85,47 @@ READ_BUFFER_SIZE = 16 * 1024
 
 MAX_GAME_DIRECTORIES = 6
 
-BASE_URLS = {
-    'Tiles': {
-        'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
-            'Windows_x64/Tiles/'),
-        'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Tiles/')
-    },
-    'Console': {
-        'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
-            'Windows_x64/Curses/'),
-        'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Curses/')
+PLATFORM = None
+BASE_URLS = None
+
+if platform.system() == 'Windows':
+    PLATFORM = 'Windows'
+    BASE_URLS = {
+        'Tiles': {
+            'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+                'Windows_x64/Tiles/'),
+            'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Tiles/')
+        },
+        'Console': {
+            'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+                'Windows_x64/Curses/'),
+            'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Curses/')
+        }
     }
-}
+elif platform.system() == 'Darwin':
+    PLATFORM = 'Mac OS X'
+    BASE_URLS = {
+        'Tiles': {
+            'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+                'OSX/Tiles/')
+        },
+        'Console': {
+            'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+                'OSX/Curses/')
+        }
+    }
+else: 
+    PLATFORM = 'Linux'
+    BASE_URLS = {
+        'Tiles': {
+            'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Linux/Tiles/')
+        },
+        'Console': {
+            'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
+                'Linux_x64/Curses/'),
+            'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Linux/Curses/')
+        }
+    }
 
 SAVES_WARNING_SIZE = 150 * 1024 * 1024
 
@@ -98,7 +135,9 @@ NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 
 def clean_qt_path(path):
-    return path.replace('/', '\\')
+    if os.name == 'nt':
+        return path.replace('/', '\\')
+    return path
 
 def safe_filename(filename):
     keepcharacters = (' ', '.', '_', '-')
@@ -122,11 +161,64 @@ def arstrip(value):
         value = value[:-1]
     return value
 
-def is_64_windows():
-    return 'PROGRAMFILES(X86)' in os.environ
+def is_osx():
+    return platform.system() == 'Darwin'
+
+def is_windows():
+    return platform.system() == 'Windows'
+
+def is_linux():
+    return platform.system() == 'Linux'
+
+def is_posix():
+    return os.name == 'posix'
+
+def is_64_system():
+    return sys.maxsize > 2**32
+    # return 'PROGRAMFILES(X86)' in os.environ
+
+def get_temp_path():
+    return os.path.join(tempfile.gettempdir(), 'CDDA Game Launcher')
+
+def get_state_dir(base_dir):
+    if is_osx():
+        return os.path.join(os.path.expanduser("~"), 'Library', 'Application Support', 'Cataclysm')
+    else:
+        return base_dir
+
+def get_save_dir(base_dir):
+    return os.path.join(get_state_dir(base_dir), 'save')
+
+def get_backup_dir(base_dir):
+    return os.path.join(get_state_dir(base_dir), 'save_backups')
+
+def get_previous_version_dir(base_dir):
+    if is_osx:
+        return os.path.join(get_state_dir(base_dir), 'previous_version')
+    else:
+        return os.path.join(base_dir, 'previous_version')
+
+def get_app_dir(base_dir):
+    if is_osx():
+        return os.path.join(base_dir, 'Cataclysm.app')
+    else:
+        return basedir
+
+def get_mods_dir(base_dir):
+    if is_osx():
+        return os.path.join(base_dir, 'Cataclysm.app', 'Contents', 'Resources', 'data', 'mods')
+    else:
+        return os.path.join(base_dir, 'data', 'mods')
+
+def get_soundpacks_dir(base_dir):
+    if is_osx():
+        return os.path.join(base_dir, 'Cataclysm.app', 'Contents', 'Resources', 'data', 'sound')
+    else:
+        return os.path.join(base_dir, 'data', 'sound')
+
 
 def bitness():
-    if is_64_windows():
+    if is_64_system():
         return _('64-bit')
     else:
         return _('32-bit')
@@ -378,7 +470,7 @@ class MainWindow(QMainWindow):
     def lv_http_finished(self):
         self.lv_html.seek(0)
         document = html5lib.parse(self.lv_html, treebuilder='lxml',
-            encoding='utf8', namespaceHTMLElements=False)
+            namespaceHTMLElements=False)
 
         for release in document.getroot().cssselect('div.release.label-latest'):
             latest_version = None
@@ -497,7 +589,7 @@ class MainWindow(QMainWindow):
 
                 try:
                     self.pipe = SimpleNamedPipe('cddagl_instance')
-                except (OSError, PyWinError):
+                except (OSError):
                     self.pipe = None
 
             def __del__(self):
@@ -512,7 +604,7 @@ class MainWindow(QMainWindow):
                         try:
                             value = self.pipe.read(1024)
                             self.read.emit(value)
-                        except (PyWinError, IOError):
+                        except (IOError):
                             pass
 
         def instance_read(value):
@@ -568,6 +660,8 @@ class MainWindow(QMainWindow):
         else:
             self.save_geometry()
             event.accept()
+
+        main_app.single_instance.close()
 
 
 class CentralWidget(QTabWidget):
@@ -888,12 +982,10 @@ class GameDirGroupBox(QGroupBox):
 
         try:
             game_dir = self.dir_combo.currentText()
-            previous_version_dir = os.path.join(game_dir, 'previous_version')
+            previous_version_dir = get_previous_version_dir(game_dir)
 
             if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
-
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
+                temp_dir = get_temp_path()
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
 
@@ -903,33 +995,38 @@ class GameDirGroupBox(QGroupBox):
                         '%08x' % random.randrange(16**8)))
                 os.makedirs(temp_move_dir)
 
-                excluded_entries = set(['previous_version'])
-                if config_true(get_config_value('prevent_save_move', 'False')):
-                    excluded_entries.add('save')
+                if is_osx:
+                    shutil.move(get_app_dir(game_dir), temp_move_dir)
+                    shutil.move(os.path.join(previous_version_dir, 'Cataclysm.app'), game_dir)
+                    shutil.move(os.path.join(temp_move_dir, 'Cataclysm.app'), previous_version_dir)
+                else:
+                    excluded_entries = set(['previous_version'])
+                    if config_true(get_config_value('prevent_save_move', 'False')):
+                        excluded_entries.add('save')
 
-                # Prevent moving the launcher if it's in the game directory
-                if getattr(sys, 'frozen', False):
-                    launcher_exe = os.path.abspath(sys.executable)
-                    launcher_dir = os.path.dirname(launcher_exe)
-                    if os.path.abspath(game_dir) == launcher_dir:
-                        excluded_entries.add(os.path.basename(launcher_exe))
+                    # Prevent moving the launcher if it's in the game directory
+                    if getattr(sys, 'frozen', False):
+                        launcher_exe = os.path.abspath(sys.executable)
+                        launcher_dir = os.path.dirname(launcher_exe)
+                        if os.path.abspath(game_dir) == launcher_dir:
+                            excluded_entries.add(os.path.basename(launcher_exe))
 
-                for entry in os.listdir(game_dir):
-                    if entry not in excluded_entries:
-                        entry_path = os.path.join(game_dir, entry)
-                        shutil.move(entry_path, temp_move_dir)
+                    for entry in os.listdir(game_dir):
+                        if entry not in excluded_entries:
+                            entry_path = os.path.join(game_dir, entry)
+                            shutil.move(entry_path, temp_move_dir)
 
-                excluded_entries = set()
-                if config_true(get_config_value('prevent_save_move', 'False')):
-                    excluded_entries.add('save')
-                for entry in os.listdir(previous_version_dir):
-                    if entry not in excluded_entries:
-                        entry_path = os.path.join(previous_version_dir, entry)
-                        shutil.move(entry_path, game_dir)
+                    excluded_entries = set()
+                    if config_true(get_config_value('prevent_save_move', 'False')):
+                        excluded_entries.add('save')
+                    for entry in os.listdir(previous_version_dir):
+                        if entry not in excluded_entries:
+                            entry_path = os.path.join(previous_version_dir, entry)
+                            shutil.move(entry_path, game_dir)
 
-                for entry in os.listdir(temp_move_dir):
-                    entry_path = os.path.join(temp_move_dir, entry)
-                    shutil.move(entry_path, previous_version_dir)
+                    for entry in os.listdir(temp_move_dir):
+                        entry_path = os.path.join(temp_move_dir, entry)
+                        shutil.move(entry_path, previous_version_dir)
 
                 retry_rmtree(temp_move_dir)
 
@@ -991,13 +1088,25 @@ class GameDirGroupBox(QGroupBox):
         if params != '':
             params = ' ' + params
 
-        cmd = '"{exe_path}"{params}'.format(exe_path=self.exe_path,
-            params=params)
+        cmd = None
+        options = None
+        env = os.environ
+        if not is_windows():
+            cmd = '{exe_path}{params}'.format(exe_path=self.exe_path, params=params)
+
+            env["DYLD_LIBRARY_PATH"] = exe_dir
+            env["DYLD_FRAMEWORK_PATH"] = exe_dir
+            options = None
+        else:
+            cmd = '"{exe_path}"{params}'.format(exe_path=self.exe_path,
+                params=params)
+            options = subprocess.CREATE_NEW_PROCESS_GROUP
 
         try:
             game_process = subprocess.Popen(cmd, cwd=exe_dir,
-                startupinfo=subprocess.CREATE_NEW_PROCESS_GROUP)
+                startupinfo=options, env=env)
         except OSError as e:
+            print(e)
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
             
@@ -1183,12 +1292,22 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             self.version_value_label.setText(_('Not a valid directory'))
         else:
             # Check for previous version
-            previous_version_dir = os.path.join(directory, 'previous_version')
+            previous_version_dir = get_previous_version_dir(directory)
             self.restore_button.setEnabled(os.path.isdir(previous_version_dir))
 
             # Find the executable
-            console_exe = os.path.join(directory, 'cataclysm.exe')
-            tiles_exe = os.path.join(directory, 'cataclysm-tiles.exe')
+            console_exe = None
+            tiles_exe = None
+
+            if is_osx():
+                console_exe = os.path.join(directory, 'Cataclysm.app', 'Contents', 'Resources', 'cataclysm')
+                tiles_exe = os.path.join(directory, 'Cataclysm.app', 'Contents', 'Resources', 'cataclysm-tiles')
+            else:
+                console_exe = os.path.join(directory, 'cataclysm')
+                tiles_exe = os.path.join(directory, 'cataclysm-tiles')
+                if is_windows():
+                    console_exe += '.exe'
+                    tiles_exe += '.exe'
 
             exe_path = None
             version_type = None
@@ -1477,7 +1596,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             self.update_saves_timer.stop()
             self.saves_value_edit.setText(_('Unknown'))
 
-        save_dir = os.path.join(self.game_dir, 'save')
+        save_dir = get_save_dir(self.game_dir)
+
         if not os.path.isdir(save_dir):
             self.saves_value_edit.setText(_('Not found'))
             return
@@ -1503,14 +1623,17 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     self.saves_size += entry.stat().st_size
 
                     if entry.name.endswith('.sav'):
-                        world_dir = os.path.dirname(entry.path)
-                        if self.save_dir == os.path.dirname(world_dir):
+                        if not is_osx():
+                            world_dir = os.path.dirname(entry.path)
+                            if self.save_dir == os.path.dirname(world_dir):
+                                self.saves_characters += 1
+                        else:
                             self.saves_characters += 1
 
                     if entry.name in WORLD_FILES:
                         world_dir = os.path.dirname(entry.path)
-                        if (world_dir not in self.world_dirs
-                            and self.save_dir == os.path.dirname(world_dir)):
+                        if (world_dir not in self.world_dirs):
+                            # and self.save_dir == os.path.dirname(world_dir)):
                             self.world_dirs.add(world_dir)
                             self.saves_worlds += 1
 
@@ -1552,11 +1675,21 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         self.exe_path = None
 
         # Check for previous version
-        previous_version_dir = os.path.join(game_dir, 'previous_version')
+        previous_version_dir = get_previous_version_dir(game_dir)
         self.previous_rb_enabled = os.path.isdir(previous_version_dir)
 
-        console_exe = os.path.join(game_dir, 'cataclysm.exe')
-        tiles_exe = os.path.join(game_dir, 'cataclysm-tiles.exe')
+        console_exe = None
+        tiles_exe = None
+
+        if is_osx():
+            console_exe = os.path.join(game_dir, 'Cataclysm.app', 'Contents', 'Resources', 'cataclysm')
+            tiles_exe = os.path.join(game_dir, 'Cataclysm.app', 'Contents', 'Resources', 'cataclysm-tiles')
+        else:
+            console_exe = os.path.join(game_dir, 'cataclysm')
+            tiles_exe = os.path.join(game_dir, 'cataclysm-tiles')
+            if is_windows():
+                console_exe += '.exe'
+                tiles_exe += '.exe'
 
         exe_path = None
         version_type = None
@@ -1741,7 +1874,7 @@ class UpdateGroupBox(QGroupBox):
 
         platform_button_group.buttonClicked.connect(self.platform_clicked)
 
-        if not is_64_windows():
+        if not is_64_system():
             x64_radio_button.setEnabled(False)
 
         x86_radio_button = QRadioButton()
@@ -1782,8 +1915,10 @@ class UpdateGroupBox(QGroupBox):
         self.tiles_radio_button.setText(_('Tiles'))
         self.console_radio_button.setText(_('Console'))
         self.platform_label.setText(_('Platform:'))
-        self.x64_radio_button.setText(_('Windows x64 (64-bit)'))
-        self.x86_radio_button.setText(_('Windows x86 (32-bit)'))
+        # self.x64_radio_button.setText(_('Windows x64 (64-bit)'))
+        self.x64_radio_button.setText(_(PLATFORM + ' (64-bit)'))
+        # self.x86_radio_button.setText(_('Windows x86 (32-bit)'))
+        self.x86_radio_button.setText(_(PLATFORM + ' (32-bit)'))
         self.available_builds_label.setText(_('Available builds:'))
         self.refresh_builds_button.setText(_('Refresh'))
         self.update_button.setText(_('Update game'))
@@ -1803,7 +1938,7 @@ class UpdateGroupBox(QGroupBox):
                 platform = 'x86'
 
             if platform is None or platform not in ('x64', 'x86'):
-                if is_64_windows():
+                if is_64_system():
                     platform = 'x64'
                 else:
                     platform = 'x86'
@@ -1881,8 +2016,7 @@ class UpdateGroupBox(QGroupBox):
                     self.finish_updating()
                     return
 
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
+                temp_dir = get_temp_path()
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
                 
@@ -2022,12 +2156,7 @@ class UpdateGroupBox(QGroupBox):
 
     def clean_game_dir(self):
         game_dir = self.game_dir
-        dir_list = os.listdir(game_dir)
-        if len(dir_list) == 0 or (
-            len(dir_list) == 1 and dir_list[0] == 'previous_version'):
-            return None
-
-        temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
+        temp_dir = get_temp_path()
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir)
 
@@ -2037,19 +2166,27 @@ class UpdateGroupBox(QGroupBox):
                 '%08x' % random.randrange(16**8)))
         os.makedirs(temp_move_dir)
 
-        excluded_entries = set(['previous_version'])
-        if config_true(get_config_value('prevent_save_move', 'False')):
-            excluded_entries.add('save')
-        # Prevent moving the launcher if it's in the game directory
-        if getattr(sys, 'frozen', False):
-            launcher_exe = os.path.abspath(sys.executable)
-            launcher_dir = os.path.dirname(launcher_exe)
-            if os.path.abspath(game_dir) == launcher_dir:
-                excluded_entries.add(os.path.basename(launcher_exe))
-        for entry in dir_list:
-            if entry not in excluded_entries:
-                entry_path = os.path.join(game_dir, entry)
-                shutil.move(entry_path, temp_move_dir)
+        if is_osx:
+            shutil.move(get_app_dir(self.game_dir), temp_move_dir)
+        else:
+            dir_list = os.listdir(game_dir)
+            if len(dir_list) == 0 or (
+                len(dir_list) == 1 and dir_list[0] == 'previous_version'):
+                return None
+
+            excluded_entries = set(['previous_version'])
+            if config_true(get_config_value('prevent_save_move', 'False')):
+                excluded_entries.add('save')
+            # Prevent moving the launcher if it's in the game directory
+            if getattr(sys, 'frozen', False):
+                launcher_exe = os.path.abspath(sys.executable)
+                launcher_dir = os.path.dirname(launcher_exe)
+                if os.path.abspath(game_dir) == launcher_dir:
+                    excluded_entries.add(os.path.basename(launcher_exe))
+            for entry in dir_list:
+                if entry not in excluded_entries:
+                    entry_path = os.path.join(game_dir, entry)
+                    shutil.move(entry_path, temp_move_dir)
 
         return temp_move_dir
 
@@ -2058,27 +2195,32 @@ class UpdateGroupBox(QGroupBox):
             return
 
         game_dir = self.game_dir
-        previous_version_dir = os.path.join(game_dir, 'previous_version')
+        previous_version_dir = get_previous_version_dir(game_dir)
         if not os.path.exists(previous_version_dir):
             os.makedirs(previous_version_dir)
 
-        for entry in os.listdir(path):
-            entry_path = os.path.join(path, entry)
-            shutil.move(entry_path, previous_version_dir)
+        if is_osx:
+            shutil.move(get_app_dir(game_dir), previous_version_dir)
+        else:
+            for entry in os.listdir(path):
+                entry_path = os.path.join(path, entry)
+                shutil.move(entry_path, previous_version_dir)
 
     def restore_backup(self):
         game_dir = self.game_dir
-        previous_version_dir = os.path.join(game_dir, 'previous_version')
+        previous_version_dir = get_previous_version_dir(game_dir)
 
         if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
-
-            for entry in os.listdir(previous_version_dir):
-                if (entry == 'save' and
-                    config_true(get_config_value('prevent_save_move',
-                        'False'))):
-                    continue
-                entry_path = os.path.join(previous_version_dir, entry)
-                shutil.move(entry_path, game_dir)
+            if is_osx:
+                shutil.move(os.path.join(previous_version_dir, 'Cataclysm.app'), game_dir)
+            else:
+                for entry in os.listdir(previous_version_dir):
+                    if (entry == 'save' and
+                        config_true(get_config_value('prevent_save_move',
+                            'False'))):
+                        continue
+                    entry_path = os.path.join(previous_version_dir, entry)
+                    shutil.move(entry_path, game_dir)
 
             retry_rmtree(previous_version_dir)
 
@@ -2105,9 +2247,10 @@ class UpdateGroupBox(QGroupBox):
     def enable_controls(self, builds_combo=False):
         self.tiles_radio_button.setEnabled(True)
         self.console_radio_button.setEnabled(True)
-        if is_64_windows():
+        if is_64_system():
             self.x64_radio_button.setEnabled(True)
-        self.x86_radio_button.setEnabled(True)
+        if not platform.system() == 'Darwin':
+            self.x86_radio_button.setEnabled(True)
 
         self.refresh_builds_button.setEnabled(True)
 
@@ -2208,6 +2351,27 @@ class UpdateGroupBox(QGroupBox):
 
                     self.completed.emit()
 
+            class TestingImgThread(QThread):
+                completed = pyqtSignal()
+                invalid = pyqtSignal()
+                not_downloaded = pyqtSignal()
+
+                def __init__(self, downloaded_file):
+                    super(TestingImgThread, self).__init__()
+
+                    self.downloaded_file = downloaded_file                    
+
+                def __del__(self):
+                    self.wait()
+
+                def run(self):
+                    result = subprocess.call(['hdiutil', 'verify', '-quiet', self.downloaded_file])
+                    if result != 0:
+                        self.invalid.emit()
+                        return
+
+                    self.completed.emit()
+
             def completed_test():
                 self.test_thread = None
 
@@ -2234,7 +2398,12 @@ class UpdateGroupBox(QGroupBox):
                 retry_rmtree(download_dir)
                 self.finish_updating()
 
-            test_thread = TestingZipThread(self.downloaded_file)
+            test_thread = None
+            if os.name == 'nt':
+                test_thread = TestingZipThread(self.downloaded_file)
+            else:
+                test_thread = TestingImgThread(self.downloaded_file)
+
             test_thread.completed.connect(completed_test)
             test_thread.invalid.connect(invalid)
             test_thread.not_downloaded.connect(not_downloaded)
@@ -2254,7 +2423,7 @@ class UpdateGroupBox(QGroupBox):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
-        backup_dir = os.path.join(game_dir, 'previous_version')
+        backup_dir = get_previous_version_dir(game_dir)
         if os.path.isdir(backup_dir):
             status_bar.showMessage(_('Deleting previous_version directory'))
             if not retry_rmtree(backup_dir):
@@ -2270,6 +2439,15 @@ class UpdateGroupBox(QGroupBox):
                 self.finish_updating()
                 return
             status_bar.clearMessage()
+
+        if is_osx():
+            app_dir = get_app_dir(game_dir)
+            if os.path.isdir(app_dir):
+                shutil.move(app_dir, os.path.join(backup_dir, 'Cataclysm.app'))
+            self.finish_updating()
+            self.backing_up_game = False
+            self.extract_new_build()
+            return
 
         dir_list = os.listdir(game_dir)
         self.backup_dir_list = dir_list
@@ -2364,18 +2542,35 @@ class UpdateGroupBox(QGroupBox):
             self.extract_new_build()
 
     def extract_new_build(self):
-        self.extracting_new_build = True
+        # self.extracting_new_build = True
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.busy += 1
+
+        if platform.system() == 'Darwin':
+            mountpoint = self.downloaded_file + '.mount'
+            os.makedirs(mountpoint)
+            subprocess.call(['hdiutil', 'attach', '-quiet', '-mountpoint', mountpoint, self.downloaded_file])
+            shutil.copytree(mountpoint + '/Cataclysm.app/', self.game_dir + '/Cataclysm.app/')
+            subprocess.call(['hdiutil', 'detach', '-quiet', mountpoint])
+            shutil.rmtree(mountpoint, ignore_errors=True)
+
+            status_bar.busy -= 1
+            # self.extracting_new_build = False
+
+            main_tab = self.get_main_tab()
+            game_dir_group_box = main_tab.game_dir_group_box
+
+            self.analysing_new_build = True
+            game_dir_group_box.analyse_new_build(self.selected_build)
+            return
         
         z = zipfile.ZipFile(self.downloaded_file)
         self.extracting_zipfile = z
 
         self.extracting_infolist = z.infolist()
         self.extracting_index = 0
-
-        main_window = self.get_main_window()
-        status_bar = main_window.statusBar()
-
-        status_bar.busy += 1
 
         extracting_label = QLabel()
         status_bar.addWidget(extracting_label, 100)
@@ -2515,9 +2710,15 @@ class UpdateGroupBox(QGroupBox):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
+        # No action required, since user data is shared
+        if is_osx:
+            self.in_post_extraction = False
+            self.finish_updating()
+            return
+
         # Copy config, save, templates and memorial directory from previous
         # version
-        previous_version_dir = os.path.join(self.game_dir, 'previous_version')
+        previous_version_dir = get_previous_version_dir(self.game_dir)
         if os.path.isdir(previous_version_dir) and self.in_post_extraction:
 
             previous_dirs = ['config', 'save', 'templates', 'memorial',
@@ -2543,7 +2744,7 @@ class UpdateGroupBox(QGroupBox):
         # Copy custom tilesets, mods and soundpack from previous version
         # tilesets
         tilesets_dir = os.path.join(self.game_dir, 'gfx')
-        previous_tilesets_dir = os.path.join(self.game_dir, 'previous_version',
+        previous_tilesets_dir = os.path.join(get_previous_version_dir(self.game_dir),
             'gfx')
 
         if (os.path.isdir(tilesets_dir) and os.path.isdir(previous_tilesets_dir)
@@ -2586,7 +2787,7 @@ class UpdateGroupBox(QGroupBox):
 
         # soundpacks
         soundpack_dir = os.path.join(self.game_dir, 'data', 'sound')
-        previous_soundpack_dir = os.path.join(self.game_dir, 'previous_version',
+        previous_soundpack_dir = os.path.join(get_previous_version_dir(self.game_dir),
             'data', 'sound')
 
         if (os.path.isdir(soundpack_dir) and os.path.isdir(
@@ -2664,7 +2865,7 @@ class UpdateGroupBox(QGroupBox):
 
         # mods
         mods_dir = os.path.join(self.game_dir, 'data', 'mods')
-        previous_mods_dir = os.path.join(self.game_dir, 'previous_version',
+        previous_mods_dir = os.path.join(get_previous_version_dir(self.game_dir),
             'data', 'mods')
 
         if (os.path.isdir(mods_dir) and os.path.isdir(previous_mods_dir) and
@@ -2715,7 +2916,7 @@ class UpdateGroupBox(QGroupBox):
 
         # Copy custom fonts
         fonts_dir = os.path.join(self.game_dir, 'data', 'font')
-        previous_fonts_dir = os.path.join(self.game_dir, 'previous_version',
+        previous_fonts_dir = os.path.join(get_previous_version_dir(self.game_dir),
             'data', 'font')
 
         if (os.path.isdir(fonts_dir) and os.path.isdir(previous_fonts_dir) and
@@ -2873,7 +3074,7 @@ class UpdateGroupBox(QGroupBox):
 
         self.lb_html.seek(0)
         document = html5lib.parse(self.lb_html, treebuilder='lxml',
-            encoding='utf8', namespaceHTMLElements=False)
+            namespaceHTMLElements=False)
 
         builds = []
         for row in document.getroot().cssselect('tr'):
@@ -2881,14 +3082,14 @@ class UpdateGroupBox(QGroupBox):
             for index, cell in enumerate(row.cssselect('td')):
                 if index == 1:
                     if len(cell) > 0 and cell[0].text.startswith(
-                        'cataclysmdda'):
+                        'cataclysmdda') or cell[0].text.startswith('Cataclysm'):
                         anchor = cell[0]
                         url = urljoin(self.base_url, anchor.get('href'))
                         name = anchor.text
 
                         build_number = None
                         match = re.search(
-                            'cataclysmdda-[01]\\.[A-F]-(?P<build>\d+)', name)
+                            '(cataclysmdda|Cataclysm)-[01]\\.[A-F]-(?P<build>\d+)', name)
                         if match is not None:
                             build_number = match.group('build')
 
@@ -3519,7 +3720,8 @@ class LauncherUpdateDialog(QDialog):
 
     def showEvent(self, event):
         if not self.shown:
-            temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
+            temp_dir = get_temp_path()
+            # temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
             if not os.path.exists(temp_dir):
                 os.makedirs(temp_dir)
 
@@ -4051,8 +4253,9 @@ class SoundpacksTab(QTabWidget):
                 self.installing_new_soundpack = True
                 self.download_aborted = False
 
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
+                temp_dir = get_temp_path()
+                # temp_dir = os.path.join(os.environ['TEMP'],
+                #     'CDDA Game Launcher')
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
                 
@@ -4764,7 +4967,7 @@ class SoundpacksTab(QTabWidget):
         self.size_le.setText('')
         self.homepage_tb.setText('')
 
-        soundpacks_dir = os.path.join(new_dir, 'data', 'sound')
+        soundpacks_dir = get_soundpacks_dir(new_dir)
         if os.path.isdir(soundpacks_dir):
             self.soundpacks_dir = soundpacks_dir
 
@@ -5027,11 +5230,11 @@ class BackupsTab(QTabWidget):
         self.backups_table.setEnabled(True)
 
         if (self.game_dir is not None and os.path.isdir(
-            os.path.join(self.game_dir, 'save_backups'))):
+            get_backup_dir(self.game_dir))):
             self.refresh_list_button.setEnabled(True)
         
         if (self.game_dir is not None and os.path.isdir(
-            os.path.join(self.game_dir, 'save'))):
+            get_save_dir(self.game_dir))):
             self.backup_current_button.setEnabled(True)
 
         selection_model = self.backups_table.selectionModel()
@@ -5135,7 +5338,7 @@ class BackupsTab(QTabWidget):
                 self.extracting_thread.quit()
 
                 def completed():
-                    save_dir = os.path.join(self.game_dir, 'save')
+                    save_dir = get_save_dir(self.game_dir)
                     retry_rmtree(save_dir)
                     if self.temp_save_dir is not None:
                         retry_rename(self.temp_save_dir, save_dir)
@@ -5185,7 +5388,7 @@ class BackupsTab(QTabWidget):
                 before_last_restore_name = _('before_last_restore')
 
                 if backup_name.lower() == before_last_restore_name.lower():
-                    backup_dir = os.path.join(self.game_dir, 'save_backups')
+                    backup_dir = get_backup_dir(self.game_dir)
 
                     name_lower = backup_name.lower()
                     name_key = alphanum_key(name_lower)
@@ -5247,12 +5450,12 @@ class BackupsTab(QTabWidget):
         status_bar = main_window.statusBar()
 
         self.temp_save_dir = None
-        save_dir = os.path.join(self.game_dir, 'save')
+        save_dir = get_save_dir(self.game_dir)
         if os.path.isdir(save_dir):
-            temp_save_dir = os.path.join(self.game_dir, 'save-{0}'.format(
+            temp_save_dir = os.path.join(get_state_dir(self.game_dir), 'save-{0}'.format(
                 '%08x' % random.randrange(16**8)))
             while os.path.exists(temp_save_dir):
-                temp_save_dir = os.path.join(self.game_dir, 'save-{0}'.format(
+                temp_save_dir = os.path.join(get_state_dir(self.game_dir), 'save-{0}'.format(
                     '%08x' % random.randrange(16**8)))
 
             if not retry_rename(save_dir, temp_save_dir):
@@ -5268,7 +5471,7 @@ class BackupsTab(QTabWidget):
 
         self.extracting_backup = True
 
-        self.extract_dir = self.game_dir
+        self.extract_dir = get_state_dir(self.game_dir)
 
         status_bar.clearMessage()
         status_bar.busy += 1
@@ -5533,7 +5736,7 @@ class BackupsTab(QTabWidget):
 
         search_start = (_('auto') + '_').lower()
 
-        backup_dir = os.path.join(self.game_dir, 'save_backups')
+        backup_dir = get_backup_dir(self.game_dir)
         if not os.path.isdir(backup_dir):
             return
 
@@ -5565,13 +5768,13 @@ class BackupsTab(QTabWidget):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
-        save_dir = os.path.join(self.game_dir, 'save')
+        save_dir = get_save_dir(self.game_dir)
         if not os.path.isdir(save_dir):
             status_bar.showMessage(_('Save directory not found'))
             return
         self.save_dir = save_dir
 
-        backup_dir = os.path.join(self.game_dir, 'save_backups')
+        backup_dir = get_backup_dir(self.game_dir)
         if not os.path.isdir(backup_dir):
             if os.path.isfile(backup_dir):
                 os.remove(backup_dir)
@@ -5766,7 +5969,7 @@ class BackupsTab(QTabWidget):
             try:
                 if self.backup_compressing:
                     next_file = self.backup_files.popleft()
-                    relpath = os.path.relpath(next_file, self.game_dir)
+                    relpath = os.path.relpath(next_file, get_state_dir(self.game_dir))
                     self.next_backup_file = next_file
 
                     self.compressing_label.setText(
@@ -5854,7 +6057,7 @@ class BackupsTab(QTabWidget):
     def game_dir_changed(self, new_dir):
         self.game_dir = new_dir
 
-        save_dir = os.path.join(self.game_dir, 'save')
+        save_dir = get_save_dir(self.game_dir)
         if os.path.isdir(save_dir):
             self.backup_current_button.setEnabled(True)
 
@@ -5910,7 +6113,7 @@ class BackupsTab(QTabWidget):
         if self.game_dir is None:
             return
 
-        backup_dir = os.path.join(self.game_dir, 'save_backups')
+        backup_dir = get_backup_dir(self.game_dir)
         if not os.path.isdir(backup_dir):
             return
 
@@ -5949,6 +6152,7 @@ class BackupsTab(QTabWidget):
                                         character_count += 1
                                     if save_file in WORLD_FILES:
                                         worlds_set.add(path_items[1])
+
                     except zipfile.BadZipFile:
                         pass
 
@@ -6390,8 +6594,9 @@ class ModsTab(QTabWidget):
                 self.installing_new_mod = True
                 self.download_aborted = False
 
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
+                temp_dir = get_temp_path()
+                # temp_dir = os.path.join(os.environ['TEMP'],
+                #     'CDDA Game Launcher')
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
                 
@@ -7188,7 +7393,7 @@ class ModsTab(QTabWidget):
 
         self.clear_details()
 
-        mods_dir = os.path.join(new_dir, 'data', 'mods')
+        mods_dir = get_mods_dir(new_dir)
         if os.path.isdir(mods_dir):
             self.mods_dir = mods_dir
 
@@ -7637,7 +7842,10 @@ def start_ui(bdir, locale, locales, single_instance):
     init_gettext(locale)
 
     if getattr(sys, 'frozen', False):
-        rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')
+        if is_windows():
+            rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')
+        else:
+            rarfile.UNRAR_TOOL = os.path.join(bdir, 'unrar')
 
     main_app = QApplication(sys.argv)
 
