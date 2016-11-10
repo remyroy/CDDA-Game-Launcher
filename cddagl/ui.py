@@ -2148,7 +2148,11 @@ class UpdateGroupBox(QGroupBox):
         self.download_last_bytes_read = 0
         self.download_speed_count = 0
 
-        self.download_http_reply = self.qnam.get(QNetworkRequest(QUrl(url)))
+        request = QNetworkRequest(QUrl(url))
+        request.setRawHeader(b'User-Agent',
+            b'CDDA-Game-Launcher/' + version.encode('utf8'))
+
+        self.download_http_reply = self.qnam.get(request)
         self.download_http_reply.finished.connect(self.download_http_finished)
         self.download_http_reply.readyRead.connect(
             self.download_http_ready_read)
@@ -2845,7 +2849,12 @@ class UpdateGroupBox(QGroupBox):
         progress_bar.setMinimum(0)
 
         self.lb_html = BytesIO()
-        self.http_reply = self.qnam.get(QNetworkRequest(QUrl(url)))
+        
+        request = QNetworkRequest(QUrl(url))
+        request.setRawHeader(b'User-Agent',
+            b'CDDA-Game-Launcher/' + version.encode('utf8'))
+        
+        self.http_reply = self.qnam.get(request)
         self.http_reply.finished.connect(self.lb_http_finished)
         self.http_reply.readyRead.connect(self.lb_http_ready_read)
         self.http_reply.downloadProgress.connect(self.lb_dl_progress)
@@ -3741,6 +3750,8 @@ class SoundpacksTab(QTabWidget):
     def __init__(self):
         super(SoundpacksTab, self).__init__()
 
+        self.tab_disabled = False
+
         self.qnam = QNetworkAccessManager()
 
         self.http_reply = None
@@ -3939,9 +3950,8 @@ class SoundpacksTab(QTabWidget):
         return self.get_main_tab().get_backups_tab()
 
     def disable_tab(self):
-        self.installed_lv.setEnabled(False)
-        self.repository_lv.setEnabled(False)
-
+        self.tab_disabled = True
+        
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
 
@@ -3956,9 +3966,8 @@ class SoundpacksTab(QTabWidget):
             repository_selection.clearSelection()
 
     def enable_tab(self):
-        self.installed_lv.setEnabled(True)
-        self.repository_lv.setEnabled(True)
-
+        self.tab_disabled = False
+        
         installed_selection = self.installed_lv.selectionModel()
         if installed_selection is None:
             installed_selected = False
@@ -4575,8 +4584,10 @@ class SoundpacksTab(QTabWidget):
             else:
                 self.disable_existing_button.setText(_('Enable'))
 
-        self.disable_existing_button.setEnabled(True)
-        self.delete_existing_button.setEnabled(True)
+        if not self.tab_disabled:
+            self.disable_existing_button.setEnabled(True)
+            self.delete_existing_button.setEnabled(True)
+        
         self.install_new_button.setEnabled(False)
 
         repository_selection = self.repository_lv.selectionModel()
@@ -4634,7 +4645,8 @@ class SoundpacksTab(QTabWidget):
                     self.size_le.setText(_('Unknown'))
 
         if (self.soundpacks_dir is not None
-            and os.path.isdir(self.soundpacks_dir)):
+            and os.path.isdir(self.soundpacks_dir)
+            and not self.tab_disabled):
             self.install_new_button.setEnabled(True)
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
@@ -6049,6 +6061,7 @@ class ModsTab(QTabWidget):
     def __init__(self):
         super(ModsTab, self).__init__()
 
+        self.tab_disabled = False
         self.qnam = QNetworkAccessManager()
 
         self.http_reply = None
@@ -6279,9 +6292,8 @@ class ModsTab(QTabWidget):
         return self.get_main_tab().get_backups_tab()
 
     def disable_tab(self):
-        self.installed_lv.setEnabled(False)
-        self.repository_lv.setEnabled(False)
-
+        self.tab_disabled = True
+        
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
 
@@ -6296,9 +6308,8 @@ class ModsTab(QTabWidget):
             repository_selection.clearSelection()
 
     def enable_tab(self):
-        self.installed_lv.setEnabled(True)
-        self.repository_lv.setEnabled(True)
-
+        self.tab_disabled = False
+        
         installed_selection = self.installed_lv.selectionModel()
         if installed_selection is None:
             installed_selected = False
@@ -6990,8 +7001,9 @@ class ModsTab(QTabWidget):
             else:
                 self.disable_existing_button.setText(_('Enable'))
 
-        self.disable_existing_button.setEnabled(True)
-        self.delete_existing_button.setEnabled(True)
+        if not self.tab_disabled:
+            self.disable_existing_button.setEnabled(True)
+            self.delete_existing_button.setEnabled(True)
         self.install_new_button.setEnabled(False)
 
         repository_selection = self.repository_lv.selectionModel()
@@ -7052,7 +7064,8 @@ class ModsTab(QTabWidget):
                     self.size_le.setText(_('Unknown'))
 
         if (self.mods_dir is not None
-            and os.path.isdir(self.mods_dir)):
+            and os.path.isdir(self.mods_dir)
+            and not self.tab_disabled):
             self.install_new_button.setEnabled(True)
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
