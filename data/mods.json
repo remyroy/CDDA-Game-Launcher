@@ -93,9 +93,76 @@
         "name": "Cataclysm++",
         "author": "Noctifer",
         "description": "Adds many-a-thing to balance the survivor including a pesudo-story. Rewards investment.",
-        "size": 87448,
+        "size": 83875,
         "url": "https://1drv.ms/u/s!Ajb7I9_jqo4TgUXcyEK5NcT20B41",
         "expected_filename": "Cataclysm++.rar",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11248.0"
+    },
+    {
+        "type": "direct_download",
+        "ident": "OvermapRebalance",
+        "name": "Overmap Rebalancing",
+        "author": "Leon",
+        "description": "Reduces occurrence of most locations and introduces new buildings. CREDITS to GovTD, Lanceo90 and DinoCat for there excellent mods, which I included herein.",
+        "category": "rebalance",
+        "size": 975137,
+        "url": "https://www.dropbox.com/s/44phhdrghhgnh77/Overmap_Rebalancing.zip?dl=1",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=12455.0"
+    },
+    {
+        "type": "direct_download",
+        "ident": "Mining_Mod",
+        "name": "Mining Mod",
+        "author": "DangerNoodle",
+        "description": "Adds mineral veins randomly found underground, to obtain various natural resources.",
+        "category": "misc_additions",
+        "size": 7799,
+        "url": "https://github.com/DangerNoodle/mining-mod/archive/master.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=13306.0"
+    },
+    {
+        "type": "direct_download",
+        "ident": "Packaging",
+        "name": "Packaging",
+        "author": "Leon",
+        "description": "Adds medium sized cardboard boxes and makeshift storage boxes. These grant reduction in volume at the price of increased weight (wrapping).",
+        "category": "items",
+        "size": 276302,
+        "url": "https://www.dropbox.com/s/50kk1p59l70pgox/Packaging.zip?dl=1",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=12646.0"
+    },
+    {
+        "type": "browser_download",
+        "ident": "PARKSANDREC",
+        "name": "Parks and Rec Building Pack",
+        "description": "Adds more park themed buildings.",
+        "category": "Buildings",
+        "author": "Whaley",
+        "size": 27987,
+        "url": "http://www.mediafire.com/download/pkx0pxw7w1vyhx8/Cataclysm+Parks+and+Rec+Building+Pack.zip",
+        "expected_filename": "Cataclysm Parks and Rec Building Pack.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=12533.0"
+    },
+    {
+        "type": "direct_download",
+        "ident": "ms",
+        "name": "Mutation stuff",
+        "description": "Changes and rebalances mutations",
+        "category": "mutations",
+        "author": "Peeved Penguin",
+        "size": 24062,
+        "url": "https://www.dropbox.com/s/mtjwfh0or5tqegb/Mutation%20changes.rar?dl=1",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=13092.0"
+    },
+    {
+        "type": "browser_download",
+        "ident": "No_Recreationals",
+        "name": "No Recreationals",
+        "description": "Removes all recreational drug instances from the game so that my dad doesn't freak when I teach him how to play.",
+        "category": "item_exclude",
+        "size": 645,
+        "url": "http://www.mediafire.com/download/sp1r0y160048uw3/No_Recreationals.zip",
+        "expected_filename": "No_Recreationals.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=13084.0"
     }
 ]

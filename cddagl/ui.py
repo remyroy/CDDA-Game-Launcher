@@ -4002,6 +4002,7 @@ class SoundpacksTab(QTabWidget):
                 try:
                     values = json.load(f)
                     if isinstance(values, list):
+                        values.sort(key=lambda x: x['name'])
                         self.repo_soundpacks = values
 
                         self.repo_soundpacks_model.insertRows(
@@ -6344,6 +6345,7 @@ class ModsTab(QTabWidget):
                 try:
                     values = json.load(f)
                     if isinstance(values, list):
+                        values.sort(key=lambda x: x['name'])
                         self.repo_mods = values
 
                         self.repo_mods_model.insertRows(
