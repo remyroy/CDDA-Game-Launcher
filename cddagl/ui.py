@@ -95,6 +95,10 @@ SAVES_WARNING_SIZE = 150 * 1024 * 1024
 RELEASES_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/releases'
 NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
 
+CHANGELOG_URL = ('http://ci.narc.ro/view/Cataclysm-DDA/job/Cataclysm-Matrix'
+    '/changes')
+ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
+
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 
 def clean_qt_path(path):
@@ -289,7 +293,7 @@ class MainWindow(QMainWindow):
     def __init__(self, title):
         super(MainWindow, self).__init__()
 
-        self.setMinimumSize(440, 500)
+        self.setMinimumSize(440, 540)
         
         self.create_status_bar()
         self.create_central_widget()
@@ -463,6 +467,8 @@ class MainWindow(QMainWindow):
                                         self.close()
                 else:
                     self.no_launcher_update_found()
+
+        self.lv_html = None
 
     def nlvcc_changed(self, state):
         no_launcher_version_check_checkbox = (
@@ -1705,6 +1711,9 @@ class UpdateGroupBox(QGroupBox):
 
         self.qnam = QNetworkAccessManager()
         self.http_reply = None
+        
+        self.changelog_http_reply = None
+        self.changelog_html = None
 
         layout = QGridLayout()
 
@@ -1764,11 +1773,24 @@ class UpdateGroupBox(QGroupBox):
         layout.addWidget(refresh_builds_button, 2, 3)
         self.refresh_builds_button = refresh_builds_button
 
+        changelog_groupbox = QGroupBox()
+        changelog_layout = QHBoxLayout()
+        changelog_groupbox.setLayout(changelog_layout)
+        layout.addWidget(changelog_groupbox, 3, 0, 1, 4)
+        self.changelog_groupbox = changelog_groupbox
+        self.changelog_layout = changelog_layout
+        
+        changelog_content = QTextBrowser()
+        changelog_content.setReadOnly(True)
+        changelog_content.setOpenExternalLinks(True)
+        self.changelog_layout.addWidget(changelog_content)
+        self.changelog_content = changelog_content
+
         update_button = QPushButton()
         update_button.setEnabled(False)
         update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
-        layout.addWidget(update_button, 3, 0, 1, 4)
+        layout.addWidget(update_button, 4, 0, 1, 4)
         self.update_button = update_button
 
         layout.setColumnStretch(1, 100)
@@ -1786,6 +1808,7 @@ class UpdateGroupBox(QGroupBox):
         self.x86_radio_button.setText(_('Windows x86 (32-bit)'))
         self.available_builds_label.setText(_('Available builds:'))
         self.refresh_builds_button.setText(_('Refresh'))
+        self.changelog_groupbox.setTitle(_('Changelog'))
         self.update_button.setText(_('Update game'))
         self.setTitle(_('Update/Installation'))
 
@@ -1819,6 +1842,7 @@ class UpdateGroupBox(QGroupBox):
                 self.x86_radio_button.setChecked(True)
 
             self.start_lb_request(BASE_URLS[graphics][platform])
+            self.refresh_changelog()
 
         self.shown = True
 
@@ -2102,7 +2126,7 @@ class UpdateGroupBox(QGroupBox):
         if update_button:
             self.update_button.setEnabled(False)
 
-    def enable_controls(self, builds_combo=False):
+    def enable_controls(self, builds_combo=False, update_button=False):
         self.tiles_radio_button.setEnabled(True)
         self.console_radio_button.setEnabled(True)
         if is_64_windows():
@@ -2116,7 +2140,10 @@ class UpdateGroupBox(QGroupBox):
         else:
             self.builds_combo.setEnabled(self.previous_bc_enabled)
 
-        self.update_button.setEnabled(self.previous_ub_enabled)
+        if update_button:
+            self.update_button.setEnabled(True)
+        else:
+            self.update_button.setEnabled(self.previous_ub_enabled)
 
     def download_game_update(self, url):
         main_window = self.get_main_window()
@@ -2966,6 +2993,8 @@ class UpdateGroupBox(QGroupBox):
             self.builds_combo.clear()
             self.builds_combo.addItem(_('Could not find remote builds'))
             self.builds_combo.setEnabled(False)
+    
+        self.lb_html = None
 
     def lb_http_ready_read(self):
         self.lb_html.write(self.http_reply.readAll())
@@ -2991,6 +3020,134 @@ class UpdateGroupBox(QGroupBox):
         url = BASE_URLS[selected_graphics][selected_platform]
 
         self.start_lb_request(url)
+        self.refresh_changelog()
+        
+    def refresh_changelog(self):
+        if self.changelog_http_reply is not None:
+            self.changelog_html = None
+            self.changelog_http_reply.abort()
+            self.changelog_http_reply = None
+            
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.clearMessage()
+        self.changelog_content.setHtml('')
+
+        status_bar.busy += 1
+
+        changelog_label = QLabel()
+        changelog_label.setText(_('Fetching: {url}').format(url=CHANGELOG_URL))
+        status_bar.addWidget(changelog_label, 100)
+        self.changelog_label = changelog_label
+
+        progress_bar = QProgressBar()
+        status_bar.addWidget(progress_bar)
+        self.changelog_progress_bar = progress_bar
+
+        progress_bar.setMinimum(0)
+
+        self.changelog_html = BytesIO()
+        
+        request = QNetworkRequest(QUrl(CHANGELOG_URL))
+        request.setRawHeader(b'User-Agent',
+            b'CDDA-Game-Launcher/' + version.encode('utf8'))
+        
+        self.changelog_http_reply = self.qnam.get(request)
+        self.changelog_http_reply.finished.connect(self.changelog_http_finished)
+        self.changelog_http_reply.readyRead.connect(
+            self.changelog_http_ready_read)
+        self.changelog_http_reply.downloadProgress.connect(
+            self.changelog_dl_progress)
+
+    def changelog_http_finished(self):
+        main_window = self.get_main_window()
+
+        status_bar = main_window.statusBar()
+        status_bar.removeWidget(self.changelog_label)
+        status_bar.removeWidget(self.changelog_progress_bar)
+
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
+
+        status_bar.busy -= 1
+
+        if not game_dir_group_box.game_started:
+            if status_bar.busy == 0:
+                status_bar.showMessage(_('Ready'))
+        else:
+            if status_bar.busy == 0:
+                status_bar.showMessage(_('Game process is running'))
+
+        if self.changelog_html is not None:
+            self.changelog_html.seek(0)
+            document = html5lib.parse(self.changelog_html, treebuilder='lxml',
+                default_encoding='utf8', namespaceHTMLElements=False)
+            
+            main_panels = document.getroot().cssselect('#main-panel')
+            if len(main_panels) == 1:
+                main_panel = main_panels[0]
+                
+                # Only keep the last 11 logs
+                h2_count = 0
+                for element in main_panel.iterchildren():
+                    if element.tag == 'h2':
+                        h2_count += 1
+                    if h2_count >= 11:
+                        element.getparent().remove(element)
+                
+                # Remove the title
+                for h1 in main_panel.cssselect('h1'):
+                    h1.getparent().remove(h1)
+                
+                # Transform h2 into divs
+                for h2 in main_panel.cssselect('h2'):
+                    div = etree.Element('div')                
+                    div.extend(h2.iterchildren())
+                    h2.getparent().replace(h2, div)
+                
+                # Remove detailed commit information
+                for li in main_panel.cssselect('li'):
+                    for anchor in li.cssselect('a'):
+                        anchor.getparent().remove(anchor)
+                    # Remove leftover text
+                    if li.text.endswith(' ('):
+                        li.text = li.text[:-2]
+                    # Autolink issues from github
+                    escaped_text = html.escape(li.text)
+                    issues = re.findall(r'#\d+', escaped_text)
+                    if len(issues) > 0:
+                        for issue in issues:
+                            escaped_text = escaped_text.replace(issue,
+                            '<a href="{root}{number}">{issue}</a>'.format(
+                            root=ISSUE_URL_ROOT, number=issue[1:], issue=issue))
+                        
+                        li.getparent().replace(li,
+                            etree.fromstring('<li>' + escaped_text + '</li>'))
+                
+                # Use absolute path for anchors
+                for anchor in main_panel.cssselect('a'):
+                    if ('href' in anchor.keys()
+                        and not anchor.get('href').startswith('http')):
+                        anchor.set('href', urljoin(CHANGELOG_URL,
+                            anchor.get('href')))
+                
+                mp_content = etree.tostring(main_panel,
+                    encoding='utf8', method='html').decode('utf8')
+                
+                self.changelog_content.setHtml(mp_content)
+        
+        self.changelog_html = None
+        self.changelog_http_reply = None
+
+    def changelog_http_ready_read(self):
+        self.changelog_html.write(self.changelog_http_reply.readAll())
+
+    def changelog_dl_progress(self, bytes_read, total_bytes):
+        if total_bytes == -1:
+            total_bytes = bytes_read * 2
+        self.changelog_progress_bar.setMaximum(total_bytes)
+        self.changelog_progress_bar.setValue(bytes_read)
 
     def graphics_clicked(self, button):
         if button is self.tiles_radio_button:
