@@ -378,7 +378,7 @@ class MainWindow(QMainWindow):
     def lv_http_finished(self):
         self.lv_html.seek(0)
         document = html5lib.parse(self.lv_html, treebuilder='lxml',
-            encoding='utf8', namespaceHTMLElements=False)
+            default_encoding='utf8', namespaceHTMLElements=False)
 
         for release in document.getroot().cssselect('div.release.label-latest'):
             latest_version = None
@@ -2873,7 +2873,7 @@ class UpdateGroupBox(QGroupBox):
 
         self.lb_html.seek(0)
         document = html5lib.parse(self.lb_html, treebuilder='lxml',
-            encoding='utf8', namespaceHTMLElements=False)
+            default_encoding='utf8', namespaceHTMLElements=False)
 
         builds = []
         for row in document.getroot().cssselect('tr'):
