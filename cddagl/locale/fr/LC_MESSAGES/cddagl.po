@@ -916,7 +916,7 @@ msgstr ""
 
 #: cddagl/ui.py:3855
 msgid "<a href=\"{url}\">Suggest a new soundpack on GitHub</a>"
-msgstr "<a href=\"{url}\">Sugérer un nouveau pack sonore sur GitHub</a>"
+msgstr "<a href=\"{url}\">Suggérer un nouveau pack sonore sur GitHub</a>"
 
 #: cddagl/ui.py:3857 cddagl/ui.py:4265
 msgid "Install this soundpack"
@@ -1262,7 +1262,7 @@ msgstr ""
 
 #: cddagl/ui.py:6191
 msgid "<a href=\"{url}\">Suggest a new mod on GitHub</a>"
-msgstr "<a href=\"{url}\">Sugérer un nouveau mod sur GitHub</a>"
+msgstr "<a href=\"{url}\">Suggérer un nouveau mod sur GitHub</a>"
 
 #: cddagl/ui.py:6194 cddagl/ui.py:6648
 msgid "Install this mod"
