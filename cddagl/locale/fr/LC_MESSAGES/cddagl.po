@@ -122,7 +122,7 @@ msgstr ""
 "\n"
 "<p>Le processus <strong>{image_file_name} ({pid})</strong> utilise "
 "présentement \n"
-"ce fichier ou ce répertoire. Vous aurez probablement besoin d'y metre fin"
+"ce fichier ou ce répertoire. Vous aurez probablement besoin d'y mettre fin"
 " pour rééessayer.</p>\n"
 
 #: cddagl/ui.py:176
@@ -173,7 +173,7 @@ msgstr ""
 "\n"
 "<p>Le processus <strong>{image_file_name} ({pid})</strong> utilise "
 "présentement \n"
-"ce fichier. Vous aurez probablement besoin d'y metre fin pour "
+"ce fichier. Vous aurez probablement besoin d'y mettre fin pour "
 "rééessayer.</p>\n"
 
 #: cddagl/ui.py:221
@@ -248,7 +248,7 @@ msgid ""
 "Launcher. Would you like to update?"
 msgstr ""
 "Vous utilisez la version {version}, mais il y a une nouvelle version du "
-"CDDA Game Launcher. Vouslez-vous faire la mise à jour ?"
+"CDDA Game Launcher. Voulez-vous faire la mise à jour ?"
 
 #: cddagl/ui.py:435
 msgid "Update the launcher"
@@ -403,7 +403,7 @@ msgstr ""
 
 #: cddagl/ui.py:1257
 msgid "Previous version restored"
-msgstr "Version précédente restorée"
+msgstr "Version précédente restaurée"
 
 #: cddagl/ui.py:1274 cddagl/ui.py:1594
 msgid "{build} ({time_delta})"
@@ -451,7 +451,7 @@ msgstr "Console"
 
 #: cddagl/ui.py:1729
 msgid "Platform:"
-msgstr "Platforme :"
+msgstr "Plate-forme :"
 
 #: cddagl/ui.py:1730
 msgid "Windows x64 (64-bit)"
@@ -528,7 +528,7 @@ msgstr "Test du fichier d'archive téléchargé"
 #: cddagl/ui.py:2166 cddagl/ui.py:4115 cddagl/ui.py:4235 cddagl/ui.py:6476
 #: cddagl/ui.py:6626
 msgid "Downloaded archive is invalid"
-msgstr "Le fichier téléchargé est invalid"
+msgstr "Le fichier téléchargé est invalide"
 
 #: cddagl/ui.py:2176
 msgid "Could not download game"
@@ -536,7 +536,7 @@ msgstr "Impossible de télécharger le jeu"
 
 #: cddagl/ui.py:2204
 msgid "Deleting previous_version directory"
-msgstr "Supression du répertoire previous_version"
+msgstr "Suppression du répertoire previous_version"
 
 #: cddagl/ui.py:2235
 msgid "Backing up current game"
@@ -556,11 +556,11 @@ msgstr "répertoire {0}"
 
 #: cddagl/ui.py:2496
 msgid "Restoring custom tilesets"
-msgstr "Restauration des packs de tuiles personalisés"
+msgstr "Restauration des packs de tuiles personnalisés"
 
 #: cddagl/ui.py:2539
 msgid "Restoring custom soundpacks"
-msgstr "Restauration des packs sonore personalisés"
+msgstr "Restauration des packs sonore personnalisés"
 
 #: cddagl/ui.py:2588
 msgid "{name} soundpack"
@@ -568,7 +568,7 @@ msgstr "Pack sonore {name}"
 
 #: cddagl/ui.py:2617
 msgid "Restoring custom mods"
-msgstr "Restauration des mods personalisés"
+msgstr "Restauration des mods personnalisés"
 
 #: cddagl/ui.py:2654
 msgid "Restoring user-default-mods.json"
@@ -576,7 +576,7 @@ msgstr "Restauration de user-default-mods.json"
 
 #: cddagl/ui.py:2668
 msgid "Restoring custom fonts"
-msgstr "Restauration des polices personalisées"
+msgstr "Restauration des polices personnalisées"
 
 #: cddagl/ui.py:2691
 msgid "Update completed"
@@ -804,7 +804,7 @@ msgstr "Conserver une copie du fichier téléchargé dans le répertoire suivant
 
 #: cddagl/ui.py:3336
 msgid "Automatically refresh builds list every"
-msgstr "Rafraîchir automatiquement la liste des builds à tout les"
+msgstr "Rafraîchir automatiquement la liste des builds à tous les"
 
 #: cddagl/ui.py:3337
 msgid "minutes"
@@ -910,7 +910,7 @@ msgstr ""
 "* Nom : [Entrez le nom de ce pack sonore]\n"
 "* Url : [Entrez l'url où l'on peut retrouver ce pack sonore]\n"
 "* Auteur : [Entrez le nom de l'auteur]\n"
-"* Page d'acceuil : [Entrez l'url du site web de l'auteur où le pack "
+"* Page d'accueil : [Entrez l'url du site web de l'auteur où le pack "
 "sonore a été publié]\n"
 "* Le pack sonore n'est pas présent dans la version : {version}\n"
 
@@ -940,7 +940,7 @@ msgstr "Chemin :"
 
 #: cddagl/ui.py:3869 cddagl/ui.py:6209
 msgid "Home page:"
-msgstr "Page d'acceuil :"
+msgstr "Page d'accueil :"
 
 #: cddagl/ui.py:3967
 msgid "Soundpack already present"
@@ -1082,7 +1082,7 @@ msgstr "Supprimer la sauvegarde"
 #: cddagl/ui.py:4926
 msgid "Do not backup the current saves before restoring a backup"
 msgstr ""
-"Ne pas effectuer de sauvegarde des parties courantes avant la restoration"
+"Ne pas effectuer de sauvegarde des parties courantes avant la restauration"
 " d'une sauvegarde"
 
 #: cddagl/ui.py:4928
@@ -1144,11 +1144,11 @@ msgstr "Maximum de sauvegardes automatiques :"
 
 #: cddagl/ui.py:5045 cddagl/ui.py:5074 cddagl/ui.py:5106
 msgid "Restore backup cancelled"
-msgstr "Restoration de la sauvegarde annullée"
+msgstr "Restauration de la sauvegarde annulée"
 
 #: cddagl/ui.py:5130
 msgid "before_last_restore"
-msgstr "avant_derniere_restoration"
+msgstr "avant_derniere_restauration"
 
 #: cddagl/ui.py:5172 cddagl/ui.py:5263
 msgid "Cancel restore backup"
@@ -1256,7 +1256,7 @@ msgstr ""
 "* Nom : [Entrez le nom du mod]\n"
 "* Url : [Entrez l'Url où nous pouvons trouver le mod]\n"
 "* Auteur : [Entrez le nom de l'auteur]\n"
-"* Page d'acceuil : [Entrez l'url du site web de l'auteur où le mod a été "
+"* Page d'accueil : [Entrez l'url du site web de l'auteur où le mod a été "
 "publié]\n"
 "* Le mod n'est pas présent dans la version : {version}\n"
 
