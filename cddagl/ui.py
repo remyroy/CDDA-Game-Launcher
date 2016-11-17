@@ -4325,7 +4325,7 @@ class SoundpacksTab(QTabWidget):
                         test_method = 'testzip'
                     elif self.downloaded_file.lower().endswith('.rar'):
                         archive_class = rarfile.RarFile
-                        archive_exception = rarfile.BadRarFile
+                        archive_exception = rarfile.Error
                         test_method = 'testrar'
 
                     try:
@@ -6689,7 +6689,7 @@ class ModsTab(QTabWidget):
                                 test_method = 'testzip'
                             elif self.downloaded_file.lower().endswith('.rar'):
                                 archive_class = rarfile.RarFile
-                                archive_exception = rarfile.BadRarFile
+                                archive_exception = rarfile.Error
                                 test_method = 'testrar'
 
                             try:
@@ -6839,7 +6839,7 @@ class ModsTab(QTabWidget):
                         test_method = 'testzip'
                     elif self.downloaded_file.lower().endswith('.rar'):
                         archive_class = rarfile.RarFile
-                        archive_exception = rarfile.BadRarFile
+                        archive_exception = rarfile.Error
                         test_method = 'testrar'
 
                     try:
