@@ -10,14 +10,13 @@
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10759.0"
     },
     {
-        "type": "browser_download",
+        "type": "direct_download",
         "ident": "ext",
-        "name": "Extended Buildings",
+        "name": "EXTENDED_BUILDINGS",
         "description": "Adds More Buildings",
         "author": "Whaley",
-        "size": 36596,
-        "url": "http://www.mediafire.com/download/38ob0m5hyeayiw5/EXTENDED_BUILDINGS.zip",
-        "expected_filename": "EXTENDED_BUILDINGS.zip",
+        "size": 25800,
+        "url": "https://www.dropbox.com/s/buonljnjy2csz5c/ZSFixed_Extended%20Buildings.zip?dl=1",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=8579.0"
     },
     {
@@ -132,15 +131,14 @@
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=12646.0"
     },
     {
-        "type": "browser_download",
+        "type": "direct_download",
         "ident": "PARKSANDREC",
         "name": "Parks and Rec Building Pack",
         "description": "Adds more park themed buildings.",
         "category": "Buildings",
         "author": "Whaley",
-        "size": 27987,
-        "url": "http://www.mediafire.com/download/pkx0pxw7w1vyhx8/Cataclysm+Parks+and+Rec+Building+Pack.zip",
-        "expected_filename": "Cataclysm Parks and Rec Building Pack.zip",
+        "size": 29308,
+        "url": "https://www.dropbox.com/s/maj5rks5kr2aek9/ZSFixed_Cataclysm%20Parks%20and%20Rec%20Building%20Pack.zip?dl=1",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=12533.0"
     },
     {
