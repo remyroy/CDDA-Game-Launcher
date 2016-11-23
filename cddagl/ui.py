@@ -2812,12 +2812,19 @@ class UpdateGroupBox(QGroupBox):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
         
-        status_bar.showMessage(_('Deleting previous_version directory'))
+        progress_rmtree = ProgressRmTree(previous_version_dir, status_bar,
+            _('previous_version directory'))
         
-        retry_rmtree(previous_version_dir)
-        
-        self.after_updating_message()
-        self.finish_updating()
+        def rmtree_completed():
+            self.progress_rmtree = None
+            
+            self.after_updating_message()
+            self.finish_updating()
+            
+        progress_rmtree.completed.connect(rmtree_completed)
+        progress_rmtree.aborted.connect(rmtree_completed)
+        self.progress_rmtree = progress_rmtree
+        progress_rmtree.start()
 
     def after_updating_message(self):
         main_window = self.get_main_window()
@@ -7634,6 +7641,59 @@ class ProgressRmTree(QTimer):
                     self.current_entry = self.source_entries.pop()
                     self.display_entry(self.current_entry)
                 else:
+                    # Remove the source directory
+                    while os.path.exists(self.src):
+                        try:
+                            try:
+                                os.rmdir(self.src)
+                            except OSError:
+                                # Remove read-only and try again
+                                os.chmod(self.src, stat.S_IWRITE)
+                                os.rmdir(self.src)
+                        except OSError as e:
+                            retry_msgbox = QMessageBox()
+                            retry_msgbox.setWindowTitle(
+                                _('Cannot remove directory'))
+                
+                            process = None
+                            if e.filename is not None:
+                                process = find_process_with_file_handle(
+                                    e.filename)
+                
+                            text = _('''
+<p>The launcher failed to remove the following directory: {directory}</p>
+<p>When trying to remove or access {filename}, the launcher raised the 
+following error: {error}</p>''').format(
+                                directory=html.escape(self.src),
+                                filename=html.escape(e.filename),
+                                error=html.escape(e.strerror))
+                
+                            if process is None:
+                                text = text + _('''
+<p>No process seems to be using that file or directory.</p>''')
+                            else:
+                                text = text + _('''
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+that file or directory. You might need to end it if you want to retry.</p>'''
+                                ).format(
+                                    image_file_name=process['image_file_name'],
+                                    pid=process['pid'])
+                
+                            retry_msgbox.setText(text)
+                            retry_msgbox.setInformativeText(_('Do you want to '
+                                'retry removing this directory?'))
+                            retry_msgbox.addButton(
+                                _('Retry removing the directory'),
+                                QMessageBox.YesRole)
+                            retry_msgbox.addButton(_('Cancel the operation'),
+                                QMessageBox.NoRole)
+                            retry_msgbox.setIcon(QMessageBox.Critical)
+                
+                            if retry_msgbox.exec() == 1:
+                                self.deleting = False
+                                self.stop()
+                                break
+                    
                     self.deleting = False
                     self.delete_completed = True
                     self.stop()
