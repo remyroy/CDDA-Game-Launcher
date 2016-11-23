@@ -872,16 +872,19 @@ class GameDirGroupBox(QGroupBox):
         self.dir_combo.setEnabled(False)
         self.dir_change_button.setEnabled(False)
 
-        self.previous_lgb_enabled = self.launch_game_button.isEnabled()
         self.launch_game_button.setEnabled(False)
-        self.previous_rb_enabled = self.restore_button.isEnabled()
         self.restore_button.setEnabled(False)
 
     def enable_controls(self):
         self.dir_combo.setEnabled(True)
         self.dir_change_button.setEnabled(True)
-        self.launch_game_button.setEnabled(self.previous_lgb_enabled)
-        self.restore_button.setEnabled(self.previous_rb_enabled)
+        
+        self.launch_game_button.setEnabled(
+            self.exe_path is not None and os.path.isfile(self.exe_path))
+        
+        directory = self.dir_combo.currentText()
+        previous_version_dir = os.path.join(directory, 'previous_version')
+        self.restore_button.setEnabled(os.path.isdir(previous_version_dir))
 
     def restore_previous(self):
         self.disable_controls()
@@ -1557,10 +1560,6 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         self.previous_exe_path = self.exe_path
         self.exe_path = None
 
-        # Check for previous version
-        previous_version_dir = os.path.join(game_dir, 'previous_version')
-        self.previous_rb_enabled = os.path.isdir(previous_version_dir)
-
         console_exe = os.path.join(game_dir, 'cataclysm.exe')
         tiles_exe = os.path.join(game_dir, 'cataclysm-tiles.exe')
 
@@ -1692,11 +1691,6 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
             timer.timeout.connect(timeout)
             timer.start(0)
-
-        if self.exe_path is None:
-            self.previous_lgb_enabled = False
-        else:
-            self.previous_lgb_enabled = True
 
 
 class UpdateGroupBox(QGroupBox):
@@ -2571,7 +2565,7 @@ class UpdateGroupBox(QGroupBox):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
-        # Copy custom tilesets, mods and soundpack from previous version
+        # Copy custom tilesets and soundpack from previous version
         # tilesets
         tilesets_dir = os.path.join(self.game_dir, 'gfx')
         previous_tilesets_dir = os.path.join(self.game_dir, 'previous_version',
@@ -2693,6 +2687,7 @@ class UpdateGroupBox(QGroupBox):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
+        # Copy custom mods from previous version
         # mods
         mods_dir = os.path.join(self.game_dir, 'data', 'mods')
         previous_mods_dir = os.path.join(self.game_dir, 'previous_version',
@@ -2770,6 +2765,31 @@ class UpdateGroupBox(QGroupBox):
         if not self.in_post_extraction:
             return
 
+        self.in_post_extraction = False
+        
+        if config_true(get_config_value('remove_previous_version', 'False')):
+            self.remove_previous_version()
+        else:
+            self.after_updating_message()
+            self.finish_updating()
+
+    def remove_previous_version(self):
+        previous_version_dir = os.path.join(self.game_dir, 'previous_version')
+        
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+        
+        status_bar.showMessage(_('Deleting previous_version directory'))
+        
+        retry_rmtree(previous_version_dir)
+        
+        self.after_updating_message()
+        self.finish_updating()
+
+    def after_updating_message(self):
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+        
         main_tab = self.get_main_tab()
         game_dir_group_box = main_tab.game_dir_group_box
 
@@ -2791,10 +2811,6 @@ class UpdateGroupBox(QGroupBox):
             else:
                 message = message + _('There is a new update available')
             status_bar.showMessage(message)
-
-        self.in_post_extraction = False
-
-        self.finish_updating()
 
     def finish_updating(self):
         self.updating = False
@@ -3538,6 +3554,15 @@ class UpdateSettingsGroupBox(QGroupBox):
         layout.addWidget(arb_group, 2, 0, 1, 3)
         self.arb_group = arb_group
         self.arb_layout = arb_layout
+        
+        remove_previous_version_checkbox = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'remove_previous_version', 'False')) else Qt.Unchecked)
+        remove_previous_version_checkbox.setCheckState(check_state)
+        remove_previous_version_checkbox.stateChanged.connect(self.rpvc_changed)
+        layout.addWidget(remove_previous_version_checkbox, 3, 0, 1, 3)
+        self.remove_previous_version_checkbox = (
+            remove_previous_version_checkbox)
 
         self.setLayout(layout)
         self.set_text()
@@ -3556,6 +3581,8 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.auto_refresh_builds_checkbox.setText(
             _('Automatically refresh builds list every'))
         self.arb_min_label.setText(_('minutes'))
+        self.remove_previous_version_checkbox.setText(_(
+            'Remove previous version after update (not recommended)'))
         self.setTitle(_('Update/Installation'))
 
     def get_settings_tab(self):
@@ -3595,6 +3622,9 @@ class UpdateSettingsGroupBox(QGroupBox):
                 saves_warning_label.show()
             else:
                 saves_warning_label.hide()
+
+    def rpvc_changed(self, state):
+        set_config_value('remove_previous_version', str(state != Qt.Unchecked))
 
     def kacc_changed(self, state):
         set_config_value('keep_archive_copy', str(state != Qt.Unchecked))
