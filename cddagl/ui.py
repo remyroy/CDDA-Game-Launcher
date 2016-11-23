@@ -2490,8 +2490,27 @@ class UpdateGroupBox(QGroupBox):
                 self.extracting_label.setText(_('Extracting {0}').format(
                     extracting_element.filename))
                 
-                self.extracting_zipfile.extract(extracting_element,
-                    self.game_dir)
+                try:
+                    self.extracting_zipfile.extract(extracting_element,
+                        self.game_dir)
+                except OSError as e:
+                    # Display the error and stop the update process
+                    error_msgbox = QMessageBox()
+                    error_msgbox.setWindowTitle(
+                        _('Cannot extract game archive'))
+                    
+                    text = _('''
+<p>The launcher failed to extract the game archive.</p>
+<p>It received the following error from the operating system: {error}</p>'''
+                        ).format(error=html.escape(e.strerror))
+        
+                    error_msgbox.setText(text)
+                    error_msgbox.addButton(_('OK'), QMessageBox.YesRole)
+                    error_msgbox.setIcon(QMessageBox.Critical)
+        
+                    error_msgbox.exec()
+                    
+                    self.update_game()
 
                 self.extracting_index += 1
 
