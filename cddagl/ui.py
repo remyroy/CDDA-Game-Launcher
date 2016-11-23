@@ -2295,7 +2295,10 @@ class UpdateGroupBox(QGroupBox):
                 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
-                        status_bar.showMessage(_('Update cancelled'))
+                        status_bar.showMessage(_('Update cancelled - Your '
+                        'previous_version directory is most likely unusable '
+                        'now. Restoring your previous version will most likely '
+                        'give you a broken game.'))
                 else:
                     if status_bar.busy == 0:
                         status_bar.showMessage(_('Installation cancelled'))
