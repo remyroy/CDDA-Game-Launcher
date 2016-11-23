@@ -1701,6 +1701,7 @@ class UpdateGroupBox(QGroupBox):
         self.updating = False
         self.close_after_update = False
         self.builds = []
+        self.progress_rmtree = None
         self.progress_copy = None
 
         self.qnam = QNetworkAccessManager()
@@ -1844,6 +1845,7 @@ class UpdateGroupBox(QGroupBox):
         if not self.updating:
             self.updating = True
             self.download_aborted = False
+            self.clearing_previous_dir = False
             self.backing_up_game = False
             self.extracting_new_build = False
             self.analysing_new_build = False
@@ -1947,6 +1949,8 @@ class UpdateGroupBox(QGroupBox):
                 else:
                     if status_bar.busy == 0:
                         status_bar.showMessage(_('Installation cancelled'))
+            elif self.clearing_previous_dir:
+                self.progress_rmtree.stop()
             elif self.backing_up_game:
                 self.backup_timer.stop()
 
@@ -2237,7 +2241,7 @@ class UpdateGroupBox(QGroupBox):
                 self.test_thread = None
 
                 status_bar.clearMessage()
-                self.backup_current_game()
+                self.clear_previous_dir()
 
             def invalid():
                 self.test_thread = None
@@ -2267,7 +2271,45 @@ class UpdateGroupBox(QGroupBox):
 
             self.test_thread = test_thread
 
+    def clear_previous_dir(self):
+        self.clearing_previous_dir = True
+        
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
+        
+        game_dir = game_dir_group_box.dir_combo.currentText()
+        self.game_dir = game_dir
+
+        backup_dir = os.path.join(game_dir, 'previous_version')
+        if os.path.isdir(backup_dir):
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+            
+            progress_rmtree = ProgressRmTree(backup_dir, status_bar,
+                _('previous_version directory'))
+                
+            def rmtree_aborted():
+                main_tab = self.get_main_tab()
+                game_dir_group_box = main_tab.game_dir_group_box
+                
+                if game_dir_group_box.exe_path is not None:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage(_('Update cancelled'))
+                else:
+                    if status_bar.busy == 0:
+                        status_bar.showMessage(_('Installation cancelled'))
+
+                self.finish_updating()
+                
+            progress_rmtree.completed.connect(self.backup_current_game)
+            progress_rmtree.aborted.connect(rmtree_aborted)
+            self.progress_rmtree = progress_rmtree
+            progress_rmtree.start()
+        else:
+            self.backup_current_game()
+
     def backup_current_game(self):
+        self.clearing_previous_dir = False
         self.backing_up_game = True
 
         main_tab = self.get_main_tab()
@@ -2278,23 +2320,8 @@ class UpdateGroupBox(QGroupBox):
 
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
-
+        
         backup_dir = os.path.join(game_dir, 'previous_version')
-        if os.path.isdir(backup_dir):
-            status_bar.showMessage(_('Deleting previous_version directory'))
-            if not retry_rmtree(backup_dir):
-                self.backing_up_game = False
-
-                if game_dir_group_box.exe_path is not None:
-                    if status_bar.busy == 0:
-                        status_bar.showMessage(_('Update cancelled'))
-                else:
-                    if status_bar.busy == 0:
-                        status_bar.showMessage(_('Installation cancelled'))
-
-                self.finish_updating()
-                return
-            status_bar.clearMessage()
 
         dir_list = os.listdir(game_dir)
         self.backup_dir_list = dir_list
@@ -7525,7 +7552,190 @@ class CataWindow(QWidget):
         rect = QRect(x, y, self.fontwidth, self.fontheight)
 
         painter.fillRect(rect, Qt.green)
+
+
+# Recursively delete an entire directory tree while showing progress in a
+# status bar. Also display a dialog to retry the delete if there is a problem.
+class ProgressRmTree(QTimer):
+    completed = pyqtSignal()
+    aborted = pyqtSignal()
+
+    def __init__(self, src, status_bar, name):
+        if not os.path.isdir(src):
+            raise OSError(_("Source path '%s' is not a directory") % src)
+        
+        super(ProgressRmTree, self).__init__()
+        
+        self.src = src
+        
+        self.status_bar = status_bar
+        self.name = name
+        
+        self.started = False
+        
+        self.status_label = None
+        self.progress_bar = None
+        
+        self.analysing = False
+        self.deleting = False
+        self.delete_completed = False
+    
+    def step(self):
+        if self.analysing:
+            if self.current_scan is None:
+                self.current_scan = scandir(self.src)
+            else:
+                try:
+                    entry = next(self.current_scan)
+                    self.source_entries.append(entry)
+                    if entry.is_dir():
+                        self.next_scans.append(entry.path)
+                    elif entry.is_file():
+                        self.total_files += 1
+
+                        files_text = ngettext('file', 'files', self.total_files)
+
+                        self.status_label.setText(_('Analysing {name} - Found '
+                            '{file_count} {files}').format(
+                                name=self.name,
+                                file_count=self.total_files,
+                                files=files_text))
+
+                except StopIteration:
+                    if len(self.next_scans) > 0:
+                        self.current_scan = scandir(self.next_scans.popleft())
+                    else:
+                        self.analysing = False
+
+                        if len(self.source_entries) > 0:
+                            self.deleting = True
+
+                            progress_bar = QProgressBar()
+                            progress_bar.setRange(0, self.total_files)
+                            progress_bar.setValue(0)
+                            self.status_bar.addWidget(progress_bar)
+                            self.progress_bar = progress_bar
+
+                            self.deleted_files = 0
+                            self.current_entry = None
+                        else:
+                            self.delete_completed = True
+                            self.stop()
+        
+        elif self.deleting:
+            if self.current_entry is None:
+                if len(self.source_entries) > 0:
+                    self.current_entry = self.source_entries.pop()
+                    self.display_entry(self.current_entry)
+                else:
+                    self.deleting = False
+                    self.delete_completed = True
+                    self.stop()
+            else:
+                while os.path.exists(self.current_entry.path):
+                    try:
+                        if self.current_entry.is_dir():
+                            try:
+                                os.rmdir(self.current_entry.path)
+                            except OSError:
+                                # Remove read-only and try again
+                                os.chmod(self.current_entry.path, stat.S_IWRITE)
+                                os.rmdir(self.current_entry.path)
+                        elif self.current_entry.is_file():
+                            try:
+                                os.unlink(self.current_entry.path)
+                            except OSError:
+                                # Remove read-only and try again
+                                os.chmod(self.current_entry.path, stat.S_IWRITE)
+                                os.unlink(self.current_entry.path)
+                    except OSError as e:
+                        retry_msgbox = QMessageBox()
+                        retry_msgbox.setWindowTitle(
+                            _('Cannot remove directory'))
             
+                        process = None
+                        if e.filename is not None:
+                            process = find_process_with_file_handle(e.filename)
+            
+                        text = _('''
+<p>The launcher failed to remove the following directory: {directory}</p>
+<p>When trying to remove or access {filename}, the launcher raised the 
+following error: {error}</p>''').format(
+                            directory=html.escape(self.src),
+                            filename=html.escape(e.filename),
+                            error=html.escape(e.strerror))
+            
+                        if process is None:
+                            text = text + _('''
+<p>No process seems to be using that file or directory.</p>''')
+                        else:
+                            text = text + _('''
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+that file or directory. You might need to end it if you want to retry.</p>'''
+                            ).format(image_file_name=process['image_file_name'],
+                                pid=process['pid'])
+            
+                        retry_msgbox.setText(text)
+                        retry_msgbox.setInformativeText(_('Do you want to '
+                            'retry removing this directory?'))
+                        retry_msgbox.addButton(
+                            _('Retry removing the directory'),
+                            QMessageBox.YesRole)
+                        retry_msgbox.addButton(_('Cancel the operation'),
+                            QMessageBox.NoRole)
+                        retry_msgbox.setIcon(QMessageBox.Critical)
+            
+                        if retry_msgbox.exec() == 1:
+                            self.deleting = False
+                            self.stop()
+                            break
+                
+                self.current_entry = None
+                self.deleted_files += 1
+                
+                self.progress_bar.setValue(self.deleted_files)
+    def display_entry(self, entry):
+        if self.status_label is not None:
+            entry_rel_path = os.path.relpath(entry.path, self.src)
+            self.status_label.setText(
+                _('Deleting {name} - {entry}').format(name=self.name,
+                    entry=entry_rel_path))
+
+    def start(self):
+        self.started = True
+        self.status_bar.clearMessage()
+        self.status_bar.busy += 1
+
+        self.analysing = True
+        status_label = QLabel()
+        status_label.setText(_('Analysing {name}').format(name=self.name))
+        self.status_bar.addWidget(status_label, 100)
+        self.status_label = status_label
+
+        self.total_files = 0
+
+        self.timeout.connect(self.step)
+
+        self.current_scan = None
+        self.next_scans = deque()
+        self.source_entries = deque()
+
+        super(ProgressRmTree, self).start(0)
+
+    def stop(self):
+        super(ProgressRmTree, self).stop()
+
+        if self.started:
+            self.status_bar.busy -= 1
+            if self.status_label is not None:
+                self.status_bar.removeWidget(self.status_label)
+            if self.progress_bar is not None:
+                self.status_bar.removeWidget(self.progress_bar)
+
+        if self.delete_completed:
+            self.completed.emit()
+        else:
+            self.aborted.emit()
 
 # Recursively copy an entire directory tree while showing progress in a
 # status bar.
