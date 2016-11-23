@@ -1950,7 +1950,8 @@ class UpdateGroupBox(QGroupBox):
                     if status_bar.busy == 0:
                         status_bar.showMessage(_('Installation cancelled'))
             elif self.clearing_previous_dir:
-                self.progress_rmtree.stop()
+                if self.progress_rmtree is not None:
+                    self.progress_rmtree.stop()
             elif self.backing_up_game:
                 self.backup_timer.stop()
 
@@ -2310,6 +2311,8 @@ class UpdateGroupBox(QGroupBox):
 
     def backup_current_game(self):
         self.clearing_previous_dir = False
+        self.progress_rmtree = None
+        
         self.backing_up_game = True
 
         main_tab = self.get_main_tab()
