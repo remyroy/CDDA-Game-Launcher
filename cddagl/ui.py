@@ -2574,8 +2574,8 @@ class UpdateGroupBox(QGroupBox):
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
 
-                progress_copy = ProgressCopyTree(src_path, dst_path, status_bar,
-                    _('{0} directory').format(next_dir))
+                progress_copy = ProgressCopyTree(src_path, dst_path, None,
+                    status_bar, _('{0} directory').format(next_dir))
                 progress_copy.completed.connect(self.copy_next_dir)
                 self.progress_copy = progress_copy
                 progress_copy.start()
@@ -2716,8 +2716,8 @@ class UpdateGroupBox(QGroupBox):
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
 
-                progress_copy = ProgressCopyTree(src_path, dst_path, status_bar,
-                    _('{name} soundpack').format(name=next_item))
+                progress_copy = ProgressCopyTree(src_path, dst_path, None,
+                    status_bar, _('{name} soundpack').format(name=next_item))
                 progress_copy.completed.connect(self.copy_next_soundpack)
                 self.progress_copy = progress_copy
                 progress_copy.start()
@@ -7823,12 +7823,12 @@ that file or directory. You might need to end it if you want to retry.</p>'''
             self.aborted.emit()
 
 # Recursively copy an entire directory tree while showing progress in a
-# status bar.
+# status bar. Optionally skip files or directories.
 class ProgressCopyTree(QTimer):
     completed = pyqtSignal()
     aborted = pyqtSignal()
 
-    def __init__(self, src, dst, status_bar, name):
+    def __init__(self, src, dst, skips, status_bar, name):
         if not os.path.isdir(src):
             raise OSError(_("Source path '%s' is not a directory") % src)
         if os.path.exists(dst):
@@ -7838,6 +7838,7 @@ class ProgressCopyTree(QTimer):
 
         self.src = src
         self.dst = dst
+        self.skips = skips
 
         self.status_bar = status_bar
         self.name = name
@@ -7864,21 +7865,23 @@ class ProgressCopyTree(QTimer):
             else:
                 try:
                     entry = next(self.current_scan)
-                    self.source_entries.append(entry)
-                    if entry.is_dir():
-                        self.next_scans.append(entry.path)
-                    elif entry.is_file():
-                        self.total_files += 1
-                        self.total_copy_size += entry.stat().st_size
+                    if self.skips is None or entry.path not in self.skips:
+                        self.source_entries.append(entry)
+                        if entry.is_dir():
+                            self.next_scans.append(entry.path)
+                        elif entry.is_file():
+                            self.total_files += 1
+                            self.total_copy_size += entry.stat().st_size
 
-                        files_text = ngettext('file', 'files', self.total_files)
+                            files_text = ngettext('file', 'files',
+                                self.total_files)
 
-                        self.status_label.setText(_('Analysing {name} - Found '
-                            '{file_count} {files} ({size})').format(
-                                name=self.name,
-                                file_count=self.total_files,
-                                files=files_text,
-                                size=sizeof_fmt(self.total_copy_size)))
+                            self.status_label.setText(_('Analysing {name} - '
+                                'Found {file_count} {files} ({size})').format(
+                                    name=self.name,
+                                    file_count=self.total_files,
+                                    files=files_text,
+                                    size=sizeof_fmt(self.total_copy_size)))
 
                 except StopIteration:
                     if len(self.next_scans) > 0:
