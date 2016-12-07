@@ -1243,6 +1243,9 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             set_config_value('game_directory', directory)
 
     def update_version(self):
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+        
         if (self.exe_reading_timer is not None
             and self.exe_reading_timer.isActive()):
             self.exe_reading_timer.stop()
@@ -1253,11 +1256,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
             status_bar.busy -= 1
 
-        main_window = self.get_main_window()
-
-        status_bar = main_window.statusBar()
         status_bar.clearMessage()
-
         status_bar.busy += 1
 
         reading_label = QLabel()
