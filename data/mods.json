@@ -43,13 +43,13 @@
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10667.0"
     },
     {
-        "type": "browser_download",
+        "type": "direct_download",
         "ident": "NM_wpns",
         "name": "Nimian Manufacture Guns",
         "description": "A new set of guns, light and accurate, as well as some other toys.",
         "author": "...",
         "size": 9625,
-        "url": "https://drive.google.com/file/d/0BymjOrrNny5BdTk4NUNoNUFkcG8/view?usp=sharing",
+        "url": "https://docs.google.com/uc?id=0BymjOrrNny5BdTk4NUNoNUFkcG8&export=download",
         "expected_filename": "Nimian_Manufacture.7z",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10755.msg260995#msg260995"
     },
