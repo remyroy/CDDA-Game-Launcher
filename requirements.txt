@@ -12,3 +12,4 @@ pylzma
 Babel
 pywin32
 pypiwin32
+rfc6266

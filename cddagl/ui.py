@@ -32,6 +32,8 @@ from babel.dates import format_datetime
 from io import BytesIO, StringIO
 from collections import deque
 
+from rfc6266 import parse_headers as parse_cd_headers
+
 import html5lib
 from lxml import etree
 from urllib.parse import urljoin, urlencode
@@ -6668,15 +6670,16 @@ class ModsTab(QTabWidget):
                         'newmod-{0}'.format(
                         '%08x' % random.randrange(16**8)))
                 os.makedirs(download_dir)
+                self.download_dir = download_dir
 
                 download_url = selected_info['url']
                 
                 url = QUrl(download_url)
                 file_info = QFileInfo(url.path())
                 file_name = file_info.fileName()
-
-                self.downloaded_file = os.path.join(download_dir, file_name)
-                self.downloading_file = open(self.downloaded_file, 'wb')
+                self.downloaded_file = os.path.join(self.download_dir,
+                    file_name)
+                self.download_first_ready = True
 
                 main_window = self.get_main_window()
 
@@ -6843,7 +6846,7 @@ class ModsTab(QTabWidget):
 
     def download_http_finished(self):
         self.downloading_file.close()
-
+        
         main_window = self.get_main_window()
 
         status_bar = main_window.statusBar()
@@ -6863,12 +6866,9 @@ class ModsTab(QTabWidget):
             redirect = self.download_http_reply.attribute(
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
-                download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
-                os.makedirs(download_dir)
-
-                self.downloading_file = open(self.downloaded_file, 'wb')
-
+                retry_rmtree(self.download_dir)
+                os.makedirs(self.download_dir)
+                
                 status_bar.busy += 1
 
                 downloading_label = QLabel()
@@ -6895,6 +6895,8 @@ class ModsTab(QTabWidget):
                 self.download_speed_count = 0
 
                 progress_bar.setValue(0)
+                
+                self.download_first_ready = True
 
                 request = QNetworkRequest(redirect)
                 request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
@@ -6978,7 +6980,30 @@ class ModsTab(QTabWidget):
             self.get_main_window().close()
 
     def download_http_ready_read(self):
-        self.downloading_file.write(self.download_http_reply.readAll())
+        if self.download_first_ready:
+            self.download_first_ready = False
+            
+            # Inspect headers for file name
+            header_pairs = self.download_http_reply.rawHeaderPairs()
+        
+            for pair in header_pairs:
+                header_name = pair[0].data().decode('iso-8859-1', 'ignore')
+                if header_name.lower() == 'content-disposition':
+                    parsed_cd = parse_cd_headers(pair[1].data())
+                    extension = os.path.splitext(parsed_cd.filename_unsafe)[1]
+                    if extension.startswith('.'):
+                        extension = extension[1:]
+                    file_name = parsed_cd.filename_sanitized(extension)
+                    self.downloaded_file = os.path.join(self.download_dir,
+                        file_name)
+            
+            self.downloading_file = open(self.downloaded_file, 'wb')
+        
+        while True:
+            data = self.download_http_reply.read(READ_BUFFER_SIZE)
+            if not data:
+                break
+            self.downloading_file.write(data)
 
     def download_dl_progress(self, bytes_read, total_bytes):
         self.downloading_progress_bar.setMaximum(total_bytes)
