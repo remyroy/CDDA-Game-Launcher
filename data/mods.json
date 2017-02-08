@@ -50,7 +50,6 @@
         "author": "...",
         "size": 9625,
         "url": "https://docs.google.com/uc?id=0BymjOrrNny5BdTk4NUNoNUFkcG8&export=download",
-        "expected_filename": "Nimian_Manufacture.7z",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=10755.msg260995#msg260995"
     },
     {
@@ -96,17 +95,6 @@
         "url": "https://1drv.ms/u/s!Ajb7I9_jqo4TgUv0lDQfCskI_C0K",
         "expected_filename": "nocs_cata_mod-master.zip",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11248.0"
-    },
-    {
-        "type": "direct_download",
-        "ident": "OvermapRebalance",
-        "name": "Overmap Rebalancing",
-        "author": "Leon",
-        "description": "Reduces occurrence of most locations and introduces new buildings. CREDITS to GovTD, Lanceo90 and DinoCat for there excellent mods, which I included herein.",
-        "category": "rebalance",
-        "size": 975137,
-        "url": "https://www.dropbox.com/s/44phhdrghhgnh77/Overmap_Rebalancing.zip?dl=1",
-        "homepage": "http://smf.cataclysmdda.com/index.php?topic=12455.0"
     },
     {
         "type": "direct_download",
