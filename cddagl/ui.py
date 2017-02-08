@@ -1024,7 +1024,7 @@ class GameDirGroupBox(QGroupBox):
 block its execution. A simple workaround is to add the game binary in your
 antivirus whitelist or select the action to trust this binary when detected.</p>
 ''').format(
-    filename=html.escape(e.filename),
+    filename=html.escape(e.filename or _('[unknown]')),
     error=html.escape(e.strerror))
 
             error_msgbox.setText(text)
