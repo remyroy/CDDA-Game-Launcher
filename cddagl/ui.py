@@ -6680,6 +6680,7 @@ class ModsTab(QTabWidget):
                 self.downloaded_file = os.path.join(self.download_dir,
                     file_name)
                 self.download_first_ready = True
+                self.downloading_file = None
 
                 main_window = self.get_main_window()
 
@@ -6845,7 +6846,8 @@ class ModsTab(QTabWidget):
             self.finish_install_new_mod()
 
     def download_http_finished(self):
-        self.downloading_file.close()
+        if self.downloading_file is not None:
+            self.downloading_file.close()
         
         main_window = self.get_main_window()
 
@@ -6897,6 +6899,7 @@ class ModsTab(QTabWidget):
                 progress_bar.setValue(0)
                 
                 self.download_first_ready = True
+                self.downloading_file = None
 
                 request = QNetworkRequest(redirect)
                 request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
