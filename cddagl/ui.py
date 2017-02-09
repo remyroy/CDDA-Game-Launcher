@@ -6860,8 +6860,7 @@ class ModsTab(QTabWidget):
         status_bar.busy -= 1
 
         if self.download_aborted:
-            download_dir = os.path.dirname(self.downloaded_file)
-            retry_rmtree(download_dir)
+            retry_rmtree(self.download_dir)
 
             self.downloading_new_mod = False
         else:
@@ -6912,8 +6911,16 @@ class ModsTab(QTabWidget):
                 self.download_http_reply.downloadProgress.connect(
                     self.download_dl_progress)
             else:
-                # Test downloaded file
+                if not os.path.exists(self.downloaded_file):
+                    status_bar.clearMessage()
+                    status_bar.showMessage(
+                        _('Could not find downloaded archive ({file})'
+                        ).format(file=self.downloaded_file))
 
+                    self.finish_install_new_mod()
+                    return
+
+                # Test downloaded file
                 status_bar.showMessage(_('Testing downloaded file archive'))
 
                 if self.downloaded_file.lower().endswith('.7z'):
@@ -6943,6 +6950,15 @@ class ModsTab(QTabWidget):
                         archive_class = rarfile.RarFile
                         archive_exception = rarfile.Error
                         test_method = 'testrar'
+                    else:
+                        extension = os.path.splitext(self.downloaded_file)[1]
+                        status_bar.clearMessage()
+                        status_bar.showMessage(
+                            _('Unknown downloaded archive format ({extension})'
+                            ).format(extension=extension))
+
+                        self.finish_install_new_mod()
+                        return
 
                     try:
                         with archive_class(self.downloaded_file) as z:
