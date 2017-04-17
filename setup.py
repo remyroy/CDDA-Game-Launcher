@@ -30,18 +30,19 @@ class Installer(Command):
             ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
 
         # Let's find and add unrar if available
-        try:
-            unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
-                'utf8')
-            added_files.append((unrar_path, '.'))
-        except CalledProcessError:
-            pass
+        if os.name == 'nt':
+            try:
+                unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
+                    'utf8')
+                added_files.append((unrar_path, '.'))
+            except CalledProcessError:
+                pass
 
         # Add mo files for localization
         locale_dir = os.path.join('cddagl', 'locale')
 
-        call('python setup.py compile_catalog -D cddagl -d {locale_dir}'.format(
-            locale_dir=locale_dir))
+        call([python, 'setup.py', 'compile_catalog','-D',
+            'cddagl', '-d', 'locale_dir'])
         
         if os.path.isdir(locale_dir):
             for entry in scandir(locale_dir):
@@ -75,11 +76,11 @@ class ExtractUpdateMessages(Command):
         pass
 
     def run(self):
-        call('python setup.py extract_messages -o cddagl\locale\messages.pot '
-            '-F cddagl\locale\mapping.cfg')
+        call([python, 'setup.py', 'extract_messages', '-o', os.path.join('cddagl', 'locale', 'messages.pot'),
+            '-F', os.path.join('cddagl', 'locale', 'mapping.cfg')])
 
-        call('python setup.py update_catalog -i cddagl\locale\messages.pot -d '
-            'cddagl\locale -D cddagl')
+        call([python, 'setup.py', 'update_catalog', '-i', os.path.join('cddagl', 'locale', 'messages.pot'),
+            '-d', os.path.join('cddagl', 'locale'), '-D', 'cddagl'])
 
 
 setup(name='cddagl',

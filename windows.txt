@@ -1,0 +1,4 @@
+-r requirements.txt
+
+pywin32
+pypiwin32
