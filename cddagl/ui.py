@@ -97,8 +97,7 @@ SAVES_WARNING_SIZE = 150 * 1024 * 1024
 RELEASES_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/releases'
 NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
 
-CHANGELOG_URL = ('http://ci.narc.ro/view/Cataclysm-DDA/job/Cataclysm-Matrix'
-    '/changes')
+CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/changes'
 ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
 
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
