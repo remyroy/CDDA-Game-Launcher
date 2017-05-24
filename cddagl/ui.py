@@ -168,7 +168,7 @@ def retry_rmtree(path):
 
             text = _('''
 <p>The launcher failed to remove the following directory: {directory}</p>
-<p>When trying to remove or access {filename}, the launcher raised the 
+<p>When trying to remove or access {filename}, the launcher raised the
 following error: {error}</p>
 ''').format(
     directory=html.escape(path),
@@ -181,7 +181,7 @@ following error: {error}</p>
 ''')
             else:
                 text = text + _('''
-<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using
 that file or directory. You might need to end it if you want to retry.</p>
 ''').format(image_file_name=process['image_file_name'], pid=process['pid'])
 
@@ -213,7 +213,7 @@ def retry_delfile(path):
 
             text = _('''
 <p>The launcher failed to delete the following file: {path}</p>
-<p>When trying to remove or access {filename}, the launcher raised the 
+<p>When trying to remove or access {filename}, the launcher raised the
 following error: {error}</p>
 ''').format(
     path=html.escape(path),
@@ -226,7 +226,7 @@ following error: {error}</p>
 ''')
             else:
                 text = text + _('''
-<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using
 that file. You might need to end it if you want to retry.</p>
 ''').format(image_file_name=process['image_file_name'], pid=process['pid'])
 
@@ -258,7 +258,7 @@ def retry_rename(src, dst):
 
             text = _('''
 <p>The launcher failed to rename the following file: {src} to {dst}</p>
-<p>When trying to rename or access {filename}, the launcher raised the 
+<p>When trying to rename or access {filename}, the launcher raised the
 following error: {error}</p>
 ''').format(
     src=html.escape(src),
@@ -272,7 +272,7 @@ following error: {error}</p>
 ''')
             else:
                 text = text + _('''
-<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using
 that file. You might need to end it if you want to retry.</p>
 ''').format(image_file_name=process['image_file_name'], pid=process['pid'])
 
@@ -296,7 +296,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setMinimumSize(440, 540)
-        
+
         self.create_status_bar()
         self.create_central_widget()
         self.create_menu()
@@ -372,7 +372,7 @@ class MainWindow(QMainWindow):
             about_dialog = AboutDialog(self, Qt.WindowTitleHint |
                 Qt.WindowCloseButtonHint)
             self.about_dialog = about_dialog
-        
+
         self.about_dialog.exec()
 
     def check_new_launcher_version(self):
@@ -762,7 +762,7 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(dir_change_button, 0, 2)
         self.dir_change_button = dir_change_button
 
-        version_label = QLabel()       
+        version_label = QLabel()
         layout.addWidget(version_label, 1, 0, Qt.AlignRight)
         self.version_label = version_label
 
@@ -799,7 +799,7 @@ class GameDirGroupBox(QGroupBox):
         self.saves_warning_label = saves_warning_label
 
         launch_game_button = QPushButton()
-        
+
         launch_game_button.setEnabled(False)
         launch_game_button.setStyleSheet("font-size: 20px;")
         launch_game_button.clicked.connect(self.launch_game)
@@ -880,10 +880,10 @@ class GameDirGroupBox(QGroupBox):
     def enable_controls(self):
         self.dir_combo.setEnabled(True)
         self.dir_change_button.setEnabled(True)
-        
+
         self.launch_game_button.setEnabled(
             self.exe_path is not None and os.path.isfile(self.exe_path))
-        
+
         directory = self.dir_combo.currentText()
         previous_version_dir = os.path.join(directory, 'previous_version')
         self.restore_button.setEnabled(os.path.isdir(previous_version_dir))
@@ -991,10 +991,10 @@ class GameDirGroupBox(QGroupBox):
             status_bar = main_window.statusBar()
 
             status_bar.showMessage(_('Game executable not found'))
-            
+
             self.launch_game_button.setEnabled(False)
             return
-        
+
         self.get_main_window().setWindowState(Qt.WindowMinimized)
         exe_dir = os.path.dirname(self.exe_path)
 
@@ -1011,12 +1011,12 @@ class GameDirGroupBox(QGroupBox):
         except OSError as e:
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
-            
+
             status_bar.showMessage(_('Could not launch the game executable'))
-            
+
             error_msgbox = QMessageBox()
             error_msgbox.setWindowTitle(_('Cannot launch game'))
-            
+
             text = _('''
 <p>The launcher failed to start the game executable in <strong>{filename}</strong> .</p>
 <p>It received the following error from the operating system: {error}</p>
@@ -1033,7 +1033,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
             error_msgbox.exec()
             return
-            
+
         self.game_process = game_process
         self.game_started = True
 
@@ -1063,7 +1063,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
             self.launch_game_button.setText(_('Show current game'))
             self.launch_game_button.setEnabled(True)
-            
+
             class ProcessWaitThread(QThread):
                 ended = pyqtSignal()
 
@@ -1186,7 +1186,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         status_bar.clearMessage()
 
         self.exe_path = None
-        
+
         main_tab = self.get_main_tab()
         update_group_box = main_tab.update_group_box
 
@@ -1247,7 +1247,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
     def update_version(self):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
-        
+
         if (self.exe_reading_timer is not None
             and self.exe_reading_timer.isActive()):
             self.exe_reading_timer.stop()
@@ -1409,7 +1409,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
             self.launch_game_button.setText(_('Show current game'))
             self.launch_game_button.setEnabled(True)
-            
+
             class ProcessWaitThread(QThread):
                 ended = pyqtSignal()
 
@@ -1481,7 +1481,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
     def update_saves(self):
         self.game_dir = self.dir_combo.currentText()
-        
+
         if (self.update_saves_timer is not None
             and self.update_saves_timer.isActive()):
             self.update_saves_timer.stop()
@@ -1577,18 +1577,18 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             self.version_value_label.setText(_('Not a CDDA directory'))
             self.build_value_label.setText(_('Unknown'))
             self.current_build = None
-            
+
             main_tab = self.get_main_tab()
             update_group_box = main_tab.update_group_box
             update_group_box.finish_updating()
 
             self.launch_game_button.setEnabled(False)
-            
+
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
             status_bar.showMessage(_('No executable found in the downloaded '
                 'archive. You might want to restore your previous version.'))
-            
+
         else:
             if (self.exe_reading_timer is not None
                 and self.exe_reading_timer.isActive()):
@@ -1707,7 +1707,7 @@ class UpdateGroupBox(QGroupBox):
 
         self.qnam = QNetworkAccessManager()
         self.http_reply = None
-        
+
         self.changelog_http_reply = None
         self.changelog_html = None
 
@@ -1725,7 +1725,7 @@ class UpdateGroupBox(QGroupBox):
         self.tiles_radio_button = tiles_radio_button
         graphics_button_group.addButton(tiles_radio_button)
 
-        console_radio_button = QRadioButton()        
+        console_radio_button = QRadioButton()
         layout.addWidget(console_radio_button, 0, 2)
         self.console_radio_button = console_radio_button
         graphics_button_group.addButton(console_radio_button)
@@ -1775,7 +1775,7 @@ class UpdateGroupBox(QGroupBox):
         layout.addWidget(changelog_groupbox, 3, 0, 1, 4)
         self.changelog_groupbox = changelog_groupbox
         self.changelog_layout = changelog_layout
-        
+
         changelog_content = QTextBrowser()
         changelog_content.setReadOnly(True)
         changelog_content.setOpenExternalLinks(True)
@@ -1906,7 +1906,7 @@ class UpdateGroupBox(QGroupBox):
                     'CDDA Game Launcher')
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
-                
+
                 download_dir = os.path.join(temp_dir, 'newbuild')
                 while os.path.exists(download_dir):
                     download_dir = os.path.join(temp_dir, 'newbuild-{0}'.format(
@@ -1914,7 +1914,7 @@ class UpdateGroupBox(QGroupBox):
                 os.makedirs(download_dir)
 
                 download_url = self.selected_build['url']
-                
+
                 url = QUrl(download_url)
                 file_info = QFileInfo(url.path())
                 file_name = file_info.fileName()
@@ -2222,7 +2222,7 @@ class UpdateGroupBox(QGroupBox):
                 def __init__(self, downloaded_file):
                     super(TestingZipThread, self).__init__()
 
-                    self.downloaded_file = downloaded_file                    
+                    self.downloaded_file = downloaded_file
 
                 def __del__(self):
                     self.wait()
@@ -2275,10 +2275,10 @@ class UpdateGroupBox(QGroupBox):
 
     def clear_previous_dir(self):
         self.clearing_previous_dir = True
-        
+
         main_tab = self.get_main_tab()
         game_dir_group_box = main_tab.game_dir_group_box
-        
+
         game_dir = game_dir_group_box.dir_combo.currentText()
         self.game_dir = game_dir
 
@@ -2286,14 +2286,14 @@ class UpdateGroupBox(QGroupBox):
         if os.path.isdir(backup_dir):
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
-            
+
             progress_rmtree = ProgressRmTree(backup_dir, status_bar,
                 _('previous_version directory'))
-                
+
             def rmtree_aborted():
                 main_tab = self.get_main_tab()
                 game_dir_group_box = main_tab.game_dir_group_box
-                
+
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
                         status_bar.showMessage(_('Update cancelled - Your '
@@ -2305,7 +2305,7 @@ class UpdateGroupBox(QGroupBox):
                         status_bar.showMessage(_('Installation cancelled'))
 
                 self.finish_updating()
-                
+
             progress_rmtree.completed.connect(self.backup_current_game)
             progress_rmtree.aborted.connect(rmtree_aborted)
             self.progress_rmtree = progress_rmtree
@@ -2316,7 +2316,7 @@ class UpdateGroupBox(QGroupBox):
     def backup_current_game(self):
         self.clearing_previous_dir = False
         self.progress_rmtree = None
-        
+
         self.backing_up_game = True
 
         main_tab = self.get_main_tab()
@@ -2327,7 +2327,7 @@ class UpdateGroupBox(QGroupBox):
 
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
-        
+
         backup_dir = os.path.join(game_dir, 'previous_version')
 
         dir_list = os.listdir(game_dir)
@@ -2399,7 +2399,7 @@ class UpdateGroupBox(QGroupBox):
                                 backup_element), self.backup_dir)
                         except OSError as e:
                             self.backup_timer.stop()
-                            
+
                             main_window = self.get_main_window()
                             status_bar = main_window.statusBar()
 
@@ -2424,7 +2424,7 @@ class UpdateGroupBox(QGroupBox):
 
     def extract_new_build(self):
         self.extracting_new_build = True
-        
+
         z = zipfile.ZipFile(self.downloaded_file)
         self.extracting_zipfile = z
 
@@ -2490,7 +2490,7 @@ class UpdateGroupBox(QGroupBox):
                     self.extracting_index]
                 self.extracting_label.setText(_('Extracting {0}').format(
                     extracting_element.filename))
-                
+
                 try:
                     self.extracting_zipfile.extract(extracting_element,
                         self.game_dir)
@@ -2499,18 +2499,18 @@ class UpdateGroupBox(QGroupBox):
                     error_msgbox = QMessageBox()
                     error_msgbox.setWindowTitle(
                         _('Cannot extract game archive'))
-                    
+
                     text = _('''
 <p>The launcher failed to extract the game archive.</p>
 <p>It received the following error from the operating system: {error}</p>'''
                         ).format(error=html.escape(e.strerror))
-        
+
                     error_msgbox.setText(text)
                     error_msgbox.addButton(_('OK'), QMessageBox.YesRole)
                     error_msgbox.setIcon(QMessageBox.Critical)
-        
+
                     error_msgbox.exec()
-                    
+
                     self.update_game()
 
                 self.extracting_index += 1
@@ -2607,7 +2607,7 @@ class UpdateGroupBox(QGroupBox):
 
             self.previous_dirs = previous_dirs
             self.previous_version_dir = previous_version_dir
-            
+
             # Skip debug files
             previous_dirs_skips = set()
             previous_dirs_skips.add(os.path.join(previous_version_dir, 'config',
@@ -2712,7 +2712,7 @@ class UpdateGroupBox(QGroupBox):
             else:
                 status_bar.clearMessage()
                 self.post_extraction_step3()
-            
+
         else:
             self.post_extraction_step3()
 
@@ -2741,7 +2741,7 @@ class UpdateGroupBox(QGroupBox):
             status_bar.clearMessage()
 
             self.post_extraction_step3()
-    
+
     def post_extraction_step3(self):
         if not self.in_post_extraction:
             return
@@ -2828,7 +2828,7 @@ class UpdateGroupBox(QGroupBox):
             return
 
         self.in_post_extraction = False
-        
+
         if config_true(get_config_value('remove_previous_version', 'False')):
             self.remove_previous_version()
         else:
@@ -2837,19 +2837,19 @@ class UpdateGroupBox(QGroupBox):
 
     def remove_previous_version(self):
         previous_version_dir = os.path.join(self.game_dir, 'previous_version')
-        
+
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
-        
+
         progress_rmtree = ProgressRmTree(previous_version_dir, status_bar,
             _('previous_version directory'))
-        
+
         def rmtree_completed():
             self.progress_rmtree = None
-            
+
             self.after_updating_message()
             self.finish_updating()
-            
+
         progress_rmtree.completed.connect(rmtree_completed)
         progress_rmtree.aborted.connect(rmtree_completed)
         self.progress_rmtree = progress_rmtree
@@ -2858,7 +2858,7 @@ class UpdateGroupBox(QGroupBox):
     def after_updating_message(self):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
-        
+
         main_tab = self.get_main_tab()
         game_dir_group_box = main_tab.game_dir_group_box
 
@@ -2961,11 +2961,11 @@ class UpdateGroupBox(QGroupBox):
         progress_bar.setMinimum(0)
 
         self.lb_html = BytesIO()
-        
+
         request = QNetworkRequest(QUrl(url))
         request.setRawHeader(b'User-Agent',
             b'CDDA-Game-Launcher/' + version.encode('utf8'))
-        
+
         self.http_reply = self.qnam.get(request)
         self.http_reply.finished.connect(self.lb_http_finished)
         self.http_reply.readyRead.connect(self.lb_http_ready_read)
@@ -3078,7 +3078,7 @@ class UpdateGroupBox(QGroupBox):
             self.builds_combo.clear()
             self.builds_combo.addItem(_('Could not find remote builds'))
             self.builds_combo.setEnabled(False)
-    
+
         self.lb_html = None
 
     def lb_http_ready_read(self):
@@ -3106,13 +3106,13 @@ class UpdateGroupBox(QGroupBox):
 
         self.start_lb_request(url)
         self.refresh_changelog()
-        
+
     def refresh_changelog(self):
         if self.changelog_http_reply is not None:
             self.changelog_html = None
             self.changelog_http_reply.abort()
             self.changelog_http_reply = None
-            
+
         main_window = self.get_main_window()
 
         status_bar = main_window.statusBar()
@@ -3133,11 +3133,11 @@ class UpdateGroupBox(QGroupBox):
         progress_bar.setMinimum(0)
 
         self.changelog_html = BytesIO()
-        
+
         request = QNetworkRequest(QUrl(CHANGELOG_URL))
         request.setRawHeader(b'User-Agent',
             b'CDDA-Game-Launcher/' + version.encode('utf8'))
-        
+
         self.changelog_http_reply = self.qnam.get(request)
         self.changelog_http_reply.finished.connect(self.changelog_http_finished)
         self.changelog_http_reply.readyRead.connect(
@@ -3168,11 +3168,11 @@ class UpdateGroupBox(QGroupBox):
             self.changelog_html.seek(0)
             document = html5lib.parse(self.changelog_html, treebuilder='lxml',
                 default_encoding='utf8', namespaceHTMLElements=False)
-            
+
             main_panels = document.getroot().cssselect('#main-panel')
             if len(main_panels) == 1:
                 main_panel = main_panels[0]
-                
+
                 # Only keep the last 11 logs
                 h2_count = 0
                 for element in main_panel.iterchildren():
@@ -3180,17 +3180,17 @@ class UpdateGroupBox(QGroupBox):
                         h2_count += 1
                     if h2_count >= 11:
                         element.getparent().remove(element)
-                
+
                 # Remove the title
                 for h1 in main_panel.cssselect('h1'):
                     h1.getparent().remove(h1)
-                
+
                 # Transform h2 into divs
                 for h2 in main_panel.cssselect('h2'):
-                    div = etree.Element('div')                
+                    div = etree.Element('div')
                     div.extend(h2.iterchildren())
                     h2.getparent().replace(h2, div)
-                
+
                 # Remove detailed commit information
                 for li in main_panel.cssselect('li'):
                     for anchor in li.cssselect('a'):
@@ -3206,22 +3206,22 @@ class UpdateGroupBox(QGroupBox):
                             escaped_text = escaped_text.replace(issue,
                             '<a href="{root}{number}">{issue}</a>'.format(
                             root=ISSUE_URL_ROOT, number=issue[1:], issue=issue))
-                        
+
                         li.getparent().replace(li,
                             etree.fromstring('<li>' + escaped_text + '</li>'))
-                
+
                 # Use absolute path for anchors
                 for anchor in main_panel.cssselect('a'):
                     if ('href' in anchor.keys()
                         and not anchor.get('href').startswith('http')):
                         anchor.set('href', urljoin(CHANGELOG_URL,
                             anchor.get('href')))
-                
+
                 mp_content = etree.tostring(main_panel,
                     encoding='utf8', method='html').decode('utf8')
-                
+
                 self.changelog_content.setHtml(mp_content)
-        
+
         self.changelog_html = None
         self.changelog_http_reply = None
 
@@ -3288,10 +3288,10 @@ class AboutDialog(QDialog):
         self.text_content.setHtml(_('''
 <p>CDDA Game Launcher version {version}</p>
 
-<p>Get the latest release <a 
+<p>Get the latest release <a
 href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.</p>
 
-<p>Please report any issue <a 
+<p>Please report any issue <a
 href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.
 </p>
 
@@ -3302,9 +3302,9 @@ bitcoins to <a href="bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ">
 <p>Thanks to the following people for their efforts in translating the CDDA Game
 Launcher</p>
 <ul>
-<li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a> 
+<li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a>
 and Night_Pryanik</li>
-<li>Italian: Rettiliano Verace from <a 
+<li>Italian: Rettiliano Verace from <a
 href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a></li>
 <li>French: Rémy Roy</li>
 </ul>
@@ -3321,7 +3321,7 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:</p>
 
-<p>The above copyright notice and this permission notice shall be included in 
+<p>The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.</p>
 
 <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -3366,7 +3366,7 @@ class LauncherSettingsGroupBox(QGroupBox):
         locale_layout = QHBoxLayout()
         locale_layout.setContentsMargins(0, 0, 0, 0)
 
-        locale_label = QLabel()       
+        locale_label = QLabel()
         locale_layout.addWidget(locale_label)
         self.locale_label = locale_label
 
@@ -3415,7 +3415,7 @@ class LauncherSettingsGroupBox(QGroupBox):
             use_launcher_dir_checkbox.stateChanged.connect(self.uld_changed)
             layout.addWidget(use_launcher_dir_checkbox, 4, 0, 1, 2)
             self.use_launcher_dir_checkbox = use_launcher_dir_checkbox
-        
+
             no_launcher_version_check_checkbox = QCheckBox()
             check_state = (Qt.Checked if config_true(get_config_value(
                 'prevent_version_check_launch', 'False'))
@@ -3623,7 +3623,7 @@ class UpdateSettingsGroupBox(QGroupBox):
         layout.addWidget(arb_group, 2, 0, 1, 3)
         self.arb_group = arb_group
         self.arb_layout = arb_layout
-        
+
         remove_previous_version_checkbox = QCheckBox()
         check_state = (Qt.Checked if config_true(get_config_value(
             'remove_previous_version', 'False')) else Qt.Unchecked)
@@ -4207,7 +4207,7 @@ class SoundpacksTab(QTabWidget):
 
     def disable_tab(self):
         self.tab_disabled = True
-        
+
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
 
@@ -4223,7 +4223,7 @@ class SoundpacksTab(QTabWidget):
 
     def enable_tab(self):
         self.tab_disabled = False
-        
+
         installed_selection = self.installed_lv.selectionModel()
         if installed_selection is None:
             installed_selected = False
@@ -4321,7 +4321,7 @@ class SoundpacksTab(QTabWidget):
                     'CDDA Game Launcher')
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
-                
+
                 download_dir = os.path.join(temp_dir, 'newsoundpack')
                 while os.path.exists(download_dir):
                     download_dir = os.path.join(temp_dir,
@@ -4330,7 +4330,7 @@ class SoundpacksTab(QTabWidget):
                 os.makedirs(download_dir)
 
                 download_url = selected_info['url']
-                
+
                 url = QUrl(download_url)
                 file_info = QFileInfo(url.path())
                 file_name = file_info.fileName()
@@ -4397,7 +4397,7 @@ class SoundpacksTab(QTabWidget):
                     selected_info['url'], selected_info.get('expected_filename',
                         None))
                 bd_dialog.exec()
-                
+
                 if bd_dialog.downloaded_path is not None:
                     self.installing_new_soundpack = True
                     self.downloaded_file = bd_dialog.downloaded_path
@@ -4473,7 +4473,7 @@ class SoundpacksTab(QTabWidget):
 
                 if os.path.isdir(self.extract_dir):
                     retry_rmtree(self.extract_dir)
-            
+
             status_bar.showMessage(_('Soundpack installation cancelled'))
 
             self.finish_install_new_soundpack()
@@ -4619,7 +4619,7 @@ class SoundpacksTab(QTabWidget):
 
     def extract_new_soundpack(self):
         self.extracting_new_soundpack = True
-        
+
         z = zipfile.ZipFile(self.downloaded_file)
         self.extracting_zipfile = z
 
@@ -4679,7 +4679,7 @@ class SoundpacksTab(QTabWidget):
                     self.extracting_index]
                 self.extracting_label.setText(_('Extracting {0}').format(
                     extracting_element.filename))
-                
+
                 self.extracting_zipfile.extract(extracting_element,
                     self.extract_dir)
 
@@ -4828,7 +4828,7 @@ class SoundpacksTab(QTabWidget):
         if selection_model is not None and selection_model.hasSelection():
             selected = selection_model.currentIndex()
             selected_info = self.soundpacks[selected.row()]
-            
+
             self.viewname_le.setText(selected_info['VIEW'])
             self.name_le.setText(selected_info['NAME'])
             self.path_label.setText(_('Path:'))
@@ -4844,7 +4844,7 @@ class SoundpacksTab(QTabWidget):
         if not self.tab_disabled:
             self.disable_existing_button.setEnabled(True)
             self.delete_existing_button.setEnabled(True)
-        
+
         self.install_new_button.setEnabled(False)
 
         repository_selection = self.repository_lv.selectionModel()
@@ -4877,7 +4877,7 @@ class SoundpacksTab(QTabWidget):
                             and self.http_reply.isRunning()):
                             self.http_reply_aborted = True
                             self.http_reply.abort()
-                        
+
                         self.http_reply_aborted = False
                         self.size_le.setText(_('Getting remote size'))
                         self.current_repo_info = selected_info
@@ -5298,7 +5298,7 @@ class BackupsTab(QTabWidget):
         if (self.game_dir is not None and os.path.isdir(
             os.path.join(self.game_dir, 'save_backups'))):
             self.refresh_list_button.setEnabled(True)
-        
+
         if (self.game_dir is not None and os.path.isdir(
             os.path.join(self.game_dir, 'save'))):
             self.backup_current_button.setEnabled(True)
@@ -5479,7 +5479,7 @@ class BackupsTab(QTabWidget):
                         str(max_counter + 1))
                     new_backup_path = os.path.join(backup_dir,
                         new_backup_name + '.zip')
-                    
+
                     if not retry_rename(selected_info['path'], new_backup_path):
                         return
 
@@ -5618,7 +5618,7 @@ class BackupsTab(QTabWidget):
                     self.extracting_thread = extracting_thread
 
                     extracting_thread.start()
-                    
+
             except IndexError:
                 self.extracting_backup = False
                 self.extracting_thread = None
@@ -5822,7 +5822,7 @@ class BackupsTab(QTabWidget):
 
         if len(auto_backups) >= max_auto_backups:
             # Remove backups to have a total of max_auto_backups - 1
-            auto_backups.sort(key=lambda x: x['modified'])            
+            auto_backups.sort(key=lambda x: x['modified'])
             remove_count = len(auto_backups) - max_auto_backups + 1
 
             to_remove = auto_backups[:remove_count]
@@ -6047,7 +6047,7 @@ class BackupsTab(QTabWidget):
                     self.compress_thread = compress_thread
 
                     compress_thread.start()
-                    
+
             except IndexError:
                 self.backup_compressing = False
                 self.compress_thread = None
@@ -6062,7 +6062,7 @@ class BackupsTab(QTabWidget):
                     self.after_backup = None
                 else:
                     status_bar.showMessage(_('Saves backup completed'))
-                
+
                 self.update_backups_table()
 
         def completed_compress():
@@ -6135,7 +6135,7 @@ class BackupsTab(QTabWidget):
     def backups_table_selection_changed(self):
         items = self.backups_table.selectedItems()
         has_items = len(items) > 0
-        
+
         self.restore_button.setEnabled(has_items)
         self.delete_button.setEnabled(has_items)
 
@@ -6209,9 +6209,9 @@ class BackupsTab(QTabWidget):
                                     return
 
                                 uncompressed_size += info.file_size
-                                
+
                                 path_items = info.filename.split('/')
-                                
+
                                 if len(path_items) == 3:
                                     save_file = path_items[-1]
                                     if save_file.endswith('.sav'):
@@ -6347,7 +6347,7 @@ class ModsTab(QTabWidget):
         tp_layout.setContentsMargins(0, 0, 0, 0)
         self.tp_layout = tp_layout
 
-        installed_gb = QGroupBox()       
+        installed_gb = QGroupBox()
         tp_layout.addWidget(installed_gb)
         self.installed_gb = installed_gb
 
@@ -6371,7 +6371,7 @@ class ModsTab(QTabWidget):
 
         disable_existing_button = QPushButton()
         disable_existing_button.clicked.connect(self.disable_existing)
-        disable_existing_button.setEnabled(False)        
+        disable_existing_button.setEnabled(False)
         ib_layout.addWidget(disable_existing_button)
         self.disable_existing_button = disable_existing_button
 
@@ -6550,7 +6550,7 @@ class ModsTab(QTabWidget):
 
     def disable_tab(self):
         self.tab_disabled = True
-        
+
         self.disable_existing_button.setEnabled(False)
         self.delete_existing_button.setEnabled(False)
 
@@ -6566,7 +6566,7 @@ class ModsTab(QTabWidget):
 
     def enable_tab(self):
         self.tab_disabled = False
-        
+
         installed_selection = self.installed_lv.selectionModel()
         if installed_selection is None:
             installed_selected = False
@@ -6663,7 +6663,7 @@ class ModsTab(QTabWidget):
                     'CDDA Game Launcher')
                 if not os.path.exists(temp_dir):
                     os.makedirs(temp_dir)
-                
+
                 download_dir = os.path.join(temp_dir, 'newmod')
                 while os.path.exists(download_dir):
                     download_dir = os.path.join(temp_dir,
@@ -6673,7 +6673,7 @@ class ModsTab(QTabWidget):
                 self.download_dir = download_dir
 
                 download_url = selected_info['url']
-                
+
                 url = QUrl(download_url)
                 file_info = QFileInfo(url.path())
                 file_name = file_info.fileName()
@@ -6738,7 +6738,7 @@ class ModsTab(QTabWidget):
                     selected_info['url'], selected_info.get('expected_filename',
                         None))
                 bd_dialog.exec()
-                
+
                 if bd_dialog.downloaded_path is not None:
 
                     main_window = self.get_main_window()
@@ -6840,7 +6840,7 @@ class ModsTab(QTabWidget):
 
                 if os.path.isdir(self.extract_dir):
                     retry_rmtree(self.extract_dir)
-            
+
             status_bar.showMessage(_('Soundpack installation cancelled'))
 
             self.finish_install_new_mod()
@@ -6848,7 +6848,7 @@ class ModsTab(QTabWidget):
     def download_http_finished(self):
         if self.downloading_file is not None:
             self.downloading_file.close()
-        
+
         main_window = self.get_main_window()
 
         status_bar = main_window.statusBar()
@@ -6869,7 +6869,7 @@ class ModsTab(QTabWidget):
             if redirect is not None:
                 retry_rmtree(self.download_dir)
                 os.makedirs(self.download_dir)
-                
+
                 status_bar.busy += 1
 
                 downloading_label = QLabel()
@@ -6896,7 +6896,7 @@ class ModsTab(QTabWidget):
                 self.download_speed_count = 0
 
                 progress_bar.setValue(0)
-                
+
                 self.download_first_ready = True
                 self.downloading_file = None
 
@@ -7001,10 +7001,10 @@ class ModsTab(QTabWidget):
     def download_http_ready_read(self):
         if self.download_first_ready:
             self.download_first_ready = False
-            
+
             # Inspect headers for file name
             header_pairs = self.download_http_reply.rawHeaderPairs()
-        
+
             for pair in header_pairs:
                 header_name = pair[0].data().decode('iso-8859-1', 'ignore')
                 if header_name.lower() == 'content-disposition':
@@ -7015,9 +7015,9 @@ class ModsTab(QTabWidget):
                     file_name = parsed_cd.filename_sanitized(extension)
                     self.downloaded_file = os.path.join(self.download_dir,
                         file_name)
-            
+
             self.downloading_file = open(self.downloaded_file, 'wb')
-        
+
         while True:
             data = self.download_http_reply.read(READ_BUFFER_SIZE)
             if not data:
@@ -7048,7 +7048,7 @@ class ModsTab(QTabWidget):
 
     def extract_new_mod(self):
         self.extracting_new_mod = True
-        
+
         if self.downloaded_file.lower().endswith('.7z'):
             self.extracting_zipfile = open(self.downloaded_file, 'rb')
             self.extracting_archive = Archive7z(self.extracting_zipfile)
@@ -7285,7 +7285,7 @@ class ModsTab(QTabWidget):
         if selection_model is not None and selection_model.hasSelection():
             selected = selection_model.currentIndex()
             selected_info = self.mods[selected.row()]
-            
+
             self.name_le.setText(selected_info.get('name', ''))
             self.ident_le.setText(selected_info.get('ident', ''))
             self.author_le.setText(selected_info.get('author', ''))
@@ -7339,7 +7339,7 @@ class ModsTab(QTabWidget):
                             and self.http_reply.isRunning()):
                             self.http_reply_aborted = True
                             self.http_reply.abort()
-                        
+
                         self.http_reply_aborted = False
                         self.size_le.setText(_('Getting remote size'))
                         self.current_repo_info = selected_info
@@ -7647,23 +7647,23 @@ class ProgressRmTree(QTimer):
     def __init__(self, src, status_bar, name):
         if not os.path.isdir(src):
             raise OSError(_("Source path '%s' is not a directory") % src)
-        
+
         super(ProgressRmTree, self).__init__()
-        
+
         self.src = src
-        
+
         self.status_bar = status_bar
         self.name = name
-        
+
         self.started = False
-        
+
         self.status_label = None
         self.progress_bar = None
-        
+
         self.analysing = False
         self.deleting = False
         self.delete_completed = False
-    
+
     def step(self):
         if self.analysing:
             if self.current_scan is None:
@@ -7705,7 +7705,7 @@ class ProgressRmTree(QTimer):
                         else:
                             self.delete_completed = True
                             self.stop()
-        
+
         elif self.deleting:
             if self.current_entry is None:
                 if len(self.source_entries) > 0:
@@ -7725,31 +7725,31 @@ class ProgressRmTree(QTimer):
                             retry_msgbox = QMessageBox()
                             retry_msgbox.setWindowTitle(
                                 _('Cannot remove directory'))
-                
+
                             process = None
                             if e.filename is not None:
                                 process = find_process_with_file_handle(
                                     e.filename)
-                
+
                             text = _('''
 <p>The launcher failed to remove the following directory: {directory}</p>
-<p>When trying to remove or access {filename}, the launcher raised the 
+<p>When trying to remove or access {filename}, the launcher raised the
 following error: {error}</p>''').format(
                                 directory=html.escape(self.src),
                                 filename=html.escape(e.filename),
                                 error=html.escape(e.strerror))
-                
+
                             if process is None:
                                 text = text + _('''
 <p>No process seems to be using that file or directory.</p>''')
                             else:
                                 text = text + _('''
-<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using
 that file or directory. You might need to end it if you want to retry.</p>'''
                                 ).format(
                                     image_file_name=process['image_file_name'],
                                     pid=process['pid'])
-                
+
                             retry_msgbox.setText(text)
                             retry_msgbox.setInformativeText(_('Do you want to '
                                 'retry removing this directory?'))
@@ -7759,12 +7759,12 @@ that file or directory. You might need to end it if you want to retry.</p>'''
                             retry_msgbox.addButton(_('Cancel the operation'),
                                 QMessageBox.NoRole)
                             retry_msgbox.setIcon(QMessageBox.Critical)
-                
+
                             if retry_msgbox.exec() == 1:
                                 self.deleting = False
                                 self.stop()
                                 break
-                    
+
                     self.deleting = False
                     self.delete_completed = True
                     self.stop()
@@ -7789,29 +7789,29 @@ that file or directory. You might need to end it if you want to retry.</p>'''
                         retry_msgbox = QMessageBox()
                         retry_msgbox.setWindowTitle(
                             _('Cannot remove directory'))
-            
+
                         process = None
                         if e.filename is not None:
                             process = find_process_with_file_handle(e.filename)
-            
+
                         text = _('''
 <p>The launcher failed to remove the following directory: {directory}</p>
-<p>When trying to remove or access {filename}, the launcher raised the 
+<p>When trying to remove or access {filename}, the launcher raised the
 following error: {error}</p>''').format(
                             directory=html.escape(self.src),
                             filename=html.escape(e.filename),
                             error=html.escape(e.strerror))
-            
+
                         if process is None:
                             text = text + _('''
 <p>No process seems to be using that file or directory.</p>''')
                         else:
                             text = text + _('''
-<p>The process <strong>{image_file_name} ({pid})</strong> is currently using 
+<p>The process <strong>{image_file_name} ({pid})</strong> is currently using
 that file or directory. You might need to end it if you want to retry.</p>'''
                             ).format(image_file_name=process['image_file_name'],
                                 pid=process['pid'])
-            
+
                         retry_msgbox.setText(text)
                         retry_msgbox.setInformativeText(_('Do you want to '
                             'retry removing this directory?'))
@@ -7821,15 +7821,15 @@ that file or directory. You might need to end it if you want to retry.</p>'''
                         retry_msgbox.addButton(_('Cancel the operation'),
                             QMessageBox.NoRole)
                         retry_msgbox.setIcon(QMessageBox.Critical)
-            
+
                         if retry_msgbox.exec() == 1:
                             self.deleting = False
                             self.stop()
                             break
-                
+
                 self.current_entry = None
                 self.deleted_files += 1
-                
+
                 self.progress_bar.setValue(self.deleted_files)
     def display_entry(self, entry):
         if self.status_label is not None:
@@ -8015,7 +8015,7 @@ class ProgressCopyTree(QTimer):
                     self.copied_files += 1
                 else:
                     self.destination_file.write(buf)
-                    
+
                     self.copied_size += buf_len
                     self.progress_bar.setValue(self.copied_size)
 
