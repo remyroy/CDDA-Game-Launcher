@@ -830,6 +830,8 @@ class GameDirGroupBox(QGroupBox):
 
     def showEvent(self, event):
         if not self.shown:
+            self.shown = True
+            
             self.last_game_directory = None
 
             if (getattr(sys, 'frozen', False)
