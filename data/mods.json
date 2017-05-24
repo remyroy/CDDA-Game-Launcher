@@ -161,5 +161,16 @@
         "url": "http://s000.tinyupload.com/index.php?file_id=04160603493089527084",
         "expected_filename": "Small Town Building Pack.zip",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=14434.0"
+    },
+    {
+      "type": "direct_download",
+      "ident": "PK_REBALANCE",
+      "name": "PKs Rebalancing [Latest]",
+      "description": "Rebalances spawn list, adds new monsters and items, adds new buildings and fortifies old buildings, and strives to create a harsher enviornment to survive in.",
+      "category": "creatures",
+      "author": "pisskop",
+      "size": 568571,
+      "url": "https://github.com/pisskop/PKs_Rebalancing/archive/master.zip",
+      "homepage": "https://github.com/pisskop/PKs_Rebalancing"
     }
 ]
