@@ -7288,6 +7288,15 @@ class ModsTab(QTabWidget):
             self.name_le.setText(selected_info.get('name', ''))
             self.ident_le.setText(selected_info.get('ident', ''))
             self.author_le.setText(selected_info.get('author', ''))
+            if not selected_info.get('author', ''):
+                authors = selected_info.get('authors', [])
+                try:
+                    iterable = iter(authors)
+                except TypeError:
+                    pass
+                else:
+                    authors = ', '.join(authors)
+                    self.author_le.setText(authors)
             self.description_le.setText(selected_info.get('description', ''))
             self.category_le.setText(selected_info.get('category', ''))
             self.path_label.setText(_('Path:'))
@@ -7321,6 +7330,15 @@ class ModsTab(QTabWidget):
             self.name_le.setText(selected_info.get('name', ''))
             self.ident_le.setText(selected_info.get('ident', ''))
             self.author_le.setText(selected_info.get('author', ''))
+            if not selected_info.get('author', ''):
+                authors = selected_info.get('authors', [])
+                try:
+                    iterable = iter(authors)
+                except TypeError:
+                    pass
+                else:
+                    authors = ', '.join(authors)
+                    self.author_le.setText(authors)
             self.description_le.setText(selected_info.get('description', ''))
             self.category_le.setText(selected_info.get('category', ''))
 
@@ -7400,7 +7418,7 @@ class ModsTab(QTabWidget):
 
     def config_info(self, config_file):
         val = {}
-        keys = ('ident', 'name', 'author', 'description', 'category')
+        keys = ('ident', 'name', 'author', 'authors', 'description', 'category')
         try:
             with open(config_file, 'r', encoding='utf8') as f:
                 try:
