@@ -149,5 +149,17 @@
         "url": "http://www.mediafire.com/download/sp1r0y160048uw3/No_Recreationals.zip",
         "expected_filename": "No_Recreationals.zip",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=13084.0"
+    },
+    {
+        "type": "browser_download",
+        "ident": "SMALLTOWNBUILDING",
+        "name": "Whaleys Small Town Building Pack",
+        "description": "Adds more quiant buildings, and a zoo.",
+        "category": "Buildings",
+        "author": "Whaley",
+        "size": 31879,
+        "url": "http://s000.tinyupload.com/index.php?file_id=04160603493089527084",
+        "expected_filename": "Small Town Building Pack.zip",
+        "homepage": "http://smf.cataclysmdda.com/index.php?topic=14434.0"
     }
 ]
