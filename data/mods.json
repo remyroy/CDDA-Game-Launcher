@@ -21,14 +21,13 @@
     },
     {
         "type": "direct_download",
-        "mod-type" : "SUPPLEMENTAL",
-      	"ident" : "ZSFIXED_cddaxp",
-      	"name" : "ZSFIXED_C:DDA Extra Professions & Gears",
-      	"author" : "Marte",
-      	"description" : "Adds a new set of professions and relative gears.",
-      	"category" : "rebalance",
-        "size": 21125,
-        "url": "https://www.dropbox.com/sh/plared1zsifi4wo/AABOGASpc9eYwE1Y_Mexf8LGa/mods/ZSFixed_CDDAXP_2016-10-15.zip?dl=1",
+        "ident": "ZSFIXED_cddaxp",
+        "name": "ZSFIXED_C:DDA Extra Professions & Gears",
+        "author" : "Marte",
+        "description": "Adds a new set of professions and relative gears.",
+        "category": "rebalance",
+        "size": 21367,
+        "url": "https://www.dropbox.com/s/r4ay5uqdnyfp36j/ZSFixed_CDDAXP_2017-05-18.zip?dl=1",
         "homepage": "http://smf.cataclysmdda.com/index.php?topic=11583.0"
     },
     {
