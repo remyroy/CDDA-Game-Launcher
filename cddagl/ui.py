@@ -3276,7 +3276,7 @@ class AboutDialog(QDialog):
 
         layout.setRowStretch(0, 100)
 
-        self.setMinimumSize(500, 400)
+        self.setMinimumSize(640, 450)
 
         self.setLayout(layout)
         self.set_text()
@@ -3296,7 +3296,10 @@ href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.
 
 <p>If you like the CDDA Game Launcher, you can buy me a beer by donating
 bitcoins to <a href="bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ">
-15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> <img src="btc-qr.png">.</p>
+15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> or by donating
+ethers to <a href="https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b">
+0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a> <img src="btc-qr.png">
+<img src="eth-qr.png">.</p>
 
 <p>Thanks to the following people for their efforts in translating the CDDA Game
 Launcher</p>
@@ -3311,7 +3314,7 @@ href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a></li>
 <p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka
 Mattahan</a> for the permission to use his artwork for the launcher icon.</p>
 
-<p>Copyright (c) 2015-2016 Rémy Roy</p>
+<p>Copyright (c) 2015-2017 Rémy Roy</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

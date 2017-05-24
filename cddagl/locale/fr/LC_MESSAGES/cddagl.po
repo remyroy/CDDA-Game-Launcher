@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 0.8.5\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-11-23 20:25-0500\n"
+"POT-Creation-Date: 2017-05-24 13:45-0400\n"
 "PO-Revision-Date: 2016-04-15 17:20-0400\n"
 "Last-Translator: \n"
 "Language: fr\n"
@@ -38,70 +38,70 @@ msgstr ""
 "Traceback:\n"
 "{traceback}"
 
-#: cddagl/ui.py:134
+#: cddagl/ui.py:135
 msgid "64-bit"
 msgstr ""
 
-#: cddagl/ui.py:136
+#: cddagl/ui.py:137
 msgid "32-bit"
 msgstr ""
 
-#: cddagl/ui.py:140
+#: cddagl/ui.py:141
 msgid "B"
 msgstr "o"
 
-#: cddagl/ui.py:141
+#: cddagl/ui.py:142
 msgid "Ki"
 msgstr ""
 
-#: cddagl/ui.py:141
+#: cddagl/ui.py:142
 msgid "Mi"
 msgstr ""
 
-#: cddagl/ui.py:141
+#: cddagl/ui.py:142
 msgid "Gi"
 msgstr ""
 
-#: cddagl/ui.py:141
+#: cddagl/ui.py:142
 msgid "Ti"
 msgstr ""
 
-#: cddagl/ui.py:141
+#: cddagl/ui.py:142
 msgid "Pi"
 msgstr ""
 
-#: cddagl/ui.py:141
+#: cddagl/ui.py:142
 msgid "Ei"
 msgstr ""
 
-#: cddagl/ui.py:142
+#: cddagl/ui.py:143
 msgid "Zi"
 msgstr ""
 
-#: cddagl/ui.py:144
+#: cddagl/ui.py:145
 #, python-format
 msgid "%3.1f %s%s"
 msgstr ""
 
-#: cddagl/ui.py:146
+#: cddagl/ui.py:147
 #, python-format
 msgid "%.1f %s%s"
 msgstr ""
 
-#: cddagl/ui.py:146
+#: cddagl/ui.py:147
 msgid "Yi"
 msgstr ""
 
-#: cddagl/ui.py:161 cddagl/ui.py:7684 cddagl/ui.py:7748
+#: cddagl/ui.py:162 cddagl/ui.py:7747 cddagl/ui.py:7811
 msgid "Cannot remove directory"
 msgstr "Impossible de supprimer le répertoire"
 
-#: cddagl/ui.py:167
+#: cddagl/ui.py:168
 msgid ""
 "\n"
 "<p>The launcher failed to remove the following directory: {directory}</p>"
 "\n"
-"<p>When trying to remove or access {filename}, the launcher raised the \n"
+"<p>When trying to remove or access {filename}, the launcher raised the\n"
 "following error: {error}</p>\n"
 msgstr ""
 "\n"
@@ -111,7 +111,7 @@ msgstr ""
 "a lancé \n"
 "l'erreur suivante : {error}</p>\n"
 
-#: cddagl/ui.py:177
+#: cddagl/ui.py:178
 msgid ""
 "\n"
 "<p>No process seems to be using that file or directory.</p>\n"
@@ -119,11 +119,11 @@ msgstr ""
 "\n"
 "<p>Aucun processus ne semble utiliser ce fichier ou ce répertoire.</p>\n"
 
-#: cddagl/ui.py:181
+#: cddagl/ui.py:182
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
-"using \n"
+"using\n"
 "that file or directory. You might need to end it if you want to "
 "retry.</p>\n"
 msgstr ""
@@ -133,28 +133,28 @@ msgstr ""
 "ce fichier ou ce répertoire. Vous aurez probablement besoin d'y mettre "
 "fin pour rééessayer.</p>\n"
 
-#: cddagl/ui.py:187 cddagl/ui.py:7711 cddagl/ui.py:7773
+#: cddagl/ui.py:188 cddagl/ui.py:7774 cddagl/ui.py:7836
 msgid "Do you want to retry removing this directory?"
 msgstr "Voulez-vous réessayer de supprimer ce répertoire ?"
 
-#: cddagl/ui.py:189 cddagl/ui.py:7714 cddagl/ui.py:7776
+#: cddagl/ui.py:190 cddagl/ui.py:7777 cddagl/ui.py:7839
 msgid "Retry removing the directory"
 msgstr "Réessayer la suppression du répertoire"
 
-#: cddagl/ui.py:191 cddagl/ui.py:236 cddagl/ui.py:282 cddagl/ui.py:7716
-#: cddagl/ui.py:7778
+#: cddagl/ui.py:192 cddagl/ui.py:237 cddagl/ui.py:283 cddagl/ui.py:7779
+#: cddagl/ui.py:7841
 msgid "Cancel the operation"
 msgstr "Annuler l'opération"
 
-#: cddagl/ui.py:206
+#: cddagl/ui.py:207
 msgid "Cannot delete file"
 msgstr "Impossible de supprimer le fichier"
 
-#: cddagl/ui.py:212
+#: cddagl/ui.py:213
 msgid ""
 "\n"
 "<p>The launcher failed to delete the following file: {path}</p>\n"
-"<p>When trying to remove or access {filename}, the launcher raised the \n"
+"<p>When trying to remove or access {filename}, the launcher raised the\n"
 "following error: {error}</p>\n"
 msgstr ""
 "\n"
@@ -164,7 +164,7 @@ msgstr ""
 "a lancé \n"
 "l'erreur suivante : {error}</p>\n"
 
-#: cddagl/ui.py:222 cddagl/ui.py:268
+#: cddagl/ui.py:223 cddagl/ui.py:269
 msgid ""
 "\n"
 "<p>No process seems to be using that file.</p>\n"
@@ -172,11 +172,11 @@ msgstr ""
 "\n"
 "<p>Aucun processus ne semble utiliser ce fichier.</p>\n"
 
-#: cddagl/ui.py:226 cddagl/ui.py:272
+#: cddagl/ui.py:227 cddagl/ui.py:273
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
-"using \n"
+"using\n"
 "that file. You might need to end it if you want to retry.</p>\n"
 msgstr ""
 "\n"
@@ -185,23 +185,23 @@ msgstr ""
 "ce fichier. Vous aurez probablement besoin d'y mettre fin pour "
 "rééessayer.</p>\n"
 
-#: cddagl/ui.py:232
+#: cddagl/ui.py:233
 msgid "Do you want to retry deleting this file?"
 msgstr "Voulez-vous réessayer de supprimer ce fichier ?"
 
-#: cddagl/ui.py:234
+#: cddagl/ui.py:235
 msgid "Retry deleting the file"
 msgstr "Réessayer la suppression du fichier"
 
-#: cddagl/ui.py:251
+#: cddagl/ui.py:252
 msgid "Cannot rename file"
 msgstr "Impossible de renommer ce fichier"
 
-#: cddagl/ui.py:257
+#: cddagl/ui.py:258
 msgid ""
 "\n"
 "<p>The launcher failed to rename the following file: {src} to {dst}</p>\n"
-"<p>When trying to rename or access {filename}, the launcher raised the \n"
+"<p>When trying to rename or access {filename}, the launcher raised the\n"
 "following error: {error}</p>\n"
 msgstr ""
 "\n"
@@ -211,47 +211,47 @@ msgstr ""
 " lancé \n"
 "l'erreur suivante : {error}</p>\n"
 
-#: cddagl/ui.py:278
+#: cddagl/ui.py:279
 msgid "Do you want to retry renaming this file?"
 msgstr "Voulez-vous réessayer de renommer ce fichier ?"
 
-#: cddagl/ui.py:280
+#: cddagl/ui.py:281
 msgid "Retry renaming the file"
 msgstr "Réessayer de renommer le fichier"
 
-#: cddagl/ui.py:321 cddagl/ui.py:344
+#: cddagl/ui.py:322 cddagl/ui.py:345
 msgid "&File"
 msgstr "&Fichier"
 
-#: cddagl/ui.py:322 cddagl/ui.py:348
+#: cddagl/ui.py:323 cddagl/ui.py:349
 msgid "E&xit"
 msgstr "&Quitter"
 
-#: cddagl/ui.py:323 cddagl/ui.py:352
+#: cddagl/ui.py:324 cddagl/ui.py:353
 msgid "&Help"
 msgstr "&Aide"
 
-#: cddagl/ui.py:325 cddagl/ui.py:357
+#: cddagl/ui.py:326 cddagl/ui.py:358
 msgid "&Check for update"
 msgstr "&Vérifier la mise à jour"
 
-#: cddagl/ui.py:326 cddagl/ui.py:363
+#: cddagl/ui.py:327 cddagl/ui.py:364
 msgid "&About CDDA Game Launcher"
 msgstr "À &propos de CDDA Game Launcher"
 
-#: cddagl/ui.py:336 cddagl/ui.py:1311 cddagl/ui.py:2987 cddagl/ui.py:3161
+#: cddagl/ui.py:337 cddagl/ui.py:1311 cddagl/ui.py:2987 cddagl/ui.py:3161
 msgid "Ready"
 msgstr "Prêt"
 
-#: cddagl/ui.py:429 cddagl/ui.py:3450
+#: cddagl/ui.py:430 cddagl/ui.py:3453
 msgid "Do not check for new version of the CDDA Game Launcher on launch"
 msgstr "Ne pas vérifier la mise à jour de CDDA Game Launcher lors du démarrage"
 
-#: cddagl/ui.py:440
+#: cddagl/ui.py:441
 msgid "Launcher update"
 msgstr "Mise à jour du lanceur"
 
-#: cddagl/ui.py:441
+#: cddagl/ui.py:442
 msgid ""
 "You are using version {version} but there is a new update for CDDA Game "
 "Launcher. Would you like to update?"
@@ -259,74 +259,74 @@ msgstr ""
 "Vous utilisez la version {version}, mais il y a une nouvelle version du "
 "CDDA Game Launcher. Voulez-vous faire la mise à jour ?"
 
-#: cddagl/ui.py:446
+#: cddagl/ui.py:447
 msgid "Update the launcher"
 msgstr "Mettre à jour le lanceur"
 
-#: cddagl/ui.py:448
+#: cddagl/ui.py:449
 msgid "Not right now"
 msgstr "Pas maintenant"
 
-#: cddagl/ui.py:485
+#: cddagl/ui.py:486
 msgid "Up to date"
 msgstr "À jour"
 
-#: cddagl/ui.py:486
+#: cddagl/ui.py:487
 msgid "The CDDA Game Launcher is up to date."
 msgstr "Le CDDA Game Launcher est à jour."
 
-#: cddagl/ui.py:592 cddagl/ui.py:610
+#: cddagl/ui.py:593 cddagl/ui.py:611
 msgid "Main"
 msgstr "Jeu"
 
-#: cddagl/ui.py:593 cddagl/ui.py:615
+#: cddagl/ui.py:594 cddagl/ui.py:616
 msgid "Backups"
 msgstr "Sauvegardes"
 
-#: cddagl/ui.py:594 cddagl/ui.py:620
+#: cddagl/ui.py:595 cddagl/ui.py:621
 msgid "Mods"
 msgstr "Mods"
 
-#: cddagl/ui.py:596 cddagl/ui.py:630
+#: cddagl/ui.py:597 cddagl/ui.py:631
 msgid "Soundpacks"
 msgstr "Packs sonore"
 
-#: cddagl/ui.py:598 cddagl/ui.py:640
+#: cddagl/ui.py:599 cddagl/ui.py:641
 msgid "Settings"
 msgstr "Configurations"
 
-#: cddagl/ui.py:625
+#: cddagl/ui.py:626
 msgid "Tilesets"
 msgstr "Packs de tuiles"
 
-#: cddagl/ui.py:635
+#: cddagl/ui.py:636
 msgid "Fonts"
 msgstr "Polices"
 
-#: cddagl/ui.py:778 cddagl/ui.py:788 cddagl/ui.py:1229 cddagl/ui.py:1230
+#: cddagl/ui.py:779 cddagl/ui.py:789 cddagl/ui.py:1230 cddagl/ui.py:1231
 #: cddagl/ui.py:1294 cddagl/ui.py:1351 cddagl/ui.py:1487 cddagl/ui.py:1577
-#: cddagl/ui.py:1645 cddagl/ui.py:1762 cddagl/ui.py:4901 cddagl/ui.py:4937
-#: cddagl/ui.py:7321 cddagl/ui.py:7357
+#: cddagl/ui.py:1645 cddagl/ui.py:1762 cddagl/ui.py:4904 cddagl/ui.py:4940
+#: cddagl/ui.py:7384 cddagl/ui.py:7420
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: cddagl/ui.py:817
+#: cddagl/ui.py:818
 msgid "Directory:"
 msgstr "Répertoire :"
 
-#: cddagl/ui.py:818
+#: cddagl/ui.py:819
 msgid "Version:"
 msgstr "Version :"
 
-#: cddagl/ui.py:819
+#: cddagl/ui.py:820
 msgid "Build:"
 msgstr "Build :"
 
-#: cddagl/ui.py:820
+#: cddagl/ui.py:821
 msgid "Saves:"
 msgstr "Parties :"
 
-#: cddagl/ui.py:822
+#: cddagl/ui.py:823
 msgid ""
 "Your save directory might be large enough to cause significant delays "
 "during the update process.\n"
@@ -338,39 +338,39 @@ msgstr ""
 "Vous pourriez vouloir activer l'option \"Ne pas copier ou déplacer le "
 "répertoire des parties\" dans l'onglet configurations."
 
-#: cddagl/ui.py:826 cddagl/ui.py:1096 cddagl/ui.py:1443
+#: cddagl/ui.py:827 cddagl/ui.py:1097 cddagl/ui.py:1443
 msgid "Launch game"
 msgstr "Lancer le jeu"
 
-#: cddagl/ui.py:827
+#: cddagl/ui.py:828
 msgid "Restore previous version"
 msgstr "Restaurer la version précédente"
 
-#: cddagl/ui.py:828
+#: cddagl/ui.py:829
 msgid "Game"
 msgstr "Le jeu"
 
-#: cddagl/ui.py:978 cddagl/ui.py:1105 cddagl/ui.py:1452 cddagl/ui.py:5802
+#: cddagl/ui.py:979 cddagl/ui.py:1106 cddagl/ui.py:1452 cddagl/ui.py:5805
 msgid "auto"
 msgstr "auto"
 
-#: cddagl/ui.py:979
+#: cddagl/ui.py:980
 msgid "before_launch"
 msgstr "avant_demarrage"
 
-#: cddagl/ui.py:991
+#: cddagl/ui.py:992
 msgid "Game executable not found"
 msgstr "Le fichier exécutable du jeu est introuvable"
 
-#: cddagl/ui.py:1013
+#: cddagl/ui.py:1014
 msgid "Could not launch the game executable"
 msgstr "Impossible de lancer le fichier exécutable du jeu"
 
-#: cddagl/ui.py:1016
+#: cddagl/ui.py:1017
 msgid "Cannot launch game"
 msgstr "Impossible de lancer le jeu"
 
-#: cddagl/ui.py:1018
+#: cddagl/ui.py:1019
 msgid ""
 "\n"
 "<p>The launcher failed to start the game executable in "
@@ -396,52 +396,56 @@ msgstr ""
 "de faire confiance en ce fichier exécutable lorsque la menace est "
 "détectée.</p>\n"
 
-#: cddagl/ui.py:1029 cddagl/ui.py:2508 cddagl/ui.py:3286
+#: cddagl/ui.py:1026
+msgid "[unknown]"
+msgstr "[inconnu]"
+
+#: cddagl/ui.py:1030 cddagl/ui.py:2508 cddagl/ui.py:3286
 msgid "OK"
 msgstr "Ok"
 
-#: cddagl/ui.py:1044 cddagl/ui.py:1314 cddagl/ui.py:1391 cddagl/ui.py:2992
+#: cddagl/ui.py:1045 cddagl/ui.py:1314 cddagl/ui.py:1391 cddagl/ui.py:2992
 #: cddagl/ui.py:3164
 msgid "Game process is running"
 msgstr "Le processus du jeu s'exécute"
 
-#: cddagl/ui.py:1062 cddagl/ui.py:1409
+#: cddagl/ui.py:1063 cddagl/ui.py:1409
 msgid "Show current game"
 msgstr "Afficher le jeu"
 
-#: cddagl/ui.py:1086 cddagl/ui.py:1433
+#: cddagl/ui.py:1087 cddagl/ui.py:1433
 msgid "Game process has ended"
 msgstr "Le processus du jeu s'est terminé"
 
-#: cddagl/ui.py:1106 cddagl/ui.py:1453
+#: cddagl/ui.py:1107 cddagl/ui.py:1453
 msgid "after_end"
 msgstr "apres_fin"
 
-#: cddagl/ui.py:1170
+#: cddagl/ui.py:1171
 msgid "Game directory"
 msgstr "Le répertoire du jeu"
 
-#: cddagl/ui.py:1192
+#: cddagl/ui.py:1193
 msgid "Not a valid directory"
 msgstr "Pas un répertoire valide"
 
-#: cddagl/ui.py:1205 cddagl/ui.py:1569
+#: cddagl/ui.py:1206 cddagl/ui.py:1569
 msgid "console"
 msgstr "console"
 
-#: cddagl/ui.py:1208 cddagl/ui.py:1572
+#: cddagl/ui.py:1209 cddagl/ui.py:1572
 msgid "tiles"
 msgstr "tuiles"
 
-#: cddagl/ui.py:1212 cddagl/ui.py:1576
+#: cddagl/ui.py:1213 cddagl/ui.py:1576
 msgid "Not a CDDA directory"
 msgstr "Pas de un répertoire de CDDA"
 
-#: cddagl/ui.py:1225 cddagl/ui.py:2908 cddagl/ui.py:3072
+#: cddagl/ui.py:1226 cddagl/ui.py:2908 cddagl/ui.py:3072
 msgid "Install game"
 msgstr "Installer le jeu"
 
-#: cddagl/ui.py:1236 cddagl/ui.py:1807 cddagl/ui.py:2906 cddagl/ui.py:3055
+#: cddagl/ui.py:1237 cddagl/ui.py:1807 cddagl/ui.py:2906 cddagl/ui.py:3055
 msgid "Update game"
 msgstr "Mettre à jour le jeu"
 
@@ -533,7 +537,7 @@ msgstr "Rafraîchir"
 msgid "Changelog"
 msgstr "Journal des modifications"
 
-#: cddagl/ui.py:1808 cddagl/ui.py:3654
+#: cddagl/ui.py:1808 cddagl/ui.py:3657
 msgid "Update/Installation"
 msgstr "Mise à jour/Installation"
 
@@ -571,12 +575,12 @@ msgstr "Mise à jour annulée"
 msgid "Installation cancelled"
 msgstr "Installation annulée"
 
-#: cddagl/ui.py:2156 cddagl/ui.py:4348 cddagl/ui.py:4511 cddagl/ui.py:6690
-#: cddagl/ui.py:6876
+#: cddagl/ui.py:2156 cddagl/ui.py:4351 cddagl/ui.py:4514 cddagl/ui.py:6695
+#: cddagl/ui.py:6878
 msgid "Downloading: {0}"
 msgstr "Téléchargement : {0}"
 
-#: cddagl/ui.py:2192 cddagl/ui.py:3772
+#: cddagl/ui.py:2192 cddagl/ui.py:3775
 msgid "Cancel update"
 msgstr "Annuler la mise à jour"
 
@@ -584,13 +588,13 @@ msgstr "Annuler la mise à jour"
 msgid "Cancel installation"
 msgstr "Annuler l'installation"
 
-#: cddagl/ui.py:2214 cddagl/ui.py:4418 cddagl/ui.py:4549 cddagl/ui.py:6762
-#: cddagl/ui.py:6913
+#: cddagl/ui.py:2214 cddagl/ui.py:4421 cddagl/ui.py:4552 cddagl/ui.py:6767
+#: cddagl/ui.py:6926
 msgid "Testing downloaded file archive"
 msgstr "Test du fichier d'archive téléchargé"
 
-#: cddagl/ui.py:2251 cddagl/ui.py:4435 cddagl/ui.py:4555 cddagl/ui.py:6799
-#: cddagl/ui.py:6949
+#: cddagl/ui.py:2251 cddagl/ui.py:4438 cddagl/ui.py:4558 cddagl/ui.py:6804
+#: cddagl/ui.py:6971
 msgid "Downloaded archive is invalid"
 msgstr "Le fichier téléchargé est invalide"
 
@@ -607,7 +611,10 @@ msgid ""
 "Update cancelled - Your previous_version directory is most likely "
 "unusable now. Restoring your previous version will most likely give you a"
 " broken game."
-msgstr "Mise à jour annullé - Votre répertoire previous_version est probablement non-utilisable. Restaurer la version précédente vous donnera probalement un jeu qui ne fonctionne pas."
+msgstr ""
+"Mise à jour annullé - Votre répertoire previous_version est probablement "
+"non-utilisable. Restaurer la version précédente vous donnera probalement "
+"un jeu qui ne fonctionne pas."
 
 #: cddagl/ui.py:2348
 msgid "Backing up current game"
@@ -617,7 +624,7 @@ msgstr "Sauvegarde du jeu existant"
 msgid "Backing up {0}"
 msgstr "Sauvegarde de {0}"
 
-#: cddagl/ui.py:2490 cddagl/ui.py:4679 cddagl/ui.py:7083
+#: cddagl/ui.py:2490 cddagl/ui.py:4682 cddagl/ui.py:7128
 msgid "Extracting {0}"
 msgstr "Extraction de {0}"
 
@@ -670,15 +677,15 @@ msgstr "Mise à jour complétée"
 msgid "Installation completed"
 msgstr "Installation complétée"
 
-#: cddagl/ui.py:2922 cddagl/ui.py:3879 cddagl/ui.py:4604 cddagl/ui.py:5559
-#: cddagl/ui.py:5638 cddagl/ui.py:5987 cddagl/ui.py:6072 cddagl/ui.py:6990
-#: cddagl/ui.py:7914 cddagl/ui.py:7983
+#: cddagl/ui.py:2922 cddagl/ui.py:3882 cddagl/ui.py:4607 cddagl/ui.py:5562
+#: cddagl/ui.py:5641 cddagl/ui.py:5990 cddagl/ui.py:6075 cddagl/ui.py:7035
+#: cddagl/ui.py:7977 cddagl/ui.py:8046
 msgid "{bytes_read}/{total_bytes}"
 msgstr "{bytes_read}/{total_bytes}"
 
-#: cddagl/ui.py:2931 cddagl/ui.py:3888 cddagl/ui.py:4613 cddagl/ui.py:5552
-#: cddagl/ui.py:5648 cddagl/ui.py:5979 cddagl/ui.py:6082 cddagl/ui.py:7000
-#: cddagl/ui.py:7907 cddagl/ui.py:7993
+#: cddagl/ui.py:2931 cddagl/ui.py:3891 cddagl/ui.py:4616 cddagl/ui.py:5555
+#: cddagl/ui.py:5651 cddagl/ui.py:5982 cddagl/ui.py:6085 cddagl/ui.py:7045
+#: cddagl/ui.py:7970 cddagl/ui.py:8056
 msgid "{bytes_sec}/s"
 msgstr "{bytes_sec}/s"
 
@@ -711,27 +718,32 @@ msgid ""
 "\n"
 "<p>CDDA Game Launcher version {version}</p>\n"
 "\n"
-"<p>Get the latest release <a \n"
+"<p>Get the latest release <a\n"
 "href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">on "
 "GitHub</a>.</p>\n"
 "\n"
-"<p>Please report any issue <a \n"
+"<p>Please report any issue <a\n"
 "href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">on "
 "GitHub</a>.\n"
 "</p>\n"
 "\n"
 "<p>If you like the CDDA Game Launcher, you can buy me a beer by donating\n"
 "bitcoins to <a href=\"bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ\">\n"
-"15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> <img src=\"btc-qr.png\">.</p>\n"
+"15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> or by donating\n"
+"ethers to <a "
+"href=\"https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b\">"
+"\n"
+"0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a> <img src=\"btc-qr.png\">\n"
+"<img src=\"eth-qr.png\">.</p>\n"
 "\n"
 "<p>Thanks to the following people for their efforts in translating the "
 "CDDA Game\n"
 "Launcher</p>\n"
 "<ul>\n"
 "<li>Russian: Daniel from <a "
-"href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a> \n"
+"href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a>\n"
 "and Night_Pryanik</li>\n"
-"<li>Italian: Rettiliano Verace from <a \n"
+"<li>Italian: Rettiliano Verace from <a\n"
 "href=\"http://emigrantebestemmiante.blogspot.com\">Emigrante "
 "Bestemmiante</a></li>\n"
 "<li>French: Rémy Roy</li>\n"
@@ -741,7 +753,7 @@ msgid ""
 "Mattahan</a> for the permission to use his artwork for the launcher "
 "icon.</p>\n"
 "\n"
-"<p>Copyright (c) 2015-2016 Rémy Roy</p>\n"
+"<p>Copyright (c) 2015-2017 Rémy Roy</p>\n"
 "\n"
 "<p>Permission is hereby granted, free of charge, to any person obtaining "
 "a copy\n"
@@ -755,7 +767,7 @@ msgid ""
 "furnished to do so, subject to the following conditions:</p>\n"
 "\n"
 "<p>The above copyright notice and this permission notice shall be "
-"included in \n"
+"included in\n"
 "all copies or substantial portions of the Software.</p>\n"
 "\n"
 "<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, "
@@ -785,9 +797,13 @@ msgstr ""
 "\n"
 "<p>Si vous aimez CDDA Game Launcher, vous pouvez m'acheter une bière en "
 "faisant un don en bitcoins\n"
-"à l'adresse <a href=\"bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ\">\n"
-"15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> <img src=\"btc-qr.png\">.</p>\n"
+"à l'adresse <a "
+"href=\"bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ\">15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a>"
+" ou en faisant un don en ethers à l'adresse <a "
+"href=\"https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b\">"
 "\n"
+"0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a> <img src=\"btc-qr.png\">\n"
+"<img src=\"eth-qr.png\">.</p>\n"
 "<p>Merci aux personnes suivantes pour leur efforts dans la traduction de "
 "CDDA Game Launcher</p>\n"
 "<ul>\n"
@@ -804,7 +820,7 @@ msgstr ""
 "Mattahan</a> pour la permission d'utiliser sa création artistique pour "
 "l'icône du lanceur.</p>\n"
 "\n"
-"<p>Copyright (c) 2015-2016 Rémy Roy</p>\n"
+"<p>Copyright (c) 2015-2017 Rémy Roy</p>\n"
 "\n"
 "<p>L'autorisation est accordée, gracieusement, à toute personne acquérant"
 " une copie de cette bibliothèque et des fichiers de documentation "
@@ -829,43 +845,43 @@ msgstr ""
 " OU SON UTILISATION, OU AVEC D'AUTRES ÉLÉMENTS DE LA BIBLIOTHÈQUE.</p>\n"
 "\n"
 
-#: cddagl/ui.py:3376 cddagl/ui.py:3443
+#: cddagl/ui.py:3379 cddagl/ui.py:3446
 msgid "System language or best match ({locale})"
 msgstr "Langue système ou la plus proche ({locale})"
 
-#: cddagl/ui.py:3386
+#: cddagl/ui.py:3389
 msgid "{locale_name} - {english_name}"
 msgstr ""
 
-#: cddagl/ui.py:3438
+#: cddagl/ui.py:3441
 msgid "Command line parameters:"
 msgstr "Paramètres de ligne de commande :"
 
-#: cddagl/ui.py:3440
+#: cddagl/ui.py:3443
 msgid "Keep the launcher opened after launching the game"
 msgstr "Conserver le lanceur ouvert après le lancement du jeu"
 
-#: cddagl/ui.py:3441
+#: cddagl/ui.py:3444
 msgid "Language:"
 msgstr "Langue :"
 
-#: cddagl/ui.py:3445
+#: cddagl/ui.py:3448
 msgid "Allow multiple instances of the launcher to be started"
 msgstr "Permettre le démarrage de plusieurs instances du lanceur"
 
-#: cddagl/ui.py:3448
+#: cddagl/ui.py:3451
 msgid "Use the launcher directory as the game directory"
 msgstr "Utiliser le répertoire du lanceur comme répertoire du jeu"
 
-#: cddagl/ui.py:3452
+#: cddagl/ui.py:3455
 msgid "Launcher"
 msgstr "Lanceur"
 
-#: cddagl/ui.py:3640
+#: cddagl/ui.py:3643
 msgid "Do not copy or move the save directory"
 msgstr "Ne pas copier ou déplacer le répertoire des parties"
 
-#: cddagl/ui.py:3642
+#: cddagl/ui.py:3645
 msgid ""
 "If your save directory size is large, it might take a long time to copy "
 "it during the update process.\n"
@@ -878,48 +894,48 @@ msgstr ""
 "contenant la version précédente ne contiendra pas le répertoire des "
 "parties."
 
-#: cddagl/ui.py:3647
+#: cddagl/ui.py:3650
 msgid "Keep a copy of the downloaded archive in the following directory:"
 msgstr "Conserver une copie du fichier téléchargé dans le répertoire suivant :"
 
-#: cddagl/ui.py:3650
+#: cddagl/ui.py:3653
 msgid "Automatically refresh builds list every"
 msgstr "Rafraîchir automatiquement la liste des builds à tous les"
 
-#: cddagl/ui.py:3651
+#: cddagl/ui.py:3654
 msgid "minutes"
 msgstr "minutes"
 
-#: cddagl/ui.py:3652
+#: cddagl/ui.py:3655
 msgid "Remove previous version after update (not recommended)"
 msgstr "Supprimer la version précédente après la mise à jour (non recommandé)"
 
-#: cddagl/ui.py:3703
+#: cddagl/ui.py:3706
 msgid "Archive directory"
 msgstr "Répertoire du fichier téléchargé"
 
-#: cddagl/ui.py:3734
+#: cddagl/ui.py:3737
 msgid "Progress:"
 msgstr "Progrès :"
 
-#: cddagl/ui.py:3743 cddagl/ui.py:4185 cddagl/ui.py:4866 cddagl/ui.py:4894
-#: cddagl/ui.py:6528 cddagl/ui.py:7286 cddagl/ui.py:7314
+#: cddagl/ui.py:3746 cddagl/ui.py:4188 cddagl/ui.py:4869 cddagl/ui.py:4897
+#: cddagl/ui.py:6531 cddagl/ui.py:7349 cddagl/ui.py:7377
 msgid "Url:"
 msgstr "Url :"
 
-#: cddagl/ui.py:3754 cddagl/ui.py:4189 cddagl/ui.py:6532
+#: cddagl/ui.py:3757 cddagl/ui.py:4192 cddagl/ui.py:6535
 msgid "Size:"
 msgstr "Taille :"
 
-#: cddagl/ui.py:3763
+#: cddagl/ui.py:3766
 msgid "Speed:"
 msgstr "Vitesse :"
 
-#: cddagl/ui.py:3782
+#: cddagl/ui.py:3785
 msgid "CDDA Game Launcher self-update"
 msgstr "Mise à jour de CDDA Game Launcher"
 
-#: cddagl/ui.py:3915
+#: cddagl/ui.py:3918
 msgid ""
 "This {name} cannot be directly downloaded by the launcher. You have to "
 "use your browser to download it."
@@ -927,62 +943,62 @@ msgstr ""
 "Ce {name} ne peut pas être téléchargé directement par le lanceur. Vous "
 "devez utiliser votre navigateur pour le télécharger."
 
-#: cddagl/ui.py:3922
+#: cddagl/ui.py:3925
 msgid "1. Open the URL in your browser."
 msgstr "1. Ouvrez l'URL dans votre navigateur."
 
-#: cddagl/ui.py:3937
+#: cddagl/ui.py:3940
 msgid "2. Download the {name} on that page and wait for the download to complete."
 msgstr ""
 "2. Téléchargez le {name} sur cette page et attendez que le téléchargement"
 " soit complété."
 
-#: cddagl/ui.py:3943
+#: cddagl/ui.py:3946
 msgid "3. Select the downloaded archive."
 msgstr "3. Sélectionnez le fichier téléchargé."
 
-#: cddagl/ui.py:3968
+#: cddagl/ui.py:3971
 msgid "Install this {name}"
 msgstr "Installer ce {name}"
 
-#: cddagl/ui.py:3974
+#: cddagl/ui.py:3977
 msgid "Do not install"
 msgstr "Ne pas installer"
 
-#: cddagl/ui.py:3985
+#: cddagl/ui.py:3988
 msgid "Browser download"
 msgstr "Téléchargement avec le navigateur"
 
-#: cddagl/ui.py:3990
+#: cddagl/ui.py:3993
 msgid "Downloaded archive"
 msgstr "Fichier téléchargé"
 
-#: cddagl/ui.py:3991
+#: cddagl/ui.py:3994
 msgid "Archive files {formats}"
 msgstr "Fichiers téléchargés {formats}"
 
-#: cddagl/ui.py:4162 cddagl/ui.py:6503
+#: cddagl/ui.py:4165 cddagl/ui.py:6506
 msgid "Installed"
 msgstr "Installés"
 
-#: cddagl/ui.py:4163 cddagl/ui.py:4783 cddagl/ui.py:4839 cddagl/ui.py:6504
-#: cddagl/ui.py:7198 cddagl/ui.py:7257
+#: cddagl/ui.py:4166 cddagl/ui.py:4786 cddagl/ui.py:4842 cddagl/ui.py:6507
+#: cddagl/ui.py:7243 cddagl/ui.py:7311
 msgid "Disable"
 msgstr "Désactiver"
 
-#: cddagl/ui.py:4164 cddagl/ui.py:6505
+#: cddagl/ui.py:4167 cddagl/ui.py:6508
 msgid "Delete"
 msgstr "Supprimer"
 
-#: cddagl/ui.py:4165 cddagl/ui.py:6517
+#: cddagl/ui.py:4168 cddagl/ui.py:6520
 msgid "Repository"
 msgstr "Répertoire"
 
-#: cddagl/ui.py:4167
+#: cddagl/ui.py:4170
 msgid "Add this new soundpack to the repository"
 msgstr "Ajouter un nouveau pack sonore au répertoire"
 
-#: cddagl/ui.py:4168
+#: cddagl/ui.py:4171
 msgid ""
 "* Name: [Enter the name of the soundpack]\n"
 "* Url: [Enter the Url where we can find the soundpack]\n"
@@ -998,39 +1014,39 @@ msgstr ""
 "sonore a été publié]\n"
 "* Le pack sonore n'est pas présent dans la version : {version}\n"
 
-#: cddagl/ui.py:4176
+#: cddagl/ui.py:4179
 msgid "<a href=\"{url}\">Suggest a new soundpack on GitHub</a>"
 msgstr "<a href=\"{url}\">Suggérer un nouveau pack sonore sur GitHub</a>"
 
-#: cddagl/ui.py:4178 cddagl/ui.py:4585
+#: cddagl/ui.py:4181 cddagl/ui.py:4588
 msgid "Install this soundpack"
 msgstr "Installer ce pack sonore"
 
-#: cddagl/ui.py:4179 cddagl/ui.py:6519
+#: cddagl/ui.py:4182 cddagl/ui.py:6522
 msgid "Details"
 msgstr "Détails"
 
-#: cddagl/ui.py:4180
+#: cddagl/ui.py:4183
 msgid "View name:"
 msgstr "Nom visuel :"
 
-#: cddagl/ui.py:4181 cddagl/ui.py:5255 cddagl/ui.py:6520
+#: cddagl/ui.py:4184 cddagl/ui.py:5258 cddagl/ui.py:6523
 msgid "Name:"
 msgstr "Nom :"
 
-#: cddagl/ui.py:4187 cddagl/ui.py:4833 cddagl/ui.py:6530 cddagl/ui.py:7251
+#: cddagl/ui.py:4190 cddagl/ui.py:4836 cddagl/ui.py:6533 cddagl/ui.py:7305
 msgid "Path:"
 msgstr "Chemin :"
 
-#: cddagl/ui.py:4190 cddagl/ui.py:6533
+#: cddagl/ui.py:4193 cddagl/ui.py:6536
 msgid "Home page:"
 msgstr "Page d'accueil :"
 
-#: cddagl/ui.py:4287
+#: cddagl/ui.py:4290
 msgid "Soundpack already present"
 msgstr "Ce pack sonore est déjà présent"
 
-#: cddagl/ui.py:4289
+#: cddagl/ui.py:4292
 msgid ""
 "It seems this soundpack is already installed. The launcher will not "
 "overwrite the soundpack if it has the same directory name. You might want"
@@ -1044,40 +1060,40 @@ msgstr ""
 "plus, il ne peut y avoir qu'un seul pack sonore avec le même nom "
 "disponible dans le jeu."
 
-#: cddagl/ui.py:4296
+#: cddagl/ui.py:4299
 msgid "Are you sure you want to install the {view} soundpack?"
 msgstr "Voulez-vous vraiment installer le pack sonore {view} ?"
 
-#: cddagl/ui.py:4299
+#: cddagl/ui.py:4302
 msgid "Install the soundpack"
 msgstr "Installer le pack sonore"
 
-#: cddagl/ui.py:4301 cddagl/ui.py:6643
+#: cddagl/ui.py:4304 cddagl/ui.py:6646
 msgid "Do not install again"
 msgstr "Ne pas installer à nouveau"
 
-#: cddagl/ui.py:4385 cddagl/ui.py:4404
+#: cddagl/ui.py:4388 cddagl/ui.py:4407
 msgid "Cancel soundpack installation"
 msgstr "Annuler l'installation du pack sonore"
 
-#: cddagl/ui.py:4441 cddagl/ui.py:6771 cddagl/ui.py:6805 cddagl/ui.py:6921
-#: cddagl/ui.py:6955
+#: cddagl/ui.py:4444 cddagl/ui.py:6776 cddagl/ui.py:6810 cddagl/ui.py:6934
+#: cddagl/ui.py:6977
 msgid "Selected file is a bad archive file"
 msgstr "Le fichier sélectionné est corrompu"
 
-#: cddagl/ui.py:4476 cddagl/ui.py:6841
+#: cddagl/ui.py:4479 cddagl/ui.py:6846
 msgid "Soundpack installation cancelled"
 msgstr "L'installation du pack sonore a été annulée"
 
-#: cddagl/ui.py:4566
+#: cddagl/ui.py:4569
 msgid "Could not download soundpack"
 msgstr "Le pack sonore n'a pu être téléchargé"
 
-#: cddagl/ui.py:4699
+#: cddagl/ui.py:4702
 msgid "Finding the soundpack"
 msgstr "Recherche du pack sonore"
 
-#: cddagl/ui.py:4727
+#: cddagl/ui.py:4730
 msgid ""
 "Soundpack installation cancelled - There is no soundpack in the "
 "downloaded archive"
@@ -1085,7 +1101,7 @@ msgstr ""
 "Installation du pack sonore annulée - Il n'y pas de pack sonore dans le "
 "fichier téléchargé"
 
-#: cddagl/ui.py:4737
+#: cddagl/ui.py:4740
 msgid ""
 "Soundpack installation cancelled - There is already a {basename} "
 "directory in {soundpacks_dir}"
@@ -1093,127 +1109,127 @@ msgstr ""
 "Installation du pack sonore annulée - Il y a déjà un répertoire "
 "{basename} dans le répertoire {soundpacks_dir}"
 
-#: cddagl/ui.py:4743
+#: cddagl/ui.py:4746
 msgid "Soundpack installation completed"
 msgstr "Installation du pack sonore complété"
 
-#: cddagl/ui.py:4767 cddagl/ui.py:4986 cddagl/ui.py:7181 cddagl/ui.py:7409
+#: cddagl/ui.py:4770 cddagl/ui.py:4989 cddagl/ui.py:7226 cddagl/ui.py:7472
 msgid " (Disabled)"
 msgstr " (Désactivé)"
 
-#: cddagl/ui.py:4768 cddagl/ui.py:4841 cddagl/ui.py:7182 cddagl/ui.py:7259
+#: cddagl/ui.py:4771 cddagl/ui.py:4844 cddagl/ui.py:7227 cddagl/ui.py:7313
 msgid "Enable"
 msgstr "Activer"
 
-#: cddagl/ui.py:4799
+#: cddagl/ui.py:4802
 msgid "Delete soundpack"
 msgstr "Supprimer le pack sonore"
 
-#: cddagl/ui.py:4800
+#: cddagl/ui.py:4803
 msgid "This will delete the soundpack directory. It cannot be undone."
 msgstr ""
 "Ceci supprimera le répertoire du pack sonore. Il ne sera pas possible de "
 "revenir en arrière."
 
-#: cddagl/ui.py:4802
+#: cddagl/ui.py:4805
 msgid "Are you sure you want to delete the {view} soundpack?"
 msgstr "Voulez-vous vraiment supprimer le pack sonore {view} ?"
 
-#: cddagl/ui.py:4804
+#: cddagl/ui.py:4807
 msgid "Delete the soundpack"
 msgstr "Supprimer le pack sonore"
 
-#: cddagl/ui.py:4806
+#: cddagl/ui.py:4809
 msgid "I want to keep the soundpack"
 msgstr "Je veux conserver le pack sonore"
 
-#: cddagl/ui.py:4815
+#: cddagl/ui.py:4818
 msgid "Soundpack deletion cancelled"
 msgstr "Annulation de la suppression du pack sonore"
 
-#: cddagl/ui.py:4820
+#: cddagl/ui.py:4823
 msgid "Soundpack deleted"
 msgstr "Pack sonore supprimé"
 
-#: cddagl/ui.py:4881 cddagl/ui.py:7301
+#: cddagl/ui.py:4884 cddagl/ui.py:7364
 msgid "Getting remote size"
 msgstr "Obtention de la taille"
 
-#: cddagl/ui.py:5242
+#: cddagl/ui.py:5245
 msgid "Backups available"
 msgstr "Sauvegardes disponibles"
 
-#: cddagl/ui.py:5243
+#: cddagl/ui.py:5246
 msgid "Manual backup"
 msgstr "Sauvegarde manuelle"
 
-#: cddagl/ui.py:5244
+#: cddagl/ui.py:5247
 msgid "Automatic backups"
 msgstr "Sauvegardes automatiques"
 
-#: cddagl/ui.py:5246 cddagl/ui.py:5370 cddagl/ui.py:5399 cddagl/ui.py:5686
+#: cddagl/ui.py:5249 cddagl/ui.py:5373 cddagl/ui.py:5402 cddagl/ui.py:5689
 msgid "Restore backup"
 msgstr "Restaurer la sauvegarde"
 
-#: cddagl/ui.py:5247
+#: cddagl/ui.py:5250
 msgid "Refresh list"
 msgstr "Rafraîchir la liste"
 
-#: cddagl/ui.py:5248 cddagl/ui.py:5706
+#: cddagl/ui.py:5251 cddagl/ui.py:5709
 msgid "Delete backup"
 msgstr "Supprimer la sauvegarde"
 
-#: cddagl/ui.py:5249
+#: cddagl/ui.py:5252
 msgid "Do not backup the current saves before restoring a backup"
 msgstr ""
 "Ne pas effectuer de sauvegarde des parties courantes avant la "
 "restauration d'une sauvegarde"
 
-#: cddagl/ui.py:5251
+#: cddagl/ui.py:5254
 msgid "Name"
 msgstr "Nom"
 
-#: cddagl/ui.py:5252
+#: cddagl/ui.py:5255
 msgid "Modified"
 msgstr "Modifiée"
 
-#: cddagl/ui.py:5252
+#: cddagl/ui.py:5255
 msgid "Worlds"
 msgstr "Mondes"
 
-#: cddagl/ui.py:5252
+#: cddagl/ui.py:5255
 msgid "Characters"
 msgstr "Personnages"
 
-#: cddagl/ui.py:5252
+#: cddagl/ui.py:5255
 msgid "Actual size"
 msgstr "Taille actuelle"
 
-#: cddagl/ui.py:5253
+#: cddagl/ui.py:5256
 msgid "Compressed size"
 msgstr "Taille compressée"
 
-#: cddagl/ui.py:5253
+#: cddagl/ui.py:5256
 msgid "Compression ratio"
 msgstr "Taux de compression"
 
-#: cddagl/ui.py:5253
+#: cddagl/ui.py:5256
 msgid "Modified date"
 msgstr "Date de modification"
 
-#: cddagl/ui.py:5256 cddagl/ui.py:6120
+#: cddagl/ui.py:5259 cddagl/ui.py:6123
 msgid "Backup current saves"
 msgstr "Sauvegarder les parties courantes"
 
-#: cddagl/ui.py:5258
+#: cddagl/ui.py:5261
 msgid "Backup saves before game launch"
 msgstr "Sauvegarder les parties avant de démarrer le jeu"
 
-#: cddagl/ui.py:5259
+#: cddagl/ui.py:5262
 msgid "Backup saves after game end"
 msgstr "Sauvegarder les parties après la fin du jeu"
 
-#: cddagl/ui.py:5261
+#: cddagl/ui.py:5264
 msgid ""
 "This option will only work if you also have the option to keep the "
 "launcher opened after launching the game in the settings tab."
@@ -1222,113 +1238,113 @@ msgstr ""
 "conserver le lanceur ouvert après le lancement du jeu dans l'onglet des "
 "configurations."
 
-#: cddagl/ui.py:5265
+#: cddagl/ui.py:5268
 msgid "Maximum automatic backups count:"
 msgstr "Maximum de sauvegardes automatiques :"
 
-#: cddagl/ui.py:5368 cddagl/ui.py:5397 cddagl/ui.py:5429
+#: cddagl/ui.py:5371 cddagl/ui.py:5400 cddagl/ui.py:5432
 msgid "Restore backup cancelled"
 msgstr "Restauration de la sauvegarde annulée"
 
-#: cddagl/ui.py:5453
+#: cddagl/ui.py:5456
 msgid "before_last_restore"
 msgstr "avant_derniere_restauration"
 
-#: cddagl/ui.py:5495 cddagl/ui.py:5586
+#: cddagl/ui.py:5498 cddagl/ui.py:5589
 msgid "Cancel restore backup"
 msgstr "Annuler la restoration de la sauvegarde"
 
-#: cddagl/ui.py:5527
+#: cddagl/ui.py:5530
 msgid "Could not rename the save directory"
 msgstr "Impossible de renommer le répertoire save"
 
-#: cddagl/ui.py:5532
+#: cddagl/ui.py:5535
 msgid "Could not remove the save file"
 msgstr "Impossible de renommer le fichier save"
 
-#: cddagl/ui.py:5547
+#: cddagl/ui.py:5550
 msgid "Extracting backup"
 msgstr "Extraction de la sauvegarde"
 
-#: cddagl/ui.py:5609
+#: cddagl/ui.py:5612
 msgid "Extracting {filename}"
 msgstr "Extraction de {filename}"
 
-#: cddagl/ui.py:5630
+#: cddagl/ui.py:5633
 msgid "{backup_name} backup restored"
 msgstr "Sauvegarde {backup_name} restaurée"
 
-#: cddagl/ui.py:5707
+#: cddagl/ui.py:5710
 msgid "This will delete the backup file. It cannot be undone."
 msgstr ""
 "Ceci supprimera la sauvegarde. Il ne sera pas possible de revenir en "
 "arrière."
 
-#: cddagl/ui.py:5709
+#: cddagl/ui.py:5712
 msgid "Are you sure you want to delete the <strong>{filename}</strong> backup?"
 msgstr "Voulez-vous vraiment supprimer la sauvegarde <strong>{filename}</strong> ?"
 
-#: cddagl/ui.py:5712
+#: cddagl/ui.py:5715
 msgid "Delete the backup"
 msgstr "Supprimer la sauvegarde"
 
-#: cddagl/ui.py:5714
+#: cddagl/ui.py:5717
 msgid "I want to keep the backup"
 msgstr "Je veux conserver la sauvegarde"
 
-#: cddagl/ui.py:5723
+#: cddagl/ui.py:5726
 msgid "Backup deletion cancelled"
 msgstr "Annulation de la suppression de la sauvegarde"
 
-#: cddagl/ui.py:5728
+#: cddagl/ui.py:5731
 msgid "Backup deleted"
 msgstr "Sauvegarde supprimée"
 
-#: cddagl/ui.py:5743 cddagl/ui.py:5785
+#: cddagl/ui.py:5746 cddagl/ui.py:5788
 msgid "Manual backup cancelled"
 msgstr "Sauvegarde manuelle annulée"
 
-#: cddagl/ui.py:5791
+#: cddagl/ui.py:5794
 msgid "manual_backup"
 msgstr "sauvegarde_manuelle"
 
-#: cddagl/ui.py:5838
+#: cddagl/ui.py:5841
 msgid "Save directory not found"
 msgstr "Le répertoire save est introuvable"
 
-#: cddagl/ui.py:5854
+#: cddagl/ui.py:5857
 msgid "Could not delete previous backup archive"
 msgstr "Impossible de supprimer la dernière sauvegarde"
 
-#: cddagl/ui.py:5943
+#: cddagl/ui.py:5946
 msgid "Cancel backup"
 msgstr "Annuler la sauvegarde"
 
-#: cddagl/ui.py:5946
+#: cddagl/ui.py:5949
 msgid "Searching for save files"
 msgstr "Recherche des fichiers des parties"
 
-#: cddagl/ui.py:5957
+#: cddagl/ui.py:5960
 msgid "Found {filename} in {path}"
 msgstr "{filename} trouvé dans {path}"
 
-#: cddagl/ui.py:5976
+#: cddagl/ui.py:5979
 msgid "Compressing save files"
 msgstr "Compression des fichiers des parties"
 
-#: cddagl/ui.py:6041
+#: cddagl/ui.py:6044
 msgid "Compressing {filename}"
 msgstr "Compression de {filename}"
 
-#: cddagl/ui.py:6063
+#: cddagl/ui.py:6066
 msgid "Saves backup completed"
 msgstr "Sauvegarde des parties complétée"
 
-#: cddagl/ui.py:6507
+#: cddagl/ui.py:6510
 msgid "Add this new mod to the repository"
 msgstr "Ajouter ce nouveau mod au répertoire"
 
-#: cddagl/ui.py:6508
+#: cddagl/ui.py:6511
 msgid ""
 "* Name: [Enter the name of the mod]\n"
 "* Url: [Enter the Url where we can find the mod]\n"
@@ -1344,35 +1360,35 @@ msgstr ""
 "publié]\n"
 "* Le mod n'est pas présent dans la version : {version}\n"
 
-#: cddagl/ui.py:6515
+#: cddagl/ui.py:6518
 msgid "<a href=\"{url}\">Suggest a new mod on GitHub</a>"
 msgstr "<a href=\"{url}\">Suggérer un nouveau mod sur GitHub</a>"
 
-#: cddagl/ui.py:6518 cddagl/ui.py:6971
+#: cddagl/ui.py:6521 cddagl/ui.py:6993
 msgid "Install this mod"
 msgstr "Installer ce mod"
 
-#: cddagl/ui.py:6521
+#: cddagl/ui.py:6524
 msgid "Ident:"
 msgstr "Ident :"
 
-#: cddagl/ui.py:6522
+#: cddagl/ui.py:6525
 msgid "Author:"
 msgstr "Auteur :"
 
-#: cddagl/ui.py:6523
+#: cddagl/ui.py:6526
 msgid "Description:"
 msgstr "Description :"
 
-#: cddagl/ui.py:6524
+#: cddagl/ui.py:6527
 msgid "Category:"
 msgstr "Catégorie :"
 
-#: cddagl/ui.py:6630
+#: cddagl/ui.py:6633
 msgid "Mod already present"
 msgstr "Ce mod est déjà présent"
 
-#: cddagl/ui.py:6631
+#: cddagl/ui.py:6634
 msgid ""
 "It seems this mod is already installed. The launcher will not overwrite "
 "the mod if it has the same directory name. You might want to delete the "
@@ -1384,35 +1400,43 @@ msgstr ""
 "if vous voulez faire une mise à jour. De plus, il ne peut y avoir qu'un "
 "seul mod avec la même valeur d'ident disponible dans le jeu."
 
-#: cddagl/ui.py:6638
+#: cddagl/ui.py:6641
 msgid "Are you sure you want to install the {name} mod?"
 msgstr "Voulez-vous vraiment installer le mode {name} ?"
 
-#: cddagl/ui.py:6641
+#: cddagl/ui.py:6644
 msgid "Install the mod"
 msgstr "Installer le mod"
 
-#: cddagl/ui.py:6725 cddagl/ui.py:6751
+#: cddagl/ui.py:6730 cddagl/ui.py:6756
 msgid "Cancel mod installation"
 msgstr "Annuler l'installation du mod"
 
-#: cddagl/ui.py:6745
+#: cddagl/ui.py:6750
 msgid "Could not find downloaded file archive"
 msgstr "Impossible de trouver le fichier téléchargé"
 
-#: cddagl/ui.py:6778 cddagl/ui.py:6928
+#: cddagl/ui.py:6783 cddagl/ui.py:6941
 msgid "Selected file is a password protected archive file"
 msgstr "Le fichier sélectionné est protégé par un mot de passe"
 
-#: cddagl/ui.py:7112
+#: cddagl/ui.py:6919
+msgid "Could not find downloaded archive ({file})"
+msgstr "Impossible de trouver le fichier téléchargé ({file})"
+
+#: cddagl/ui.py:6959
+msgid "Unknown downloaded archive format ({extension})"
+msgstr "Format de fichier téléchargé inconnu ({extension})"
+
+#: cddagl/ui.py:7157
 msgid "Finding the mod"
 msgstr "Recherche du mod"
 
-#: cddagl/ui.py:7140
+#: cddagl/ui.py:7185
 msgid "Mod installation cancelled - There is no mod in the downloaded archive"
 msgstr "Installation du mod annulée - Il n'y pas de mod dans le fichier téléchargé"
 
-#: cddagl/ui.py:7150
+#: cddagl/ui.py:7195
 msgid ""
 "Mod installation cancelled - There is already a {basename} directory in "
 "{mods_dir}"
@@ -1420,65 +1444,65 @@ msgstr ""
 "Installation du mod annulée - Il y a déjà un répertoire {basename} dans "
 "le répertoire {mods_dir}"
 
-#: cddagl/ui.py:7156
+#: cddagl/ui.py:7201
 msgid "Mod installation completed"
 msgstr "Installation du mod complétée"
 
-#: cddagl/ui.py:7180 cddagl/ui.py:7197 cddagl/ui.py:7411
+#: cddagl/ui.py:7225 cddagl/ui.py:7242 cddagl/ui.py:7474
 msgid "*Error*"
 msgstr "*Erreur*"
 
-#: cddagl/ui.py:7214
+#: cddagl/ui.py:7259
 msgid "Delete mod"
 msgstr "Supprimer le mod"
 
-#: cddagl/ui.py:7215
+#: cddagl/ui.py:7260
 msgid "This will delete the mod directory. It cannot be undone."
 msgstr ""
 "Ceci supprimera le répertoire du mod.  Il ne sera pas possible de revenir"
 " en arrière."
 
-#: cddagl/ui.py:7217
+#: cddagl/ui.py:7262
 msgid "Are you sure you want to delete the {view} mod?"
 msgstr "Voulez-vous vraiment supprimer le mod {view} ?"
 
-#: cddagl/ui.py:7219
+#: cddagl/ui.py:7264
 msgid "Delete the mod"
 msgstr "Supprimer le mod"
 
-#: cddagl/ui.py:7221
+#: cddagl/ui.py:7266
 msgid "I want to keep the mod"
 msgstr "Je veux conserver le mod"
 
-#: cddagl/ui.py:7230
+#: cddagl/ui.py:7275
 msgid "Mod deletion cancelled"
 msgstr "Suppression du mod annulée"
 
-#: cddagl/ui.py:7235
+#: cddagl/ui.py:7280
 msgid "Mod deleted"
 msgstr "Mod supprimé"
 
-#: cddagl/ui.py:7606 cddagl/ui.py:7842
+#: cddagl/ui.py:7669 cddagl/ui.py:7905
 #, python-format
 msgid "Source path '%s' is not a directory"
 msgstr "Le répertoire de source '%s' n'est pas un répertoire"
 
-#: cddagl/ui.py:7637 cddagl/ui.py:7885
+#: cddagl/ui.py:7700 cddagl/ui.py:7948
 msgid "file"
 msgid_plural "files"
 msgstr[0] "fichier"
 msgstr[1] "fichiers"
 
-#: cddagl/ui.py:7639
+#: cddagl/ui.py:7702
 msgid "Analysing {name} - Found {file_count} {files}"
 msgstr "Analyse de {name} - {file_count} {files} trouvés"
 
-#: cddagl/ui.py:7691 cddagl/ui.py:7754
+#: cddagl/ui.py:7754 cddagl/ui.py:7817
 msgid ""
 "\n"
 "<p>The launcher failed to remove the following directory: {directory}</p>"
 "\n"
-"<p>When trying to remove or access {filename}, the launcher raised the \n"
+"<p>When trying to remove or access {filename}, the launcher raised the\n"
 "following error: {error}</p>"
 msgstr ""
 "\n"
@@ -1488,7 +1512,7 @@ msgstr ""
 "a lancé \n"
 "l'erreur suivante : {error}</p>"
 
-#: cddagl/ui.py:7700 cddagl/ui.py:7763
+#: cddagl/ui.py:7763 cddagl/ui.py:7826
 msgid ""
 "\n"
 "<p>No process seems to be using that file or directory.</p>"
@@ -1496,11 +1520,11 @@ msgstr ""
 "\n"
 "<p>Aucun processus ne semble utiliser ce fichier ou ce répertoire.</p>"
 
-#: cddagl/ui.py:7703 cddagl/ui.py:7766
+#: cddagl/ui.py:7766 cddagl/ui.py:7829
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
-"using \n"
+"using\n"
 "that file or directory. You might need to end it if you want to retry.</p>"
 msgstr ""
 "\n"
@@ -1509,28 +1533,28 @@ msgstr ""
 "ce fichier ou ce répertoire. Vous aurez probablement besoin d'y mettre "
 "fin pour rééessayer.</p>"
 
-#: cddagl/ui.py:7795
+#: cddagl/ui.py:7858
 msgid "Deleting {name} - {entry}"
 msgstr "Suppresion de {name} - {entry}"
 
-#: cddagl/ui.py:7805 cddagl/ui.py:8014
+#: cddagl/ui.py:7868 cddagl/ui.py:8077
 msgid "Analysing {name}"
 msgstr "Analyse de {name}"
 
-#: cddagl/ui.py:7844
+#: cddagl/ui.py:7907
 #, python-format
 msgid "Destination path '%s' already exists"
 msgstr "Le répertoire de destination '%s' existe déjà"
 
-#: cddagl/ui.py:7888
+#: cddagl/ui.py:7951
 msgid "Analysing {name} - Found {file_count} {files} ({size})"
 msgstr "Analyse de {name} - {file_count} {files} trouvés ({size})"
 
-#: cddagl/ui.py:8004
+#: cddagl/ui.py:8067
 msgid "Copying {name} - {entry}"
 msgstr "Copie de {name} - {entry}"
 
-#: cddagl/ui.py:8061
+#: cddagl/ui.py:8124
 msgid ""
 "The CDDA Game Launcher just crashed. An unhandled exception was raised. "
 "Here are the details."
@@ -1538,7 +1562,7 @@ msgstr ""
 "Le CDDA Game Launcher s'est interrompu. Une exception inattendue a été "
 "lancée. Voici les détails."
 
-#: cddagl/ui.py:8073
+#: cddagl/ui.py:8136
 msgid ""
 "\n"
 "<p>CDDA Game Launcher version: {version}</p>\n"
@@ -1556,11 +1580,11 @@ msgstr ""
 "<p>Traceback:</p>\n"
 "<code>{traceback}</code>\n"
 
-#: cddagl/ui.py:8088
+#: cddagl/ui.py:8151
 msgid "Unhandled exception: [Enter a title]"
 msgstr "Exception inattendue: [Entrez un titre]"
 
-#: cddagl/ui.py:8089
+#: cddagl/ui.py:8152
 msgid ""
 "* Description: [Enter what you did and what happened]\n"
 "* Version: {version}\n"
@@ -1582,7 +1606,7 @@ msgstr ""
 "{traceback}\n"
 "```\n"
 
-#: cddagl/ui.py:8104
+#: cddagl/ui.py:8167
 msgid ""
 "Please help us make a better launcher <a href=\"{url}\">by reporting this"
 " issue on GitHub</a>."
@@ -1590,15 +1614,15 @@ msgstr ""
 "Veuillez nous aider à faire un meilleur lanceur <a href=\"{url}\">en "
 "signalant ce problème sur GitHub</a>."
 
-#: cddagl/ui.py:8111
+#: cddagl/ui.py:8174
 msgid "Exit"
 msgstr "Sortir"
 
-#: cddagl/ui.py:8117
+#: cddagl/ui.py:8180
 msgid "Something went wrong"
 msgstr "Quelque chose a mal tourné"
 
-#: cddagl/ui.py:8131
+#: cddagl/ui.py:8194
 msgid "Could not find translations for {locale} in {locale_dir} ({info})"
 msgstr ""
 "Impossible de trouver les traductions pour {locale} dans {locale_dir} "
@@ -1609,3 +1633,6 @@ msgstr ""
 
 #~ msgid "Could not download mod"
 #~ msgstr "Impossible de télécharger le mod"
+
+#~ msgid ""
+#~ msgstr ""
