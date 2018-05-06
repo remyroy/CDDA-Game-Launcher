@@ -239,5 +239,17 @@
     "url": "https://drive.google.com/open?id=1Syut09Asr393JYkzND3-FAYcR5sv_jFM",
     "expected_filename": "SD_Winterclothes.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/wintertime-classes/14608"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SD_Batcon",
+    "name": "Storage Battery Conversions",
+    "description": "Convert Brightnights' Rechargable Batteries to vanilla Storage Batteries.",
+    "category": "items",
+    "author": "ShadowDragon8685",
+    "size": 1059,
+    "url": "https://drive.google.com/open?id=1cEN6MG--udSFDIf03Yulazp049oSvQZ_",
+    "expected_filename": "SD_Batcon.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/battery-conversion-brightnights-to-vanilla/14639"
   }
 ]
