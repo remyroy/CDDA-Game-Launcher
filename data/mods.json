@@ -183,5 +183,163 @@
     "size": 568571,
     "url": "https://github.com/pisskop/PKs_Rebalancing/archive/master.zip",
     "homepage": "https://github.com/pisskop/PKs_Rebalancing"
+  },
+  {
+    "type": "direct_download",
+    "ident": "oa_additional_buildings_mod",
+    "name": "Oa's Additional Buildings mod",
+    "description": "Adds more buildings into the game, (for a full list see readme)",
+    "category": "buildings",
+    "author": "Oa",
+    "size": 26218,
+    "url": "https://github.com/Narroe/oa_additional_buildings_mod/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/additional-buildings-mod/15364"
+  },
+  {
+    "type": "direct_download",
+    "ident": "FujiStruct",
+    "name": "Fuji's More Buildings",
+    "description": "Adds more buildings and more variations to existing buildings.",
+    "category": "buildings",
+    "author": "Fuji",
+    "size": 55262,
+    "url": "https://github.com/NotFuji/Fuji_Structures/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/fujis-structures/15351"
+  },
+  {
+    "type": "direct_download",
+    "ident": "cityside",
+    "name": "More City Locations",
+    "description": "Adds more inner-city locations. Bring variety to your city life!",
+    "category": "buildings",
+    "author": "nornagon",
+    "size": 11883,
+    "url": "https://github.com/nornagon/cdda-more-city-locations/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/more-city-locations/13954"
+  },
+  {
+    "type": "direct_download",
+    "ident": "no_pipe_guns",
+    "name": "No Makeshift Firearms",
+    "description": "Removes crafted pipe and scrap metal firearms that fire conventional cartridges.",
+    "category": "item_exclude",
+    "author": "Cyrano7",
+    "size": 1148,
+    "url": "https://github.com/Cyrano7/No-Makeshift-Firearms-Mod/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/no-makeshift-guns-mod"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SD_Winterclothes",
+    "name": "Wintertime Classes",
+    "description": "Adds upcosted, powered-up clones of standard professions clad for wintertime.",
+    "category": "rebalance",
+    "author": "ShadowDragon8685",
+    "size": 5816,
+    "url": "https://drive.google.com/open?id=1Syut09Asr393JYkzND3-FAYcR5sv_jFM",
+    "expected_filename": "SD_Winterclothes.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/wintertime-classes/14608"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SD_Batcon",
+    "name": "Storage Battery Conversions",
+    "description": "Convert Brightnights' Rechargable Batteries to vanilla Storage Batteries.",
+    "category": "items",
+    "author": "ShadowDragon8685",
+    "size": 1059,
+    "url": "https://drive.google.com/open?id=1cEN6MG--udSFDIf03Yulazp049oSvQZ_",
+    "expected_filename": "SD_Batcon.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/battery-conversion-brightnights-to-vanilla/14639"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SD_Magcrafting",
+    "name": "Craft Ammo Magazines & Belt Links",
+    "description": "Adds recipes for ammo mags and belt linkages.",
+    "category": "items",
+    "author": "ShadowDragon8685",
+    "size": 16441,
+    "url": "https://drive.google.com/open?id=1yUoz9XrSGG7TaLpWzNMCFKMS-2lETuuU",
+    "expected_filename": "SD_Magcrafting.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/craftable-ammunition-magazines/14607"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SD_Magcrafting_Realguns_Extension",
+    "name": "Craft Ammo Mags - ERG",
+    "description": "Adds recipes for ammo mags for Extended Realistic Guns.",
+    "category": "items",
+    "author": "ShadowDragon8685",
+    "size": 1316,
+    "url": "https://drive.google.com/open?id=1rfZUhaJAGMOKIWzfdN7wuJnJH6bGBZAl",
+    "expected_filename": "SD_Magcrafting_Extension_Realguns.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/craftable-ammunition-magazines/14607"
+  },
+  {
+    "type": "direct_download",
+    "ident": "Arcana",
+    "name": "Arcana and Magic Items",
+    "description": "Adds a new skill for creating and using magical items, and alters many anomalous monsters.",
+    "category": "magical",
+    "author": "Chaosvolt",
+    "size": 67754,
+    "url": "https://github.com/chaosvolt/cdda-arcana-mod/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/magical-items-and-arcana-skill-no-longer-merged-hosted-on-github/10288"
+  },
+  {
+    "type": "direct_download",
+    "ident": "dda-lua",
+    "name": "Dark Days Ahead: Lua",
+    "description": "Shared LUA library mod for easier LUA modding of Dark Days Ahead.",
+    "category": "content",
+    "author": "ZhilkinSerg",
+    "size": 85104,
+    "url": "https://github.com/ZhilkinSerg/Cataclysm-DDA-LUA/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/cataclysm-dda-lua-updated-on-2017-11-29/14117"
+  },
+  {
+    "type": "direct_download",
+    "ident": "dda-lua-fun",
+    "name": "Dark Days Ahead: Lua (Fun)",
+    "description": "New fun using LUA.",
+    "category": "content",
+    "author": "ZhilkinSerg",
+    "size": 85104,
+    "url": "https://github.com/ZhilkinSerg/Cataclysm-DDA-LUA/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/cataclysm-dda-lua-updated-on-2017-11-29/14117"
+  },
+  {
+    "type": "direct_download",
+    "ident": "dda-lua-items",
+    "name": "Dark Days Ahead: Lua (Items)",
+    "description": "New items using LUA.",
+    "category": "content",
+    "author": "ZhilkinSerg",
+    "size": 85104,
+    "url": "https://github.com/ZhilkinSerg/Cataclysm-DDA-LUA/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/cataclysm-dda-lua-updated-on-2017-11-29/14117"
+  },
+  {
+    "type": "direct_download",
+    "ident": "dda-lua-skills",
+    "name": "Dark Days Ahead: Lua (Skills)",
+    "description": "New skills using LUA.",
+    "category": "content",
+    "author": "ZhilkinSerg",
+    "size": 85104,
+    "url": "https://github.com/ZhilkinSerg/Cataclysm-DDA-LUA/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/cataclysm-dda-lua-updated-on-2017-11-29/14117"
+  },
+  {
+    "type": "direct_download",
+    "ident": "dda-lua-traits",
+    "name": "Dark Days Ahead: Lua (Traits)",
+    "description": "New traits using LUA.",
+    "category": "content",
+    "author": "ZhilkinSerg",
+    "size": 85104,
+    "url": "https://github.com/ZhilkinSerg/Cataclysm-DDA-LUA/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/cataclysm-dda-lua-updated-on-2017-11-29/14117"
   }
 ]
