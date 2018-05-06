@@ -227,5 +227,17 @@
     "size": 1148,
     "url": "https://github.com/Cyrano7/No-Makeshift-Firearms-Mod/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/no-makeshift-guns-mod"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SD_Winterclothes",
+    "name": "Wintertime Classes",
+    "description": "Adds upcosted, powered-up clones of standard professions clad for wintertime.",
+    "category": "rebalance",
+    "author": "ShadowDragon8685",
+    "size": 5816,
+    "url": "https://drive.google.com/open?id=1Syut09Asr393JYkzND3-FAYcR5sv_jFM",
+    "expected_filename": "SD_Winterclothes.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/wintertime-classes/14608"
   }
 ]
