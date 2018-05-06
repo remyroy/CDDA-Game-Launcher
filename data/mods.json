@@ -205,5 +205,16 @@
     "size": 55262,
     "url": "https://github.com/NotFuji/Fuji_Structures/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/fujis-structures/15351"
+  },
+  {
+    "type": "direct_download",
+    "ident": "cityside",
+    "name": "More City Locations",
+    "description": "Adds more inner-city locations. Bring variety to your city life!",
+    "category": "buildings",
+    "author": "nornagon",
+    "size": 11883,
+    "url": "https://github.com/nornagon/cdda-more-city-locations/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/more-city-locations/13954"
   }
 ]
