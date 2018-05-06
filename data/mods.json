@@ -183,5 +183,16 @@
     "size": 568571,
     "url": "https://github.com/pisskop/PKs_Rebalancing/archive/master.zip",
     "homepage": "https://github.com/pisskop/PKs_Rebalancing"
+  },
+  {
+    "type": "direct_download",
+    "ident": "oa_additional_buildings_mod",
+    "name": "Oa's Additional Buildings mod",
+    "description": "Adds more buildings into the game, (for a full list see readme)",
+    "category": "buildings",
+    "author": "Oa",
+    "size": 26218,
+    "url": "https://github.com/Narroe/oa_additional_buildings_mod/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/additional-buildings-mod/15364"
   }
 ]
