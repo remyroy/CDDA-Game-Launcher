@@ -253,6 +253,30 @@
     "homepage": "https://discourse.cataclysmdda.org/t/battery-conversion-brightnights-to-vanilla/14639"
   },
   {
+    "type": "browser_download",
+    "ident": "SD_Magcrafting",
+    "name": "Craft Ammo Magazines & Belt Links",
+    "description": "Adds recipes for ammo mags and belt linkages.",
+    "category": "items",
+    "author": "ShadowDragon8685",
+    "size": 16441,
+    "url": "https://drive.google.com/open?id=1yUoz9XrSGG7TaLpWzNMCFKMS-2lETuuU",
+    "expected_filename": "SD_Magcrafting.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/craftable-ammunition-magazines/14607"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SD_Magcrafting_Realguns_Extension",
+    "name": "Craft Ammo Mags - ERG",
+    "description": "Adds recipes for ammo mags for Extended Realistic Guns.",
+    "category": "items",
+    "author": "ShadowDragon8685",
+    "size": 1316,
+    "url": "https://drive.google.com/open?id=1rfZUhaJAGMOKIWzfdN7wuJnJH6bGBZAl",
+    "expected_filename": "SD_Magcrafting_Extension_Realguns.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/craftable-ammunition-magazines/14607"
+  },
+  {
     "type": "direct_download",
     "ident": "Arcana",
     "name": "Arcana and Magic Items",
