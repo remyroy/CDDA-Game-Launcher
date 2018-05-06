@@ -216,5 +216,16 @@
     "size": 11883,
     "url": "https://github.com/nornagon/cdda-more-city-locations/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/more-city-locations/13954"
+  },
+  {
+    "type": "direct_download",
+    "ident": "no_pipe_guns",
+    "name": "No Makeshift Firearms",
+    "description": "Removes crafted pipe and scrap metal firearms that fire conventional cartridges.",
+    "category": "item_exclude",
+    "author": "Cyrano7",
+    "size": 1148,
+    "url": "https://github.com/Cyrano7/No-Makeshift-Firearms-Mod/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/no-makeshift-guns-mod"
   }
 ]
