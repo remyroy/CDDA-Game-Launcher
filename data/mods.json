@@ -10,6 +10,17 @@
     "homepage": "https://discourse.cataclysmdda.org/t/artyoms-gun-emporium-update-2-hotfix-1-holy-shit/10035"
   },
   {
+    "type": "browser_download",
+    "ident": "Arts' Guns",
+    "name": "Artyoms' Gun Emporium - Reloaded",
+    "description": "Adds all the guns that YOU need to survive the Cataclysm",
+    "author": "Artyom177, Leon713, and /u/chieflean",
+    "size": 28885,
+    "url": "https://mega.nz/#!jBIwVSSD!nlFJlnEvvUi9Z8AhIbEQqUxc0F7hYIXfOpEKay1eybE",
+    "expected_filename": "Artyom Emporium v.1.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/artyoms-gun-emporium-reloaded-more-guns/15045"
+  },
+  {
     "type": "direct_download",
     "ident": "ext",
     "name": "EXTENDED_BUILDINGS",
