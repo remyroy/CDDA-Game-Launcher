@@ -87,7 +87,16 @@ class Installer(Command):
         call(makespec_call)
 
         # Call pyinstaller
-        call(['pyinstaller', 'launcher.spec'])
+        pyinstaller_call = ['pyinstaller']
+
+        # Add debug info for PyInstaller
+        if bool(self.debug):
+            pyinstaller_call.append('--clean')
+            pyinstaller_call.extend(('--log-level', 'DEBUG'))
+
+        pyinstaller_call.append('launcher.spec')
+
+        call(pyinstaller_call)
 
 
 class ExtractUpdateMessages(Command):
