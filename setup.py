@@ -8,6 +8,7 @@ from babel.messages import frontend as babel
 from subprocess import call, check_output, CalledProcessError
 
 import os
+import winreg
 
 try:
     from os import scandir
@@ -15,17 +16,37 @@ except ImportError:
     from scandir import scandir
 
 class Installer(Command):
-    user_options = []
+    user_options = [
+        ('debug=', None,
+            'Specify if we are using a debug build with PyInstaller.'),
+    ]
     def initialize_options(self):
-        pass
+        self.debug = None
     def finalize_options(self):
         pass
 
     def run(self):
-        call(['pyi-makespec', '-F', '-w', '--noupx',
+        makespec_call = ['pyi-makespec', '-F', '-w', '--noupx',
             '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
-            'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico'])
+            'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico']
 
+        # Check if we have Windows Kits 10 path and add ucrt path
+        windowskit_path = None
+        try:
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                r'SOFTWARE\Microsoft\Windows Kits\Installed Roots',
+                access=winreg.KEY_READ | winreg.KEY_WOW64_32KEY)
+            value = winreg.QueryValueEx(key, 'KitsRoot10')
+            windowskit_path = value[0]
+            winreg.CloseKey(key)
+        except OSError:
+            windowskit_path = None
+
+        if windowskit_path is not None:
+            ucrt_path = windowskit_path + 'Redist\\ucrt\\DLLs\\x86\\'
+            makespec_call.extend(('-p', ucrt_path))
+
+        # Additional files
         added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
             ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
 
@@ -42,7 +63,7 @@ class Installer(Command):
 
         call('python setup.py compile_catalog -D cddagl -d {locale_dir}'.format(
             locale_dir=locale_dir))
-        
+
         if os.path.isdir(locale_dir):
             for entry in scandir(locale_dir):
                 if entry.is_dir():
@@ -53,17 +74,19 @@ class Installer(Command):
                         mo_path = mo_path.replace('\\', '/')
                         added_files.append((mo_path, mo_dir))
 
-        spec_content = None
-        with open('launcher.spec', 'r') as f:
-            spec_content = f.read()
+        # Include additional files
+        for src, dest in added_files:
+            src_dest = src + ';' + dest
+            makespec_call.extend(('--add-data', src_dest))
 
-        spec_content = spec_content.replace('datas=None', 'datas=added_files')
-        spec_content = ('added_files = ' + repr(added_files) + '\n' +
-            spec_content)
+        # Add debug build
+        if bool(self.debug):
+            makespec_call.append('-d')
 
-        with open('launcher.spec', 'w') as f:
-            f.write(spec_content)
+        # Call the makespec util
+        call(makespec_call)
 
+        # Call pyinstaller
         call(['pyinstaller', 'launcher.spec'])
 
 
