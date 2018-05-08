@@ -693,7 +693,7 @@ msgid ""
 "Mattahan</a> for the permission to use his artwork for the launcher "
 "icon.</p>\n"
 "\n"
-"<p>Copyright (c) 2015-2017 Rémy Roy</p>\n"
+"<p>Copyright (c) 2015-2018 Rémy Roy</p>\n"
 "\n"
 "<p>Permission is hereby granted, free of charge, to any person obtaining "
 "a copy\n"
@@ -1450,4 +1450,3 @@ msgstr ""
 
 #~ msgid "Deleting previous_version directory"
 #~ msgstr ""
-

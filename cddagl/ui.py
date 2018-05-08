@@ -831,7 +831,7 @@ class GameDirGroupBox(QGroupBox):
     def showEvent(self, event):
         if not self.shown:
             self.shown = True
-            
+
             self.last_game_directory = None
 
             if (getattr(sys, 'frozen', False)
@@ -3316,7 +3316,7 @@ href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a></li>
 <p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka
 Mattahan</a> for the permission to use his artwork for the launcher icon.</p>
 
-<p>Copyright (c) 2015-2017 Rémy Roy</p>
+<p>Copyright (c) 2015-2018 Rémy Roy</p>
 
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
