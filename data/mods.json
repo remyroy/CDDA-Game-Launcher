@@ -162,15 +162,14 @@
     "homepage": "https://discourse.cataclysmdda.org/t/no-recreational-drugs-mod/12354"
   },
   {
-    "type": "browser_download",
+    "type": "direct_download",
     "ident": "SMALLTOWNBUILDING",
     "name": "Whaleys Small Town Building Pack",
     "description": "Adds more quiant buildings, and a zoo.",
     "category": "Buildings",
     "author": "Whaley",
-    "size": 31879,
-    "url": "http://s000.tinyupload.com/index.php?file_id=04160603493089527084",
-    "expected_filename": "Small Town Building Pack.zip",
+    "size": 31773,
+    "url": "https://www.dropbox.com/s/1rtpemg9pxbt0lb/Small%20Town%20Building%20Pack.zip?dl=1",
     "homepage": "https://discourse.cataclysmdda.org/t/small-town-building-pack/13690"
   },
   {
