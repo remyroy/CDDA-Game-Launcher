@@ -6,10 +6,8 @@ html5lib
 lxml
 cssselect
 arrow
-scandir
 rarfile
 pylzma
 Babel
-pywin32
 pypiwin32
 rfc6266
