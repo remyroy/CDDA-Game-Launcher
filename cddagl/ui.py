@@ -6531,6 +6531,15 @@ class ModsTab(QTabWidget):
         details_gb_layout.addWidget(homepage_tb, 7, 1)
         self.homepage_tb = homepage_tb
 
+        version_label = QLabel()
+        details_gb_layout.addWidget(version_label, 8, 0, Qt.AlignRight)
+        self.version_label = version_label
+
+        version_le = QLineEdit()
+        version_le.setReadOnly(True)
+        details_gb_layout.addWidget(version_le, 8, 1)
+        self.version_le = version_le
+
         details_gb.setLayout(details_gb_layout)
         self.details_gb_layout = details_gb_layout
 
@@ -6571,6 +6580,7 @@ class ModsTab(QTabWidget):
 
         self.size_label.setText(_('Size:'))
         self.homepage_label.setText(_('Home page:'))
+        self.version_label.setText(_('Version:'))
 
     def get_main_window(self):
         return self.parentWidget().parentWidget().parentWidget()
@@ -7357,6 +7367,10 @@ class ModsTab(QTabWidget):
             self.path_le.setText(selected_info['path'])
             self.size_le.setText(sizeof_fmt(selected_info['size']))
             self.homepage_tb.setText('')
+            if selected_info.get('version', None) is not None:
+                self.version_le.setText(selected_info['version'])
+            else:
+                self.version_le.setText(_('Unknown'))
 
             if selected_info['enabled']:
                 self.disable_existing_button.setText(_('Disable'))
@@ -7398,6 +7412,7 @@ class ModsTab(QTabWidget):
                     self.author_le.setText(authors)
             self.description_le.setText(selected_info.get('description', ''))
             self.category_le.setText(selected_info.get('category', ''))
+            self.version_le.setText(selected_info.get('version', _('Unknown')))
 
             if selected_info['type'] == 'direct_download':
                 self.path_label.setText(_('Url:'))
@@ -7475,7 +7490,8 @@ class ModsTab(QTabWidget):
 
     def config_info(self, config_file):
         val = {}
-        keys = ('ident', 'name', 'author', 'authors', 'description', 'category')
+        keys = ('ident', 'name', 'author', 'authors', 'description', 'category',
+            'version')
         try:
             with open(config_file, 'r', encoding='utf8') as f:
                 try:
@@ -7537,6 +7553,7 @@ class ModsTab(QTabWidget):
         self.path_le.setText('')
         self.size_le.setText('')
         self.homepage_tb.setText('')
+        self.version_le.setText('')
 
     def clear_mods(self):
         self.game_dir = None
