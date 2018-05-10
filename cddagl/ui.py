@@ -1711,6 +1711,7 @@ class UpdateGroupBox(QGroupBox):
 
         self.changelog_http_reply = None
         self.changelog_html = None
+        self.parsing_thread = None
 
         layout = QGridLayout()
 
@@ -3118,7 +3119,7 @@ class UpdateGroupBox(QGroupBox):
 
         status_bar = main_window.statusBar()
         status_bar.clearMessage()
-        self.changelog_content.setHtml('')
+        self.changelog_content.setHtml(_('<h3>Loading changelog...</h3>'))
 
         status_bar.busy += 1
 
@@ -3166,62 +3167,96 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.showMessage(_('Game process is running'))
 
         if self.changelog_html is not None:
-            self.changelog_html.seek(0)
-            document = html5lib.parse(self.changelog_html, treebuilder='lxml',
-                default_encoding='utf8', namespaceHTMLElements=False)
+            self.changelog_content.setHtml(_('<h3>Parsing changelog...</h3>'))
 
-            main_panels = document.getroot().cssselect('#main-panel')
-            if len(main_panels) == 1:
-                main_panel = main_panels[0]
+            # Use thread to avoid blocking UI during parsing
+            def completed_parsing():
+                if self.parsing_thread is None:
+                    return
 
-                # Only keep the last 11 logs
-                h2_count = 0
-                for element in main_panel.iterchildren():
-                    if element.tag == 'h2':
-                        h2_count += 1
-                    if h2_count >= 11:
-                        element.getparent().remove(element)
+                self.changelog_content.setHtml(self.parsing_thread.mp_content)
+                self.parsing_thread = None
 
-                # Remove the title
-                for h1 in main_panel.cssselect('h1'):
-                    h1.getparent().remove(h1)
+            class ParsingThread(QThread):
+                completed = pyqtSignal()
 
-                # Transform h2 into divs
-                for h2 in main_panel.cssselect('h2'):
-                    div = etree.Element('div')
-                    div.extend(h2.iterchildren())
-                    h2.getparent().replace(h2, div)
+                def __init__(self, changelog_html):
+                    super(ParsingThread, self).__init__()
 
-                # Remove detailed commit information
-                for li in main_panel.cssselect('li'):
-                    for anchor in li.cssselect('a'):
-                        anchor.getparent().remove(anchor)
-                    # Remove leftover text
-                    if li.text.endswith(' ('):
-                        li.text = li.text[:-2]
-                    # Autolink issues from github
-                    escaped_text = html.escape(li.text)
-                    issues = re.findall(r'#\d+', escaped_text)
-                    if len(issues) > 0:
-                        for issue in issues:
-                            escaped_text = escaped_text.replace(issue,
-                            '<a href="{root}{number}">{issue}</a>'.format(
-                            root=ISSUE_URL_ROOT, number=issue[1:], issue=issue))
+                    self.changelog_html = changelog_html
+                    self.mp_content = ''
 
-                        li.getparent().replace(li,
-                            etree.fromstring('<li>' + escaped_text + '</li>'))
+                def __del__(self):
+                    self.wait()
 
-                # Use absolute path for anchors
-                for anchor in main_panel.cssselect('a'):
-                    if ('href' in anchor.keys()
-                        and not anchor.get('href').startswith('http')):
-                        anchor.set('href', urljoin(CHANGELOG_URL,
-                            anchor.get('href')))
+                def run(self):
+                    self.changelog_html.seek(0)
+                    document = html5lib.parse(self.changelog_html,
+                        treebuilder='lxml', default_encoding='utf8',
+                        namespaceHTMLElements=False)
 
-                mp_content = etree.tostring(main_panel,
-                    encoding='utf8', method='html').decode('utf8')
+                    main_panels = document.getroot().cssselect('#main-panel')
+                    if len(main_panels) == 1:
+                        main_panel = main_panels[0]
 
-                self.changelog_content.setHtml(mp_content)
+                        # Only keep the last 11 logs
+                        h2_count = 0
+                        for element in main_panel.iterchildren():
+                            if element.tag == 'h2':
+                                h2_count += 1
+                            if h2_count >= 11:
+                                element.getparent().remove(element)
+
+                        # Remove the title
+                        for h1 in main_panel.cssselect('h1'):
+                            h1.getparent().remove(h1)
+
+                        # Transform h2 into divs
+                        for h2 in main_panel.cssselect('h2'):
+                            div = etree.Element('div')
+                            div.extend(h2.iterchildren())
+                            h2.getparent().replace(h2, div)
+
+                        # Remove detailed commit information
+                        for li in main_panel.cssselect('li'):
+                            for anchor in li.cssselect('a'):
+                                anchor.getparent().remove(anchor)
+                            # Remove leftover text
+                            if li.text.endswith(' ('):
+                                li.text = li.text[:-2]
+                            # Autolink issues from github
+                            escaped_text = html.escape(li.text)
+                            issues = re.findall(r'#\d+', escaped_text)
+                            if len(issues) > 0:
+                                for issue in issues:
+                                    escaped_text = escaped_text.replace(issue,
+                                    '<a href="{root}{number}">{issue}'
+                                    '</a>'.format(root=ISSUE_URL_ROOT,
+                                    number=issue[1:], issue=issue))
+
+                                li.getparent().replace(li,
+                                    etree.fromstring('<li>' + escaped_text +
+                                    '</li>'))
+
+                        # Use absolute path for anchors
+                        for anchor in main_panel.cssselect('a'):
+                            if ('href' in anchor.keys()
+                                and not anchor.get('href').startswith('http')):
+                                anchor.set('href', urljoin(CHANGELOG_URL,
+                                    anchor.get('href')))
+
+                        mp_content = etree.tostring(main_panel,
+                            encoding='utf8', method='html').decode('utf8')
+
+                        self.mp_content = mp_content
+
+                    self.completed.emit()
+
+            parsing_thread = ParsingThread(self.changelog_html)
+            parsing_thread.completed.connect(completed_parsing)
+            self.parsing_thread = parsing_thread
+
+            parsing_thread.start()
 
         self.changelog_html = None
         self.changelog_http_reply = None
