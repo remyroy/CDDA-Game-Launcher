@@ -3340,10 +3340,10 @@ href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.
 </p>
 
 <p>If you like the CDDA Game Launcher, you can buy me a beer by donating
-bitcoins to <a href="bitcoin:15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ">
-15SxanjS9CELTqVRCeEKgzFKYCCvSDLdsZ</a> or by donating
+bitcoins to <a href="bitcoin:3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV">
+3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV</a> <img src="btc-qr.png"> or by donating
 ethers to <a href="https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b">
-0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a> <img src="btc-qr.png">
+0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a>
 <img src="eth-qr.png">.</p>
 
 <p>Thanks to the following people for their efforts in translating the CDDA Game
