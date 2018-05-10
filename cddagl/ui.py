@@ -7625,7 +7625,6 @@ class ModsTab(QTabWidget):
                                 self.mods.append(mod_info)
                                 mod_info['size'] = (
                                     self.scan_size(mod_info))
-                                self.add_mod(mod_info)
                                 continue
                         disabled_config_file = os.path.join(mod_path,
                             'modinfo.json.disabled')
@@ -7641,10 +7640,15 @@ class ModsTab(QTabWidget):
                                 self.mods.append(mod_info)
                                 mod_info['size'] = (
                                     self.scan_size(mod_info))
-                                self.add_mod(mod_info)
 
                 except StopIteration:
                     break
+
+            # Sort installed mods
+            self.mods.sort(key=lambda x: x['name'])
+            for mod_info in self.mods:
+                self.add_mod(mod_info)
+
         else:
             self.mods_dir = None
 
