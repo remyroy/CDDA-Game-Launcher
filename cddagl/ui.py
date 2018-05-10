@@ -7183,32 +7183,35 @@ class ModsTab(QTabWidget):
         timer.start(0)
 
     def move_new_mod(self):
-        # Find the mod in the self.extract_dir
-        # Move the mod from that location into self.mods_dir
+        # Find the mod(s) in the self.extract_dir
+        # Move the mod(s) from that location into self.mods_dir
 
         self.moving_new_mod = True
 
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
 
-        status_bar.showMessage(_('Finding the mod'))
+        status_bar.showMessage(_('Finding the mod(s)'))
 
         next_scans = deque()
         current_scan = scandir(self.extract_dir)
 
-        mod_dir = None
+        mod_dirs = set()
 
         while True:
             try:
                 entry = next(current_scan)
+                dirname, basename = os.path.split(entry.path)
+
+                # Don't include submod dir/files in mod dir search
+                if dirname in mod_dirs:
+                    continue
+
                 if entry.is_dir():
                     next_scans.append(entry.path)
                 elif entry.is_file():
-                    dirname, basename = os.path.split(entry.path)
-                    if basename == 'modinfo.json':
-                        mod_dir = dirname
-                        entry = None
-                        break
+                    if basename.lower() == 'modinfo.json':
+                        mod_dirs.add(dirname)
             except StopIteration:
                 if len(next_scans) > 0:
                     current_scan = scandir(next_scans.popleft())
@@ -7218,7 +7221,7 @@ class ModsTab(QTabWidget):
         for item in current_scan:
             pass
 
-        if mod_dir is None:
+        if len(mod_dirs) == 0:
             status_bar.showMessage(_('Mod installation cancelled - There '
                 'is no mod in the downloaded archive'))
             retry_rmtree(self.extract_dir)
@@ -7226,15 +7229,20 @@ class ModsTab(QTabWidget):
 
             self.finish_install_new_mod()
         else:
-            mod_dir_name = os.path.basename(mod_dir)
-            target_dir = os.path.join(self.mods_dir, mod_dir_name)
-            if os.path.exists(target_dir):
-                status_bar.showMessage(_('Mod installation cancelled - '
-                    'There is already a {basename} directory in '
-                    '{mods_dir}').format(basename=mod_dir_name,
-                        mods_dir=self.mods_dir))
-            else:
-                shutil.move(mod_dir, self.mods_dir)
+            all_moved = True
+            for mod_dir in mod_dirs:
+                mod_dir_name = os.path.basename(mod_dir)
+                target_dir = os.path.join(self.mods_dir, mod_dir_name)
+                if os.path.exists(target_dir):
+                    status_bar.showMessage(_('Mod installation cancelled - '
+                        'There is already a {basename} directory in '
+                        '{mods_dir}').format(basename=mod_dir_name,
+                            mods_dir=self.mods_dir))
+                    all_moved = False
+                    break
+                else:
+                    shutil.move(mod_dir, self.mods_dir)
+            if all_moved:
                 status_bar.showMessage(_('Mod installation completed'))
 
             retry_rmtree(self.extract_dir)
