@@ -26,7 +26,12 @@ class Installer(Command):
         pass
 
     def run(self):
-        makespec_call = ['pyi-makespec', '-F', '-w', '--noupx',
+        window_mode = '-w' # -w for no console and -c for console
+
+        if bool(self.debug):
+            window_mode = '-c'
+
+        makespec_call = ['pyi-makespec', '-F', window_mode, '--noupx',
             '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
             'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico']
 
