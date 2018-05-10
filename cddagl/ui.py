@@ -797,19 +797,27 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(saves_warning_label, 3, 2)
         self.saves_warning_label = saves_warning_label
 
-        launch_game_button = QPushButton()
+        buttons_container = QWidget()
+        buttons_layout = QGridLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_container.setLayout(buttons_layout)
 
+        launch_game_button = QPushButton()
         launch_game_button.setEnabled(False)
         launch_game_button.setStyleSheet("font-size: 20px;")
         launch_game_button.clicked.connect(self.launch_game)
-        layout.addWidget(launch_game_button, 4, 0, 1, 3)
+        buttons_layout.addWidget(launch_game_button, 0, 0, 1, 3)
         self.launch_game_button = launch_game_button
 
         restore_button = QPushButton()
         restore_button.setEnabled(False)
         restore_button.clicked.connect(self.restore_previous)
-        layout.addWidget(restore_button, 5, 0, 1, 3)
+        buttons_layout.addWidget(restore_button, 0, 3, 1, 1)
         self.restore_button = restore_button
+
+        layout.addWidget(buttons_container, 4, 0, 1, 3)
+        self.buttons_container = buttons_container
+        self.buttons_layout = buttons_layout
 
         self.setLayout(layout)
         self.set_text()
