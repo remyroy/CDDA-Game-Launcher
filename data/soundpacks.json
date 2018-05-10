@@ -27,5 +27,13 @@
         "url": "https://www.dropbox.com/s/d8dfmb2facvkdh6/RRFSounds.zip?dl=1",
         "size": 80933991,
         "homepage": "https://discourse.cataclysmdda.org/t/ambient-sounds/9710/201"
+    },
+    {
+        "type": "direct_download",
+        "viewname": "CDDA-Soundpack",
+        "name": "CDDA-Soundpack",
+        "url": "https://github.com/budg3/CDDA-Soundpack/archive/master.zip",
+        "size": 48214543,
+        "homepage": "https://discourse.cataclysmdda.org/t/cdda-soundpack/15329"
     }
 ]
