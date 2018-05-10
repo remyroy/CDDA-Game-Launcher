@@ -6663,9 +6663,15 @@ class ModsTab(QTabWidget):
             selected = selection_model.currentIndex()
             selected_info = self.repo_mods[selected.row()]
 
+            mod_idents = selected_info['ident']
+            if isinstance(mod_idents, list):
+                mod_idents = set(mod_idents)
+            else:
+                mod_idents = set((mod_idents, ))
+
             # Is it already installed?
             for mod in self.mods:
-                if mod['ident'] == selected_info['ident']:
+                if mod['ident'] in mod_idents:
                     confirm_msgbox = QMessageBox()
                     confirm_msgbox.setWindowTitle(_('Mod already present'))
                     confirm_msgbox.setText(_('It seems this mod is '
@@ -7376,7 +7382,10 @@ class ModsTab(QTabWidget):
             selected_info = self.repo_mods[selected.row()]
 
             self.name_le.setText(selected_info.get('name', ''))
-            self.ident_le.setText(selected_info.get('ident', ''))
+            mod_idents = selected_info.get('ident', '')
+            if isinstance(mod_idents, list):
+                mod_idents = ', '.join(mod_idents)
+            self.ident_le.setText(mod_idents)
             self.author_le.setText(selected_info.get('author', ''))
             if not selected_info.get('author', ''):
                 authors = selected_info.get('authors', [])
