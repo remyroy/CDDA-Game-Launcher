@@ -296,5 +296,16 @@
     "size": 85104,
     "url": "https://github.com/ZhilkinSerg/Cataclysm-DDA-LUA/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/cataclysm-dda-lua-updated-on-2017-11-29/14117"
+  },
+  {
+    "type": "direct_download",
+    "ident": "cars_to_wrecks",
+    "name": "Cars to Wrecks",
+    "description": "Changes vehicle spawns to spawn more wrecks and less cars.",
+    "category": "vehicles",
+    "author": "GiMoe",
+    "size": 3359,
+    "url": "https://github.com/chootrain/cdda_wrecks/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/cars-to-wrecks/15506"
   }
 ]
