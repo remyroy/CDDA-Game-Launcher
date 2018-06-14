@@ -307,5 +307,16 @@
     "size": 3359,
     "url": "https://github.com/chootrain/cdda_wrecks/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/cars-to-wrecks/15506"
+  },
+  {
+    "type": "browser_download",
+    "ident": "more_buildings_and_locations",
+    "name": "More Builings & Locations!",
+    "description": "houses in various states of construction.. more cemeteries & parks.. also vacant lots, desolate barns, dollar stores & an indoor pool! (50+ instances)",
+    "category": "buildings",
+    "author": "CosmicCoincidence",
+    "size": 51209,
+    "url": "https://nofile.io/f/fpzg9u6S0om/More+Buildings+&+Locations!.rar",
+    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8qzhjd/more_locations/"
   }
 ]
