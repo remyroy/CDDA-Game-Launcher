@@ -319,5 +319,29 @@
     "url": "https://nofile.io/f/fpzg9u6S0om/More+Buildings+&+Locations!.rar",
     "expected_filename": "More Buildings & Locations!.rar",
     "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8qzhjd/more_locations/"
+  },
+  {
+    "type": "browser_download",
+    "ident": "BIGOLBUILDING",
+    "name": "Whaleys Big Ol' Building Pack",
+    "description": "Adds more buildings , including a zoo, and a stadium.",
+    "category": "buildings",
+    "author": "Whaley",
+    "size": 44495,
+    "url": "https://nofile.io/f/kbEB4HekuOq/Whaleys+Big+Buildings+Pack.zip",
+    "expected_filename": "Whaleys Big Buildings Pack.zip",
+    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8nc0b0/whaleys_big_buildings_pack/"
+  },
+  {
+    "type": "browser_download",
+    "ident": "SEEDYSPOT",
+    "name": "Seedy Spots Building Pack",
+    "description": "Adds more low income building types.",
+    "category": "buildings",
+    "author": "Whaley",
+    "size": 44027,
+    "url": "https://nofile.io/f/NRZrNjWvZDK/Cataclysm+Seedy+Spots+Building+Pack.zip",
+    "expected_filename": "Cataclysm Seedy Spots Building Pack.zip",
+    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8nayyx/cataclysm_building_pack_seedy_spots/"
   }
 ]
