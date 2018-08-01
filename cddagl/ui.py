@@ -102,6 +102,9 @@ ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
 
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 
+FAKE_USER_AGENT = (b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+    b'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36')
+
 def clean_qt_path(path):
     return path.replace('/', '\\')
 
@@ -3876,6 +3879,10 @@ class LauncherUpdateDialog(QDialog):
                 retry_rmtree(download_dir)
                 os.makedirs(download_dir)
 
+                redirected_url = urljoin(
+                    self.http_reply.request().url().toString(),
+                    redirect.toString())
+
                 self.downloading_file = open(self.downloaded_file, 'wb')
 
                 self.download_last_read = datetime.utcnow()
@@ -3885,7 +3892,8 @@ class LauncherUpdateDialog(QDialog):
 
                 self.progress_bar.setValue(0)
 
-                self.http_reply = self.qnam.get(QNetworkRequest(redirect))
+                self.http_reply = self.qnam.get(QNetworkRequest(QUrl(
+                    redirected_url)))
                 self.http_reply.finished.connect(self.http_finished)
                 self.http_reply.readyRead.connect(self.http_ready_read)
                 self.http_reply.downloadProgress.connect(self.dl_progress)
@@ -4418,9 +4426,7 @@ class SoundpacksTab(QTabWidget):
                 self.downloading_new_soundpack = True
 
                 request = QNetworkRequest(QUrl(url))
-                request.setRawHeader(b'User-Agent', b'Mozilla/5.0 (Windows NT '
-                    b'6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                    b'Chrome/49.0.2623.87 Safari/537.36')
+                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -4555,9 +4561,13 @@ class SoundpacksTab(QTabWidget):
 
                 status_bar.busy += 1
 
+                redirected_url = urljoin(
+                    self.download_http_reply.request().url().toString(),
+                    redirect.toString())
+
                 downloading_label = QLabel()
                 downloading_label.setText(_('Downloading: {0}').format(
-                    redirect.toString()))
+                    redirected_url))
                 status_bar.addWidget(downloading_label, 100)
                 self.downloading_label = downloading_label
 
@@ -4580,10 +4590,8 @@ class SoundpacksTab(QTabWidget):
 
                 progress_bar.setValue(0)
 
-                request = QNetworkRequest(redirect)
-                request.setRawHeader(b'User-Agent', b'Mozilla/5.0 (Windows NT '
-                    b'6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                    b'Chrome/49.0.2623.87 Safari/537.36')
+                request = QNetworkRequest(QUrl(redirected_url))
+                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -4930,8 +4938,7 @@ class SoundpacksTab(QTabWidget):
                         self.current_repo_info = selected_info
 
                         request = QNetworkRequest(QUrl(selected_info['url']))
-                        request.setRawHeader(b'User-Agent',
-                            b'Mozilla /5.0 (linux-gnu)')
+                        request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
 
                         self.http_reply = self.qnam.head(request)
                         self.http_reply.finished.connect(
@@ -6778,7 +6785,7 @@ class ModsTab(QTabWidget):
                 self.downloading_new_mod = True
 
                 request = QNetworkRequest(QUrl(url))
-                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -6935,9 +6942,13 @@ class ModsTab(QTabWidget):
 
                 status_bar.busy += 1
 
+                redirected_url = urljoin(
+                    self.download_http_reply.request().url().toString(),
+                    redirect.toString())
+
                 downloading_label = QLabel()
                 downloading_label.setText(_('Downloading: {0}').format(
-                    redirect.toString()))
+                    redirected_url))
                 status_bar.addWidget(downloading_label, 100)
                 self.downloading_label = downloading_label
 
@@ -6963,8 +6974,8 @@ class ModsTab(QTabWidget):
                 self.download_first_ready = True
                 self.downloading_file = None
 
-                request = QNetworkRequest(redirect)
-                request.setRawHeader(b'User-Agent', b'Mozilla /5.0 (linux-gnu)')
+                request = QNetworkRequest(QUrl(redirected_url))
+                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -7442,8 +7453,7 @@ class ModsTab(QTabWidget):
                         self.current_repo_info = selected_info
 
                         request = QNetworkRequest(QUrl(selected_info['url']))
-                        request.setRawHeader(b'User-Agent',
-                            b'Mozilla /5.0 (linux-gnu)')
+                        request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
 
                         self.http_reply = self.qnam.head(request)
                         self.http_reply.finished.connect(
