@@ -6393,6 +6393,7 @@ class ModsTab(QTabWidget):
 
         self.game_dir = None
         self.mods_dir = None
+        self.user_mods_dir = None
 
         layout = QVBoxLayout()
 
@@ -7611,6 +7612,8 @@ class ModsTab(QTabWidget):
         self.clear_details()
 
         mods_dir = os.path.join(new_dir, 'data', 'mods')
+        user_mods_dir = os.path.join(new_dir, 'mods')
+
         if os.path.isdir(mods_dir):
             self.mods_dir = mods_dir
 
@@ -7654,13 +7657,59 @@ class ModsTab(QTabWidget):
                 except StopIteration:
                     break
 
-            # Sort installed mods
-            self.mods.sort(key=lambda x: x['name'])
-            for mod_info in self.mods:
-                self.add_mod(mod_info)
-
         else:
             self.mods_dir = None
+
+        if os.path.isdir(user_mods_dir):
+            self.user_mods_dir = user_mods_dir
+
+            dir_scan = scandir(user_mods_dir)
+
+            while True:
+                try:
+                    entry = next(dir_scan)
+                    if entry.is_dir():
+                        mod_path = entry.path
+                        config_file = os.path.join(mod_path,
+                            'modinfo.json')
+                        if os.path.isfile(config_file):
+                            info = self.config_info(config_file)
+                            if 'ident' in info:
+                                mod_info = {
+                                    'path': mod_path,
+                                    'enabled': True
+                                }
+                                mod_info.update(info)
+
+                                self.mods.append(mod_info)
+                                mod_info['size'] = (
+                                    self.scan_size(mod_info))
+                                continue
+                        disabled_config_file = os.path.join(mod_path,
+                            'modinfo.json.disabled')
+                        if os.path.isfile(disabled_config_file):
+                            info = self.config_info(disabled_config_file)
+                            if 'ident' in info:
+                                mod_info = {
+                                    'path': mod_path,
+                                    'enabled': False
+                                }
+                                mod_info.update(info)
+
+                                self.mods.append(mod_info)
+                                mod_info['size'] = (
+                                    self.scan_size(mod_info))
+
+                except StopIteration:
+                    break
+
+        else:
+            self.user_mods_dir = None
+
+        # Sort installed mods
+        self.mods.sort(key=lambda x: x['name'])
+        for mod_info in self.mods:
+            self.add_mod(mod_info)
 
 
 class TilesetsTab(QTabWidget):
