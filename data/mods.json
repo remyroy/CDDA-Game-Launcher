@@ -357,5 +357,17 @@
     "url": "https://nofile.io/f/yNNkkQcdVGE/Whaleys+Big+Buildings+Pack+FIX.zip",
     "expected_filename": "Whaleys Big Buildings Pack FIX.zip",
     "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8nc0b0/whaleys_big_buildings_pack/"
+  },
+  {
+    "type": "browser_download",
+    "ident": "more_buildings_and_locations",
+    "name": "More Builings & Locations!",
+    "description": "houses in various states of construction.. more cemeteries & parks.. also vacant lots, desolate barns, dollar stores & an indoor pool! (50+ instances)",
+    "category": "buildings",
+    "author": "CosmicCoincidence",
+    "size": 51209,
+    "url": "https://nofile.io/f/fpzg9u6S0om/More+Buildings+&+Locations!.rar",
+    "expected_filename": "More Buildings & Locations!.rar",
+    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8qzhjd/more_locations/"
   }
 ]
