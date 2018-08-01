@@ -307,5 +307,16 @@
     "size": 3359,
     "url": "https://github.com/chootrain/cdda_wrecks/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/cars-to-wrecks/15506"
+  },
+  {
+    "type": "direct_download",
+    "ident": "DracoDogMod",
+    "name": "Draco's Dog Mod",
+    "authors": [ "DracoGriffin" ],
+    "description": "Adds differing dog breeds that can be tamed and trained.",
+    "category": "creatures",
+    "size": 26582,
+    "url": "https://github.com/DracoGriffin/DG_Mods/archive/master.zip",
+    "homepage": "https://github.com/DracoGriffin"
   }
 ]
