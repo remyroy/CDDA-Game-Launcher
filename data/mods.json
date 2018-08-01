@@ -310,6 +310,17 @@
   },
   {
     "type": "direct_download",
+    "ident": "Ninja",
+    "name": "Ninja MOD",
+    "description": "Secret mod only for Ninja",
+    "category": "misc_additions",
+    "author": "hount of \"@\"",
+    "size": 43501,
+    "url": "https://www.dropbox.com/s/z1wv9fauosi443p/Ninja_2018-05-18_Linted.zip?dl=1",
+    "homepage": "https://discourse.cataclysmdda.org/t/ninja-mod-from-the-japanese-wiki/13704/"
+  },
+  {
+    "type": "direct_download",
     "ident": "DracoDogMod",
     "name": "Draco's Dog Mod",
     "authors": [ "DracoGriffin" ],
