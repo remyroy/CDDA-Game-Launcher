@@ -2799,6 +2799,44 @@ class UpdateGroupBox(QGroupBox):
         if not self.in_post_extraction:
             return
 
+        # user mods
+        user_mods_dir = os.path.join(self.game_dir, 'mods')
+        previous_user_mods_dir = os.path.join(self.game_dir, 'previous_version',
+            'mods')
+
+        if (os.path.isdir(previous_user_mods_dir) and self.in_post_extraction):
+            status_bar.showMessage(_('Restoring user custom mods'))
+
+            if not os.path.exists(user_mods_dir):
+                os.makedirs(user_mods_dir)
+
+            official_set = {}
+            for entry in os.listdir(user_mods_dir):
+                entry_path = os.path.join(user_mods_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.mod_ident(entry_path)
+                    if name is not None and name not in official_set:
+                        official_set[name] = entry_path
+            previous_set = {}
+            for entry in os.listdir(previous_user_mods_dir):
+                entry_path = os.path.join(previous_user_mods_dir, entry)
+                if os.path.isdir(entry_path):
+                    name = self.mod_ident(entry_path)
+                    if name is not None and name not in previous_set:
+                        previous_set[name] = entry_path
+
+            custom_set = set(previous_set.keys()) - set(official_set.keys())
+            for item in custom_set:
+                target_dir = os.path.join(user_mods_dir, os.path.basename(
+                    previous_set[item]))
+                if not os.path.exists(target_dir):
+                    shutil.copytree(previous_set[item], target_dir)
+
+            status_bar.clearMessage()
+
+        if not self.in_post_extraction:
+            return
+
         # Copy user-default-mods.json if present
         user_default_mods_file = os.path.join(mods_dir,
             'user-default-mods.json')
