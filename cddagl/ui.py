@@ -1857,6 +1857,11 @@ class UpdateGroupBox(QGroupBox):
 
     def update_game(self):
         if not self.updating:
+            if self.builds is None or len(self.builds) < 1:
+                status_bar.showMessage(_('Cannot update the game since no '
+                    'build was found'))
+                return
+
             self.updating = True
             self.download_aborted = False
             self.clearing_previous_dir = False
