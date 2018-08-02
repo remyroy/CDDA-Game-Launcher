@@ -6096,8 +6096,9 @@ class BackupsTab(QTabWidget):
                         self.last_comp = datetime.utcnow()
                         self.next_backup_file = None
 
-                        self.compressing_timer.stop()
-                        self.compressing_timer = None
+                        if self.compressing_timer is not None:
+                            self.compressing_timer.stop()
+                            self.compressing_timer = None
 
                         self.backup_saves_step2()
 
