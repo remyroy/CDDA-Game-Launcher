@@ -1858,6 +1858,9 @@ class UpdateGroupBox(QGroupBox):
     def update_game(self):
         if not self.updating:
             if self.builds is None or len(self.builds) < 1:
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+                
                 status_bar.showMessage(_('Cannot update the game since no '
                     'build was found'))
                 return
