@@ -977,7 +977,11 @@ class GameDirGroupBox(QGroupBox):
         elif self.game_process_id is not None:
             pid = self.game_process_id
 
-        activate_window(pid)
+        try:
+            activate_window(pid)
+        except (OSError, PyWinError):
+            # Can't activate window, we will assume that the game ended
+            self.game_ended()
 
     def launch_game(self):
         if self.game_started:
@@ -1092,40 +1096,56 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     self.ended.emit()
 
             def process_ended():
-                self.process_wait_thread = None
-
-                self.game_process = None
-                self.game_started = False
-
-                status_bar.showMessage(_('Game process has ended'))
-
-                self.enable_controls()
-                update_group_box.enable_controls()
-
-                soundpacks_tab.enable_tab()
-                mods_tab.enable_tab()
-                settings_tab.enable_tab()
-                backups_tab.enable_tab()
-
-                self.launch_game_button.setText(_('Launch game'))
-
-                self.get_main_window().setWindowState(Qt.WindowActive)
-
-                self.update_saves()
-
-                if config_true(get_config_value('backup_on_end', 'False')):
-                    backups_tab.prune_auto_backups()
-
-                    name = '{auto}_{name}'.format(auto=_('auto'),
-                        name=_('after_end'))
-
-                    backups_tab.backup_saves(name)
+                self.game_ended()
 
             process_wait_thread = ProcessWaitThread(self.game_process)
             process_wait_thread.ended.connect(process_ended)
             process_wait_thread.start()
 
             self.process_wait_thread = process_wait_thread
+
+    def game_ended(self):
+        if self.process_wait_thread is not None:
+            self.process_wait_thread.quit()
+            self.process_wait_thread = None
+
+        self.game_process = None
+        self.game_started = False
+
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_bar.showMessage(_('Game process has ended'))
+
+        main_tab = self.get_main_tab()
+        update_group_box = main_tab.update_group_box
+
+        soundpacks_tab = main_tab.get_soundpacks_tab()
+        mods_tab = main_tab.get_mods_tab()
+        settings_tab = main_tab.get_settings_tab()
+        backups_tab = main_tab.get_backups_tab()
+
+        self.enable_controls()
+        update_group_box.enable_controls()
+
+        soundpacks_tab.enable_tab()
+        mods_tab.enable_tab()
+        settings_tab.enable_tab()
+        backups_tab.enable_tab()
+
+        self.launch_game_button.setText(_('Launch game'))
+
+        self.get_main_window().setWindowState(Qt.WindowActive)
+
+        self.update_saves()
+
+        if config_true(get_config_value('backup_on_end', 'False')):
+            backups_tab.prune_auto_backups()
+
+            name = '{auto}_{name}'.format(auto=_('auto'),
+                name=_('after_end'))
+
+            backups_tab.backup_saves(name)
 
     def get_main_tab(self):
         return self.parentWidget()
@@ -1860,7 +1880,7 @@ class UpdateGroupBox(QGroupBox):
             if self.builds is None or len(self.builds) < 1:
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
-                
+
                 status_bar.showMessage(_('Cannot update the game since no '
                     'build was found'))
                 return
