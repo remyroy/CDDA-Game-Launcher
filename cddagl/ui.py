@@ -12,6 +12,7 @@ import html
 import stat
 import logging
 import platform
+import tempfile
 
 try:
     from os import scandir
@@ -104,6 +105,8 @@ WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 
 FAKE_USER_AGENT = (b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
     b'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36')
+
+TEMP_PREFIX = 'cddagl'
 
 def clean_qt_path(path):
     return path.replace('/', '\\')
@@ -915,46 +918,37 @@ class GameDirGroupBox(QGroupBox):
 
             if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
 
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
-                if not os.path.exists(temp_dir):
-                    os.makedirs(temp_dir)
+                with tempfile.TemporaryDirectory(prefix=TEMP_PREFIX
+                    ) as temp_move_dir:
 
-                temp_move_dir = os.path.join(temp_dir, 'moved')
-                while os.path.exists(temp_move_dir):
-                    temp_move_dir = os.path.join(temp_dir, 'moved-{0}'.format(
-                        '%08x' % random.randrange(16**8)))
-                os.makedirs(temp_move_dir)
+                    excluded_entries = set(['previous_version'])
+                    if config_true(get_config_value('prevent_save_move',
+                        'False')):
+                        excluded_entries.add('save')
 
-                excluded_entries = set(['previous_version'])
-                if config_true(get_config_value('prevent_save_move', 'False')):
-                    excluded_entries.add('save')
+                    # Prevent moving the launcher if it's in the game directory
+                    if getattr(sys, 'frozen', False):
+                        launcher_exe = os.path.abspath(sys.executable)
+                        launcher_dir = os.path.dirname(launcher_exe)
+                        if os.path.abspath(game_dir) == launcher_dir:
+                            excluded_entries.add(os.path.basename(launcher_exe))
 
-                # Prevent moving the launcher if it's in the game directory
-                if getattr(sys, 'frozen', False):
-                    launcher_exe = os.path.abspath(sys.executable)
-                    launcher_dir = os.path.dirname(launcher_exe)
-                    if os.path.abspath(game_dir) == launcher_dir:
-                        excluded_entries.add(os.path.basename(launcher_exe))
+                    for entry in os.listdir(game_dir):
+                        if entry not in excluded_entries:
+                            entry_path = os.path.join(game_dir, entry)
+                            shutil.move(entry_path, temp_move_dir)
 
-                for entry in os.listdir(game_dir):
-                    if entry not in excluded_entries:
-                        entry_path = os.path.join(game_dir, entry)
-                        shutil.move(entry_path, temp_move_dir)
+                    excluded_entries = set()
+                    if config_true(get_config_value('prevent_save_move', 'False')):
+                        excluded_entries.add('save')
+                    for entry in os.listdir(previous_version_dir):
+                        if entry not in excluded_entries:
+                            entry_path = os.path.join(previous_version_dir, entry)
+                            shutil.move(entry_path, game_dir)
 
-                excluded_entries = set()
-                if config_true(get_config_value('prevent_save_move', 'False')):
-                    excluded_entries.add('save')
-                for entry in os.listdir(previous_version_dir):
-                    if entry not in excluded_entries:
-                        entry_path = os.path.join(previous_version_dir, entry)
-                        shutil.move(entry_path, game_dir)
-
-                for entry in os.listdir(temp_move_dir):
-                    entry_path = os.path.join(temp_move_dir, entry)
-                    shutil.move(entry_path, previous_version_dir)
-
-                retry_rmtree(temp_move_dir)
+                    for entry in os.listdir(temp_move_dir):
+                        entry_path = os.path.join(temp_move_dir, entry)
+                        shutil.move(entry_path, previous_version_dir)
 
                 self.restored_previous = True
         except OSError as e:
@@ -1943,16 +1937,7 @@ class UpdateGroupBox(QGroupBox):
                     self.finish_updating()
                     return
 
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
-                if not os.path.exists(temp_dir):
-                    os.makedirs(temp_dir)
-
-                download_dir = os.path.join(temp_dir, 'newbuild')
-                while os.path.exists(download_dir):
-                    download_dir = os.path.join(temp_dir, 'newbuild-{0}'.format(
-                        '%08x' % random.randrange(16**8)))
-                os.makedirs(download_dir)
+                download_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
 
                 download_url = self.selected_build['url']
 
@@ -2034,6 +2019,9 @@ class UpdateGroupBox(QGroupBox):
                 self.restore_backup()
                 self.restore_previous_content(path)
 
+                if path is not None:
+                    retry_rmtree(path)
+
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
                         status_bar.showMessage(_('Update cancelled'))
@@ -2056,6 +2044,9 @@ class UpdateGroupBox(QGroupBox):
                 self.restore_backup()
                 self.restore_previous_content(path)
 
+                if path is not None:
+                    retry_rmtree(path)
+
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
                         status_bar.showMessage(_('Update cancelled'))
@@ -2076,6 +2067,9 @@ class UpdateGroupBox(QGroupBox):
                 self.restore_backup()
                 self.restore_previous_content(path)
 
+                if path is not None:
+                    retry_rmtree(path)
+
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
                         status_bar.showMessage(_('Update cancelled'))
@@ -2092,15 +2086,7 @@ class UpdateGroupBox(QGroupBox):
             len(dir_list) == 1 and dir_list[0] == 'previous_version'):
             return None
 
-        temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir)
-
-        temp_move_dir = os.path.join(temp_dir, 'moved')
-        while os.path.exists(temp_move_dir):
-            temp_move_dir = os.path.join(temp_dir, 'moved-{0}'.format(
-                '%08x' % random.randrange(16**8)))
-        os.makedirs(temp_move_dir)
+        temp_move_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
 
         excluded_entries = set(['previous_version'])
         if config_true(get_config_value('prevent_save_move', 'False')):
@@ -3900,16 +3886,7 @@ class LauncherUpdateDialog(QDialog):
 
     def showEvent(self, event):
         if not self.shown:
-            temp_dir = os.path.join(os.environ['TEMP'], 'CDDA Game Launcher')
-            if not os.path.exists(temp_dir):
-                os.makedirs(temp_dir)
-
-            temp_dl_dir = os.path.join(temp_dir, 'launcher-update')
-            while os.path.exists(temp_dl_dir):
-                temp_dl_dir = os.path.join(temp_dir,
-                    'launcher-update-{0}'.format(
-                    '%08x' % random.randrange(16**8)))
-            os.makedirs(temp_dl_dir)
+            temp_dl_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
 
             exe_name = os.path.basename(sys.executable)
 
@@ -4438,17 +4415,7 @@ class SoundpacksTab(QTabWidget):
                 self.installing_new_soundpack = True
                 self.download_aborted = False
 
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
-                if not os.path.exists(temp_dir):
-                    os.makedirs(temp_dir)
-
-                download_dir = os.path.join(temp_dir, 'newsoundpack')
-                while os.path.exists(download_dir):
-                    download_dir = os.path.join(temp_dir,
-                        'newsoundpack-{0}'.format(
-                        '%08x' % random.randrange(16**8)))
-                os.makedirs(download_dir)
+                download_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
 
                 download_url = selected_info['url']
 
@@ -6797,17 +6764,7 @@ class ModsTab(QTabWidget):
                 self.installing_new_mod = True
                 self.download_aborted = False
 
-                temp_dir = os.path.join(os.environ['TEMP'],
-                    'CDDA Game Launcher')
-                if not os.path.exists(temp_dir):
-                    os.makedirs(temp_dir)
-
-                download_dir = os.path.join(temp_dir, 'newmod')
-                while os.path.exists(download_dir):
-                    download_dir = os.path.join(temp_dir,
-                        'newmod-{0}'.format(
-                        '%08x' % random.randrange(16**8)))
-                os.makedirs(download_dir)
+                download_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
                 self.download_dir = download_dir
 
                 download_url = selected_info['url']
