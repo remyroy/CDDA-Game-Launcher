@@ -1875,9 +1875,35 @@ class UpdateGroupBox(QGroupBox):
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
 
-                status_bar.showMessage(_('Cannot update the game since no '
-                    'build was found'))
+                status_bar.showMessage(_('Cannot update or install the game '
+                    'since no build was found'))
                 return
+
+            main_tab = self.get_main_tab()
+            game_dir_group_box = main_tab.game_dir_group_box
+            game_dir = game_dir_group_box.dir_combo.currentText()
+
+            # Check if we are installing in an empty directory
+            if (game_dir_group_box.exe_path is None and
+                os.path.exists(game_dir) and
+                os.path.isdir(game_dir)):
+
+                current_scan = scandir(game_dir)
+                game_dir_empty = True
+
+                try:
+                    next(current_scan)
+                    game_dir_empty = False
+                except StopIteration:
+                    pass
+
+                if not game_dir_empty:
+                    main_window = self.get_main_window()
+                    status_bar = main_window.statusBar()
+
+                    status_bar.showMessage(_('Cannot install the game if the '
+                        'game directory is not empty'))
+                    return
 
             self.updating = True
             self.download_aborted = False
@@ -1888,9 +1914,6 @@ class UpdateGroupBox(QGroupBox):
             self.in_post_extraction = False
 
             self.selected_build = self.builds[self.builds_combo.currentIndex()]
-
-            main_tab = self.get_main_tab()
-            game_dir_group_box = main_tab.game_dir_group_box
 
             latest_build = self.builds[0]
             if game_dir_group_box.current_build == latest_build['number']:
@@ -1922,8 +1945,6 @@ class UpdateGroupBox(QGroupBox):
             mods_tab.disable_tab()
             settings_tab.disable_tab()
             backups_tab.disable_tab()
-
-            game_dir = game_dir_group_box.dir_combo.currentText()
 
             try:
                 if not os.path.exists(game_dir):
