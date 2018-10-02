@@ -5945,6 +5945,9 @@ class BackupsTab(QTabWidget):
         save_dir = os.path.join(self.game_dir, 'save')
         if not os.path.isdir(save_dir):
             status_bar.showMessage(_('Save directory not found'))
+            if self.after_backup is not None:
+                self.after_backup()
+                self.after_backup = None
             return
         self.save_dir = save_dir
 
