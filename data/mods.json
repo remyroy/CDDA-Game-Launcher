@@ -42,14 +42,14 @@
     "homepage": "https://discourse.cataclysmdda.org/t/c-dda-extra-professions-gears/10856"
   },
   {
-    "type": "browser_download",
+    "type": "direct_download",
+    "mod_type": "SUPPLEMENTAL",
     "ident": "jury_rigged_robots",
     "name": "Jury-Rigged Robots",
     "description": "Options for salvaging, jury rigging, and reprogramming broken robots.",
-    "author": "Sunshine",
-    "size": 10625,
-    "url": "https://mega.co.nz/#!rQkklSKQ!l_2XXv7YtnK8On668dqHH-MKA5THufUulGoXr-YRvjA",
-    "expected_filename": "Jury_Rigged_Robots.7z",
+    "author": "Sunshine, TheSalamanderDJ",
+    "size": 29431,
+    "url": "https://github.com/TheSalamanderDJ/Jury-Rigged-Robots/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/jury-rigged-robots-mod/9943"
   },
   {
