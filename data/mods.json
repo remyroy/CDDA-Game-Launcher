@@ -380,5 +380,25 @@
     "url": "https://nofile.io/f/fpzg9u6S0om/More+Buildings+&+Locations!.rar",
     "expected_filename": "More Buildings & Locations!.rar",
     "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8qzhjd/more_locations/"
-  }
+  },
+  {
+    "type": "direct_download",
+    "ident": "Bootleg_Walkers",
+    "name": "Bootleg Walkers",
+    "description": "Allows one to construct shoddy knock-offs of the Northrup ATSV chicken walker.  For more information, consult the README.md file.",
+    "category": "items",
+    "author": [ "Feasts Upon Stars/Aggregate" ],
+    "url": "https://github.com/91247686/Bootleg-Walkers/archive/master.zip",
+    "homepage": "https://github.com/91247686/Bootleg-Walkers"
+  },
+  {
+    "type": "direct_download",
+    "ident": "national_guard_camp_edit",
+    "name": "Beta National Guard Camp, Aggregate's edit",
+    "description": "Help test some alterations to the base Camp.  Provide feedback in the thread under 'The Lab'",
+    "category": "buildings",
+    "author": [ "acidia", "Aggregate" ],
+    "url": "https://github.com/91247686/National-Guard-Camp-edit/archive/master.zip",
+    "homepage": "https://github.com/91247686/National-Guard-Camp-edit"
+  } 
 ]
