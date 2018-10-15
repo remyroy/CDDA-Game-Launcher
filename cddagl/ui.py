@@ -80,16 +80,16 @@ READ_BUFFER_SIZE = 16 * 1024
 
 MAX_GAME_DIRECTORIES = 6
 
+BASE_URL = 'https://dev.narc.ro/cataclysm/jenkins-latest/'
+
 BASE_URLS = {
     'Tiles': {
-        'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
-            'Windows_x64/Tiles/'),
-        'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Tiles/')
+        'x64': (BASE_URL + 'Windows_x64/Tiles/'),
+        'x86': (BASE_URL + 'Windows/Tiles/')
     },
     'Console': {
-        'x64': ('http://dev.narc.ro/cataclysm/jenkins-latest/'
-            'Windows_x64/Curses/'),
-        'x86': ('http://dev.narc.ro/cataclysm/jenkins-latest/Windows/Curses/')
+        'x64': (BASE_URL + 'Windows_x64/Curses/'),
+        'x86': (BASE_URL + 'Windows/Curses/')
     }
 }
 
@@ -3063,6 +3063,38 @@ class UpdateGroupBox(QGroupBox):
         status_bar = main_window.statusBar()
         status_bar.removeWidget(self.fetching_label)
         status_bar.removeWidget(self.fetching_progress_bar)
+
+        redirect = self.http_reply.attribute(
+            QNetworkRequest.RedirectionTargetAttribute)
+        if redirect is not None:
+            redirected_url = urljoin(
+                self.http_reply.request().url().toString(),
+                redirect.toString())
+
+            fetching_label = QLabel()
+            fetching_label.setText(_('Fetching: {url}').format(
+                url=redirected_url))
+            self.base_url = redirected_url
+            status_bar.addWidget(fetching_label, 100)
+            self.fetching_label = fetching_label
+
+            progress_bar = QProgressBar()
+            status_bar.addWidget(progress_bar)
+            self.fetching_progress_bar = progress_bar
+
+            progress_bar.setMinimum(0)
+
+            self.lb_html = BytesIO()
+
+            request = QNetworkRequest(QUrl(redirected_url))
+            request.setRawHeader(b'User-Agent',
+                b'CDDA-Game-Launcher/' + version.encode('utf8'))
+
+            self.http_reply = self.qnam.get(request)
+            self.http_reply.finished.connect(self.lb_http_finished)
+            self.http_reply.readyRead.connect(self.lb_http_ready_read)
+            self.http_reply.downloadProgress.connect(self.lb_dl_progress)
+            return
 
         main_tab = self.get_main_tab()
         game_dir_group_box = main_tab.game_dir_group_box
