@@ -3115,45 +3115,68 @@ class UpdateGroupBox(QGroupBox):
             default_encoding='utf8', namespaceHTMLElements=False)
 
         builds = []
-        for row in document.getroot().cssselect('tr'):
-            build = {}
-            for index, cell in enumerate(row.cssselect('td')):
-                if index == 1:
-                    if len(cell) > 0 and cell[0].text.startswith(
-                        'cataclysmdda'):
-                        anchor = cell[0]
-                        url = urljoin(self.base_url, anchor.get('href'))
-                        name = anchor.text
+        anchors = document.getroot().cssselect('a')
+        first_one = True
+        builds_dates = {}
 
-                        build_number = None
-                        match = re.search(
-                            'cataclysmdda-[01]\\.[A-F]-(?P<build>\d+)', name)
-                        if match is not None:
-                            build_number = match.group('build')
+        for anchor in anchors:
+            if anchor.text.startswith('cataclysmdda'):
+                if first_one:
+                    first_one = False
+                    parent_tag = anchor.getparent()
+                    parent_texts = parent_tag.itertext()
+                    last_text = None
 
-                        build['url'] = url
-                        build['name'] = name
-                        build['number'] = build_number
-                elif index == 2:
-                    # build date
-                    str_date = cell.text.strip()
-                    if str_date != '':
-                        build_date = datetime.strptime(str_date,
-                            '%Y-%m-%d %H:%M')
-                        build['date'] = build_date
+                    try:
+                        next_text = next(parent_texts).strip()
+                        while True:
+                            if next_text != '':
+                                try:
+                                    if (last_text is not None and
+                                        last_text.startswith('cataclysmdda')):
+                                        date = (next_text.split(' ')[0] + ' ' +
+                                            next_text.split(' ')[1])
+                                        build_date = datetime.strptime(date,
+                                            '%Y-%m-%d %H:%M')
+                                        builds_dates[last_text] = build_date
+                                except:
+                                    pass
+                                last_text = next_text
+                            next_text = next(parent_texts).strip()
+                    except StopIteration:
+                        pass
 
-            if 'url' in build:
+
+                url = urljoin(self.base_url, anchor.get('href'))
+                name = anchor.text
+
+                build_number = None
+                match = re.search(
+                    'cataclysmdda-[01]\\.[A-F]-(?P<build>\d+)', name)
+                if match is not None:
+                    build_number = match.group('build')
+
+                build = {}
+                build['url'] = url
+                build['name'] = name
+                build['number'] = build_number
+                build['date'] = (builds_dates[name] if name in builds_dates else
+                    None)
+
                 builds.append(build)
 
         if len(builds) > 0:
-            builds.reverse()
+            builds.sort(key=lambda x: (x['number'], x['date']), reverse=True)
             self.builds = builds
 
             self.builds_combo.clear()
             for index, build in enumerate(builds):
-                build_date = arrow.get(build['date'], 'UTC')
-                human_delta = build_date.humanize(arrow.utcnow(),
-                    locale=app_locale)
+                if build['date'] is not None:
+                    build_date = arrow.get(build['date'], 'UTC')
+                    human_delta = build_date.humanize(arrow.utcnow(),
+                        locale=app_locale)
+                else:
+                    human_delta = _('Unknown')
 
                 if index == 0:
                     self.builds_combo.addItem(
