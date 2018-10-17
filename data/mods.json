@@ -400,5 +400,18 @@
     "authors": [ "acidia", "Aggregate" ],
     "url": "https://github.com/91247686/National-Guard-Camp-edit/archive/master.zip",
     "homepage": "https://github.com/91247686/National-Guard-Camp-edit"
+  },
+  {
+    "type": "direct_download",
+    "ident": "no_freeze",
+    "name": "No Freeze",
+    "authors": [ "Poragon" ],
+    "maintainers": [ "Poragon" ],
+    "description": "Makes all food items minus water freeze at -1000f",
+    "category": "items",
+    "dependencies": [ "dda" ],
+    "size": 15091,
+    "url": "https://github.com/Poragon/No-Freeze/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/no-freeze-mod-release/16709/20"
   }
 ]
