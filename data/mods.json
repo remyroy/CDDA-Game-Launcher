@@ -153,13 +153,14 @@
   {
     "type": "direct_download",
     "ident": "PK_REBALANCE",
-    "name": "PKs Rebalancing [Latest]",
+    "name": "PKs Rebalancing [build > 8098]",
     "description": "Rebalances spawn list, adds new monsters and items, adds new buildings and fortifies old buildings, and strives to create a harsher enviornment to survive in.",
     "category": "creatures",
-    "author": "pisskop",
-    "size": 568571,
-    "url": "https://github.com/pisskop/PKs_Rebalancing/archive/master.zip",
-    "homepage": "https://github.com/pisskop/PKs_Rebalancing"
+    "author": "dissociativity (Siyalatas/pisskop)",
+    "size": 492553,
+    "version": "5.7.2eUO",
+    "url": "https://github.com/dissociativity/PKs_Rebalancing/archive/master.zip",
+    "homepage": "https://github.com/Dissociativity/PKs_Rebalancing"
   },
   {
     "type": "direct_download",
