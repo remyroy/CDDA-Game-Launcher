@@ -67,19 +67,6 @@ class Installer(Command):
         except CalledProcessError:
             pass
 
-        # Gotta add SSL libraries because PyInstaller can't bundle them?
-        import PyQt5
-        pyqt5_dir = os.path.dirname(PyQt5.__file__)
-        pyqt5_bin_dir = os.path.join(pyqt5_dir, 'Qt', 'bin')
-        libeay32_file = os.path.join(pyqt5_bin_dir, 'libeay32.dll')
-        ssleay32_file = os.path.join(pyqt5_bin_dir, 'ssleay32.dll')
-
-        if os.path.exists(libeay32_file):
-            added_binaries.append((libeay32_file, r'PyQt5\Qt\bin'))
-
-        if os.path.exists(ssleay32_file):
-            added_binaries.append((ssleay32_file, r'PyQt5\Qt\bin'))
-
         # Add mo files for localization
         locale_dir = os.path.join('cddagl', 'locale')
 

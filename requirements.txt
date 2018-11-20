@@ -1,7 +1,7 @@
 SQLAlchemy
 alembic
 PyQt5
-PyInstaller
+PyInstaller>=3.4
 html5lib
 lxml
 cssselect
@@ -11,3 +11,4 @@ pylzma
 Babel
 pypiwin32
 rfc6266
+pywinutils

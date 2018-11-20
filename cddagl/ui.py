@@ -46,6 +46,8 @@ from distutils.version import LooseVersion
 
 from pywintypes import error as PyWinError
 
+import winutils
+
 from PyQt5.QtCore import (
     Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel,
     QSize, QRect, QThread, QItemSelectionModel, QItemSelection)
@@ -155,99 +157,20 @@ def sizeof_fmt(num, suffix=None):
 def get_data_path():
     return os.path.join(basedir, 'data')
 
-def remove_readonly(func, path, _):
-    os.chmod(path, stat.S_IWRITE)
-    func(path)
+def delete_path(path):
+    ''' Move directory or file in the recycle bin using the built in Windows
+    File operations dialog
+    '''
 
-def retry_rmtree(path):
-    while os.path.isdir(path):
-        try:
-            shutil.rmtree(path, onerror=remove_readonly)
-        except OSError as e:
-            retry_msgbox = QMessageBox()
-            retry_msgbox.setWindowTitle(_('Cannot remove directory'))
+    # Make sure we have an absolute path first
+    if not os.path.isabs(path):
+        path = os.path.abspath(path)
 
-            process = None
-            if e.filename is not None:
-                process = find_process_with_file_handle(e.filename)
+    shellcon = winutils.shellcon
 
-            text = _('''
-<p>The launcher failed to remove the following directory: {directory}</p>
-<p>When trying to remove or access {filename}, the launcher raised the
-following error: {error}</p>
-''').format(
-    directory=html.escape(path),
-    filename=html.escape(e.filename),
-    error=html.escape(e.strerror))
+    flags = shellcon.FOF_ALLOWUNDO
 
-            if process is None:
-                text = text + _('''
-<p>No process seems to be using that file or directory.</p>
-''')
-            else:
-                text = text + _('''
-<p>The process <strong>{image_file_name} ({pid})</strong> is currently using
-that file or directory. You might need to end it if you want to retry.</p>
-''').format(image_file_name=process['image_file_name'], pid=process['pid'])
-
-            retry_msgbox.setText(text)
-            retry_msgbox.setInformativeText(_('Do you want to retry removing '
-                'this directory?'))
-            retry_msgbox.addButton(_('Retry removing the directory'),
-                QMessageBox.YesRole)
-            retry_msgbox.addButton(_('Cancel the operation'),
-                QMessageBox.NoRole)
-            retry_msgbox.setIcon(QMessageBox.Critical)
-
-            if retry_msgbox.exec() == 1:
-                return False
-
-    return True
-
-def retry_delfile(path):
-    while os.path.isfile(path):
-        try:
-            os.remove(path)
-        except OSError as e:
-            retry_msgbox = QMessageBox()
-            retry_msgbox.setWindowTitle(_('Cannot delete file'))
-
-            process = None
-            if e.filename is not None:
-                process = find_process_with_file_handle(e.filename)
-
-            text = _('''
-<p>The launcher failed to delete the following file: {path}</p>
-<p>When trying to remove or access {filename}, the launcher raised the
-following error: {error}</p>
-''').format(
-    path=html.escape(path),
-    filename=html.escape(e.filename),
-    error=html.escape(e.strerror))
-
-            if process is None:
-                text = text + _('''
-<p>No process seems to be using that file.</p>
-''')
-            else:
-                text = text + _('''
-<p>The process <strong>{image_file_name} ({pid})</strong> is currently using
-that file. You might need to end it if you want to retry.</p>
-''').format(image_file_name=process['image_file_name'], pid=process['pid'])
-
-            retry_msgbox.setText(text)
-            retry_msgbox.setInformativeText(_('Do you want to retry deleting '
-                'this file?'))
-            retry_msgbox.addButton(_('Retry deleting the file'),
-                QMessageBox.YesRole)
-            retry_msgbox.addButton(_('Cancel the operation'),
-                QMessageBox.NoRole)
-            retry_msgbox.setIcon(QMessageBox.Critical)
-
-            if retry_msgbox.exec() == 1:
-                return False
-
-    return True
+    return winutils.delete(path, flags)
 
 def retry_rename(src, dst):
     while os.path.exists(src):
@@ -2034,14 +1957,14 @@ class UpdateGroupBox(QGroupBox):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                delete_path(download_dir)
 
                 path = self.clean_game_dir()
                 self.restore_backup()
                 self.restore_previous_content(path)
 
                 if path is not None:
-                    retry_rmtree(path)
+                    delete_path(path)
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
@@ -2066,7 +1989,7 @@ class UpdateGroupBox(QGroupBox):
                 self.restore_previous_content(path)
 
                 if path is not None:
-                    retry_rmtree(path)
+                    delete_path(path)
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
@@ -2089,7 +2012,7 @@ class UpdateGroupBox(QGroupBox):
                 self.restore_previous_content(path)
 
                 if path is not None:
-                    retry_rmtree(path)
+                    delete_path(path)
 
                 if game_dir_group_box.exe_path is not None:
                     if status_bar.busy == 0:
@@ -2152,7 +2075,7 @@ class UpdateGroupBox(QGroupBox):
                 entry_path = os.path.join(previous_version_dir, entry)
                 shutil.move(entry_path, game_dir)
 
-            retry_rmtree(previous_version_dir)
+            delete_path(previous_version_dir)
 
     def get_main_tab(self):
         return self.parentWidget()
@@ -2257,7 +2180,7 @@ class UpdateGroupBox(QGroupBox):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            retry_rmtree(download_dir)
+            delete_path(download_dir)
         else:
             # Test downloaded file
             status_bar.showMessage(_('Testing downloaded file archive'))
@@ -2300,7 +2223,7 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.showMessage(_('Downloaded archive is invalid'))
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                delete_path(download_dir)
                 self.finish_updating()
 
             def not_downloaded():
@@ -2310,7 +2233,7 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.showMessage(_('Could not download game'))
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                delete_path(download_dir)
                 self.finish_updating()
 
             test_thread = TestingZipThread(self.downloaded_file)
@@ -2335,29 +2258,15 @@ class UpdateGroupBox(QGroupBox):
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
 
-            progress_rmtree = ProgressRmTree(backup_dir, status_bar,
-                _('previous_version directory'))
+            status_bar.showMessage(_('Deleting {name}').format(
+                name=_('previous_version directory')))
 
-            def rmtree_aborted():
-                main_tab = self.get_main_tab()
-                game_dir_group_box = main_tab.game_dir_group_box
-
-                if game_dir_group_box.exe_path is not None:
-                    if status_bar.busy == 0:
-                        status_bar.showMessage(_('Update cancelled - Your '
-                        'previous_version directory is most likely unusable '
-                        'now. Restoring your previous version will most likely '
-                        'give you a broken game.'))
-                else:
-                    if status_bar.busy == 0:
-                        status_bar.showMessage(_('Installation cancelled'))
-
+            if delete_path(backup_dir):
+                self.backup_current_game()
+            else:
+                status_bar.showMessage(_('Update cancelled - Could not delete '
+                'the {name}.').format(name=_('previous_version directory')))
                 self.finish_updating()
-
-            progress_rmtree.completed.connect(self.backup_current_game)
-            progress_rmtree.aborted.connect(rmtree_aborted)
-            self.progress_rmtree = progress_rmtree
-            progress_rmtree.start()
         else:
             self.backup_current_game()
 
@@ -2525,7 +2434,7 @@ class UpdateGroupBox(QGroupBox):
                         shutil.move(self.downloaded_file, archive_dir)
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                delete_path(download_dir)
 
                 main_tab = self.get_main_tab()
                 game_dir_group_box = main_tab.game_dir_group_box
@@ -3989,13 +3898,13 @@ class LauncherUpdateDialog(QDialog):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            retry_rmtree(download_dir)
+            delete_path(download_dir)
         else:
             redirect = self.http_reply.attribute(
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                delete_path(download_dir)
                 os.makedirs(download_dir)
 
                 redirected_url = urljoin(
@@ -4631,10 +4540,10 @@ class SoundpacksTab(QTabWidget):
                 self.extracting_zipfile.close()
 
                 download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                delete_path(download_dir)
 
                 if os.path.isdir(self.extract_dir):
-                    retry_rmtree(self.extract_dir)
+                    delete_path(self.extract_dir)
 
             status_bar.showMessage(_('Soundpack installation cancelled'))
 
@@ -4655,7 +4564,7 @@ class SoundpacksTab(QTabWidget):
 
         if self.download_aborted:
             download_dir = os.path.dirname(self.downloaded_file)
-            retry_rmtree(download_dir)
+            delete_path(download_dir)
 
             self.downloading_new_soundpack = False
         else:
@@ -4663,7 +4572,7 @@ class SoundpacksTab(QTabWidget):
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
                 download_dir = os.path.dirname(self.downloaded_file)
-                retry_rmtree(download_dir)
+                delete_path(download_dir)
                 os.makedirs(download_dir)
 
                 self.downloading_file = open(self.downloaded_file, 'wb')
@@ -4721,7 +4630,7 @@ class SoundpacksTab(QTabWidget):
                                 'invalid'))
 
                             download_dir = os.path.dirname(self.downloaded_file)
-                            retry_rmtree(download_dir)
+                            delete_path(download_dir)
                             self.downloading_new_soundpack = False
 
                             self.finish_install_new_soundpack()
@@ -4731,7 +4640,7 @@ class SoundpacksTab(QTabWidget):
                     status_bar.showMessage(_('Could not download soundpack'))
 
                     download_dir = os.path.dirname(self.downloaded_file)
-                    retry_rmtree(download_dir)
+                    delete_path(download_dir)
                     self.downloading_new_soundpack = False
 
                     self.finish_install_new_soundpack()
@@ -4834,7 +4743,7 @@ class SoundpacksTab(QTabWidget):
 
                 if self.install_type == 'direct_download':
                     download_dir = os.path.dirname(self.downloaded_file)
-                    retry_rmtree(download_dir)
+                    delete_path(download_dir)
 
                 self.move_new_soundpack()
 
@@ -4891,7 +4800,7 @@ class SoundpacksTab(QTabWidget):
         if soundpack_dir is None:
             status_bar.showMessage(_('Soundpack installation cancelled - There '
                 'is no soundpack in the downloaded archive'))
-            retry_rmtree(self.extract_dir)
+            delete_path(self.extract_dir)
             self.moving_new_soundpack = False
 
             self.finish_install_new_soundpack()
@@ -4907,7 +4816,7 @@ class SoundpacksTab(QTabWidget):
                 shutil.move(soundpack_dir, self.soundpacks_dir)
                 status_bar.showMessage(_('Soundpack installation completed'))
 
-            retry_rmtree(self.extract_dir)
+            delete_path(self.extract_dir)
             self.moving_new_soundpack = False
 
             self.game_dir_changed(self.game_dir)
@@ -4976,7 +4885,7 @@ class SoundpacksTab(QTabWidget):
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
 
-            if not retry_rmtree(selected_info['path']):
+            if not delete_path(selected_info['path']):
                 status_bar.showMessage(_('Soundpack deletion cancelled'))
             else:
                 self.soundpacks_model.removeRows(selected.row(), 1)
@@ -5540,7 +5449,7 @@ class BackupsTab(QTabWidget):
 
                 def completed():
                     self.finish_backup_saves()
-                    retry_delfile(self.backup_path)
+                    delete_path(self.backup_path)
                     self.compress_thread = None
 
                 waiting_thread = WaitingThread(self.compress_thread)
@@ -5550,7 +5459,7 @@ class BackupsTab(QTabWidget):
                 waiting_thread.start()
             else:
                 self.finish_backup_saves()
-                retry_delfile(self.backup_path)
+                delete_path(self.backup_path)
                 self.compress_thread = None
 
             self.backup_compressing = False
@@ -5568,7 +5477,7 @@ class BackupsTab(QTabWidget):
 
                 def completed():
                     save_dir = os.path.join(self.game_dir, 'save')
-                    retry_rmtree(save_dir)
+                    delete_path(save_dir)
                     if self.temp_save_dir is not None:
                         retry_rename(self.temp_save_dir, save_dir)
                     self.temp_save_dir = None
@@ -5692,7 +5601,7 @@ class BackupsTab(QTabWidget):
                 return
             self.temp_save_dir = temp_save_dir
         elif os.path.isfile(save_dir):
-            if not retry_delfile(save_dir):
+            if not delete_path(save_dir):
                 status_bar.showMessage(_('Could not remove the save file'))
                 return
 
@@ -5838,7 +5747,7 @@ class BackupsTab(QTabWidget):
             self.extracting_zipfile.close()
 
         if self.temp_save_dir is not None:
-            retry_rmtree(self.temp_save_dir)
+            delete_path(self.temp_save_dir)
 
         self.enable_tab()
         self.get_main_tab().enable_tab()
@@ -5883,7 +5792,7 @@ class BackupsTab(QTabWidget):
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
 
-            if not retry_delfile(selected_info['path']):
+            if not delete_path(selected_info['path']):
                 status_bar.showMessage(_('Backup deletion cancelled'))
             else:
                 self.backups_table.removeRow(selected.row())
@@ -5928,7 +5837,7 @@ class BackupsTab(QTabWidget):
 
                 def completed():
                     self.finish_backup_saves()
-                    retry_delfile(self.backup_path)
+                    delete_path(self.backup_path)
                     self.compress_thread = None
 
                 waiting_thread = WaitingThread(self.compress_thread)
@@ -5938,7 +5847,7 @@ class BackupsTab(QTabWidget):
                 waiting_thread.start()
             else:
                 self.finish_backup_saves()
-                retry_delfile(self.backup_path)
+                delete_path(self.backup_path)
                 self.compress_thread = None
 
             self.backup_compressing = False
@@ -5991,7 +5900,7 @@ class BackupsTab(QTabWidget):
             to_remove = auto_backups[:remove_count]
 
             for backup in to_remove:
-                retry_delfile(backup['path'])
+                delete_path(backup['path'])
 
     def backup_saves(self, name, single=False):
         main_window = self.get_main_window()
@@ -6017,7 +5926,7 @@ class BackupsTab(QTabWidget):
             backup_filename = name + '.zip'
             self.backup_path = os.path.join(backup_dir, backup_filename)
             if os.path.isfile(self.backup_path):
-                if not retry_delfile(self.backup_path):
+                if not delete_path(self.backup_path):
                     status_bar.showMessage(_('Could not delete previous '
                         'backup archive'))
                     return
@@ -7010,10 +6919,10 @@ class ModsTab(QTabWidget):
 
                 if self.install_type == 'direct_download':
                     download_dir = os.path.dirname(self.downloaded_file)
-                    retry_rmtree(download_dir)
+                    delete_path(download_dir)
 
                 if os.path.isdir(self.extract_dir):
-                    retry_rmtree(self.extract_dir)
+                    delete_path(self.extract_dir)
 
             status_bar.showMessage(_('Soundpack installation cancelled'))
 
@@ -7034,14 +6943,14 @@ class ModsTab(QTabWidget):
         status_bar.busy -= 1
 
         if self.download_aborted:
-            retry_rmtree(self.download_dir)
+            delete_path(self.download_dir)
 
             self.downloading_new_mod = False
         else:
             redirect = self.download_http_reply.attribute(
                 QNetworkRequest.RedirectionTargetAttribute)
             if redirect is not None:
-                retry_rmtree(self.download_dir)
+                delete_path(self.download_dir)
                 os.makedirs(self.download_dir)
 
                 status_bar.busy += 1
@@ -7293,7 +7202,7 @@ class ModsTab(QTabWidget):
 
                 if self.install_type == 'direct_download':
                     download_dir = os.path.dirname(self.downloaded_file)
-                    retry_rmtree(download_dir)
+                    delete_path(download_dir)
 
                 self.move_new_mod()
 
@@ -7363,7 +7272,7 @@ class ModsTab(QTabWidget):
         if len(mod_dirs) == 0:
             status_bar.showMessage(_('Mod installation cancelled - There '
                 'is no mod in the downloaded archive'))
-            retry_rmtree(self.extract_dir)
+            delete_path(self.extract_dir)
             self.moving_new_mod = False
 
             self.finish_install_new_mod()
@@ -7384,7 +7293,7 @@ class ModsTab(QTabWidget):
             if all_moved:
                 status_bar.showMessage(_('Mod installation completed'))
 
-            retry_rmtree(self.extract_dir)
+            delete_path(self.extract_dir)
             self.moving_new_mod = False
 
             self.game_dir_changed(self.game_dir)
@@ -7455,7 +7364,7 @@ class ModsTab(QTabWidget):
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
 
-            if not retry_rmtree(selected_info['path']):
+            if not delete_path(selected_info['path']):
                 status_bar.showMessage(_('Mod deletion cancelled'))
             else:
                 self.mods_model.removeRows(selected.row(), 1)
