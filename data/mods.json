@@ -75,28 +75,6 @@
   },
   {
     "type": "direct_download",
-    "ident": "StatsThroughSkillsThree",
-    "name": "StatsThoughSkills III",
-    "author": "Plaidman",
-    "description": "Allows stats to raise logarithmically via skill progression. Designed to allow changing your starting stats.",
-    "category": "rebalance",
-    "size": 1934,
-    "url": "https://bitbucket.org/jrtomsic/cataclysm-dda/downloads/StatsThroughSkillsIII.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/statsthroughskills-ii/10627/21"
-  },
-  {
-    "type": "direct_download",
-    "ident": "StatsThroughSkillsFour",
-    "name": "StatsThoughSkills IV",
-    "author": "TaiGambol, Michaelmalus",
-    "description": "Allows stats to raise logarithmically via skill progression. Designed to allow changing your starting stats.",
-    "category": "rebalance",
-    "size": 1398,
-    "url": "https://www.dropbox.com/s/hjmus5en099b9eq/Stats%20Through%20Skills%20IV.7z?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/statsthroughskills-ii/10627/28"
-  },
-  {
-    "type": "direct_download",
     "mod-type": "SUPPLEMENTAL",
     "ident": "Cata++",
     "name": "Cataclysm++",
