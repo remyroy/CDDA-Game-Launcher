@@ -392,5 +392,16 @@
     "size": 15091,
     "url": "https://github.com/Poragon/No-Freeze/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/no-freeze-mod-release/16709/20"
+  },
+  {
+    "type": "direct_download",
+    "ident": "GunCotton",
+    "name": "Gun Cotton",
+    "authors": [ "vegarbg" ],
+    "description": "Adds craftable gun cotton, gun cotton based explosives, and gunpowder.",
+    "category": "items",
+    "dependencies": [ "dda" ],
+    "url": "https://github.com/vegarbg/GunCotton/archive/master.zip",
+    "homepage": "https://github.com/vegarbg/GunCotton"
   }
 ]
