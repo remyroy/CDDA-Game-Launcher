@@ -465,8 +465,8 @@ class MainWindow(QMainWindow):
 
     def showEvent(self, event):
         if not self.shown:
-            if not config_true(get_config_value('prevent_version_check_launch',
-                'False')):
+            if config_true(get_config_value('prevent_version_check_launch',
+                'False')): #if the config "preventcheck" is false, then...
                 if getattr(sys, 'frozen', False):
                     self.check_new_launcher_version()
 
