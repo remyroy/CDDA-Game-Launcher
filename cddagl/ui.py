@@ -13,13 +13,14 @@ import stat
 import logging
 import platform
 import tempfile
+import xml.etree.ElementTree
 
 try:
     from os import scandir
 except ImportError:
     from scandir import scandir
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import arrow
 
 import gettext
@@ -100,8 +101,10 @@ SAVES_WARNING_SIZE = 150 * 1024 * 1024
 RELEASES_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/releases'
 NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
 
-CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/changes'
+CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/api/xml?tree=builds[number,timestamp,building,result,changeSet[items[msg]]]&xpath=//build&wrapper=builds'
 ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
+
+BUILD_CHANGES_URL = lambda bn: f'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/{bn}/changes'
 
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 
@@ -1658,7 +1661,7 @@ class UpdateGroupBox(QGroupBox):
         self.http_reply = None
 
         self.changelog_http_reply = None
-        self.changelog_html = None
+        self.changelog_http_data = None
         self.parsing_thread = None
 
         layout = QGridLayout()
@@ -3159,7 +3162,7 @@ class UpdateGroupBox(QGroupBox):
 
     def refresh_changelog(self):
         if self.changelog_http_reply is not None:
-            self.changelog_html = None
+            self.changelog_http_data = None
             self.changelog_http_reply.abort()
             self.changelog_http_reply = None
 
@@ -3172,7 +3175,7 @@ class UpdateGroupBox(QGroupBox):
         status_bar.busy += 1
 
         changelog_label = QLabel()
-        changelog_label.setText(_('Fetching: {url}').format(url=CHANGELOG_URL))
+        changelog_label.setText(_('Fetching latest build changelogs'))
         status_bar.addWidget(changelog_label, 100)
         self.changelog_label = changelog_label
 
@@ -3182,7 +3185,7 @@ class UpdateGroupBox(QGroupBox):
 
         progress_bar.setMinimum(0)
 
-        self.changelog_html = BytesIO()
+        self.changelog_http_data = BytesIO()
 
         request = QNetworkRequest(QUrl(CHANGELOG_URL))
         request.setRawHeader(b'User-Agent',
@@ -3214,7 +3217,7 @@ class UpdateGroupBox(QGroupBox):
             if status_bar.busy == 0:
                 status_bar.showMessage(_('Game process is running'))
 
-        if self.changelog_html is not None:
+        if self.changelog_http_data is not None:
             self.changelog_content.setHtml(_('<h3>Parsing changelog...</h3>'))
 
             # Use thread to avoid blocking UI during parsing
@@ -3228,89 +3231,50 @@ class UpdateGroupBox(QGroupBox):
             class ParsingThread(QThread):
                 completed = pyqtSignal()
 
-                def __init__(self, changelog_html):
+                def __init__(self, changelog_http_data):
                     super(ParsingThread, self).__init__()
 
-                    self.changelog_html = changelog_html
+                    self.changelog_http_data = changelog_http_data
                     self.mp_content = ''
 
                 def __del__(self):
                     self.wait()
 
                 def run(self):
-                    self.changelog_html.seek(0)
-                    document = html5lib.parse(self.changelog_html,
-                        treebuilder='lxml', default_encoding='utf8',
-                        namespaceHTMLElements=False)
+                    self.changelog_http_data.seek(0)
+                    changelog_xml = xml.etree.ElementTree.fromstring(self.changelog_http_data.read())
 
-                    main_panels = document.getroot().cssselect('#main-panel')
-                    if len(main_panels) == 1:
-                        main_panel = main_panels[0]
+                    for build_data in changelog_xml:
+                        build_changes = build_data.findall(r'.//changeSet/item/msg')
+                        if (len(build_changes) <= 0
+                                or build_data.find('building').text == 'true'
+                                or build_data.find('result').text != 'SUCCESS'):
+                            continue
+                        build_number = int(build_data.find('number').text)
+                        build_timestamp = int(build_data.find('timestamp').text) // 1000
+                        build_date_utc = datetime.utcfromtimestamp(build_timestamp).astimezone(tz=timezone.utc)
+                        build_date_local = build_date_utc.astimezone(tz=None)
 
-                        # Only keep the last 11 logs
-                        h2_count = 0
-                        for element in main_panel.iterchildren():
-                            if element.tag == 'h2':
-                                h2_count += 1
-                            if h2_count >= 11:
-                                element.getparent().remove(element)
-
-                        # Remove the title
-                        for h1 in main_panel.cssselect('h1'):
-                            h1.getparent().remove(h1)
-
-                        # Transform h2 into divs
-                        for h2 in main_panel.cssselect('h2'):
-                            div = etree.Element('div')
-                            div.extend(h2.iterchildren())
-                            h2.getparent().replace(h2, div)
-
-                        # Remove detailed commit information
-                        for li in main_panel.cssselect('li'):
-                            for anchor in li.cssselect('a'):
-                                anchor.getparent().remove(anchor)
-                            # Remove leftover text
-                            if li.text.endswith(' ('):
-                                li.text = li.text[:-2]
-                            # Autolink issues from github
-                            escaped_text = html.escape(li.text)
-                            issues = re.findall(r'#\d+', escaped_text)
-                            if len(issues) > 0:
-                                for issue in issues:
-                                    escaped_text = escaped_text.replace(issue,
-                                    '<a href="{root}{number}">{issue}'
-                                    '</a>'.format(root=ISSUE_URL_ROOT,
-                                    number=issue[1:], issue=issue))
-
-                                li.getparent().replace(li,
-                                    etree.fromstring('<li>' + escaped_text +
-                                    '</li>'))
-
-                        # Use absolute path for anchors
-                        for anchor in main_panel.cssselect('a'):
-                            if ('href' in anchor.keys()
-                                and not anchor.get('href').startswith('http')):
-                                anchor.set('href', urljoin(CHANGELOG_URL,
-                                    anchor.get('href')))
-
-                        mp_content = etree.tostring(main_panel,
-                            encoding='utf8', method='html').decode('utf8')
-
-                        self.mp_content = mp_content
+                        build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">Build #{build_number}</a>'
+                        self.mp_content += f'<h4>{build_link} - {build_date_local.strftime("%c (UTC%z)")}</h4>'
+                        self.mp_content += '<ul>'
+                        for changeset_item in build_changes:
+                            self.mp_content += f'<li>{changeset_item.text}</li>'
+                        self.mp_content += '</ul>'
 
                     self.completed.emit()
 
-            parsing_thread = ParsingThread(self.changelog_html)
+            parsing_thread = ParsingThread(self.changelog_http_data)
             parsing_thread.completed.connect(completed_parsing)
             self.parsing_thread = parsing_thread
 
             parsing_thread.start()
 
-        self.changelog_html = None
+        self.changelog_http_data = None
         self.changelog_http_reply = None
 
     def changelog_http_ready_read(self):
-        self.changelog_html.write(self.changelog_http_reply.readAll())
+        self.changelog_http_data.write(self.changelog_http_reply.readAll())
 
     def changelog_dl_progress(self, bytes_read, total_bytes):
         if total_bytes == -1:
