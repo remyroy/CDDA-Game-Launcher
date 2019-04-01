@@ -3245,21 +3245,38 @@ class UpdateGroupBox(QGroupBox):
                     changelog_xml = xml.etree.ElementTree.fromstring(self.changelog_http_data.read())
 
                     for build_data in changelog_xml:
-                        build_changes = build_data.findall(r'.//changeSet/item/msg')
-                        if (len(build_changes) <= 0
-                                or build_data.find('building').text == 'true'
-                                or build_data.find('result').text != 'SUCCESS'):
-                            continue
-                        build_number = int(build_data.find('number').text)
-                        build_timestamp = int(build_data.find('timestamp').text) // 1000
-                        build_date_utc = datetime.utcfromtimestamp(build_timestamp).astimezone(tz=timezone.utc)
-                        build_date_local = build_date_utc.astimezone(tz=None)
+                        build_date_text = None
+                        if build_data.find('building').text == 'true':
+                            build_status = 'IN_PROGRESS'
+                        else:
+                            build_status = build_data.find('result').text   ### 'SUCCESS' or 'FAILURE'
 
+                            build_timestamp = int(build_data.find('timestamp').text) // 1000
+                            build_date_utc = datetime.utcfromtimestamp(build_timestamp).astimezone(tz=timezone.utc)
+                            build_date_local = build_date_utc.astimezone(tz=None)
+                            build_date_text = build_date_local.strftime("%c (UTC%z)")
+
+                        build_changes = build_data.findall(r'.//changeSet/item/msg')
+                        build_number = int(build_data.find('number').text)
                         build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">Build #{build_number}</a>'
-                        self.mp_content += f'<h4>{build_link} - {build_date_local.strftime("%c (UTC%z)")}</h4>'
+
+                        if build_status == 'IN_PROGRESS':
+                            fmt = '<h4>{0} - <span style="color:purple">{1}</span></h4>'
+                            self.mp_content += fmt.format(build_link, _('Build in progress for some platforms!'))
+                        elif build_status == 'SUCCESS':
+                            self.mp_content += '<h4>{0} - {1}</h4>'.format(build_link, build_date_text)
+                        else:   ### build_status = 'FAILURE'
+                            fmt = '<h4>{0} - {1}, <span style="color:red">{2}</span></h4>'
+                            self.mp_content += fmt.format(build_link, build_date_text,
+                                                          _('but build failed for some platforms!'))
+
                         self.mp_content += '<ul>'
-                        for changeset_item in build_changes:
-                            self.mp_content += f'<li>{changeset_item.text}</li>'
+                        if len(build_changes) < 1:
+                            fmt = '<li><span style="color:green">{0}</span></li>'
+                            self.mp_content += fmt.format(_('No changes, same code as previous build!'))
+                        else:
+                            for changeset_item in build_changes:
+                                self.mp_content += f'<li>{changeset_item.text}</li>'
                         self.mp_content += '</ul>'
 
                     self.completed.emit()
