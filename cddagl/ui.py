@@ -3244,6 +3244,9 @@ class UpdateGroupBox(QGroupBox):
                     self.changelog_http_data.seek(0)
                     changelog_xml = xml.etree.ElementTree.fromstring(self.changelog_http_data.read())
 
+                    ### "((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))" is like a \b that accepts "#" as word char too
+                    id_regex = re.compile(r'((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))#(?P<id>\d+)\b')
+
                     for build_data in changelog_xml:
                         build_date_text = None
                         if build_data.find('building').text == 'true':
@@ -3276,7 +3279,9 @@ class UpdateGroupBox(QGroupBox):
                             self.mp_content += fmt.format(_('No changes, same code as previous build!'))
                         else:
                             for changeset_item in build_changes:
-                                self.mp_content += f'<li>{changeset_item.text}</li>'
+                                change_with_links = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>',
+                                                                 changeset_item.text)
+                                self.mp_content += f'<li>{change_with_links}</li>'
                         self.mp_content += '</ul>'
 
                     self.completed.emit()
