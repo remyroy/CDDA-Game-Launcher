@@ -3255,7 +3255,7 @@ class UpdateGroupBox(QGroupBox):
                             build_status = build_data.find('result').text   ### 'SUCCESS' or 'FAILURE'
 
                             build_timestamp = int(build_data.find('timestamp').text) // 1000
-                            build_date_utc = datetime.utcfromtimestamp(build_timestamp).astimezone(tz=timezone.utc)
+                            build_date_utc = datetime.utcfromtimestamp(build_timestamp).replace(tzinfo=timezone.utc)
                             build_date_local = build_date_utc.astimezone(tz=None)
                             build_date_text = build_date_local.strftime("%c (UTC%z)")
 
