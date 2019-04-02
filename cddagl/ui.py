@@ -3248,28 +3248,28 @@ class UpdateGroupBox(QGroupBox):
                     id_regex = re.compile(r'((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))#(?P<id>\d+)\b')
 
                     for build_data in changelog_xml:
-                        build_date_text = None
                         if build_data.find('building').text == 'true':
                             build_status = 'IN_PROGRESS'
                         else:
                             build_status = build_data.find('result').text   ### 'SUCCESS' or 'FAILURE'
 
-                            build_timestamp = int(build_data.find('timestamp').text) // 1000
-                            build_date_utc = datetime.utcfromtimestamp(build_timestamp).replace(tzinfo=timezone.utc)
-                            build_date_local = build_date_utc.astimezone(tz=None)
-                            build_date_text = build_date_local.strftime("%c (UTC%z)")
+                        build_timestamp = int(build_data.find('timestamp').text) // 1000
+                        build_date_utc = datetime.utcfromtimestamp(build_timestamp).replace(tzinfo=timezone.utc)
+                        build_date_local = build_date_utc.astimezone(tz=None)
+                        build_date_text = build_date_local.strftime("%c (UTC%z)")
 
                         build_changes = build_data.findall(r'.//changeSet/item/msg')
                         build_number = int(build_data.find('number').text)
                         build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">Build #{build_number}</a>'
 
                         if build_status == 'IN_PROGRESS':
-                            fmt = '<h4>{0} - <span style="color:purple">{1}</span></h4>'
-                            self.mp_content += fmt.format(build_link, _('Build in progress for some platforms!'))
+                            fmt = '<h4>{0} - {1} <span style="color:purple">{2}</span></h4>'
+                            self.mp_content += fmt.format(build_link, build_date_text,
+                                                          _('build in progress for some platforms!'))
                         elif build_status == 'SUCCESS':
                             self.mp_content += '<h4>{0} - {1}</h4>'.format(build_link, build_date_text)
                         else:   ### build_status = 'FAILURE'
-                            fmt = '<h4>{0} - {1}, <span style="color:red">{2}</span></h4>'
+                            fmt = '<h4>{0} - {1} <span style="color:red">{2}</span></h4>'
                             self.mp_content += fmt.format(build_link, build_date_text,
                                                           _('but build failed for some platforms!'))
 
