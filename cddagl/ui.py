@@ -113,6 +113,14 @@ FAKE_USER_AGENT = (b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
 
 TEMP_PREFIX = 'cddagl'
 
+def unique(seq):
+    """Return unique entries in a unordered sequence while preserving order."""
+    seen = set()
+    for x in seq:
+        if x not in seen:
+            seen.add(x)
+            yield x
+
 def clean_qt_path(path):
     return path.replace('/', '\\')
 
@@ -3258,7 +3266,8 @@ class UpdateGroupBox(QGroupBox):
                         build_date_local = build_date_utc.astimezone(tz=None)
                         build_date_text = build_date_local.strftime("%c (UTC%z)")
 
-                        build_changes = build_data.findall(r'.//changeSet/item/msg')
+                        build_changes = map(lambda x: x.text.strip(), build_data.findall(r'.//changeSet/item/msg'))
+                        build_changes = list(unique(build_changes))
                         build_number = int(build_data.find('number').text)
                         build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">Build #{build_number}</a>'
 
@@ -3279,7 +3288,7 @@ class UpdateGroupBox(QGroupBox):
                             self.mp_content += fmt.format(_('No changes, same code as previous build!'))
                         else:
                             for change in build_changes:
-                                change = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>', change.text)
+                                change = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>', change)
                                 self.mp_content += f'<li>{change}</li>'
                         self.mp_content += '</ul>'
 
