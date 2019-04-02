@@ -3278,10 +3278,9 @@ class UpdateGroupBox(QGroupBox):
                             fmt = '<li><span style="color:green">{0}</span></li>'
                             self.mp_content += fmt.format(_('No changes, same code as previous build!'))
                         else:
-                            for changeset_item in build_changes:
-                                change_with_links = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>',
-                                                                 changeset_item.text)
-                                self.mp_content += f'<li>{change_with_links}</li>'
+                            for change in build_changes:
+                                change = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>', change.text)
+                                self.mp_content += f'<li>{change}</li>'
                         self.mp_content += '</ul>'
 
                     self.completed.emit()
