@@ -1654,6 +1654,65 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             timer.start(0)
 
 
+class ParsingThread(QThread):
+    completed = pyqtSignal()
+
+    def __init__(self, changelog_http_data):
+        super(ParsingThread, self).__init__()
+
+        self.changelog_http_data = changelog_http_data
+        self.mp_content = ''
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        self.changelog_http_data.seek(0)
+        changelog_xml = xml.etree.ElementTree.fromstring(self.changelog_http_data.read())
+
+        ### "((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))" is like a \b that accepts "#" as word char too
+        id_regex = re.compile(r'((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))#(?P<id>\d+)\b')
+
+        for build_data in changelog_xml:
+            if build_data.find('building').text == 'true':
+                build_status = 'IN_PROGRESS'
+            else:
+                build_status = build_data.find('result').text   ### 'SUCCESS' or 'FAILURE'
+
+            build_timestamp = int(build_data.find('timestamp').text) // 1000
+            build_date_utc = datetime.utcfromtimestamp(build_timestamp).replace(tzinfo=timezone.utc)
+            build_date_local = build_date_utc.astimezone(tz=None)
+            build_date_text = build_date_local.strftime("%c (UTC%z)")
+
+            build_changes = map(lambda x: x.text.strip(), build_data.findall(r'.//changeSet/item/msg'))
+            build_changes = list(unique(build_changes))
+            build_number = int(build_data.find('number').text)
+            build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">Build #{build_number}</a>'
+
+            if build_status == 'IN_PROGRESS':
+                fmt = '<h4>{0} - {1} <span style="color:purple">{2}</span></h4>'
+                self.mp_content += fmt.format(build_link, build_date_text,
+                                              _('build in progress for some platforms!'))
+            elif build_status == 'SUCCESS':
+                self.mp_content += '<h4>{0} - {1}</h4>'.format(build_link, build_date_text)
+            else:   ### build_status = 'FAILURE'
+                fmt = '<h4>{0} - {1} <span style="color:red">{2}</span></h4>'
+                self.mp_content += fmt.format(build_link, build_date_text,
+                                              _('but build failed for some platforms!'))
+
+            self.mp_content += '<ul>'
+            if len(build_changes) < 1:
+                fmt = '<li><span style="color:green">{0}</span></li>'
+                self.mp_content += fmt.format(_('No changes, same code as previous build!'))
+            else:
+                for change in build_changes:
+                    change = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>', change)
+                    self.mp_content += f'<li>{change}</li>'
+            self.mp_content += '</ul>'
+
+        self.completed.emit()
+
+
 class UpdateGroupBox(QGroupBox):
     def __init__(self):
         super(UpdateGroupBox, self).__init__()
@@ -3235,64 +3294,6 @@ class UpdateGroupBox(QGroupBox):
 
                 self.changelog_content.setHtml(self.parsing_thread.mp_content)
                 self.parsing_thread = None
-
-            class ParsingThread(QThread):
-                completed = pyqtSignal()
-
-                def __init__(self, changelog_http_data):
-                    super(ParsingThread, self).__init__()
-
-                    self.changelog_http_data = changelog_http_data
-                    self.mp_content = ''
-
-                def __del__(self):
-                    self.wait()
-
-                def run(self):
-                    self.changelog_http_data.seek(0)
-                    changelog_xml = xml.etree.ElementTree.fromstring(self.changelog_http_data.read())
-
-                    ### "((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))" is like a \b that accepts "#" as word char too
-                    id_regex = re.compile(r'((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))#(?P<id>\d+)\b')
-
-                    for build_data in changelog_xml:
-                        if build_data.find('building').text == 'true':
-                            build_status = 'IN_PROGRESS'
-                        else:
-                            build_status = build_data.find('result').text   ### 'SUCCESS' or 'FAILURE'
-
-                        build_timestamp = int(build_data.find('timestamp').text) // 1000
-                        build_date_utc = datetime.utcfromtimestamp(build_timestamp).replace(tzinfo=timezone.utc)
-                        build_date_local = build_date_utc.astimezone(tz=None)
-                        build_date_text = build_date_local.strftime("%c (UTC%z)")
-
-                        build_changes = map(lambda x: x.text.strip(), build_data.findall(r'.//changeSet/item/msg'))
-                        build_changes = list(unique(build_changes))
-                        build_number = int(build_data.find('number').text)
-                        build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">Build #{build_number}</a>'
-
-                        if build_status == 'IN_PROGRESS':
-                            fmt = '<h4>{0} - {1} <span style="color:purple">{2}</span></h4>'
-                            self.mp_content += fmt.format(build_link, build_date_text,
-                                                          _('build in progress for some platforms!'))
-                        elif build_status == 'SUCCESS':
-                            self.mp_content += '<h4>{0} - {1}</h4>'.format(build_link, build_date_text)
-                        else:   ### build_status = 'FAILURE'
-                            fmt = '<h4>{0} - {1} <span style="color:red">{2}</span></h4>'
-                            self.mp_content += fmt.format(build_link, build_date_text,
-                                                          _('but build failed for some platforms!'))
-
-                        self.mp_content += '<ul>'
-                        if len(build_changes) < 1:
-                            fmt = '<li><span style="color:green">{0}</span></li>'
-                            self.mp_content += fmt.format(_('No changes, same code as previous build!'))
-                        else:
-                            for change in build_changes:
-                                change = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>', change)
-                                self.mp_content += f'<li>{change}</li>'
-                        self.mp_content += '</ul>'
-
-                    self.completed.emit()
 
             parsing_thread = ParsingThread(self.changelog_http_data)
             parsing_thread.completed.connect(completed_parsing)
