@@ -114,7 +114,7 @@ FAKE_USER_AGENT = (b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
 TEMP_PREFIX = 'cddagl'
 
 def unique(seq):
-    """Return unique entries in a unordered sequence while preserving order."""
+    """Return unique entries in a unordered sequence while original order."""
     seen = set()
     for x in seq:
         if x not in seen:
@@ -1654,63 +1654,85 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             timer.start(0)
 
 
-class ParsingThread(QThread):
-    completed = pyqtSignal()
+class ChangelogParsingThread(QThread):
+    completed = pyqtSignal(StringIO)
 
     def __init__(self, changelog_http_data):
-        super(ParsingThread, self).__init__()
-
+        super(ChangelogParsingThread, self).__init__()
         self.changelog_http_data = changelog_http_data
-        self.mp_content = ''
 
     def __del__(self):
         self.wait()
 
     def run(self):
+        changelog_html = StringIO()
         self.changelog_http_data.seek(0)
-        changelog_xml = xml.etree.ElementTree.fromstring(self.changelog_http_data.read())
+        changelog_xml = xml.etree.ElementTree.fromstring(
+                            self.changelog_http_data.read())
 
-        ### "((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))" is like a \b that accepts "#" as word char too
-        id_regex = re.compile(r'((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))#(?P<id>\d+)\b')
+        ### "((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))" is like a \b
+        ### that accepts "#" as word char too.
+        ### regex used to match issues / PR IDs like "#43151"
+        id_regex = re.compile(r'((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))'
+                              r'#(?P<id>\d+)\b')
 
         for build_data in changelog_xml:
             if build_data.find('building').text == 'true':
                 build_status = 'IN_PROGRESS'
             else:
-                build_status = build_data.find('result').text   ### 'SUCCESS' or 'FAILURE'
+                ### possible "result" values: 'SUCCESS' or 'FAILURE'
+                build_status = build_data.find('result').text
 
             build_timestamp = int(build_data.find('timestamp').text) // 1000
-            build_date_utc = datetime.utcfromtimestamp(build_timestamp).replace(tzinfo=timezone.utc)
+            build_date_utc = datetime.utcfromtimestamp(build_timestamp)
+            build_date_utc = build_date_utc.replace(tzinfo=timezone.utc)
             build_date_local = build_date_utc.astimezone(tz=None)
             build_date_text = build_date_local.strftime("%c (UTC%z)")
 
-            build_changes = map(lambda x: x.text.strip(), build_data.findall(r'.//changeSet/item/msg'))
+            build_changes = build_data.findall(r'.//changeSet/item/msg')
+            build_changes = map(lambda x: x.text.strip(), build_changes)
             build_changes = list(unique(build_changes))
             build_number = int(build_data.find('number').text)
-            build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">Build #{build_number}</a>'
+            build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">' \
+                         f'Build #{build_number}</a>'
 
             if build_status == 'IN_PROGRESS':
-                fmt = '<h4>{0} - {1} <span style="color:purple">{2}</span></h4>'
-                self.mp_content += fmt.format(build_link, build_date_text,
-                                              _('build in progress for some platforms!'))
+                changelog_html.write(
+                    '<h4>{0} - {1} <span style="color:purple">{2}</span></h4>'
+                    .format(
+                        build_link,
+                        build_date_text,
+                        _('build in progress for some platforms!')
+                    )
+                )
             elif build_status == 'SUCCESS':
-                self.mp_content += '<h4>{0} - {1}</h4>'.format(build_link, build_date_text)
-            else:   ### build_status = 'FAILURE'
-                fmt = '<h4>{0} - {1} <span style="color:red">{2}</span></h4>'
-                self.mp_content += fmt.format(build_link, build_date_text,
-                                              _('but build failed for some platforms!'))
+                changelog_html.write(
+                    '<h4>{0} - {1}</h4>'
+                    .format(build_link, build_date_text)
+                )
+            else:   ### build_status == 'FAILURE'
+                changelog_html.write(
+                    '<h4>{0} - {1} <span style="color:red">{2}</span></h4>'
+                    .format(
+                        build_link,
+                        build_date_text,
+                        _('but build failed for some platforms!')
+                    )
+                )
 
-            self.mp_content += '<ul>'
+            changelog_html.write('<ul>')
             if len(build_changes) < 1:
-                fmt = '<li><span style="color:green">{0}</span></li>'
-                self.mp_content += fmt.format(_('No changes, same code as previous build!'))
+                changelog_html.write(
+                    '<li><span style="color:green">{0}</span></li>'
+                    .format(_('No changes, same code as previous build!')))
             else:
                 for change in build_changes:
-                    change = id_regex.sub(rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>', change)
-                    self.mp_content += f'<li>{change}</li>'
-            self.mp_content += '</ul>'
+                    link_repl = rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>'
+                    change = id_regex.sub(link_repl, change)
+                    changelog_html.write(f'<li>{change}</li>')
+            changelog_html.write('</ul>')
 
-        self.completed.emit()
+        self.completed.emit(changelog_html)
 
 
 class UpdateGroupBox(QGroupBox):
@@ -1729,7 +1751,6 @@ class UpdateGroupBox(QGroupBox):
 
         self.changelog_http_reply = None
         self.changelog_http_data = None
-        self.parsing_thread = None
 
         layout = QGridLayout()
 
@@ -3288,17 +3309,9 @@ class UpdateGroupBox(QGroupBox):
             self.changelog_content.setHtml(_('<h3>Parsing changelog...</h3>'))
 
             # Use thread to avoid blocking UI during parsing
-            def completed_parsing():
-                if self.parsing_thread is None:
-                    return
-
-                self.changelog_content.setHtml(self.parsing_thread.mp_content)
-                self.parsing_thread = None
-
-            parsing_thread = ParsingThread(self.changelog_http_data)
-            parsing_thread.completed.connect(completed_parsing)
-            self.parsing_thread = parsing_thread
-
+            parsing_thread = ChangelogParsingThread(self.changelog_http_data)
+            parsing_thread.completed.connect(
+                lambda x: self.changelog_content.setHtml(x.getvalue()))
             parsing_thread.start()
 
         self.changelog_http_data = None
