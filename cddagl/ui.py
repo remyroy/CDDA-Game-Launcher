@@ -951,7 +951,7 @@ class GameDirGroupBox(QGroupBox):
 
         try:
             game_process = subprocess.Popen(cmd, cwd=exe_dir,
-                startupinfo=subprocess.CREATE_NEW_PROCESS_GROUP)
+                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
         except OSError as e:
             main_window = self.get_main_window()
             status_bar = main_window.statusBar()
