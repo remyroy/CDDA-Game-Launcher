@@ -423,5 +423,18 @@
     "category": "misc_additions",
     "url": "https://github.com/Axema/Vampiric-Stuff/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/vampiric-stuffs-mod-thread/16001/1"
+  },
+  {
+    "type": "browser_download",
+    "ident": "hydroponics",
+    "name": "Hydroponics",
+    "authors": [ "Unknown" ],
+    "maintainers": [ "Tiny Hippo" ],
+    "description": "Adds hydroponic units, a terrain which can be harvested for vegetables once a season. Spawn occasionally in labs or basements. Or build your own.",
+    "category": "misc_additions",
+    "size": 5797,
+    "url": "https://drive.google.com/file/d/1avdtB8WsRPaBtx4zbQhjBK9gtWQ4ujYq/view?usp=sharing",
+    "expected_filename": "Hydroponics.zip",
+    "homepage": "https://github.com/remyroy/CDDA-Game-Launcher/issues/266"
   }
 ]
