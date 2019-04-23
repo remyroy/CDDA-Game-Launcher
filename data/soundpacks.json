@@ -35,5 +35,14 @@
         "url": "https://github.com/budg3/CDDA-Soundpack/archive/master.zip",
         "size": 48214543,
         "homepage": "https://discourse.cataclysmdda.org/t/cdda-soundpack/15329"
+    },
+    {
+        "type": "browser_download",
+        "viewname": "CO.AG SoundPack",
+        "name": "CO.AG SoundPack",
+        "size": 126161760,
+        "url": "https://drive.google.com/file/d/1avdtB8WsRPaBtx4zbQhjBK9gtWQ4ujYq/view?usp=sharing",
+        "expected_filename": "CO.AG SoundPack (v1.1) (02-Mar-19).zip",
+        "homepage": "https://discourse.cataclysmdda.org/t/soundpack-co-ag-soundpack/18992"
     }
 ]
