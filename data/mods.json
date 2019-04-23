@@ -86,6 +86,17 @@
   },
   {
     "type": "direct_download",
+    "mod-type": "SUPPLEMENTAL",
+    "ident": "Cata++",
+    "name": "Cataclysm++ [0.D Stable]",
+    "author": "Noctifer",
+    "description": "The unofficial expansion mod for Cataclysm: Dark Days Ahead.",
+    "size": 123507,
+    "url": "https://github.com/Noctifer-de-Mortem/nocts_cata_mod/archive/v0.D.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/cataclysm-mod/10523"
+  },
+  {
+    "type": "direct_download",
     "ident": "Mining_Mod",
     "name": "Mining Mod",
     "author": "DangerNoodle",
