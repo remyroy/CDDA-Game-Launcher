@@ -44,5 +44,14 @@
         "url": "https://drive.google.com/file/d/1avdtB8WsRPaBtx4zbQhjBK9gtWQ4ujYq/view?usp=sharing",
         "expected_filename": "CO.AG SoundPack (v1.1) (02-Mar-19).zip",
         "homepage": "https://discourse.cataclysmdda.org/t/soundpack-co-ag-soundpack/18992"
+    },
+    {
+        "type": "browser_download",
+        "viewname": "2ch soundpack",
+        "name": "2ch soundpack",
+        "size": 101963863,
+        "url": "https://drive.google.com/open?id=14_ZlFCwqavU8JJ9X4PHVM5vqEXs46OsM",
+        "expected_filename": "2ch sounpack.zip",
+        "homepage": "https://github.com/remyroy/CDDA-Game-Launcher/issues/248"
     }
 ]
