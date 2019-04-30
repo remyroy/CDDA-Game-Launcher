@@ -3152,7 +3152,7 @@ class UpdateGroupBox(QGroupBox):
 
                 build_number = None
                 match = re.search(
-                    'cataclysmdda-[01]\\.[A-F]-(?P<build>\d+)', name)
+                    'cataclysmdda-[01]\\.[A-F](.*)-(?P<build>\d+)', name)
                 if match is not None:
                     build_number = match.group('build')
 
