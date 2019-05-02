@@ -386,7 +386,6 @@ class MainWindow(QMainWindow):
             return
 
         current_version = LooseVersion(version)
-        current_version = LooseVersion('1.2')
 
         if latest_version > current_version:
 
