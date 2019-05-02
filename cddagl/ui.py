@@ -1799,34 +1799,15 @@ class UpdateGroupBox(QGroupBox):
 
         layout = QGridLayout()
 
-        graphics_label = QLabel()
-        layout.addWidget(graphics_label, 0, 0, Qt.AlignRight)
-        self.graphics_label = graphics_label
-
-        graphics_button_group = QButtonGroup()
-        self.graphics_button_group = graphics_button_group
-
-        tiles_radio_button = QRadioButton()
-        layout.addWidget(tiles_radio_button, 0, 1)
-        self.tiles_radio_button = tiles_radio_button
-        graphics_button_group.addButton(tiles_radio_button)
-
-        console_radio_button = QRadioButton()
-        layout.addWidget(console_radio_button, 0, 2)
-        self.console_radio_button = console_radio_button
-        graphics_button_group.addButton(console_radio_button)
-
-        graphics_button_group.buttonClicked.connect(self.graphics_clicked)
-
         platform_label = QLabel()
-        layout.addWidget(platform_label, 1, 0, Qt.AlignRight)
+        layout.addWidget(platform_label, 0, 0, Qt.AlignRight)
         self.platform_label = platform_label
 
         platform_button_group = QButtonGroup()
         self.platform_button_group = platform_button_group
 
         x64_radio_button = QRadioButton()
-        layout.addWidget(x64_radio_button, 1, 1)
+        layout.addWidget(x64_radio_button, 0, 1)
         self.x64_radio_button = x64_radio_button
         platform_button_group.addButton(x64_radio_button)
 
@@ -1836,29 +1817,29 @@ class UpdateGroupBox(QGroupBox):
             x64_radio_button.setEnabled(False)
 
         x86_radio_button = QRadioButton()
-        layout.addWidget(x86_radio_button, 1, 2)
+        layout.addWidget(x86_radio_button, 0, 2)
         self.x86_radio_button = x86_radio_button
         platform_button_group.addButton(x86_radio_button)
 
         available_builds_label = QLabel()
-        layout.addWidget(available_builds_label, 2, 0, Qt.AlignRight)
+        layout.addWidget(available_builds_label, 1, 0, Qt.AlignRight)
         self.available_builds_label = available_builds_label
 
         builds_combo = QComboBox()
         builds_combo.setEnabled(False)
         builds_combo.addItem(_('Unknown'))
-        layout.addWidget(builds_combo, 2, 1, 1, 2)
+        layout.addWidget(builds_combo, 1, 1, 1, 2)
         self.builds_combo = builds_combo
 
         refresh_builds_button = QToolButton()
         refresh_builds_button.clicked.connect(self.refresh_builds)
-        layout.addWidget(refresh_builds_button, 2, 3)
+        layout.addWidget(refresh_builds_button, 1, 3)
         self.refresh_builds_button = refresh_builds_button
 
         changelog_groupbox = QGroupBox()
         changelog_layout = QHBoxLayout()
         changelog_groupbox.setLayout(changelog_layout)
-        layout.addWidget(changelog_groupbox, 3, 0, 1, 4)
+        layout.addWidget(changelog_groupbox, 2, 0, 1, 4)
         self.changelog_groupbox = changelog_groupbox
         self.changelog_layout = changelog_layout
 
@@ -1872,7 +1853,7 @@ class UpdateGroupBox(QGroupBox):
         update_button.setEnabled(False)
         update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
-        layout.addWidget(update_button, 4, 0, 1, 4)
+        layout.addWidget(update_button, 3, 0, 1, 4)
         self.update_button = update_button
 
         layout.setColumnStretch(1, 100)
@@ -1882,9 +1863,6 @@ class UpdateGroupBox(QGroupBox):
         self.set_text()
 
     def set_text(self):
-        self.graphics_label.setText(_('Graphics:'))
-        self.tiles_radio_button.setText(_('Tiles'))
-        self.console_radio_button.setText(_('Console'))
         self.platform_label.setText(_('Platform:'))
         self.x64_radio_button.setText(_('Windows x64 (64-bit)'))
         self.x86_radio_button.setText(_('Windows x86 (32-bit)'))
@@ -1896,10 +1874,6 @@ class UpdateGroupBox(QGroupBox):
 
     def showEvent(self, event):
         if not self.shown:
-            graphics = get_config_value('graphics')
-            if graphics is None:
-                graphics = 'Tiles'
-
             platform = get_config_value('platform')
 
             if platform == 'Windows x64':
@@ -1913,17 +1887,12 @@ class UpdateGroupBox(QGroupBox):
                 else:
                     platform = 'x86'
 
-            if graphics == 'Tiles':
-                self.tiles_radio_button.setChecked(True)
-            elif graphics == 'Console':
-                self.console_radio_button.setChecked(True)
-
             if platform == 'x64':
                 self.x64_radio_button.setChecked(True)
             elif platform == 'x86':
                 self.x86_radio_button.setChecked(True)
 
-            self.start_lb_request(BASE_ASSETS[graphics][platform])
+            self.start_lb_request(BASE_ASSETS['Tiles'][platform])
             self.refresh_changelog()
 
         self.shown = True
@@ -2220,8 +2189,6 @@ class UpdateGroupBox(QGroupBox):
         return self.get_main_tab().get_main_window()
 
     def disable_controls(self, update_button=False):
-        self.tiles_radio_button.setEnabled(False)
-        self.console_radio_button.setEnabled(False)
         self.x64_radio_button.setEnabled(False)
         self.x86_radio_button.setEnabled(False)
 
@@ -2234,8 +2201,6 @@ class UpdateGroupBox(QGroupBox):
             self.update_button.setEnabled(False)
 
     def enable_controls(self, builds_combo=False, update_button=False):
-        self.tiles_radio_button.setEnabled(True)
-        self.console_radio_button.setEnabled(True)
         if is_64_windows():
             self.x64_radio_button.setEnabled(True)
         self.x86_radio_button.setEnabled(True)
@@ -3306,20 +3271,14 @@ class UpdateGroupBox(QGroupBox):
         self.fetching_progress_bar.setValue(bytes_read)
 
     def refresh_builds(self):
-        selected_graphics = self.graphics_button_group.checkedButton()
         selected_platform = self.platform_button_group.checkedButton()
-
-        if selected_graphics is self.tiles_radio_button:
-            selected_graphics = 'Tiles'
-        elif selected_graphics is self.console_radio_button:
-            selected_graphics = 'Console'
 
         if selected_platform is self.x64_radio_button:
             selected_platform = 'x64'
         elif selected_platform is self.x86_radio_button:
             selected_platform = 'x86'
 
-        release_asset = BASE_ASSETS[selected_graphics][selected_platform]
+        release_asset = BASE_ASSETS['Tiles'][selected_platform]
 
         self.start_lb_request(release_asset)
         self.refresh_changelog()
@@ -3401,16 +3360,6 @@ class UpdateGroupBox(QGroupBox):
             total_bytes = bytes_read * 2
         self.changelog_progress_bar.setMaximum(total_bytes)
         self.changelog_progress_bar.setValue(bytes_read)
-
-    def graphics_clicked(self, button):
-        if button is self.tiles_radio_button:
-            config_value = 'Tiles'
-        elif button is self.console_radio_button:
-            config_value = 'Console'
-
-        set_config_value('graphics', config_value)
-
-        self.refresh_builds()
 
     def platform_clicked(self, button):
         if button is self.x64_radio_button:
