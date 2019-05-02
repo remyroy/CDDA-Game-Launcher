@@ -14,6 +14,7 @@ import logging
 import platform
 import tempfile
 import xml.etree.ElementTree
+import markdown
 
 try:
     from os import scandir
@@ -87,9 +88,9 @@ GITHUB_REST_API_URL = 'https://api.github.com'
 GITHUB_API_VERSION = b'application/vnd.github.v3+json'
 
 CDDA_RELEASES = '/repos/CleverRaven/Cataclysm-DDA/releases'
-CDDAGL_RELEASES = '/repos/remyroy/CDDA-Game-Launcher/releases'
+CDDAGL_LATEST_RELEASE = '/repos/remyroy/CDDA-Game-Launcher/releases/latest'
 
-BASE_ASSERTS = {
+BASE_ASSETS = {
     'Tiles': {
         'x64': {
             'Platform': 'Windows_x64',
@@ -114,11 +115,11 @@ BASE_ASSERTS = {
 
 SAVES_WARNING_SIZE = 150 * 1024 * 1024
 
-RELEASES_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/releases'
 NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
 
 CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/api/xml?tree=builds[number,timestamp,building,result,changeSet[items[msg]]]&xpath=//build&wrapper=builds'
-ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
+CDDA_ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
+CDDAGL_ISSUE_URL_ROOT = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/'
 
 BUILD_CHANGES_URL = lambda bn: f'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/{bn}/changes'
 
@@ -332,100 +333,128 @@ class MainWindow(QMainWindow):
 
     def check_new_launcher_version(self):
         self.lv_html = BytesIO()
-        self.http_reply = self.qnam.get(QNetworkRequest(QUrl(RELEASES_URL)))
+
+        url = GITHUB_REST_API_URL + CDDAGL_LATEST_RELEASE
+
+        request = QNetworkRequest(QUrl(url))
+        request.setRawHeader(b'User-Agent',
+            b'CDDA-Game-Launcher/' + version.encode('utf8'))
+        request.setRawHeader(b'Accept', GITHUB_API_VERSION)
+
+        self.http_reply = self.qnam.get(request)
         self.http_reply.finished.connect(self.lv_http_finished)
         self.http_reply.readyRead.connect(self.lv_http_ready_read)
 
     def lv_http_finished(self):
         self.lv_html.seek(0)
-        document = html5lib.parse(self.lv_html, treebuilder='lxml',
-            default_encoding='utf8', namespaceHTMLElements=False)
 
-        for release in document.getroot().cssselect('div.release.label-latest'):
-            latest_version = None
-            version_text = None
-            for span in release.cssselect('ul.tag-references li:first-child '
-                'span'):
-                version_text = span.text
-                if version_text.startswith('v'):
-                    version_text = version_text[1:]
-                latest_version = LooseVersion(version_text)
-
-            if latest_version is not None:
-                current_version = LooseVersion(version)
-
-                if latest_version > current_version:
-                    release_header = ''
-                    release_body = ''
-
-                    header_divs = release.cssselect(
-                        'div.release-body div.release-header')
-                    if len(header_divs) > 0:
-                        header = header_divs[0]
-                        for anchor in header.cssselect('a'):
-                            if 'href' in anchor.keys():
-                                anchor.set('href', urljoin(RELEASES_URL,
-                                    anchor.get('href')))
-                        release_header = etree.tostring(header,
-                             encoding='utf8', method='html').decode('utf8')
-
-                    body_divs = release.cssselect(
-                        'div.release-body div.markdown-body')
-                    if len(body_divs) > 0:
-                        body = body_divs[0]
-                        for anchor in body.cssselect('a'):
-                            if 'href' in anchor.keys():
-                                anchor.set('href', urljoin(RELEASES_URL,
-                                    anchor.get('href')))
-                        release_body = etree.tostring(body,
-                            encoding='utf8', method='html').decode('utf8')
-
-                    html_text = release_header + release_body
-
-                    no_launcher_version_check_checkbox = QCheckBox()
-                    no_launcher_version_check_checkbox.setText(_('Do not check '
-                        'for new version of the CDDA Game Launcher on launch'))
-                    check_state = (Qt.Checked if config_true(get_config_value(
-                        'prevent_version_check_launch', 'False'))
-                        else Qt.Unchecked)
-                    no_launcher_version_check_checkbox.stateChanged.connect(
-                        self.nlvcc_changed)
-                    no_launcher_version_check_checkbox.setCheckState(
-                        check_state)
-
-                    launcher_update_msgbox = QMessageBox()
-                    launcher_update_msgbox.setWindowTitle(_('Launcher update'))
-                    launcher_update_msgbox.setText(_('You are using version '
-                        '{version} but there is a new update for CDDA Game '
-                        'Launcher. Would you like to update?').format(
-                        version=version))
-                    launcher_update_msgbox.setInformativeText(html_text)
-                    launcher_update_msgbox.addButton(_('Update the launcher'),
-                        QMessageBox.YesRole)
-                    launcher_update_msgbox.addButton(_('Not right now'),
-                        QMessageBox.NoRole)
-                    launcher_update_msgbox.setCheckBox(
-                        no_launcher_version_check_checkbox)
-                    launcher_update_msgbox.setIcon(QMessageBox.Question)
-
-                    if launcher_update_msgbox.exec() == 0:
-                        for item in release.cssselect(
-                            'ul.release-downloads li a'):
-                            if 'href' in item.keys():
-                                url = urljoin(RELEASES_URL, item.get('href'))
-                                if url.endswith('.exe'):
-                                    launcher_update_dialog = (
-                                        LauncherUpdateDialog(url, version_text,
-                                            self, Qt.WindowTitleHint |
-                                            Qt.WindowCloseButtonHint))
-                                    launcher_update_dialog.exec()
-
-                                    if launcher_update_dialog.updated:
-                                        self.close()
-                else:
-                    self.no_launcher_update_found()
+        latest_release = json.loads(TextIOWrapper(self.lv_html, encoding='utf8'
+            ).read())
 
         self.lv_html = None
+
+        if 'name' not in latest_release:
+            return
+        if 'html_url' not in latest_release:
+            return
+        if 'tag_name' not in latest_release:
+            return
+        if 'assets' not in latest_release:
+            return
+        if 'body' not in latest_release:
+            return
+
+        version_text = latest_release['tag_name']
+        if version_text.startswith('v'):
+            version_text = version_text[1:]
+        latest_version = LooseVersion(version_text)
+
+        if latest_version is None:
+            return
+
+        executable_url = None
+        for file_asset in latest_release['assets']:
+            if not 'name' in file_asset:
+                continue
+            if 'browser_download_url' not in file_asset:
+                continue
+            if file_asset['name'].endswith('.exe'):
+                executable_url = file_asset['browser_download_url']
+                break
+
+        if executable_url is None:
+            return
+
+        current_version = LooseVersion(version)
+        current_version = LooseVersion('1.2')
+
+        if latest_version > current_version:
+
+            markdown_desc = latest_release['body']
+
+            # Replace number signs with issue links
+            number_pattern = ' \\#(?P<id>\\d+)'
+            replacement_pattern = (' [#\\g<id>](' + CDDAGL_ISSUE_URL_ROOT +
+                '\\g<id>)')
+            markdown_desc = re.sub(number_pattern, replacement_pattern,
+                markdown_desc)
+
+            html_desc = markdown.markdown(markdown_desc)
+
+            release_html = ('''
+<h2><a href="{release_url}">{release_name}</a></h2>{description}
+                ''').format(
+                release_url=html.escape(latest_release['html_url']),
+                release_name=html.escape(latest_release['name']),
+                description=html_desc)
+
+            no_launcher_version_check_checkbox = QCheckBox()
+            no_launcher_version_check_checkbox.setText(_('Do not check '
+                'for new version of the CDDA Game Launcher on launch'))
+            check_state = (Qt.Checked if config_true(get_config_value(
+                'prevent_version_check_launch', 'False'))
+                else Qt.Unchecked)
+            no_launcher_version_check_checkbox.stateChanged.connect(
+                self.nlvcc_changed)
+            no_launcher_version_check_checkbox.setCheckState(
+                check_state)
+
+            launcher_update_msgbox = QMessageBox()
+            launcher_update_msgbox.setWindowTitle(_('Launcher update'))
+            launcher_update_msgbox.setText(_('You are using version '
+                '{version} but there is a new update for CDDA Game '
+                'Launcher. Would you like to update?').format(
+                version=version))
+            launcher_update_msgbox.setInformativeText(release_html)
+            launcher_update_msgbox.addButton(_('Update the launcher'),
+                QMessageBox.YesRole)
+            launcher_update_msgbox.addButton(_('Not right now'),
+                QMessageBox.NoRole)
+            launcher_update_msgbox.setCheckBox(
+                no_launcher_version_check_checkbox)
+            launcher_update_msgbox.setIcon(QMessageBox.Question)
+
+            if launcher_update_msgbox.exec() == 0:
+                # TODO: Update launcher, see #170
+                # New executable url is in executable_url for download
+                '''
+                for item in release.cssselect(
+                    'ul.release-downloads li a'):
+                    if 'href' in item.keys():
+                        url = urljoin(RELEASES_URL, item.get('href'))
+                        if url.endswith('.exe'):
+                            launcher_update_dialog = (
+                                LauncherUpdateDialog(url, version_text,
+                                    self, Qt.WindowTitleHint |
+                                    Qt.WindowCloseButtonHint))
+                            launcher_update_dialog.exec()
+
+                            if launcher_update_dialog.updated:
+                                self.close()
+                '''
+
+        else:
+            self.no_launcher_update_found()
 
     def nlvcc_changed(self, state):
         no_launcher_version_check_checkbox = (
@@ -1743,7 +1772,7 @@ class ChangelogParsingThread(QThread):
                     .format(_('No changes, same code as previous build!')))
             else:
                 for change in build_changes:
-                    link_repl = rf'<a href="{ISSUE_URL_ROOT}\g<id>">#\g<id></a>'
+                    link_repl = rf'<a href="{CDDA_ISSUE_URL_ROOT}\g<id>">#\g<id></a>'
                     change = id_regex.sub(link_repl, change)
                     changelog_html.write(f'<li>{change}</li>')
             changelog_html.write('</ul>')
@@ -1894,7 +1923,7 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'x86':
                 self.x86_radio_button.setChecked(True)
 
-            self.start_lb_request(BASE_ASSERTS[graphics][platform])
+            self.start_lb_request(BASE_ASSETS[graphics][platform])
             self.refresh_changelog()
 
         self.shown = True
@@ -3083,7 +3112,7 @@ class UpdateGroupBox(QGroupBox):
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
 
-    def start_lb_request(self, base_assert):
+    def start_lb_request(self, base_asset):
         self.disable_controls(True)
 
         main_window = self.get_main_window()
@@ -3097,7 +3126,7 @@ class UpdateGroupBox(QGroupBox):
         self.builds_combo.addItem(_('Fetching remote builds'))
 
         url = GITHUB_REST_API_URL + CDDA_RELEASES
-        self.base_assert = base_assert
+        self.base_asset = base_asset
 
         fetching_label = QLabel()
         fetching_label.setText(_('Fetching: {url}').format(url=url))
@@ -3183,8 +3212,8 @@ class UpdateGroupBox(QGroupBox):
 
         builds = []
 
-        asset_platform = self.base_assert['Platform']
-        asset_graphics = self.base_assert['Graphics']
+        asset_platform = self.base_asset['Platform']
+        asset_graphics = self.base_asset['Graphics']
 
         target_regex = ('cataclysmdda-(?P<major>.+)-' +
             re.escape(asset_platform) + '-' +
@@ -3290,9 +3319,9 @@ class UpdateGroupBox(QGroupBox):
         elif selected_platform is self.x86_radio_button:
             selected_platform = 'x86'
 
-        release_assert = BASE_ASSERTS[selected_graphics][selected_platform]
+        release_asset = BASE_ASSETS[selected_graphics][selected_platform]
 
-        self.start_lb_request(release_assert)
+        self.start_lb_request(release_asset)
         self.refresh_changelog()
 
     def refresh_changelog(self):

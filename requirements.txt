@@ -12,3 +12,4 @@ Babel
 pypiwin32
 rfc6266
 pywinutils
+Markdown
