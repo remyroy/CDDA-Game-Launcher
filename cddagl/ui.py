@@ -1732,7 +1732,8 @@ class ChangelogParsingThread(QThread):
             build_date_utc = datetime.utcfromtimestamp(build_timestamp)
             build_date_utc = build_date_utc.replace(tzinfo=timezone.utc)
             build_date_local = build_date_utc.astimezone(tz=None)
-            build_date_text = build_date_local.strftime("%c (UTC%z)")
+            build_date_text = format_datetime(build_date_local,
+                format='long', locale=app_locale)
 
             build_changes = build_data.findall(r'.//changeSet/item/msg')
             build_changes = map(lambda x: x.text.strip(), build_changes)
