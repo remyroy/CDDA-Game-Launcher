@@ -31,7 +31,7 @@ from babel.core import Locale
 from babel.numbers import format_percent
 from babel.dates import format_datetime
 
-from io import BytesIO, StringIO
+from io import BytesIO, StringIO, TextIOWrapper
 from collections import deque
 
 from rfc6266 import parse_headers as parse_cd_headers
@@ -83,16 +83,32 @@ READ_BUFFER_SIZE = 16 * 1024
 
 MAX_GAME_DIRECTORIES = 6
 
-BASE_URL = 'https://dev.narc.ro/cataclysm/jenkins-latest/'
+GITHUB_REST_API_URL = 'https://api.github.com'
+GITHUB_API_VERSION = b'application/vnd.github.v3+json'
 
-BASE_URLS = {
+CDDA_RELEASES = '/repos/CleverRaven/Cataclysm-DDA/releases'
+CDDAGL_RELEASES = '/repos/remyroy/CDDA-Game-Launcher/releases'
+
+BASE_ASSERTS = {
     'Tiles': {
-        'x64': (BASE_URL + 'Windows_x64/Tiles/'),
-        'x86': (BASE_URL + 'Windows/Tiles/')
+        'x64': {
+            'Platform': 'Windows_x64',
+            'Graphics': 'Tiles'
+        },
+        'x86': {
+            'Platform': 'Windows',
+            'Graphics': 'Tiles'
+        }
     },
     'Console': {
-        'x64': (BASE_URL + 'Windows_x64/Curses/'),
-        'x86': (BASE_URL + 'Windows/Curses/')
+        'x64': {
+            'Platform': 'Windows_x64',
+            'Graphics': 'Curses'
+        },
+        'x86': {
+            'Platform': 'Windows',
+            'Graphics': 'Curses'
+        },
     }
 }
 
@@ -1878,7 +1894,7 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'x86':
                 self.x86_radio_button.setChecked(True)
 
-            self.start_lb_request(BASE_URLS[graphics][platform])
+            self.start_lb_request(BASE_ASSERTS[graphics][platform])
             self.refresh_changelog()
 
         self.shown = True
@@ -2273,6 +2289,52 @@ class UpdateGroupBox(QGroupBox):
             download_dir = os.path.dirname(self.downloaded_file)
             delete_path(download_dir)
         else:
+            redirect = self.download_http_reply.attribute(
+                QNetworkRequest.RedirectionTargetAttribute)
+            if redirect is not None:
+                redirected_url = urljoin(
+                    self.download_http_reply.request().url().toString(),
+                    redirect.toString())
+
+                downloading_label = QLabel()
+                downloading_label.setText(_('Downloading: {0}').format(
+                    redirected_url))
+                status_bar.addWidget(downloading_label, 100)
+                self.downloading_label = downloading_label
+
+                dowloading_speed_label = QLabel()
+                status_bar.addWidget(dowloading_speed_label)
+                self.dowloading_speed_label = dowloading_speed_label
+
+                downloading_size_label = QLabel()
+                status_bar.addWidget(downloading_size_label)
+                self.downloading_size_label = downloading_size_label
+
+                progress_bar = QProgressBar()
+                status_bar.addWidget(progress_bar)
+                self.downloading_progress_bar = progress_bar
+                progress_bar.setMinimum(0)
+
+                self.download_last_read = datetime.utcnow()
+                self.download_last_bytes_read = 0
+                self.download_speed_count = 0
+
+                request = QNetworkRequest(QUrl(redirected_url))
+                request.setRawHeader(b'User-Agent',
+                    b'CDDA-Game-Launcher/' + version.encode('utf8'))
+
+                self.downloading_file = open(self.downloaded_file, 'wb')
+
+                self.download_http_reply = self.qnam.get(request)
+                self.download_http_reply.finished.connect(
+                    self.download_http_finished)
+                self.download_http_reply.readyRead.connect(
+                    self.download_http_ready_read)
+                self.download_http_reply.downloadProgress.connect(
+                    self.download_dl_progress)
+
+                return
+
             # Test downloaded file
             status_bar.showMessage(_('Testing downloaded file archive'))
 
@@ -3021,7 +3083,7 @@ class UpdateGroupBox(QGroupBox):
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
 
-    def start_lb_request(self, url):
+    def start_lb_request(self, base_assert):
         self.disable_controls(True)
 
         main_window = self.get_main_window()
@@ -3033,6 +3095,9 @@ class UpdateGroupBox(QGroupBox):
 
         self.builds_combo.clear()
         self.builds_combo.addItem(_('Fetching remote builds'))
+
+        url = GITHUB_REST_API_URL + CDDA_RELEASES
+        self.base_assert = base_assert
 
         fetching_label = QLabel()
         fetching_label.setText(_('Fetching: {url}').format(url=url))
@@ -3051,6 +3116,7 @@ class UpdateGroupBox(QGroupBox):
         request = QNetworkRequest(QUrl(url))
         request.setRawHeader(b'User-Agent',
             b'CDDA-Game-Launcher/' + version.encode('utf8'))
+        request.setRawHeader(b'Accept', GITHUB_API_VERSION)
 
         self.http_reply = self.qnam.get(request)
         self.http_reply.finished.connect(self.lb_http_finished)
@@ -3089,6 +3155,7 @@ class UpdateGroupBox(QGroupBox):
             request = QNetworkRequest(QUrl(redirected_url))
             request.setRawHeader(b'User-Agent',
                 b'CDDA-Game-Launcher/' + version.encode('utf8'))
+            request.setRawHeader(b'Accept', GITHUB_API_VERSION)
 
             self.http_reply = self.qnam.get(request)
             self.http_reply.finished.connect(self.lb_http_finished)
@@ -3111,59 +3178,39 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.showMessage(_('Game process is running'))
 
         self.lb_html.seek(0)
-        document = html5lib.parse(self.lb_html, treebuilder='lxml',
-            default_encoding='utf8', namespaceHTMLElements=False)
+        releases = json.loads(TextIOWrapper(self.lb_html, encoding='utf8'
+            ).read())
 
         builds = []
-        anchors = document.getroot().cssselect('a')
-        first_one = True
-        builds_dates = {}
 
-        for anchor in anchors:
-            if anchor.text.startswith('cataclysmdda'):
-                if first_one:
-                    first_one = False
-                    parent_tag = anchor.getparent()
-                    parent_texts = parent_tag.itertext()
-                    last_text = None
+        asset_platform = self.base_assert['Platform']
+        asset_graphics = self.base_assert['Graphics']
 
-                    try:
-                        next_text = next(parent_texts).strip()
-                        while True:
-                            if next_text != '':
-                                try:
-                                    if (last_text is not None and
-                                        last_text.startswith('cataclysmdda')):
-                                        date = (next_text.split(' ')[0] + ' ' +
-                                            next_text.split(' ')[1])
-                                        build_date = datetime.strptime(date,
-                                            '%Y-%m-%d %H:%M')
-                                        builds_dates[last_text] = build_date
-                                except:
-                                    pass
-                                last_text = next_text
-                            next_text = next(parent_texts).strip()
-                    except StopIteration:
-                        pass
+        target_regex = ('cataclysmdda-(?P<major>.+)-' +
+            re.escape(asset_platform) + '-' +
+            re.escape(asset_graphics) + '-' +
+            '(?P<build>\\d+)\\.zip'
+            )
 
-
-                url = urljoin(self.base_url, anchor.get('href'))
-                name = anchor.text
-
-                build_number = None
-                match = re.search(
-                    'cataclysmdda-[01]\\.[A-F](.*)-(?P<build>\d+)', name)
+        for release in releases:
+            if not 'assets' in release:
+                continue
+            for file_asset in release['assets']:
+                if not 'name' in file_asset:
+                    continue
+                if not 'browser_download_url' in file_asset:
+                    continue
+                if not 'created_at' in file_asset:
+                    continue
+                match = re.search(target_regex, file_asset['name'])
                 if match is not None:
-                    build_number = match.group('build')
-
-                build = {}
-                build['url'] = url
-                build['name'] = name
-                build['number'] = build_number
-                build['date'] = (builds_dates[name] if name in builds_dates else
-                    None)
-
-                builds.append(build)
+                    build = {
+                        'url': file_asset['browser_download_url'],
+                        'name': file_asset['name'],
+                        'number': match.group('build'),
+                        'date': arrow.get(file_asset['created_at']).datetime
+                    }
+                    builds.append(build)
 
         if len(builds) > 0:
             builds.sort(key=lambda x: (x['number'], x['date']), reverse=True)
@@ -3243,9 +3290,9 @@ class UpdateGroupBox(QGroupBox):
         elif selected_platform is self.x86_radio_button:
             selected_platform = 'x86'
 
-        url = BASE_URLS[selected_graphics][selected_platform]
+        release_assert = BASE_ASSERTS[selected_graphics][selected_platform]
 
-        self.start_lb_request(url)
+        self.start_lb_request(release_assert)
         self.refresh_changelog()
 
     def refresh_changelog(self):
