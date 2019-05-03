@@ -447,5 +447,15 @@
     "url": "https://drive.google.com/file/d/1avdtB8WsRPaBtx4zbQhjBK9gtWQ4ujYq/view?usp=sharing",
     "expected_filename": "Hydroponics.zip",
     "homepage": "https://github.com/remyroy/CDDA-Game-Launcher/issues/266"
+  },
+  {
+    "type": "direct_download",
+    "ident": "Nechronica_Redux",
+    "name": "Nechronica Redux",
+    "author": "YukariMindGap",
+    "description": "MODIFIED by Yukari Yakumo from Malkues: Add items, mutations and enemies appearing in Nechronica: the Long Long Sequel.",
+    "size": 26684,
+    "url": "https://github.com/YukariMindGap/Necronica_Redux/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/nechronica-redux/19857"
   }
 ]
