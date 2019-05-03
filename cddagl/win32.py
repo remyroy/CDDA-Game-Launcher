@@ -69,7 +69,7 @@ class Enumeration(c_uint):
         else:
             raise ValueError("No enumeration member with value %r" % value)
         c_uint.__init__(self, value)
-        
+
 
     @classmethod
     def from_param(cls, param):
@@ -269,7 +269,7 @@ kernel32.OpenProcess.argtypes = (
     DWORD,  # DesiredAccess
     BOOL,   # InheritHandle
     DWORD)  # ProcessId
-    
+
 
 kernel32.WaitForSingleObject.restype = DWORD
 kernel32.WaitForSingleObject.argtypes = (
@@ -287,7 +287,7 @@ class GUID(Structure):   # [1]
         ("Data2", WORD),
         ("Data3", WORD),
         ("Data4", BYTE * 8)
-    ] 
+    ]
 
     def __init__(self, uuid_):
         Structure.__init__(self)
@@ -426,7 +426,7 @@ GetModuleFileNameEx.argtypes = (
 class PathNotFoundException(Exception): pass
 
 def get_path(folderid, user_handle=UserHandle.common):
-    fid = GUID(folderid) 
+    fid = GUID(folderid)
     pPath = ctypes.c_wchar_p()
     S_OK = 0
     if _SHGetKnownFolderPath(ctypes.byref(fid), 0, user_handle,
@@ -438,7 +438,10 @@ def get_path(folderid, user_handle=UserHandle.common):
 
 def get_downloads_directory():
     if VISTA_OR_LATER:
-        return get_path(FOLDERID.Downloads, UserHandle.current)
+        try:
+            return get_path(FOLDERID.Downloads, UserHandle.current)
+        except PathNotFoundException:
+            return os.path.join(os.path.expanduser('~'), 'Downloads')
     else:
         return os.path.join(shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL,
             None, 0), 'Downloads')
@@ -581,7 +584,7 @@ def find_process_with_file_handle(path):
 
         if status != STATUS_SUCCESS:
             continue
-        
+
         # Query the object type
         buflen = 0x1000
         pobject_type_info = cast(create_string_buffer(buflen),
@@ -620,7 +623,7 @@ def find_process_with_file_handle(path):
             buflen = length.value
             pobject_name = cast(create_string_buffer(buflen),
                 POINTER(UNICODE_STRING))
-        
+
         if status != STATUS_SUCCESS:
             kernel32.CloseHandle(dup_handle)
             continue
@@ -712,10 +715,10 @@ class SingleInstance:
         self.mutexname = 'cddagl_{64394E79-7931-49CB-B8CF-3F4ECAE16B6C}'
         self.mutex = win32event.CreateMutex(None, False, self.mutexname)
         self.lasterror = win32api.GetLastError()
-    
+
     def aleradyrunning(self):
         return (self.lasterror == ERROR_ALREADY_EXISTS)
-    
+
     def close(self):
         if self.mutex:
             win32api.CloseHandle(self.mutex)
@@ -757,7 +760,7 @@ class SimpleNamedPipe:
         code, value = win32file.ReadFile(self.pipe, size)
         if code != 0:
             raise IOError(win32api.FormatMessage(code))
-        
+
         return value
 
     def close(self):
