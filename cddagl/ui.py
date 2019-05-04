@@ -117,7 +117,7 @@ SAVES_WARNING_SIZE = 150 * 1024 * 1024
 
 NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
 
-CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/api/xml?tree=builds[number,timestamp,building,result,changeSet[items[msg]]]&xpath=//build&wrapper=builds'
+CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/api/xml?tree=builds[number,timestamp,building,result,changeSet[items[msg]],runs[result,fullDisplayName]]&xpath=//build&wrapper=builds'
 CDDA_ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
 CDDAGL_ISSUE_URL_ROOT = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/'
 
@@ -1708,6 +1708,26 @@ class ChangelogParsingThread(QThread):
     def __del__(self):
         self.wait()
 
+    def get_results_by_platform(self, build_data):
+        regex = re.compile(r'.*\b(Tiles),(Windows(?:_x64)?)\b.*')
+
+        def platform_display_name(code_name):
+            if code_name == 'Tiles-Windows': return 'Windows x86'
+            if code_name == 'Tiles-Windows_x64': return 'Windows x64'
+            return code_name
+
+        build_platforms = build_data.findall(r'.//run')
+        build_platforms = filter(
+            lambda x: regex.search(x.find('fullDisplayName').text) is not None,
+            build_platforms
+        )
+
+        return tuple({'result': x.find('result').text,
+                      'platform': platform_display_name(
+                                    regex.sub(r'\1-\2',
+                                              x.find('fullDisplayName').text))}
+                     for x in build_platforms)
+
     def run(self):
         changelog_html = StringIO()
         self.changelog_http_data.seek(0)
@@ -1721,11 +1741,14 @@ class ChangelogParsingThread(QThread):
                               r'#(?P<id>\d+)\b')
 
         for build_data in changelog_xml:
+            build_by_platform = self.get_results_by_platform(build_data)
             if build_data.find('building').text == 'true':
                 build_status = 'IN_PROGRESS'
+            elif any(x['result'] == 'FAILURE' for x in build_by_platform):
+                build_status = 'FAILURE'
             else:
                 ### possible "result" values: 'SUCCESS' or 'FAILURE'
-                build_status = build_data.find('result').text
+                build_status = 'SUCCESS'
 
             build_timestamp = int(build_data.find('timestamp').text) // 1000
             build_date_utc = datetime.utcfromtimestamp(build_timestamp)
@@ -1747,7 +1770,7 @@ class ChangelogParsingThread(QThread):
                     .format(
                         build_link,
                         build_date_text,
-                        _('build in progress for some platforms!')
+                        _('build still in progress!')
                     )
                 )
             elif build_status == 'SUCCESS':
@@ -1757,11 +1780,14 @@ class ChangelogParsingThread(QThread):
                 )
             else:   ### build_status == 'FAILURE'
                 changelog_html.write(
-                    '<h4>{0} - {1} <span style="color:red">{2}</span></h4>'
+                    '<h4>{0} - {1} <span style="color:red">{2} {3}</span></h4>'
                     .format(
                         build_link,
                         build_date_text,
-                        _('but build failed for some platforms!')
+                        _('but build failed for:'),
+                        ', '.join(map(lambda x: x['platform'],
+                                      filter(lambda y: y['result'] == 'FAILURE',
+                                             build_by_platform)))
                     )
                 )
 
