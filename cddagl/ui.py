@@ -1718,7 +1718,9 @@ class ChangelogParsingThread(QThread):
 
         build_platforms = build_data.findall(r'.//run')
         build_platforms = filter(
-            lambda x: regex.search(x.find('fullDisplayName').text) is not None,
+            lambda x: x.find('result') is not None and
+                      x.find('fullDisplayName') is not None and
+                      regex.search(x.find('fullDisplayName').text) is not None,
             build_platforms
         )
 
