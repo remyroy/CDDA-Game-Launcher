@@ -196,7 +196,11 @@ def delete_path(path):
 
     shellcon = winutils.shellcon
 
-    flags = shellcon.FOF_ALLOWUNDO
+    flags = (
+        shellcon.FOF_ALLOWUNDO |
+        shellcon.FOF_NOCONFIRMATION |
+        shellcon.FOF_WANTNUKEWARNING
+        )
 
     return winutils.delete(path, flags)
 
