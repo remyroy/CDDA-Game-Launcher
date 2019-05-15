@@ -350,10 +350,36 @@ class MainWindow(QMainWindow):
         self.http_reply.readyRead.connect(self.lv_http_ready_read)
 
     def lv_http_finished(self):
+        status_code = self.http_reply.attribute(
+            QNetworkRequest.HttpStatusCodeAttribute)
+        if status_code != 200:
+            reason = self.http_reply.attribute(
+                QNetworkRequest.HttpReasonPhraseAttribute)
+            url = self.http_reply.request().url().toString()
+            msg = _('Could not find launcher latest release '
+                '[HTTP {status_code}] ({reason}) when requesting {url}'
+                ).format(
+                    status_code=status_code,
+                    reason=reason,
+                    url=url
+                )
+            logger.warning(msg)
+
+            if self.in_manual_update_check:
+                self.in_manual_update_check = False
+
+            self.lv_html = None
+            return
+
         self.lv_html.seek(0)
 
-        latest_release = json.loads(TextIOWrapper(self.lv_html, encoding='utf8'
-            ).read())
+        try:
+            latest_release = json.loads(TextIOWrapper(self.lv_html,
+                encoding='utf8').read())
+        except json.decoder.JSONDecodeError:
+            latest_release = {
+                'cannot_decode': True
+            }
 
         self.lv_html = None
 
@@ -527,6 +553,7 @@ class MainWindow(QMainWindow):
             if not config_true(get_config_value('prevent_version_check_launch',
                 'False')):
                 if getattr(sys, 'frozen', False):
+                    self.in_manual_update_check = False
                     self.check_new_launcher_version()
 
         self.shown = True
@@ -3203,9 +3230,38 @@ class UpdateGroupBox(QGroupBox):
             if status_bar.busy == 0:
                 status_bar.showMessage(_('Game process is running'))
 
+        status_code = self.http_reply.attribute(
+            QNetworkRequest.HttpStatusCodeAttribute)
+        if status_code != 200:
+            reason = self.http_reply.attribute(
+                QNetworkRequest.HttpReasonPhraseAttribute)
+            url = self.http_reply.request().url().toString()
+            msg = _('Could not find remote builds [HTTP {status_code}] '
+                '({reason}) when requesting {url}').format(
+                    status_code=status_code,
+                    reason=reason,
+                    url=url
+                )
+            if status_bar.busy == 0:
+                status_bar.showMessage(msg)
+            logger.warning(msg)
+
+            self.builds = None
+
+            self.builds_combo.clear()
+            self.builds_combo.addItem(msg)
+            self.builds_combo.setEnabled(False)
+
+            self.lb_html = None
+            return
+
         self.lb_html.seek(0)
-        releases = json.loads(TextIOWrapper(self.lb_html, encoding='utf8'
-            ).read())
+        try:
+            releases = json.loads(TextIOWrapper(self.lb_html, encoding='utf8'
+                ).read())
+        except json.decoder.JSONDecodeError:
+            releases = []
+        self.lb_html = None
 
         builds = []
 
@@ -3292,8 +3348,6 @@ class UpdateGroupBox(QGroupBox):
             self.builds_combo.clear()
             self.builds_combo.addItem(_('Could not find remote builds'))
             self.builds_combo.setEnabled(False)
-
-        self.lb_html = None
 
     def lb_http_ready_read(self):
         self.lb_html.write(self.http_reply.readAll())
