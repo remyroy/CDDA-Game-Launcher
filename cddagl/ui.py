@@ -3233,6 +3233,17 @@ class UpdateGroupBox(QGroupBox):
             if status_bar.busy == 0:
                 status_bar.showMessage(_('Game process is running'))
 
+        requests_remaining = None
+        if self.http_reply.hasRawHeader(GITHUB_XRL_REMAINING):
+            requests_remaining = self.http_reply.rawHeader(GITHUB_XRL_REMAINING)
+            requests_remaining = tryint(requests_remaining)
+        
+        reset_dt = None
+        if self.http_reply.hasRawHeader(GITHUB_XRL_RESET):
+            reset_dt = self.http_reply.rawHeader(GITHUB_XRL_RESET)
+            reset_dt = tryint(reset_dt)
+            reset_dt = arrow.get(reset_dt)
+
         status_code = self.http_reply.attribute(
             QNetworkRequest.HttpStatusCodeAttribute)
         if status_code != 200:
@@ -3257,17 +3268,6 @@ class UpdateGroupBox(QGroupBox):
 
             self.lb_html = None
             return
-        
-        requests_remaining = None
-        if self.http_reply.hasRawHeader(GITHUB_XRL_REMAINING):
-            requests_remaining = self.http_reply.rawHeader(GITHUB_XRL_REMAINING)
-            requests_remaining = tryint(requests_remaining)
-        
-        reset_dt = None
-        if self.http_reply.hasRawHeader(GITHUB_XRL_RESET):
-            reset_dt = self.http_reply.rawHeader(GITHUB_XRL_RESET)
-            reset_dt = tryint(reset_dt)
-            reset_dt = arrow.get(reset_dt)
 
         self.lb_html.seek(0)
         try:
