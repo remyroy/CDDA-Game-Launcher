@@ -87,6 +87,9 @@ MAX_GAME_DIRECTORIES = 6
 GITHUB_REST_API_URL = 'https://api.github.com'
 GITHUB_API_VERSION = b'application/vnd.github.v3+json'
 
+GITHUB_XRL_REMAINING = b'X-RateLimit-Remaining'
+GITHUB_XRL_RESET = b'X-RateLimit-Reset'
+
 CDDA_RELEASES = '/repos/CleverRaven/Cataclysm-DDA/releases'
 CDDAGL_LATEST_RELEASE = '/repos/remyroy/CDDA-Game-Launcher/releases/latest'
 
@@ -3254,6 +3257,17 @@ class UpdateGroupBox(QGroupBox):
 
             self.lb_html = None
             return
+        
+        requests_remaining = None
+        if self.http_reply.hasRawHeader(GITHUB_XRL_REMAINING):
+            requests_remaining = self.http_reply.rawHeader(GITHUB_XRL_REMAINING)
+            requests_remaining = tryint(requests_remaining)
+        
+        reset_dt = None
+        if self.http_reply.hasRawHeader(GITHUB_XRL_RESET):
+            reset_dt = self.http_reply.rawHeader(GITHUB_XRL_RESET)
+            reset_dt = tryint(reset_dt)
+            reset_dt = arrow.get(reset_dt)
 
         self.lb_html.seek(0)
         try:
