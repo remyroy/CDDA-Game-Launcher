@@ -353,6 +353,25 @@ class MainWindow(QMainWindow):
         self.http_reply.readyRead.connect(self.lv_http_ready_read)
 
     def lv_http_finished(self):
+        redirect = self.http_reply.attribute(
+            QNetworkRequest.RedirectionTargetAttribute)
+        if redirect is not None:
+            redirected_url = urljoin(
+                self.http_reply.request().url().toString(),
+                redirect.toString())
+
+            self.lv_html = BytesIO()
+
+            request = QNetworkRequest(QUrl(redirected_url))
+            request.setRawHeader(b'User-Agent',
+                b'CDDA-Game-Launcher/' + version.encode('utf8'))
+            request.setRawHeader(b'Accept', GITHUB_API_VERSION)
+
+            self.http_reply = self.qnam.get(request)
+            self.http_reply.finished.connect(self.lv_http_finished)
+            self.http_reply.readyRead.connect(self.lv_http_ready_read)
+            return
+
         status_code = self.http_reply.attribute(
             QNetworkRequest.HttpStatusCodeAttribute)
         if status_code != 200:
