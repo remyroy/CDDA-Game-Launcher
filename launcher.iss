@@ -34,7 +34,7 @@ LicenseFile=LICENSE
 UninstallDisplayIcon={uninstallexe}
 SetupIconFile=cddagl\resources\launcher.ico
 OutputDir=dist\innosetup
-OutputBaseFilename=cddagl_installer
+OutputBaseFilename=cddagl_installer_v{#SetupSetting("AppVersion")}
 
 
 [Languages]
