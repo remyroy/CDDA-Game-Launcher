@@ -33,7 +33,7 @@ class Installer(Command):
         if bool(self.debug):
             window_mode = '-c'
 
-        makespec_call = ['pyi-makespec', '-F', window_mode, '--noupx',
+        makespec_call = ['pyi-makespec', '-D', window_mode, '--noupx',
             '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
             'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico']
 
