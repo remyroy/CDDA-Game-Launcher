@@ -8,6 +8,7 @@ from babel.messages import frontend as babel
 from subprocess import call, check_output, CalledProcessError
 
 import os
+import pathlib
 import winreg
 
 import os.path
@@ -16,6 +17,23 @@ try:
     from os import scandir
 except ImportError:
     from scandir import scandir
+
+
+def get_setup_dir():
+    """Return an absolute path to setup.py directory
+    Useful to find project files no matter where setup.py is invoked.
+    """
+    try:
+        return get_setup_dir.setup_base_dir
+    except AttributeError:
+        get_setup_dir.setup_base_dir = pathlib.Path(__file__).absolute().parent
+    return get_setup_dir.setup_base_dir
+
+
+def get_version():
+    with open(get_setup_dir() / 'VERSION') as version_file:
+        return version_file.read().strip()
+
 
 class CompileWithPyInstaller(Command):
     description = 'Build CDDAGL with PyInstaller'
@@ -129,7 +147,7 @@ class ExtractUpdateMessages(Command):
 
 
 setup(name='cddagl',
-      version='1.3.22',
+      version=get_version(),
       description=(
           'A Cataclysm: Dark Days Ahead launcher with additional features'),
       author='Rémy Roy',
