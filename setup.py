@@ -17,7 +17,8 @@ try:
 except ImportError:
     from scandir import scandir
 
-class Installer(Command):
+class CompileWithPyInstaller(Command):
+    description = 'Build CDDAGL with PyInstaller'
     user_options = [
         ('debug=', None,
             'Specify if we are using a debug build with PyInstaller.'),
@@ -135,7 +136,7 @@ setup(name='cddagl',
       author_email='remyroy@remyroy.com',
       url='https://github.com/remyroy/CDDA-Game-Launcher',
       packages=['cddagl'],
-      cmdclass={'installer': Installer,
+      cmdclass={'installer': CompileWithPyInstaller,
         'exup_messages': ExtractUpdateMessages,
         'compile_catalog': babel.compile_catalog,
         'extract_messages': babel.extract_messages,
