@@ -41,8 +41,10 @@ class CompileWithPyInstaller(Command):
         ('debug=', None,
             'Specify if we are using a debug build with PyInstaller.'),
     ]
+
     def initialize_options(self):
         self.debug = None
+
     def finalize_options(self):
         pass
 
@@ -133,8 +135,10 @@ class CompileWithPyInstaller(Command):
 
 class ExtractUpdateMessages(Command):
     user_options = []
+
     def initialize_options(self):
         pass
+
     def finalize_options(self):
         pass
 
