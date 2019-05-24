@@ -133,6 +133,26 @@ class CompileWithPyInstaller(Command):
         call(pyinstaller_call)
 
 
+class CreateInnoSetupInstaller(Command):
+    description = 'Creates a Windows Installer for the project'
+    user_options = [
+        ('compiler=', None,
+            'Specify if we are using a debug build with PyInstaller.'),
+    ]
+
+    def initialize_options(self):
+        self.compiler = r'C:\Program Files (x86)\Inno Setup 6\Compil32.exe'
+
+    def finalize_options(self):
+        if not pathlib.Path(self.compiler).exists():
+            raise Exception('Inno Setup Compiler (Compil32.exe) not found.')
+
+    def run(self):
+        #### Make sure we are running Inno Setup from the project directory
+        os.chdir(get_setup_dir())
+        call([self.compiler, '/cc', 'launcher.iss'])
+
+
 class ExtractUpdateMessages(Command):
     user_options = []
 
@@ -159,6 +179,7 @@ setup(name='cddagl',
       url='https://github.com/remyroy/CDDA-Game-Launcher',
       packages=['cddagl'],
       cmdclass={'installer': CompileWithPyInstaller,
+        'innosetup': CreateInnoSetupInstaller,
         'exup_messages': ExtractUpdateMessages,
         'compile_catalog': babel.compile_catalog,
         'extract_messages': babel.extract_messages,
