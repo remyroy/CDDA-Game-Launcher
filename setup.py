@@ -155,6 +155,8 @@ class CreateInnoSetupInstaller(Command):
     def run(self):
         #### Make sure we are running Inno Setup from the project directory
         os.chdir(get_setup_dir())
+        freeze_cmd = FreezeWithPyInstaller(self.distribution)
+        freeze_cmd.run()
         call([self.compiler, '/cc', 'launcher.iss'])
 
 
