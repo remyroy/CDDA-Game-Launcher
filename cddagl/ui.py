@@ -71,7 +71,9 @@ from cddagl.win32 import (
     activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
     wait_for_pid)
 
-from .__version__ import version
+import cddagl
+version = cddagl.__version__
+
 
 main_app = None
 basedir = None
@@ -3256,7 +3258,7 @@ class UpdateGroupBox(QGroupBox):
         if self.http_reply.hasRawHeader(GITHUB_XRL_REMAINING):
             requests_remaining = self.http_reply.rawHeader(GITHUB_XRL_REMAINING)
             requests_remaining = tryint(requests_remaining)
-        
+
         reset_dt = None
         if self.http_reply.hasRawHeader(GITHUB_XRL_RESET):
             reset_dt = self.http_reply.rawHeader(GITHUB_XRL_RESET)

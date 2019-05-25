@@ -31,7 +31,7 @@ def get_setup_dir():
 
 
 def get_version():
-    with open(get_setup_dir() / 'VERSION') as version_file:
+    with open(get_setup_dir() / 'cddagl' / 'VERSION') as version_file:
         return version_file.read().strip()
 
 
@@ -75,8 +75,13 @@ class FreezeWithPyInstaller(Command):
             makespec_call.extend(('-p', ucrt_path))
 
         # Additional files
-        added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
-            ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
+        added_files = [
+            ('alembic', 'alembic'),
+            ('bin/updated.bat', '.'),
+            ('data', 'data'),
+            ('cddagl/resources', 'cddagl/resources'),
+            ('cddagl/VERSION', 'cddagl')
+        ]
 
         added_binaries = []
 
@@ -178,6 +183,7 @@ setup(name='cddagl',
       author_email='remyroy@remyroy.com',
       url='https://github.com/remyroy/CDDA-Game-Launcher',
       packages=['cddagl'],
+      package_data={'cddagl': ['VERSION']},
       cmdclass={'freeze': FreezeWithPyInstaller,
         'create_installer': CreateInnoSetupInstaller,
         'exup_messages': ExtractUpdateMessages,
