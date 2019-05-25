@@ -35,7 +35,7 @@ def get_version():
         return version_file.read().strip()
 
 
-class CompileWithPyInstaller(Command):
+class FreezeWithPyInstaller(Command):
     description = 'Build CDDAGL with PyInstaller'
     user_options = [
         ('debug=', None,
@@ -178,8 +178,8 @@ setup(name='cddagl',
       author_email='remyroy@remyroy.com',
       url='https://github.com/remyroy/CDDA-Game-Launcher',
       packages=['cddagl'],
-      cmdclass={'installer': CompileWithPyInstaller,
-        'innosetup': CreateInnoSetupInstaller,
+      cmdclass={'freeze': FreezeWithPyInstaller,
+        'create_installer': CreateInnoSetupInstaller,
         'exup_messages': ExtractUpdateMessages,
         'compile_catalog': babel.compile_catalog,
         'extract_messages': babel.extract_messages,
