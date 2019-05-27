@@ -25,7 +25,7 @@ The resulting launcher installer should be in the `dist\innosetup` directory.
 
 ## Step by step guide to run and build the launcher executable
 
-1. Download and install Python 3.6 from [https://www.python.org/downloads/release/python-365/](https://www.python.org/downloads/release/python-365/). The rest of this guide will assume that you are using the 32-bit (x86) version of Python. It could also work with the 64-bit version (x86-64) but it would require some tweaks and it is out of scope for this guide.
+1. Download and install Python 3.6 from [https://www.python.org/downloads/release/python-368/](https://www.python.org/downloads/release/python-368/). The rest of this guide will assume that you are using the 32-bit (x86) version of Python. It could also work with the 64-bit version (x86-64) but it would require some tweaks and it is out of scope for this guide.
 2. Add Python directory and Scripts subdirectory in your PATH.
     * During installation, there is an optional *Add Python 3.6 to PATH*. If you selected this option, nothing else needs to be done here.
     * If you did not select that option, you will need to set your PATH variable globally or each time you want to use it. Here are the steps to set your PATH variable in a single command line window.
