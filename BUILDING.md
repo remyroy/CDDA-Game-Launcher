@@ -2,7 +2,7 @@
 
 CDDA Game Launcher is developed using Python. In order to run or build the launcher, you will need to download a recent version of Python and install all the requirements.
 
-> It seems like the projects cannot be built with Python 3.7+ . More efforts are needed to fix this issue. See #263 for instance.
+> It seems like the projects cannot be built with Python 3.7+ . More efforts are needed to fix this issue. See [#263](https://github.com/remyroy/CDDA-Game-Launcher/issues/263) for instance.
 
 ## Requirements
 
