@@ -88,7 +88,7 @@ class FreezeWithPyInstaller(Command):
         # Let's find and add unrar if available
         try:
             unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
-                'utf8')
+                'cp437')
             added_files.append((unrar_path, '.'))
         except CalledProcessError:
             pass
@@ -142,7 +142,7 @@ class CreateInnoSetupInstaller(Command):
     description = 'Creates a Windows Installer for the project'
     user_options = [
         ('compiler=', None,
-            'Specify if we are using a debug build with PyInstaller.'),
+            'Specify the path to Inno Setup Compiler (Compil32.exe).'),
     ]
 
     def initialize_options(self):

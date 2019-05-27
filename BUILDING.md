@@ -2,6 +2,8 @@
 
 CDDA Game Launcher is developed using Python. In order to run or build the launcher, you will need to download a recent version of Python and install all the requirements.
 
+> It seems like the projects cannot be built with Python 3.7+ . More efforts are needed to fix this issue. See #263 for instance.
+
 ## Requirements
 
 The full list of requirements is available in [requirements.txt](requirements.txt). Most of these requirements are Python packages that can be installed using [pip](https://en.wikipedia.org/wiki/Pip_%28package_manager%29). Unfortunately, some of these requirements need build tools which are not easy to use nor easy to install on Windows. Here are those special requirements:
@@ -15,11 +17,11 @@ Compiled binaries for lxml and pylzma can be found on [Christoph Gohlke's Unoffi
 
 Once you have Python installed and all the requirements, you can run the launcher by going into the project directory and by running `python cddagl\launcher.py`.
 
-## Building the launcher executable for distribution
+## Building the launcher installer for distribution
 
-Once you have Python installed and all the requirements, you can build the launcher executable for distribution by going into the project directory and running `python setup.py installer`. This will use the PyInstaller package to create a frozen stand-alone executable with all the dependencies bundled. If you want the executable to support RAR archives, you will also need to have the [UnRAR command line tool](http://www.rarlab.com/rar_add.htm) in your PATH.
+Once you have Python installed and all the requirements, you can build the launcher installer for distribution by going into the project directory and running `python setup.py create_installer`. This will use the PyInstaller package to create a frozen stand-alone executable with all the dependencies alongside. Afterwards, it will build the installer using Inno Setup. If you want the executable to support RAR archives, you will also need to have the [UnRAR command line tool](http://www.rarlab.com/rar_add.htm) in your PATH.
 
-The resulting launcher executable should be in the `dist` directory.
+The resulting launcher installer should be in the `dist\innosetup` directory.
 
 ## Step by step guide to run and build the launcher executable
 
@@ -34,6 +36,7 @@ The resulting launcher executable should be in the `dist` directory.
 5. Download the CDDA Game Launcher source code. If you have git installed, you can type the following command in your command line window: `git clone https://github.com/remyroy/CDDA-Game-Launcher.git`. You can also download the source code from [https://github.com/remyroy/CDDA-Game-Launcher/archive/master.zip](https://github.com/remyroy/CDDA-Game-Launcher/archive/master.zip). Make sure to extract the zip file somewhere before trying to run the code.
 6. In your command line window, change directory to the source code directory. Type `cd [path to source code]` and press `↵ Enter`.
 7. See if you can run the launcher by typing the following command in your command line window: `python cddagl\launcher.py` and press `↵ Enter`. If you have everything installed correctly, you should see the launcher running.
-8. Download the [UnRAR command line tool](http://www.rarlab.com/rar/unrarw32.exe) and extract it to `%LOCALAPPDATA%\Programs\Python\Python36-32\Scripts`.
-9. Install the Windows 10 SDK by installing the [Build Tools for Visual Studio](http://landinghub.visualstudio.com/visual-cpp-build-tools). Make sure the Windows 10 SDK option is selected during installation.
-10. To build the launcher executable, type the following command in your command line window: `python setup.py installer` and press `↵ Enter`. The resulting launcher executable should be in the `dist` subdirectory.
+8. Download and install [Inno Setup](http://www.jrsoftware.org/isinfo.php). You should use the default installation path to have `Compil32.exe` in `C:\Program Files (x86)\Inno Setup 6\`. If you do not use the default installation path, you will have to use the `--compiler=[path to `
+9. Download the [UnRAR command line tool](http://www.rarlab.com/rar/unrarw32.exe) and extract it to `%LOCALAPPDATA%\Programs\Python\Python36-32\Scripts`.
+10. Install [the Windows 10 SDK](https://developer.microsoft.com/en-US/windows/downloads/windows-10-sdk). Make sure the Windows 10 SDK option is selected during installation if you choose the Visual Studio Installer optional components.
+11. To build the launcher installer, type the following command in your command line window: `python setup.py create_installer` and press `↵ Enter`. The resulting launcher installer should be in the `dist\innosetup` subdirectory.
