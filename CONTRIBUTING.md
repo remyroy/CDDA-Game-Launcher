@@ -43,7 +43,7 @@ A good bug report shouldn't leave others needing to chase you up for more
 information. Please try to be as detailed as possible in your report. What is
 your environment? What steps will reproduce the issue? What browser(s) and OS
 experience the problem? What would you expect to be the outcome? All these
-details will help people to fix any potential bugs.
+details will help people to fix any potential bugs. [Report bugs effectively](https://www.chiark.greenend.org.uk/~sgtatham/bugs.html).
 
 Example:
 
@@ -140,3 +140,7 @@ project:
 
 **IMPORTANT**: By submitting a patch, you agree to allow the project owner to
 license your work under the same license as that used by the project.
+
+## Code of conduct
+
+Participants in this projet are expected to follow [the Code of Conduct](CODE_OF_CONDUCT.md).

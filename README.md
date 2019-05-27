@@ -34,3 +34,7 @@ Anyone and everyone is welcome to contribute. Please take a moment to review the
 * [Bug reports](CONTRIBUTING.md#bugs)
 * [Feature requests](CONTRIBUTING.md#features)
 * [Pull requests](CONTRIBUTING.md#pull-requests)
+
+## Code of conduct
+
+Participants in this projet are expected to follow [the Code of Conduct](CODE_OF_CONDUCT.md).
