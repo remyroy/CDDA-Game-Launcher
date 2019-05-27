@@ -30,7 +30,9 @@ from cddagl.ui import start_ui, ui_exception
 
 from cddagl.win32 import get_ui_locale, SingleInstance, write_named_pipe
 
-from cddagl.__version__ import version
+import cddagl
+version = cddagl.__version__
+
 
 MAX_LOG_SIZE = 1024 * 1024
 MAX_LOG_FILES = 5

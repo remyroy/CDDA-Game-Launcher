@@ -8,6 +8,7 @@ from babel.messages import frontend as babel
 from subprocess import call, check_output, CalledProcessError
 
 import os
+import pathlib
 import winreg
 
 import os.path
@@ -17,13 +18,33 @@ try:
 except ImportError:
     from scandir import scandir
 
-class Installer(Command):
+
+def get_setup_dir():
+    """Return an absolute path to setup.py directory
+    Useful to find project files no matter where setup.py is invoked.
+    """
+    try:
+        return get_setup_dir.setup_base_dir
+    except AttributeError:
+        get_setup_dir.setup_base_dir = pathlib.Path(__file__).absolute().parent
+    return get_setup_dir.setup_base_dir
+
+
+def get_version():
+    with open(get_setup_dir() / 'cddagl' / 'VERSION') as version_file:
+        return version_file.read().strip()
+
+
+class FreezeWithPyInstaller(Command):
+    description = 'Build CDDAGL with PyInstaller'
     user_options = [
         ('debug=', None,
             'Specify if we are using a debug build with PyInstaller.'),
     ]
+
     def initialize_options(self):
         self.debug = None
+
     def finalize_options(self):
         pass
 
@@ -33,7 +54,7 @@ class Installer(Command):
         if bool(self.debug):
             window_mode = '-c'
 
-        makespec_call = ['pyi-makespec', '-F', window_mode, '--noupx',
+        makespec_call = ['pyi-makespec', '-D', window_mode, '--noupx',
             '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
             'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico']
 
@@ -54,8 +75,13 @@ class Installer(Command):
             makespec_call.extend(('-p', ucrt_path))
 
         # Additional files
-        added_files = [('alembic', 'alembic'), ('bin/updated.bat', '.'),
-            ('data', 'data'), ('cddagl/resources', 'cddagl/resources')]
+        added_files = [
+            ('alembic', 'alembic'),
+            ('bin/updated.bat', '.'),
+            ('data', 'data'),
+            ('cddagl/resources', 'cddagl/resources'),
+            ('cddagl/VERSION', 'cddagl')
+        ]
 
         added_binaries = []
 
@@ -112,10 +138,34 @@ class Installer(Command):
         call(pyinstaller_call)
 
 
+class CreateInnoSetupInstaller(Command):
+    description = 'Creates a Windows Installer for the project'
+    user_options = [
+        ('compiler=', None,
+            'Specify if we are using a debug build with PyInstaller.'),
+    ]
+
+    def initialize_options(self):
+        self.compiler = r'C:\Program Files (x86)\Inno Setup 6\Compil32.exe'
+
+    def finalize_options(self):
+        if not pathlib.Path(self.compiler).exists():
+            raise Exception('Inno Setup Compiler (Compil32.exe) not found.')
+
+    def run(self):
+        #### Make sure we are running Inno Setup from the project directory
+        os.chdir(get_setup_dir())
+        freeze_cmd = FreezeWithPyInstaller(self.distribution)
+        freeze_cmd.run()
+        call([self.compiler, '/cc', 'launcher.iss'])
+
+
 class ExtractUpdateMessages(Command):
     user_options = []
+
     def initialize_options(self):
         pass
+
     def finalize_options(self):
         pass
 
@@ -128,14 +178,16 @@ class ExtractUpdateMessages(Command):
 
 
 setup(name='cddagl',
-      version='1.3.22',
+      version=get_version(),
       description=(
           'A Cataclysm: Dark Days Ahead launcher with additional features'),
       author='Rémy Roy',
       author_email='remyroy@remyroy.com',
       url='https://github.com/remyroy/CDDA-Game-Launcher',
       packages=['cddagl'],
-      cmdclass={'installer': Installer,
+      package_data={'cddagl': ['VERSION']},
+      cmdclass={'freeze': FreezeWithPyInstaller,
+        'create_installer': CreateInnoSetupInstaller,
         'exup_messages': ExtractUpdateMessages,
         'compile_catalog': babel.compile_catalog,
         'extract_messages': babel.extract_messages,
