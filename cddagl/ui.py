@@ -1815,7 +1815,8 @@ class ChangelogParsingThread(QThread):
                 format='long', locale=app_locale)
 
             build_changes = build_data.findall(r'.//changeSet/item/msg')
-            build_changes = map(lambda x: x.text.strip(), build_changes)
+            build_changes = map(lambda x: html.escape(x.text.strip(), True),
+                                build_changes)
             build_changes = list(unique(build_changes))
             build_number = int(build_data.find('number').text)
             build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">' \
