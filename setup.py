@@ -77,7 +77,6 @@ class FreezeWithPyInstaller(Command):
         # Additional files
         added_files = [
             ('alembic', 'alembic'),
-            ('bin/updated.bat', '.'),
             ('data', 'data'),
             ('cddagl/resources', 'cddagl/resources'),
             ('cddagl/VERSION', 'cddagl')

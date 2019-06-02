@@ -524,23 +524,14 @@ class MainWindow(QMainWindow):
             launcher_update_msgbox.setIcon(QMessageBox.Question)
 
             if launcher_update_msgbox.exec() == 0:
-                # TODO: Update launcher, see #170
-                # New executable url is in executable_url for download
-                '''
-                for item in release.cssselect(
-                    'ul.release-downloads li a'):
-                    if 'href' in item.keys():
-                        url = urljoin(RELEASES_URL, item.get('href'))
-                        if url.endswith('.exe'):
-                            launcher_update_dialog = (
-                                LauncherUpdateDialog(url, version_text,
-                                    self, Qt.WindowTitleHint |
-                                    Qt.WindowCloseButtonHint))
-                            launcher_update_dialog.exec()
+                flags = Qt.WindowTitleHint | Qt.WindowCloseButtonHint
 
-                            if launcher_update_dialog.updated:
-                                self.close()
-                '''
+                launcher_update_dialog = (LauncherUpdateDialog(executable_url,
+                    version_text, self, flags))
+                launcher_update_dialog.exec()
+
+                if launcher_update_dialog.updated:
+                    self.close()
 
         else:
             self.no_launcher_update_found()
@@ -4139,25 +4130,9 @@ class LauncherUpdateDialog(QDialog):
             else:
                 # Download completed
                 if getattr(sys, 'frozen', False):
-                    launcher_exe = os.path.abspath(sys.executable)
-                    launcher_dir = os.path.dirname(launcher_exe)
-                    download_dir = os.path.dirname(self.downloaded_file)
-                    pid = os.getpid()
+                    # Launch self.downloaded_file and close
 
-                    batch_path = os.path.join(sys._MEIPASS, 'updated.bat')
-                    copied_batch_path = os.path.join(download_dir,
-                        'updated.bat')
-                    shutil.copy2(batch_path, copied_batch_path)
-
-                    command = ('start "Update Process" call "{batch}" "{pid}" '
-                        '"{update_path}" "{update_dir}" "{exe_path}" '
-                        '"{exe_dir}"'
-                        ).format(batch=copied_batch_path, pid=pid,
-                        update_path=self.downloaded_file,
-                        update_dir=download_dir,
-                        exe_path=launcher_exe,
-                        exe_dir=launcher_dir)
-                    subprocess.call(command, shell=True)
+                    subprocess.Popen([self.downloaded_file])
 
                     self.updated = True
                     self.done(0)
