@@ -4777,29 +4777,60 @@ class SoundpacksTab(QTabWidget):
                 # Test downloaded file
                 status_bar.showMessage(_('Testing downloaded file archive'))
 
-                try:
-                    with zipfile.ZipFile(self.downloaded_file) as z:
-                        if z.testzip() is not None:
-                            status_bar.clearMessage()
-                            status_bar.showMessage(_('Downloaded archive is '
-                                'invalid'))
+                if self.downloaded_file.lower().endswith('.7z'):
+                    try:
+                        with open(self.downloaded_file, 'rb') as f:
+                            archive = Archive7z(f)
+                    except FormatError:
+                        status_bar.clearMessage()
+                        status_bar.showMessage(_('Selected file is a '
+                            'bad archive file'))
 
-                            download_dir = os.path.dirname(self.downloaded_file)
-                            delete_path(download_dir)
-                            self.downloading_new_soundpack = False
+                        self.finish_install_new_soundpack()
+                        return
+                    except NoPasswordGivenError:
+                        status_bar.clearMessage()
+                        status_bar.showMessage(_('Selected file is a '
+                            'password protected archive file'))
 
-                            self.finish_install_new_soundpack()
-                            return
-                except zipfile.BadZipFile:
-                    status_bar.clearMessage()
-                    status_bar.showMessage(_('Could not download soundpack'))
+                        self.finish_install_new_soundpack()
+                        return
+                else:
+                    if self.downloaded_file.lower().endswith('.zip'):
+                        archive_class = zipfile.ZipFile
+                        archive_exception = zipfile.BadZipFile
+                        test_method = 'testzip'
+                    elif self.downloaded_file.lower().endswith('.rar'):
+                        archive_class = rarfile.RarFile
+                        archive_exception = rarfile.Error
+                        test_method = 'testrar'
+                    else:
+                        extension = os.path.splitext(self.downloaded_file)[1]
+                        status_bar.clearMessage()
+                        status_bar.showMessage(
+                            _('Unknown downloaded archive format ({extension})'
+                            ).format(extension=extension))
 
-                    download_dir = os.path.dirname(self.downloaded_file)
-                    delete_path(download_dir)
-                    self.downloading_new_soundpack = False
+                        self.finish_install_new_soundpack()
+                        return
 
-                    self.finish_install_new_soundpack()
-                    return
+                    try:
+                        with archive_class(self.downloaded_file) as z:
+                            test = getattr(z, test_method)
+                            if test() is not None:
+                                status_bar.clearMessage()
+                                status_bar.showMessage(
+                                    _('Downloaded archive is invalid'))
+
+                                self.finish_install_new_soundpack()
+                                return
+                    except archive_exception:
+                        status_bar.clearMessage()
+                        status_bar.showMessage(_('Selected file is a '
+                            'bad archive file'))
+
+                        self.finish_install_new_soundpack()
+                        return
 
                 status_bar.clearMessage()
                 self.downloading_new_soundpack = False
@@ -4848,8 +4879,21 @@ class SoundpacksTab(QTabWidget):
     def extract_new_soundpack(self):
         self.extracting_new_soundpack = True
 
-        z = zipfile.ZipFile(self.downloaded_file)
-        self.extracting_zipfile = z
+        if self.downloaded_file.lower().endswith('.7z'):
+            self.extracting_zipfile = open(self.downloaded_file, 'rb')
+            self.extracting_archive = Archive7z(self.extracting_zipfile)
+
+            self.extracting_infolist = self.extracting_archive.getmembers()
+        else:
+            if self.downloaded_file.lower().endswith('.zip'):
+                archive_class = zipfile.ZipFile
+            elif self.downloaded_file.lower().endswith('.rar'):
+                archive_class = rarfile.RarFile
+
+            z = archive_class(self.downloaded_file)
+            self.extracting_zipfile = z
+
+            self.extracting_infolist = z.infolist()
 
         self.extract_dir = os.path.join(self.game_dir, 'newsoundpack')
         while os.path.exists(self.extract_dir):
@@ -4857,7 +4901,6 @@ class SoundpacksTab(QTabWidget):
                 'newsoundpack-{0}'.format('%08x' % random.randrange(16**8)))
         os.makedirs(self.extract_dir)
 
-        self.extracting_infolist = z.infolist()
         self.extracting_index = 0
 
         main_window = self.get_main_window()
@@ -4895,6 +4938,10 @@ class SoundpacksTab(QTabWidget):
                 self.extracting_new_soundpack = False
 
                 self.extracting_zipfile.close()
+                self.extracting_zipfile = None
+
+                if self.downloaded_file.lower().endswith('.7z'):
+                    self.extracting_archive = None
 
                 if self.install_type == 'direct_download':
                     download_dir = os.path.dirname(self.downloaded_file)
@@ -4905,11 +4952,21 @@ class SoundpacksTab(QTabWidget):
             else:
                 extracting_element = self.extracting_infolist[
                     self.extracting_index]
+
                 self.extracting_label.setText(_('Extracting {0}').format(
                     extracting_element.filename))
 
-                self.extracting_zipfile.extract(extracting_element,
-                    self.extract_dir)
+                if self.downloaded_file.lower().endswith('.7z'):
+                    destination = os.path.join(self.extract_dir,
+                        *extracting_element.filename.split('/'))
+                    dest_dir = os.path.dirname(destination)
+                    if not os.path.isdir(dest_dir):
+                        os.makedirs(dest_dir)
+                    with open(destination, 'wb') as f:
+                        f.write(extracting_element.read())
+                else:
+                    self.extracting_zipfile.extract(extracting_element,
+                        self.extract_dir)
 
                 self.extracting_index += 1
 
