@@ -201,8 +201,15 @@ def delete_path(path):
 
     shellcon = winutils.shellcon
 
-    flags = (
-        shellcon.FOF_ALLOWUNDO |
+    permanently_delete_files = config_true(
+        get_config_value('permanently_delete_files', 'False'))
+
+    if permanently_delete_files:
+        flags = 0
+    else:
+        flags = shellcon.FOF_ALLOWUNDO
+
+    flags = (flags |
         shellcon.FOF_NOCONFIRMATION |
         shellcon.FOF_WANTNUKEWARNING
         )
@@ -3874,6 +3881,16 @@ class UpdateSettingsGroupBox(QGroupBox):
         layout.addWidget(remove_previous_version_checkbox, 3, 0, 1, 3)
         self.remove_previous_version_checkbox = (
             remove_previous_version_checkbox)
+        
+        permanently_delete_files_checkbox = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'permanently_delete_files', 'False')) else Qt.Unchecked)
+        permanently_delete_files_checkbox.setCheckState(check_state)
+        permanently_delete_files_checkbox.stateChanged.connect(
+                self.prfc_changed)
+        layout.addWidget(permanently_delete_files_checkbox, 4, 0, 1, 3)
+        self.permanently_delete_files_checkbox = (
+            permanently_delete_files_checkbox)
 
         self.setLayout(layout)
         self.set_text()
@@ -3894,6 +3911,9 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.arb_min_label.setText(_('minutes'))
         self.remove_previous_version_checkbox.setText(_(
             'Remove previous version after update (not recommended)'))
+        self.permanently_delete_files_checkbox.setText(_(
+            'Permanently delete files instead of moving them in the recycle '
+            'bin (not recommended)'))
         self.setTitle(_('Update/Installation'))
 
     def get_settings_tab(self):
@@ -3936,6 +3956,9 @@ class UpdateSettingsGroupBox(QGroupBox):
 
     def rpvc_changed(self, state):
         set_config_value('remove_previous_version', str(state != Qt.Unchecked))
+
+    def prfc_changed(self, state):
+        set_config_value('permanently_delete_files', str(state != Qt.Unchecked))
 
     def kacc_changed(self, state):
         set_config_value('keep_archive_copy', str(state != Qt.Unchecked))
