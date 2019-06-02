@@ -53,5 +53,13 @@
         "url": "https://drive.google.com/open?id=14_ZlFCwqavU8JJ9X4PHVM5vqEXs46OsM",
         "expected_filename": "2ch sounpack.zip",
         "homepage": "https://github.com/remyroy/CDDA-Game-Launcher/issues/248"
+    },
+    {
+        "type": "direct_download",
+        "viewname": "@'s soundpack",
+        "name": "@'s soundpack",
+        "url": "https://github.com/damalsk/damalsksoundpack/archive/v0.2.zip",
+        "size": 164342384,
+        "homepage": "https://discourse.cataclysmdda.org/t/soundpack-s-soundpack-vehicle-sounds-licensed-music-and-more/20131"
     }
 ]
