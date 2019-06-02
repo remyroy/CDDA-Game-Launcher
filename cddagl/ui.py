@@ -1942,15 +1942,22 @@ class UpdateGroupBox(QGroupBox):
         layout.addWidget(builds_combo, 1, 1, 1, 2)
         self.builds_combo = builds_combo
 
+        refresh_warning_label = QLabel()
+        icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
+        refresh_warning_label.setPixmap(icon.pixmap(16, 16))
+        refresh_warning_label.hide()
+        layout.addWidget(refresh_warning_label, 1, 3)
+        self.refresh_warning_label = refresh_warning_label
+
         refresh_builds_button = QToolButton()
         refresh_builds_button.clicked.connect(self.refresh_builds)
-        layout.addWidget(refresh_builds_button, 1, 3)
+        layout.addWidget(refresh_builds_button, 1, 4)
         self.refresh_builds_button = refresh_builds_button
 
         changelog_groupbox = QGroupBox()
         changelog_layout = QHBoxLayout()
         changelog_groupbox.setLayout(changelog_layout)
-        layout.addWidget(changelog_groupbox, 2, 0, 1, 4)
+        layout.addWidget(changelog_groupbox, 2, 0, 1, 5)
         self.changelog_groupbox = changelog_groupbox
         self.changelog_layout = changelog_layout
 
@@ -1964,7 +1971,7 @@ class UpdateGroupBox(QGroupBox):
         update_button.setEnabled(False)
         update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
-        layout.addWidget(update_button, 3, 0, 1, 4)
+        layout.addWidget(update_button, 3, 0, 1, 5)
         self.update_button = update_button
 
         layout.setColumnStretch(1, 100)
@@ -3194,6 +3201,7 @@ class UpdateGroupBox(QGroupBox):
 
     def start_lb_request(self, base_asset):
         self.disable_controls(True)
+        self.refresh_warning_label.hide()
 
         main_window = self.get_main_window()
 
@@ -3296,6 +3304,26 @@ class UpdateGroupBox(QGroupBox):
             reset_dt = self.http_reply.rawHeader(GITHUB_XRL_RESET)
             reset_dt = tryint(reset_dt)
             reset_dt = arrow.get(reset_dt)
+
+        if requests_remaining is not None and requests_remaining <= 10:
+            # Warn about remaining requests on GitHub API
+            reset_dt_display = _('Unknown')
+            if reset_dt is not None:
+                reset_dt_local = reset_dt.astimezone(tz=None)
+                reset_dt_display = format_datetime(reset_dt_local,
+                    format='long', locale=app_locale)
+
+            self.refresh_warning_label.show()
+            self.refresh_warning_label.setToolTip(_('You have {remaining} '
+            'request(s) remaining for accessing GitHub API.\nYou will have to '
+            'wait until {datetime} to get more requests.\nThose requests are '
+            'needed to get the available builds.\nIf you keep running low on '
+            'those remaining requests, avoid quickly refreshing often\n for the'
+            'available builds. For more information, search GitHub API rate '
+            'limiting.').format(
+                remaining=requests_remaining,
+                datetime=reset_dt_display
+            ))
 
         status_code = self.http_reply.attribute(
             QNetworkRequest.HttpStatusCodeAttribute)
