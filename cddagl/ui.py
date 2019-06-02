@@ -46,7 +46,7 @@ from py7zlib import Archive7z, NoPasswordGivenError, FormatError
 
 from distutils.version import LooseVersion
 
-from pywintypes import error as PyWinError
+from pywintypes import error as PyWinError, com_error
 
 import winutils
 
@@ -191,8 +191,9 @@ def get_data_path():
     return os.path.join(basedir, 'data')
 
 def delete_path(path):
-    ''' Move directory or file in the recycle bin using the built in Windows
-    File operations dialog
+    ''' Move directory or file in the recycle bin (or permanently delete it 
+    depending on the settings used) using the built in Windows File
+    operations dialog
     '''
 
     # Make sure we have an absolute path first
@@ -214,7 +215,35 @@ def delete_path(path):
         shellcon.FOF_WANTNUKEWARNING
         )
 
-    return winutils.delete(path, flags)
+    try:
+        return winutils.delete(path, flags)
+    except com_error:
+        return False
+
+def move_path(srcpath, dstpath):
+    ''' Move srcpath to dstpath using using the built in Windows File
+    operations dialog
+    '''
+
+    # Make sure we have absolute paths first
+    if not os.path.isabs(srcpath):
+        srcpath = os.path.abspath(srcpath)
+    if not os.path.isabs(dstpath):
+        dstpath = os.path.abspath(dstpath)
+    
+    shellcon = winutils.shellcon
+
+    flags = (
+        shellcon.FOF_ALLOWUNDO |
+        shellcon.FOF_NOCONFIRMMKDIR |
+        shellcon.FOF_NOCONFIRMATION |
+        shellcon.FOF_WANTNUKEWARNING
+        )
+
+    try:
+        return winutils.move(srcpath, dstpath, flags)
+    except com_error:
+        return False
 
 def retry_rename(src, dst):
     while os.path.exists(src):
@@ -2589,10 +2618,8 @@ class UpdateGroupBox(QGroupBox):
                             backup_element))
                         self.backup_current_display = False
                     else:
-                        try:
-                            shutil.move(os.path.join(self.game_dir,
-                                backup_element), self.backup_dir)
-                        except OSError as e:
+                        srcpath = os.path.join(self.game_dir, backup_element)
+                        if not move_path(srcpath, self.backup_dir):
                             self.backup_timer.stop()
 
                             main_window = self.get_main_window()
@@ -2606,7 +2633,13 @@ class UpdateGroupBox(QGroupBox):
 
                             self.finish_updating()
 
-                            status_bar.showMessage(str(e))
+                            msg = (_('Could not move {srcpath} in {dstpath} .')
+                                ).format(
+                                    srcpath=srcpath,
+                                    dstpath=self.backup_dir
+                                )
+
+                            status_bar.showMessage(msg)
 
                         self.backup_index += 1
                         self.backup_current_display = True
