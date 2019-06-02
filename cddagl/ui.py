@@ -4256,7 +4256,26 @@ class BrowserDownloadDialog(QDialog):
             self.download_path_le.setText(clean_qt_path(selected_file))
 
     def install_clicked(self):
-        self.downloaded_path = self.download_path_le.text()
+        choosen_file = self.download_path_le.text()
+        if not os.path.isfile(choosen_file):
+            filenotfound_msgbox = QMessageBox()
+            filenotfound_msgbox.setWindowTitle(_('File not found'))
+
+            text = (_('{filepath} is not an existing file on your system. '
+                'Make sure to download the archive with your browser. Make '
+                'sure to select the downloaded archive afterwards.')).format(
+                    filepath=choosen_file
+                )
+
+            filenotfound_msgbox.setText(text)
+            filenotfound_msgbox.addButton(_('I will try again'),
+                QMessageBox.AcceptRole)
+            filenotfound_msgbox.setIcon(QMessageBox.Warning)
+            filenotfound_msgbox.exec()
+
+            return
+        
+        self.downloaded_path = choosen_file
         self.done(1)
 
     def do_not_install_clicked(self):
