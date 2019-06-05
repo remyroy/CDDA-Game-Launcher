@@ -4722,32 +4722,62 @@ class SoundpacksTab(QTabWidget):
                     # Test downloaded file
                     status_bar.showMessage(_('Testing downloaded file archive'))
 
-                    if self.downloaded_file.lower().endswith('.zip'):
-                        archive_class = zipfile.ZipFile
-                        archive_exception = zipfile.BadZipFile
-                        test_method = 'testzip'
-                    elif self.downloaded_file.lower().endswith('.rar'):
-                        archive_class = rarfile.RarFile
-                        archive_exception = rarfile.Error
-                        test_method = 'testrar'
+                    if self.downloaded_file.lower().endswith('.7z'):
+                        try:
+                            with open(self.downloaded_file, 'rb') as f:
+                                archive = Archive7z(f)
+                        except FormatError:
+                            status_bar.clearMessage()
+                            status_bar.showMessage(_('Selected file is a '
+                                'bad archive file'))
 
-                    try:
-                        with archive_class(self.downloaded_file) as z:
-                            test = getattr(z, test_method)
-                            if test() is not None:
-                                status_bar.clearMessage()
-                                status_bar.showMessage(
-                                    _('Downloaded archive is invalid'))
+                            self.finish_install_new_soundpack()
+                            return
+                        except NoPasswordGivenError:
+                            status_bar.clearMessage()
+                            status_bar.showMessage(_('Selected file is a '
+                                'password protected archive file'))
 
-                                self.finish_install_new_soundpack()
-                                return
-                    except archive_exception:
-                        status_bar.clearMessage()
-                        status_bar.showMessage(_('Selected file is a bad '
-                            'archive file'))
+                            self.finish_install_new_soundpack()
+                            return
+                    else:
+                        archive_exception = None
+                        if self.downloaded_file.lower().endswith('.zip'):
+                            archive_class = zipfile.ZipFile
+                            archive_exception = zipfile.BadZipFile
+                            test_method = 'testzip'
+                        elif self.downloaded_file.lower().endswith('.rar'):
+                            archive_class = rarfile.RarFile
+                            archive_exception = rarfile.Error
+                            test_method = 'testrar'
+                        else:
+                            extension = os.path.splitext(self.downloaded_file
+                                )[1]
+                            status_bar.clearMessage()
+                            status_bar.showMessage(
+                                _('Unknown downloaded archive format '
+                                '({extension})').format(extension=extension))
 
-                        self.finish_install_new_soundpack()
-                        return
+                            self.finish_install_new_soundpack()
+                            return
+
+                        try:
+                            with archive_class(self.downloaded_file) as z:
+                                test = getattr(z, test_method)
+                                if test() is not None:
+                                    status_bar.clearMessage()
+                                    status_bar.showMessage(
+                                        _('Downloaded archive is invalid'))
+
+                                    self.finish_install_new_soundpack()
+                                    return
+                        except archive_exception:
+                            status_bar.clearMessage()
+                            status_bar.showMessage(_('Selected file is a '
+                                'bad archive file'))
+
+                            self.finish_install_new_soundpack()
+                            return
 
                     status_bar.clearMessage()
                     self.extract_new_soundpack()
@@ -4874,6 +4904,7 @@ class SoundpacksTab(QTabWidget):
                         self.finish_install_new_soundpack()
                         return
                 else:
+                    archive_exception = None
                     if self.downloaded_file.lower().endswith('.zip'):
                         archive_class = zipfile.ZipFile
                         archive_exception = zipfile.BadZipFile
