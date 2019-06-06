@@ -7,6 +7,7 @@ from alembic import command
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import joinedload, joinedload_all
+from sqlalchemy.exc import OperationalError
 
 from cddagl.configmodel import ConfigValue, GameVersion, GameBuild
 
@@ -21,7 +22,13 @@ def init_config(basedir):
     alembic_cfg = Config()
     alembic_cfg.set_main_option('sqlalchemy.url', get_db_url())
     alembic_cfg.set_main_option('script_location', alembic_dir)
-    command.upgrade(alembic_cfg, "head")
+    
+    try:
+        command.upgrade(alembic_cfg, "head")
+    except OperationalError:
+        # If we cannot upgrade the database, we remove it and try again
+        os.remove(get_config_path())
+        command.upgrade(alembic_cfg, "head")
 
 def get_config_path():
     local_app_data = os.environ.get('LOCALAPPDATA', os.environ.get('APPDATA'))
