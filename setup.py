@@ -119,7 +119,7 @@ class FreezeWithPyInstaller(Command):
 
         # Add debug build
         if bool(self.debug):
-            makespec_call.append('-d')
+            makespec_call.extend(('-d', 'all'))
 
         # Call the makespec util
         call(makespec_call)
