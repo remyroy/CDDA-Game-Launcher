@@ -14,7 +14,6 @@ import win32api
 import win32event
 import win32pipe
 import win32con
-import win32
 
 from pywintypes import error as WinError
 
