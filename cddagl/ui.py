@@ -3382,11 +3382,12 @@ class UpdateGroupBox(QGroupBox):
             if build_match is not None:
                 asset = None
                 if 'assets' in release:
-                    asset_iter = (x
-                                  for x in release['assets']
-                                  if ('browser_download_url' in x
-                                     and 'name' in x
-                                     and target_regex.search(x['name']) is not None))
+                    asset_iter = (
+                        x for x in release['assets']
+                        if 'browser_download_url' in x
+                           and 'name' in x
+                           and target_regex.search(x['name']) is not None
+                    )
                     asset = next(asset_iter, None)
 
                 build = {
