@@ -3378,6 +3378,9 @@ class UpdateGroupBox(QGroupBox):
         build_regex = re.compile(r'build #(?P<build>\d+)')
 
         for release in releases:
+            if any(x not in release for x in ('name', 'created_at')):
+                continue
+
             build_match = build_regex.search(release['name'])
             if build_match is not None:
                 asset = None
