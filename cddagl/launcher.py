@@ -156,11 +156,12 @@ def init_exception_catcher():
     sys.excepthook = handle_exception
 
 if __name__ == '__main__':
+    init_logging()
+    init_exception_catcher()
+
     init_config(basedir)
     single_instance = init_single_instance()
 
     app_locale = init_gettext()
-    init_logging()
-    init_exception_catcher()
 
     start_ui(basedir, app_locale, available_locales, single_instance)
