@@ -3425,15 +3425,13 @@ class UpdateGroupBox(QGroupBox):
             for x in range(combo_model.rowCount()):
                 if combo_model.item(x).data(Qt.UserRole)['url'] is None:
                     combo_model.item(x).setEnabled(False)
-                    #combo_model.item(x).setFlags(combo_model.item(x).flags()
-                    #                             & ~Qt.ItemIsSelectable)
-                    combo_model.item(x).setText(combo_model.item(x).text()
-                                                + ' - build unavailable')
+                    combo_model.item(x).setText(combo_model.item(x).text() +
+                        _(' - build unavailable'))
                 elif not default_set:
                     default_set = True
                     self.builds_combo.setCurrentIndex(x)
-                    combo_model.item(x).setText(combo_model.item(x).text()
-                                                + ' - latest build available')
+                    combo_model.item(x).setText(combo_model.item(x).text() +
+                        _(' - latest build available'))
 
 
             if not game_dir_group_box.game_started:
