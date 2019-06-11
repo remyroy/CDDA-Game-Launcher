@@ -191,7 +191,7 @@ def get_data_path():
     return os.path.join(basedir, 'data')
 
 def delete_path(path):
-    ''' Move directory or file in the recycle bin (or permanently delete it 
+    ''' Move directory or file in the recycle bin (or permanently delete it
     depending on the settings used) using the built in Windows File
     operations dialog
     '''
@@ -230,7 +230,7 @@ def move_path(srcpath, dstpath):
         srcpath = os.path.abspath(srcpath)
     if not os.path.isabs(dstpath):
         dstpath = os.path.abspath(dstpath)
-    
+
     shellcon = winutils.shellcon
 
     flags = (
@@ -1791,12 +1791,19 @@ class ChangelogParsingThread(QThread):
         self.wait()
 
     def get_results_by_platform(self, build_data):
-        regex = re.compile(r'.*\b(Tiles),(Windows(?:_x64)?)\b.*')
+        regex = re.compile(r'.*\b'
+                           r'(?P<ui>Curses|Tiles),'
+                           r'(?P<plat>Linux_x64|Windows(?:_x64)?)'
+                           r'\b.*')
 
         def platform_display_name(code_name):
+            code_name = regex.sub(r'\g<ui>-\g<plat>',
+                                  code_name.find('fullDisplayName').text)
+
             if code_name == 'Tiles-Windows': return 'Windows x86'
             if code_name == 'Tiles-Windows_x64': return 'Windows x64'
-            return code_name
+            if code_name == 'Curses-Linux_x64': return 'All Platforms'
+            return None
 
         build_platforms = build_data.findall(r'.//run')
         build_platforms = filter(
@@ -1807,10 +1814,9 @@ class ChangelogParsingThread(QThread):
         )
 
         return tuple({'result': x.find('result').text,
-                      'platform': platform_display_name(
-                                    regex.sub(r'\1-\2',
-                                              x.find('fullDisplayName').text))}
-                     for x in build_platforms)
+                      'platform': platform_display_name(x)}
+                     for x in build_platforms
+                     if platform_display_name(x) is not None)
 
     def run(self):
         changelog_html = StringIO()
@@ -3363,31 +3369,38 @@ class UpdateGroupBox(QGroupBox):
         asset_platform = self.base_asset['Platform']
         asset_graphics = self.base_asset['Graphics']
 
-        target_regex = ('cataclysmdda-(?P<major>.+)-' +
-            re.escape(asset_platform) + '-' +
-            re.escape(asset_graphics) + '-' +
-            '(?P<build>\\d+)\\.zip'
+        target_regex = re.compile(r'cataclysmdda-(?P<major>.+)-' +
+            re.escape(asset_platform) + r'-' +
+            re.escape(asset_graphics) + r'-' +
+            r'(?P<build>\d+)\.zip'
             )
 
+        build_regex = re.compile(r'build #(?P<build>\d+)')
+
         for release in releases:
-            if not 'assets' in release:
+            if any(x not in release for x in ('name', 'created_at')):
                 continue
-            for file_asset in release['assets']:
-                if not 'name' in file_asset:
-                    continue
-                if not 'browser_download_url' in file_asset:
-                    continue
-                if not 'created_at' in file_asset:
-                    continue
-                match = re.search(target_regex, file_asset['name'])
-                if match is not None:
-                    build = {
-                        'url': file_asset['browser_download_url'],
-                        'name': file_asset['name'],
-                        'number': match.group('build'),
-                        'date': arrow.get(file_asset['created_at']).datetime
-                    }
-                    builds.append(build)
+
+            build_match = build_regex.search(release['name'])
+            if build_match is not None:
+                asset = None
+                if 'assets' in release:
+                    asset_iter = (
+                        x for x in release['assets']
+                        if 'browser_download_url' in x
+                           and 'name' in x
+                           and target_regex.search(x['name']) is not None
+                    )
+                    asset = next(asset_iter, None)
+
+                build = {
+                    'url': asset['browser_download_url'] if asset is not None
+                                                         else None,
+                    'name': asset['name'] if asset is not None else None,
+                    'number': build_match.group('build'),
+                    'date': arrow.get(release['created_at']).datetime
+                }
+                builds.append(build)
 
         if len(builds) > 0:
             builds.sort(key=lambda x: (x['number'], x['date']), reverse=True)
@@ -3402,13 +3415,26 @@ class UpdateGroupBox(QGroupBox):
                 else:
                     human_delta = _('Unknown')
 
-                if index == 0:
-                    self.builds_combo.addItem(
-                        _('{number} ({delta}) - latest').format(
-                        number=build['number'], delta=human_delta))
-                else:
-                    self.builds_combo.addItem(_('{number} ({delta})').format(
-                        number=build['number'], delta=human_delta))
+                self.builds_combo.addItem(
+                    _('{number} ({delta})').format(
+                    number=build['number'], delta=human_delta),
+                    userData=build)
+
+            combo_model = self.builds_combo.model()
+            default_set = False
+            for x in range(combo_model.rowCount()):
+                if combo_model.item(x).data(Qt.UserRole)['url'] is None:
+                    combo_model.item(x).setEnabled(False)
+                    #combo_model.item(x).setFlags(combo_model.item(x).flags()
+                    #                             & ~Qt.ItemIsSelectable)
+                    combo_model.item(x).setText(combo_model.item(x).text()
+                                                + ' - build unavailable')
+                elif not default_set:
+                    default_set = True
+                    self.builds_combo.setCurrentIndex(x)
+                    combo_model.item(x).setText(combo_model.item(x).text()
+                                                + ' - latest build available')
+
 
             if not game_dir_group_box.game_started:
                 self.builds_combo.setEnabled(True)
@@ -3933,7 +3959,7 @@ class UpdateSettingsGroupBox(QGroupBox):
         layout.addWidget(remove_previous_version_checkbox, 3, 0, 1, 3)
         self.remove_previous_version_checkbox = (
             remove_previous_version_checkbox)
-        
+
         permanently_delete_files_checkbox = QCheckBox()
         check_state = (Qt.Checked if config_true(get_config_value(
             'permanently_delete_files', 'False')) else Qt.Unchecked)
@@ -4310,7 +4336,7 @@ class BrowserDownloadDialog(QDialog):
             filenotfound_msgbox.exec()
 
             return
-        
+
         self.downloaded_path = choosen_file
         self.done(1)
 
