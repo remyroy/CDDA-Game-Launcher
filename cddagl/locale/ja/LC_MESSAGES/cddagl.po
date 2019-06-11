@@ -7,23 +7,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 1.3.11.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-05-17 10:52-0400\n"
+"POT-Creation-Date: 2019-06-11 13:41-0400\n"
 "PO-Revision-Date: 2019-05-21 05:50+0900\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
 "Language-Team: ja <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
-"X-Generator: Poedit 1.5.7\n"
+"Generated-By: Babel 2.6.0\n"
 
-#: cddagl/launcher.py:137
+#: cddagl/launcher.py:139
 msgid "CDDA Game Launcher started: {version}"
 msgstr ""
 
-#: cddagl/launcher.py:146
+#: cddagl/launcher.py:148
 msgid ""
 "Global error:\n"
 "Launcher version: {version}\n"
@@ -33,157 +32,65 @@ msgid ""
 "{traceback}"
 msgstr ""
 
-#: cddagl/ui.py:135
+#: cddagl/ui.py:176
 msgid "64-bit"
 msgstr ""
 
-#: cddagl/ui.py:137
+#: cddagl/ui.py:178
 msgid "32-bit"
 msgstr ""
 
-#: cddagl/ui.py:141
+#: cddagl/ui.py:182
 msgid "B"
 msgstr ""
 
-#: cddagl/ui.py:142
+#: cddagl/ui.py:183
 msgid "Ki"
 msgstr ""
 
-#: cddagl/ui.py:142
+#: cddagl/ui.py:183
 msgid "Mi"
 msgstr ""
 
-#: cddagl/ui.py:142
+#: cddagl/ui.py:183
 msgid "Gi"
 msgstr ""
 
-#: cddagl/ui.py:142
+#: cddagl/ui.py:183
 msgid "Ti"
 msgstr ""
 
-#: cddagl/ui.py:142
+#: cddagl/ui.py:183
 msgid "Pi"
 msgstr ""
 
-#: cddagl/ui.py:142
+#: cddagl/ui.py:183
 msgid "Ei"
 msgstr ""
 
-#: cddagl/ui.py:143
+#: cddagl/ui.py:184
 msgid "Zi"
 msgstr ""
 
-#: cddagl/ui.py:145
+#: cddagl/ui.py:186
 #, python-format
 msgid "%3.1f %s%s"
 msgstr ""
 
-#: cddagl/ui.py:147
+#: cddagl/ui.py:188
 #, python-format
 msgid "%.1f %s%s"
 msgstr ""
 
-#: cddagl/ui.py:147
+#: cddagl/ui.py:188
 msgid "Yi"
 msgstr ""
 
-#: cddagl/ui.py:162 cddagl/ui.py:7830 cddagl/ui.py:7894
-msgid "Cannot remove directory"
-msgstr "ディレクトリを削除できません"
-
-#: cddagl/ui.py:168
-msgid ""
-"\n"
-"<p>The launcher failed to remove the following directory: {directory}</p>\n"
-"<p>When trying to remove or access {filename}, the launcher raised the\n"
-"following error: {error}</p>\n"
-msgstr ""
-"\n"
-"<p>以下のディレクトリの削除に失敗しました: {directory}</p>\n"
-"<p>{filename}へのアクセスを試みましたがエラーが発生しました\n"
-": {error}</p>\n"
-
-#: cddagl/ui.py:178
-msgid ""
-"\n"
-"<p>No process seems to be using that file or directory.</p>\n"
-msgstr ""
-"\n"
-"<p>指定されたファイルまたはディレクトリを使用中のプロセスはありません。</p>\n"
-
-#: cddagl/ui.py:182
-msgid ""
-"\n"
-"<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
-"using\n"
-"that file or directory. You might need to end it if you want to retry.</p>\n"
-msgstr ""
-"\n"
-"<p>プロセス <strong>{image_file_name} ({pid})</strong> が、指定された\n"
-"ファイルまたはディレクトリを使用中です。 上記プロセス終了後に再試行して下さ"
-"い。</p>\n"
-
-#: cddagl/ui.py:188 cddagl/ui.py:7857 cddagl/ui.py:7919
-msgid "Do you want to retry removing this directory?"
-msgstr "ディレクトリの削除を再試行しますか？"
-
-#: cddagl/ui.py:190 cddagl/ui.py:7860 cddagl/ui.py:7922
-msgid "Retry removing the directory"
-msgstr "ディレクトリの削除を再試行する"
-
-#: cddagl/ui.py:192 cddagl/ui.py:237 cddagl/ui.py:283 cddagl/ui.py:7862
-#: cddagl/ui.py:7924
-msgid "Cancel the operation"
-msgstr "中止"
-
-#: cddagl/ui.py:207
-msgid "Cannot delete file"
-msgstr "ファイルを削除できません"
-
-#: cddagl/ui.py:213
-msgid ""
-"\n"
-"<p>The launcher failed to delete the following file: {path}</p>\n"
-"<p>When trying to remove or access {filename}, the launcher raised the\n"
-"following error: {error}</p>\n"
-msgstr ""
-"\n"
-"<p>以下のファイルの削除に失敗しました: {path}</p>\n"
-"<p>{filename},へのアクセスを試みましたがエラーが発生しました\n"
-": {error}</p>\n"
-
-#: cddagl/ui.py:223 cddagl/ui.py:269
-msgid ""
-"\n"
-"<p>No process seems to be using that file.</p>\n"
-msgstr ""
-"\n"
-"<p>指定されたファイルを使用中のプロセスはありません。</p>\n"
-
-#: cddagl/ui.py:227 cddagl/ui.py:273
-msgid ""
-"\n"
-"<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
-"using\n"
-"that file. You might need to end it if you want to retry.</p>\n"
-msgstr ""
-"\n"
-"<p>プロセス <strong>{image_file_name} ({pid})</strong> が、指定された\n"
-"ファイルを使用中です。上記プロセス終了後に再試行して下さい。</p>\n"
-
-#: cddagl/ui.py:233
-msgid "Do you want to retry deleting this file?"
-msgstr "ファイルの削除を再試行しますか？"
-
-#: cddagl/ui.py:235
-msgid "Retry deleting the file"
-msgstr "ファイルの削除を再試行"
-
-#: cddagl/ui.py:252
+#: cddagl/ui.py:254
 msgid "Cannot rename file"
 msgstr "ファイルをリネームできません"
 
-#: cddagl/ui.py:258
+#: cddagl/ui.py:260
 msgid ""
 "\n"
 "<p>The launcher failed to rename the following file: {src} to {dst}</p>\n"
@@ -195,417 +102,456 @@ msgstr ""
 "<p>{filename}へのアクセスまたはリネームを試みましたがエラーが発生しました\n"
 ": {error}</p>\n"
 
-#: cddagl/ui.py:279
+#: cddagl/ui.py:271
+msgid ""
+"\n"
+"<p>No process seems to be using that file.</p>\n"
+msgstr ""
+"\n"
+"<p>指定されたファイルを使用中のプロセスはありません。</p>\n"
+
+#: cddagl/ui.py:275
+msgid ""
+"\n"
+"<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
+"using\n"
+"that file. You might need to end it if you want to retry.</p>\n"
+msgstr ""
+"\n"
+"<p>プロセス <strong>{image_file_name} ({pid})</strong> が、指定された\n"
+"ファイルを使用中です。上記プロセス終了後に再試行して下さい。</p>\n"
+
+#: cddagl/ui.py:281
 msgid "Do you want to retry renaming this file?"
 msgstr "ファイルのリネームを再試行しますか？"
 
-#: cddagl/ui.py:281
+#: cddagl/ui.py:283
 msgid "Retry renaming the file"
 msgstr "ファイルのリネームを再試行"
 
-#: cddagl/ui.py:322 cddagl/ui.py:345
+#: cddagl/ui.py:285 cddagl/ui.py:8278 cddagl/ui.py:8340
+msgid "Cancel the operation"
+msgstr "中止"
+
+#: cddagl/ui.py:324 cddagl/ui.py:347
 msgid "&File"
 msgstr "ファイル"
 
-#: cddagl/ui.py:323 cddagl/ui.py:349
+#: cddagl/ui.py:325 cddagl/ui.py:351
 msgid "E&xit"
 msgstr "終了"
 
-#: cddagl/ui.py:324 cddagl/ui.py:353
+#: cddagl/ui.py:326 cddagl/ui.py:355
 msgid "&Help"
 msgstr "ヘルプ"
 
-#: cddagl/ui.py:326 cddagl/ui.py:358
+#: cddagl/ui.py:328 cddagl/ui.py:360
 msgid "&Check for update"
 msgstr "アップデート確認"
 
-#: cddagl/ui.py:327 cddagl/ui.py:364
+#: cddagl/ui.py:329 cddagl/ui.py:366
 msgid "&About CDDA Game Launcher"
 msgstr "&CDDA Game Launcher について"
 
-#: cddagl/ui.py:337 cddagl/ui.py:1321 cddagl/ui.py:2998 cddagl/ui.py:3172
+#: cddagl/ui.py:339 cddagl/ui.py:1398 cddagl/ui.py:3296 cddagl/ui.py:3543
 msgid "Ready"
 msgstr "準備完了"
 
-#: cddagl/ui.py:430 cddagl/ui.py:3498
+#: cddagl/ui.py:419
+msgid ""
+"Could not find launcher latest release [HTTP {status_code}] ({reason}) "
+"when requesting {url}"
+msgstr ""
+
+#: cddagl/ui.py:501 cddagl/ui.py:3776
 msgid "Do not check for new version of the CDDA Game Launcher on launch"
 msgstr "起動時に新しいバージョンをチェックしない"
 
-#: cddagl/ui.py:441
+#: cddagl/ui.py:512
 msgid "Launcher update"
 msgstr "アップデート"
 
-#: cddagl/ui.py:442
+#: cddagl/ui.py:513
 msgid ""
 "You are using version {version} but there is a new update for CDDA Game "
 "Launcher. Would you like to update?"
-msgstr ""
-"使用中の {version} よりも新しいバージョンがあります。アップデートしますか？"
+msgstr "使用中の {version} よりも新しいバージョンがあります。アップデートしますか？"
 
-#: cddagl/ui.py:447
+#: cddagl/ui.py:518
 msgid "Update the launcher"
 msgstr "アップデートする"
 
-#: cddagl/ui.py:449
+#: cddagl/ui.py:520
 msgid "Not right now"
 msgstr "後で"
 
-#: cddagl/ui.py:486
+#: cddagl/ui.py:551
 msgid "Up to date"
 msgstr "最新版"
 
-#: cddagl/ui.py:487
+#: cddagl/ui.py:552
 msgid "The CDDA Game Launcher is up to date."
 msgstr "お使いの CDDA Game Launcher は最新版です。"
 
-#: cddagl/ui.py:593 cddagl/ui.py:611
+#: cddagl/ui.py:659 cddagl/ui.py:677
 msgid "Main"
 msgstr "メイン"
 
-#: cddagl/ui.py:594 cddagl/ui.py:616
+#: cddagl/ui.py:660 cddagl/ui.py:682
 msgid "Backups"
 msgstr "バックアップ"
 
-#: cddagl/ui.py:595 cddagl/ui.py:621
+#: cddagl/ui.py:661 cddagl/ui.py:687
 msgid "Mods"
 msgstr "Mod"
 
-#: cddagl/ui.py:597 cddagl/ui.py:631
+#: cddagl/ui.py:663 cddagl/ui.py:697
 msgid "Soundpacks"
 msgstr "サウンドパック"
 
-#: cddagl/ui.py:599 cddagl/ui.py:641
+#: cddagl/ui.py:665 cddagl/ui.py:707
 msgid "Settings"
 msgstr "設定"
 
-#: cddagl/ui.py:626
+#: cddagl/ui.py:692
 msgid "Tilesets"
 msgstr "タイルセット"
 
-#: cddagl/ui.py:636
+#: cddagl/ui.py:702
 msgid "Fonts"
 msgstr "フォント"
 
-#: cddagl/ui.py:779 cddagl/ui.py:789 cddagl/ui.py:1240 cddagl/ui.py:1241
-#: cddagl/ui.py:1304 cddagl/ui.py:1361 cddagl/ui.py:1497 cddagl/ui.py:1587
-#: cddagl/ui.py:1655 cddagl/ui.py:1773 cddagl/ui.py:4949 cddagl/ui.py:4985
-#: cddagl/ui.py:7381 cddagl/ui.py:7423 cddagl/ui.py:7461 cddagl/ui.py:7497
+#: cddagl/ui.py:845 cddagl/ui.py:855 cddagl/ui.py:1317 cddagl/ui.py:1318
+#: cddagl/ui.py:1381 cddagl/ui.py:1438 cddagl/ui.py:1574 cddagl/ui.py:1664
+#: cddagl/ui.py:1732 cddagl/ui.py:1947 cddagl/ui.py:3316 cddagl/ui.py:3416
+#: cddagl/ui.py:5319 cddagl/ui.py:5355 cddagl/ui.py:7750 cddagl/ui.py:7792
+#: cddagl/ui.py:7829 cddagl/ui.py:7865
 msgid "Unknown"
 msgstr "不明"
 
-#: cddagl/ui.py:826
+#: cddagl/ui.py:892
 msgid "Directory:"
 msgstr "ディレクトリ:"
 
-#: cddagl/ui.py:827 cddagl/ui.py:6591
+#: cddagl/ui.py:893 cddagl/ui.py:6966
 msgid "Version:"
 msgstr "バージョン:"
 
-#: cddagl/ui.py:828
+#: cddagl/ui.py:894
 msgid "Build:"
 msgstr "ビルド:"
 
-#: cddagl/ui.py:829
+#: cddagl/ui.py:895
 msgid "Saves:"
 msgstr "セーブ:"
 
-#: cddagl/ui.py:831
+#: cddagl/ui.py:897
 msgid ""
-"Your save directory might be large enough to cause significant delays during "
-"the update process.\n"
+"Your save directory might be large enough to cause significant delays "
+"during the update process.\n"
 "You might want to enable the \"Do not copy or move the save directory\" "
 "option in the settings tab."
 msgstr ""
-"アップデートプロセス中の重要な遅延のため、セーブディレクトリは十分な領域を必"
-"要とします。\n"
+"アップデートプロセス中の重要な遅延のため、セーブディレクトリは十分な領域を必要とします。\n"
 "設定タブから \"セーブディレクトリをコピー・移動しない\" 設定ができます。"
 
-#: cddagl/ui.py:835 cddagl/ui.py:1107 cddagl/ui.py:1453
+#: cddagl/ui.py:901 cddagl/ui.py:1190 cddagl/ui.py:1530
 msgid "Launch game"
 msgstr "ゲーム起動"
 
-#: cddagl/ui.py:836
+#: cddagl/ui.py:902
 msgid "Restore previous version"
 msgstr "以前のバージョンを復元する"
 
-#: cddagl/ui.py:837
+#: cddagl/ui.py:903
 msgid "Game"
 msgstr "ゲーム"
 
-#: cddagl/ui.py:989 cddagl/ui.py:1116 cddagl/ui.py:1462 cddagl/ui.py:5850
+#: cddagl/ui.py:1050 cddagl/ui.py:1199 cddagl/ui.py:1539 cddagl/ui.py:6220
 msgid "auto"
 msgstr "自動"
 
-#: cddagl/ui.py:990
+#: cddagl/ui.py:1051
 msgid "before_launch"
 msgstr "起動前"
 
-#: cddagl/ui.py:1002
+#: cddagl/ui.py:1063
 msgid "Game executable not found"
 msgstr "実行ファイルがありません"
 
-#: cddagl/ui.py:1024
+#: cddagl/ui.py:1085
 msgid "Could not launch the game executable"
 msgstr "実行ファイルの起動に失敗しました"
 
-#: cddagl/ui.py:1027
+#: cddagl/ui.py:1088
 msgid "Cannot launch game"
 msgstr "起動出来ませんでした"
 
-#: cddagl/ui.py:1029
+#: cddagl/ui.py:1090
 msgid ""
 "\n"
-"<p>The launcher failed to start the game executable in <strong>{filename}</"
-"strong> .</p>\n"
-"<p>It received the following error from the operating system: {error}</p>\n"
-"<p>Poor antivirus products are known to detect the game binary as a threat "
-"and\n"
-"block its execution. A simple workaround is to add the game binary in your\n"
-"antivirus whitelist or select the action to trust this binary when detected."
-"</p>\n"
+"<p>The launcher failed to start the game executable in "
+"<strong>{filename}</strong> .</p>\n"
+"<p>It received the following error from the operating system: {error}</p>"
+"\n"
+"<p>Poor antivirus products are known to detect the game binary as a "
+"threat and\n"
+"block its execution. A simple workaround is to add the game binary in "
+"your\n"
+"antivirus whitelist or select the action to trust this binary when "
+"detected.</p>\n"
 msgstr ""
 "\n"
 "<p>ゲーム実行ファイルの起動に失敗しました。:<strong>{filename}</strong></p>\n"
 "<p>システムから以下のエラーを受け取りました。: {error}</p>\n"
-"<p>一部のアンチウイルス製品はゲームバイナリを脅威と誤認し、その起動をブロック"
-"してし\n"
-"まうことがあります。ゲームバイナリをホワイトリストに登録するか、ブロックされ"
-"た際に「信頼す\n"
+"<p>一部のアンチウイルス製品はゲームバイナリを脅威と誤認し、その起動をブロックしてし\n"
+"まうことがあります。ゲームバイナリをホワイトリストに登録するか、ブロックされた際に「信頼す\n"
 "る」を選択することで回避できるかもしれません。\n"
 
-#: cddagl/ui.py:1036
+#: cddagl/ui.py:1097
 msgid "[unknown]"
 msgstr "[不明]"
 
-#: cddagl/ui.py:1040 cddagl/ui.py:2519 cddagl/ui.py:3331
+#: cddagl/ui.py:1101 cddagl/ui.py:2741 cddagl/ui.py:3609
 msgid "OK"
 msgstr ""
 
-#: cddagl/ui.py:1055 cddagl/ui.py:1324 cddagl/ui.py:1401 cddagl/ui.py:3003
-#: cddagl/ui.py:3175
+#: cddagl/ui.py:1116 cddagl/ui.py:1401 cddagl/ui.py:1478 cddagl/ui.py:3301
+#: cddagl/ui.py:3546
 msgid "Game process is running"
 msgstr "ゲーム実行中"
 
-#: cddagl/ui.py:1073 cddagl/ui.py:1419
+#: cddagl/ui.py:1134 cddagl/ui.py:1496
 msgid "Show current game"
 msgstr "現在のゲームを表示"
 
-#: cddagl/ui.py:1097 cddagl/ui.py:1443
+#: cddagl/ui.py:1172 cddagl/ui.py:1520
 msgid "Game process has ended"
 msgstr "ゲーム実行終了"
 
-#: cddagl/ui.py:1117 cddagl/ui.py:1463
+#: cddagl/ui.py:1200 cddagl/ui.py:1540
 msgid "after_end"
 msgstr "終了後"
 
-#: cddagl/ui.py:1181
+#: cddagl/ui.py:1258
 msgid "Game directory"
 msgstr "ゲームディレクトリ"
 
-#: cddagl/ui.py:1203
+#: cddagl/ui.py:1280
 msgid "Not a valid directory"
 msgstr "無効なディレクトリ"
 
-#: cddagl/ui.py:1216 cddagl/ui.py:1579
+#: cddagl/ui.py:1293 cddagl/ui.py:1656
 msgid "console"
 msgstr "コンソール"
 
-#: cddagl/ui.py:1219 cddagl/ui.py:1582
+#: cddagl/ui.py:1296 cddagl/ui.py:1659
 msgid "tiles"
 msgstr "タイル"
 
-#: cddagl/ui.py:1223 cddagl/ui.py:1586
+#: cddagl/ui.py:1300 cddagl/ui.py:1663
 msgid "Not a CDDA directory"
 msgstr "CDDAディレクトリではありません"
 
-#: cddagl/ui.py:1236 cddagl/ui.py:2919 cddagl/ui.py:3083
+#: cddagl/ui.py:1313 cddagl/ui.py:3179 cddagl/ui.py:3462
 msgid "Install game"
 msgstr "インストール"
 
-#: cddagl/ui.py:1247 cddagl/ui.py:1818 cddagl/ui.py:2917 cddagl/ui.py:3066
+#: cddagl/ui.py:1324 cddagl/ui.py:1996 cddagl/ui.py:3177 cddagl/ui.py:3445
 msgid "Update game"
 msgstr "アップデート"
 
-#: cddagl/ui.py:1274 cddagl/ui.py:1625
+#: cddagl/ui.py:1351 cddagl/ui.py:1702
 msgid "Reading: {0}"
 msgstr "読み込み中: {0}"
 
-#: cddagl/ui.py:1309 cddagl/ui.py:1657
+#: cddagl/ui.py:1386 cddagl/ui.py:1734
 msgid "{version} ({type})"
 msgstr ""
 
-#: cddagl/ui.py:1319
+#: cddagl/ui.py:1396
 msgid "Previous version restored"
 msgstr "以前のバージョンが復元されました"
 
-#: cddagl/ui.py:1336 cddagl/ui.py:1664
+#: cddagl/ui.py:1413 cddagl/ui.py:1741
 msgid "{build} ({time_delta})"
 msgstr ""
 
-#: cddagl/ui.py:1354 cddagl/ui.py:2889 cddagl/ui.py:3078
+#: cddagl/ui.py:1431 cddagl/ui.py:3149 cddagl/ui.py:3457
 msgid "Your game is up to date"
 msgstr "ゲームは最新版です"
 
-#: cddagl/ui.py:1356 cddagl/ui.py:2891 cddagl/ui.py:3080
+#: cddagl/ui.py:1433 cddagl/ui.py:3151 cddagl/ui.py:3459
 msgid "There is a new update available"
 msgstr "アップデート可能です"
 
-#: cddagl/ui.py:1501
+#: cddagl/ui.py:1578
 msgid "Not found"
 msgstr ""
 
-#: cddagl/ui.py:1536
+#: cddagl/ui.py:1613
 msgid "World"
 msgid_plural "Worlds"
 msgstr[0] "ワールド"
 
-#: cddagl/ui.py:1538
+#: cddagl/ui.py:1615
 msgid "Character"
 msgid_plural "Characters"
 msgstr[0] "キャラクター"
 
-#: cddagl/ui.py:1541
+#: cddagl/ui.py:1618
 msgid "{world_count} {worlds} - {character_count} {characters} ({size})"
 msgstr ""
 
-#: cddagl/ui.py:1598
+#: cddagl/ui.py:1675
 msgid ""
 "No executable found in the downloaded archive. You might want to restore "
 "your previous version."
+msgstr "ダウンロードしたアーカイブの中に実行ファイルがありません。以前のバージョンを復元することをおすすめします。"
+
+#: cddagl/ui.py:1864
+msgid "build still in progress!"
 msgstr ""
-"ダウンロードしたアーカイブの中に実行ファイルがありません。以前のバージョンを"
-"復元することをおすすめします。"
 
-#: cddagl/ui.py:1809
-msgid "Graphics:"
-msgstr "グラフィック:"
+#: cddagl/ui.py:1878
+msgid "but build failed for:"
+msgstr ""
 
-#: cddagl/ui.py:1810
-msgid "Tiles"
-msgstr "タイル"
+#: cddagl/ui.py:1889
+msgid "No changes, same code as previous build!"
+msgstr ""
 
-#: cddagl/ui.py:1811
-msgid "Console"
-msgstr "コンソール"
-
-#: cddagl/ui.py:1812
+#: cddagl/ui.py:1990
 msgid "Platform:"
 msgstr "プラットフォーム:"
 
-#: cddagl/ui.py:1813
+#: cddagl/ui.py:1991
 msgid "Windows x64 (64-bit)"
 msgstr ""
 
-#: cddagl/ui.py:1814
+#: cddagl/ui.py:1992
 msgid "Windows x86 (32-bit)"
 msgstr ""
 
-#: cddagl/ui.py:1815
+#: cddagl/ui.py:1993
 msgid "Available builds:"
 msgstr "有効なビルド:"
 
-#: cddagl/ui.py:1816
+#: cddagl/ui.py:1994
 msgid "Refresh"
 msgstr "更新"
 
-#: cddagl/ui.py:1817
+#: cddagl/ui.py:1995
 msgid "Changelog"
 msgstr "更新履歴"
 
-#: cddagl/ui.py:1819 cddagl/ui.py:3702
+#: cddagl/ui.py:1997 cddagl/ui.py:3993
 msgid "Update/Installation"
 msgstr "アップデート/インストール"
 
-#: cddagl/ui.py:1873
+#: cddagl/ui.py:2030
+msgid "Cannot update or install the game since no build was found"
+msgstr ""
+
+#: cddagl/ui.py:2056
+msgid "Cannot install the game if the game directory is not empty"
+msgstr ""
+
+#: cddagl/ui.py:2073
 msgid "Game is up to date"
 msgstr "ゲームは最新版です"
 
-#: cddagl/ui.py:1874
+#: cddagl/ui.py:2074
 msgid "You already have the latest version."
 msgstr "すでに最新版がインストールされています。"
 
-#: cddagl/ui.py:1876
+#: cddagl/ui.py:2076
 msgid "Are you sure you want to update your game?"
 msgstr "アップデートを開始しますか？"
 
-#: cddagl/ui.py:1878
+#: cddagl/ui.py:2078
 msgid "Update the game again"
 msgstr "もう一度アップデートする"
 
-#: cddagl/ui.py:1880
+#: cddagl/ui.py:2080
 msgid "I do not need to update the game again"
 msgstr "もう一度アップデートしない"
 
-#: cddagl/ui.py:1910
+#: cddagl/ui.py:2108
 msgid "Cannot install game on a file"
 msgstr "ファイルへのインストールが出来ません"
 
-#: cddagl/ui.py:1959 cddagl/ui.py:1981 cddagl/ui.py:2008 cddagl/ui.py:2030
-#: cddagl/ui.py:2050
+#: cddagl/ui.py:2148 cddagl/ui.py:2170 cddagl/ui.py:2200 cddagl/ui.py:2225
+#: cddagl/ui.py:2248
 msgid "Update cancelled"
 msgstr "アップデートが中止されました"
 
-#: cddagl/ui.py:1962 cddagl/ui.py:1984 cddagl/ui.py:2011 cddagl/ui.py:2033
-#: cddagl/ui.py:2053 cddagl/ui.py:2315
+#: cddagl/ui.py:2151 cddagl/ui.py:2173 cddagl/ui.py:2203 cddagl/ui.py:2228
+#: cddagl/ui.py:2251
 msgid "Installation cancelled"
 msgstr "インストールが中止されました"
 
-#: cddagl/ui.py:2167 cddagl/ui.py:4396 cddagl/ui.py:4559 cddagl/ui.py:6756
-#: cddagl/ui.py:6939
+#: cddagl/ui.py:2353 cddagl/ui.py:2418 cddagl/ui.py:4679 cddagl/ui.py:4874
+#: cddagl/ui.py:7121 cddagl/ui.py:7308
 msgid "Downloading: {0}"
 msgstr "ダウンロード中: {0}"
 
-#: cddagl/ui.py:2203 cddagl/ui.py:3820
+#: cddagl/ui.py:2389 cddagl/ui.py:4114
 msgid "Cancel update"
 msgstr "アップデート中止"
 
-#: cddagl/ui.py:2205
+#: cddagl/ui.py:2391
 msgid "Cancel installation"
 msgstr "インストール中止"
 
-#: cddagl/ui.py:2225 cddagl/ui.py:4466 cddagl/ui.py:4597 cddagl/ui.py:6828
-#: cddagl/ui.py:6987
+#: cddagl/ui.py:2457 cddagl/ui.py:4747 cddagl/ui.py:4910 cddagl/ui.py:7193
+#: cddagl/ui.py:7356
 msgid "Testing downloaded file archive"
 msgstr "ダウンロード済みのアーカイブをテスト中"
 
-#: cddagl/ui.py:2262 cddagl/ui.py:4483 cddagl/ui.py:4603 cddagl/ui.py:6865
-#: cddagl/ui.py:7032
+#: cddagl/ui.py:2494 cddagl/ui.py:4794 cddagl/ui.py:4956 cddagl/ui.py:7230
+#: cddagl/ui.py:7401
 msgid "Downloaded archive is invalid"
 msgstr "ダウンロード済みのアーカイブが無効です"
 
-#: cddagl/ui.py:2272
+#: cddagl/ui.py:2504
 msgid "Could not download game"
 msgstr "ダウンロード出来ませんでした"
 
-#: cddagl/ui.py:2301 cddagl/ui.py:2855
+#: cddagl/ui.py:2532
+#, fuzzy
+msgid "Deleting {name}"
+msgstr "解析中 {name}"
+
+#: cddagl/ui.py:2533 cddagl/ui.py:2539 cddagl/ui.py:3115
 msgid "previous_version directory"
 msgstr "以前のバージョンのディレクトリ"
 
-#: cddagl/ui.py:2309
-msgid ""
-"Update cancelled - Your previous_version directory is most likely unusable "
-"now. Restoring your previous version will most likely give you a broken game."
+#: cddagl/ui.py:2538
+msgid "Update cancelled - Could not delete the {name}."
 msgstr ""
-"アップデートが中止されました - 以前のバージョンのディレクトリが利用できませ"
-"ん。以前のバージョンを復元した場合、正常に動作しないと思われます。"
 
-#: cddagl/ui.py:2359
+#: cddagl/ui.py:2577
 msgid "Backing up current game"
 msgstr "現在のゲームをバックアップ中"
 
-#: cddagl/ui.py:2403
+#: cddagl/ui.py:2621
 msgid "Backing up {0}"
 msgstr "バックアップ中 {0}"
 
-#: cddagl/ui.py:2501 cddagl/ui.py:4727 cddagl/ui.py:7189
+#: cddagl/ui.py:2640
+msgid "Could not move {srcpath} in {dstpath} ."
+msgstr ""
+
+#: cddagl/ui.py:2723 cddagl/ui.py:5089 cddagl/ui.py:7558
 msgid "Extracting {0}"
 msgstr "展開中 {0}"
 
-#: cddagl/ui.py:2511
+#: cddagl/ui.py:2733
 msgid "Cannot extract game archive"
 msgstr "展開に失敗しました"
 
-#: cddagl/ui.py:2513
+#: cddagl/ui.py:2735
 msgid ""
 "\n"
 "<p>The launcher failed to extract the game archive.</p>\n"
@@ -615,151 +561,186 @@ msgstr ""
 "<p>アーカイブの展開に失敗しました。</p>\n"
 "<p>システムから以下のエラーを受け取りました。: {error}</p>"
 
-#: cddagl/ui.py:2590
+#: cddagl/ui.py:2812
 msgid "{0} directory"
 msgstr "{0} ディレクトリ"
 
-#: cddagl/ui.py:2648
+#: cddagl/ui.py:2870
 msgid "Restoring custom tilesets"
 msgstr "カスタムタイルセットを復元中"
 
-#: cddagl/ui.py:2691
+#: cddagl/ui.py:2913
 msgid "Restoring custom soundpacks"
 msgstr "カスタムサウンドパックを復元中"
 
-#: cddagl/ui.py:2740
+#: cddagl/ui.py:2962
 msgid "{name} soundpack"
 msgstr "{name} サウンドパック"
 
-#: cddagl/ui.py:2770
+#: cddagl/ui.py:2992
 msgid "Restoring custom mods"
 msgstr "カスタムModを復元中"
 
-#: cddagl/ui.py:2807
+#: cddagl/ui.py:3027
+#, fuzzy
+msgid "Restoring user custom mods"
+msgstr "カスタムModを復元中"
+
+#: cddagl/ui.py:3067
 msgid "Restoring user-default-mods.json"
 msgstr "ユーザーデフォルトMod設定を復元中"
 
-#: cddagl/ui.py:2821
+#: cddagl/ui.py:3081
 msgid "Restoring custom fonts"
 msgstr "カスタムフォントを復元中"
 
-#: cddagl/ui.py:2876
+#: cddagl/ui.py:3136
 msgid "Update completed"
 msgstr "アップデート完了"
 
-#: cddagl/ui.py:2878
+#: cddagl/ui.py:3138
 msgid "Installation completed"
 msgstr "インストール完了"
 
-#: cddagl/ui.py:2933 cddagl/ui.py:3927 cddagl/ui.py:4652 cddagl/ui.py:5607
-#: cddagl/ui.py:5686 cddagl/ui.py:6035 cddagl/ui.py:6120 cddagl/ui.py:7096
-#: cddagl/ui.py:8060 cddagl/ui.py:8129
+#: cddagl/ui.py:3193 cddagl/ui.py:4201 cddagl/ui.py:4997 cddagl/ui.py:5977
+#: cddagl/ui.py:6056 cddagl/ui.py:6408 cddagl/ui.py:6494 cddagl/ui.py:7465
+#: cddagl/ui.py:8476 cddagl/ui.py:8545
 msgid "{bytes_read}/{total_bytes}"
 msgstr ""
 
-#: cddagl/ui.py:2942 cddagl/ui.py:3936 cddagl/ui.py:4661 cddagl/ui.py:5600
-#: cddagl/ui.py:5696 cddagl/ui.py:6027 cddagl/ui.py:6130 cddagl/ui.py:7106
-#: cddagl/ui.py:8053 cddagl/ui.py:8139
+#: cddagl/ui.py:3202 cddagl/ui.py:4210 cddagl/ui.py:5006 cddagl/ui.py:5970
+#: cddagl/ui.py:6066 cddagl/ui.py:6400 cddagl/ui.py:6504 cddagl/ui.py:7475
+#: cddagl/ui.py:8469 cddagl/ui.py:8555
 msgid "{bytes_sec}/s"
 msgstr ""
 
-#: cddagl/ui.py:2959
+#: cddagl/ui.py:3220
 msgid "Fetching remote builds"
 msgstr "リモートビルド取り込み中"
 
-#: cddagl/ui.py:2962 cddagl/ui.py:3135
+#: cddagl/ui.py:3226 cddagl/ui.py:3264
 msgid "Fetching: {url}"
 msgstr "取り込み中: {url}"
 
-#: cddagl/ui.py:3052
-msgid "{number} ({delta}) - latest"
-msgstr "{number} ({delta}) - 最新版"
+#: cddagl/ui.py:3323
+msgid ""
+"You have {remaining} request(s) remaining for accessing GitHub API.\n"
+"You will have to wait until {datetime} to get more requests.\n"
+"Those requests are needed to get the available builds.\n"
+"If you keep running low on those remaining requests, avoid quickly "
+"refreshing often\n"
+" for theavailable builds. For more information, search GitHub API rate "
+"limiting."
+msgstr ""
 
-#: cddagl/ui.py:3055
+#: cddagl/ui.py:3340
+msgid ""
+"Could not find remote builds [HTTP {status_code}] ({reason}) when "
+"requesting {url}"
+msgstr ""
+
+#: cddagl/ui.py:3419
 msgid "{number} ({delta})"
 msgstr ""
 
-#: cddagl/ui.py:3089
+#: cddagl/ui.py:3429
+#, fuzzy
+msgid " - build unavailable"
+msgstr "バックアップ使用可能"
+
+#: cddagl/ui.py:3434
+msgid " - latest build available"
+msgstr ""
+
+#: cddagl/ui.py:3468
 msgid "Could not find remote builds"
 msgstr "リモートビルドがありません"
 
-#: cddagl/ui.py:3130
+#: cddagl/ui.py:3501
 msgid "<h3>Loading changelog...</h3>"
 msgstr "<h3>更新履歴を読み込み中...</h3>"
 
-#: cddagl/ui.py:3178
+#: cddagl/ui.py:3506
+#, fuzzy
+msgid "Fetching latest build changelogs"
+msgstr "リモートビルド取り込み中"
+
+#: cddagl/ui.py:3549
 msgid "<h3>Parsing changelog...</h3>"
 msgstr "<h3>更新履歴を解析中...</h3>"
 
-#: cddagl/ui.py:3330
+#: cddagl/ui.py:3608
 msgid "About CDDA Game Launcher"
 msgstr "About CDDA Game について"
 
-#: cddagl/ui.py:3332
+#: cddagl/ui.py:3610
 msgid ""
 "\n"
 "<p>CDDA Game Launcher version {version}</p>\n"
 "\n"
 "<p>Get the latest release <a\n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">on GitHub</"
-"a>.</p>\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">on "
+"GitHub</a>.</p>\n"
 "\n"
 "<p>Please report any issue <a\n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">on GitHub</"
-"a>.\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">on "
+"GitHub</a>.\n"
 "</p>\n"
 "\n"
 "<p>If you like the CDDA Game Launcher, you can buy me a beer by donating\n"
 "bitcoins to <a href=\"bitcoin:3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV\">\n"
 "3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV</a> <img src=\"btc-qr.png\"> or by "
 "donating\n"
-"ethers to <a href=\"https://etherscan.io/"
-"address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b\">\n"
+"ethers to <a "
+"href=\"https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b\">"
+"\n"
 "0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a>\n"
 "<img src=\"eth-qr.png\">.</p>\n"
 "\n"
-"<p>Thanks to the following people for their efforts in translating the CDDA "
-"Game\n"
+"<p>Thanks to the following people for their efforts in translating the "
+"CDDA Game\n"
 "Launcher</p>\n"
 "<ul>\n"
-"<li>Russian: Daniel from <a href=\"http://cataclysmdda.ru/\">cataclysmdda."
-"ru</a>\n"
+"<li>Russian: Daniel from <a "
+"href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a>\n"
 "and Night_Pryanik</li>\n"
 "<li>Italian: Rettiliano Verace from <a\n"
-"href=\"http://emigrantebestemmiante.blogspot.com\">Emigrante Bestemmiante</"
-"a></li>\n"
+"href=\"http://emigrantebestemmiante.blogspot.com\">Emigrante "
+"Bestemmiante</a></li>\n"
 "<li>French: Rémy Roy</li>\n"
 "</ul>\n"
 "\n"
 "<p>Thanks to <a href=\"http://mattahan.deviantart.com/\">Paul Davey aka\n"
-"Mattahan</a> for the permission to use his artwork for the launcher icon.</"
-"p>\n"
+"Mattahan</a> for the permission to use his artwork for the launcher "
+"icon.</p>\n"
 "\n"
 "<p>Copyright (c) 2015-2019 Rémy Roy</p>\n"
 "\n"
-"<p>Permission is hereby granted, free of charge, to any person obtaining a "
-"copy\n"
-"of this software and associated documentation files (the \"Software\"), to "
-"deal\n"
+"<p>Permission is hereby granted, free of charge, to any person obtaining "
+"a copy\n"
+"of this software and associated documentation files (the \"Software\"), "
+"to deal\n"
 "in the Software without restriction, including without limitation the "
 "rights\n"
-"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell"
+"\n"
 "copies of the Software, and to permit persons to whom the Software is\n"
 "furnished to do so, subject to the following conditions:</p>\n"
 "\n"
-"<p>The above copyright notice and this permission notice shall be included "
-"in\n"
+"<p>The above copyright notice and this permission notice shall be "
+"included in\n"
 "all copies or substantial portions of the Software.</p>\n"
 "\n"
-"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
-"OR\n"
+"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, "
+"EXPRESS OR\n"
 "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
-"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL "
+"THE\n"
 "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
 "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
 "FROM,\n"
-"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN "
-"THE\n"
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN"
+" THE\n"
 "SOFTWARE.</p>\n"
 "\n"
 msgstr ""
@@ -767,225 +748,243 @@ msgstr ""
 "<p>CDDA Game Launcher version {version}</p>\n"
 "\n"
 "<p>最新版はこちら<a\n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">on GitHub</"
-"a>.</p>\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/releases\">on "
+"GitHub</a>.</p>\n"
 "\n"
 "<p>ご意見をお寄せ下さい<a\n"
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">on GitHub</"
-"a>.\n"
+"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">on "
+"GitHub</a>.\n"
 "</p>\n"
 "\n"
-"<p>CDDA Game Launcherを気に入りましたか？寄付をして開発者にビールをおごれま"
-"す\n"
-"ビットコインはこちら <a href=\"bitcoin:3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV"
-"\">\n"
+"<p>CDDA Game Launcherを気に入りましたか？寄付をして開発者にビールをおごれます\n"
+"ビットコインはこちら <a href=\"bitcoin:3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV\">\n"
 "3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV</a> <img src=\"btc-qr.png\"> \n"
-"ethersはこちら <a href=\"https://etherscan.io/"
-"address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b\">\n"
+"ethersはこちら <a "
+"href=\"https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b\">"
+"\n"
 "0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a>\n"
 "<img src=\"eth-qr.png\">.</p>\n"
 "\n"
 "<p>CDDA Game Launcherの翻訳に尽力してくれている皆様に感謝します。</p>\n"
 "<ul>\n"
-"<li>Russian: Daniel from <a href=\"http://cataclysmdda.ru/\">cataclysmdda."
-"ru</a>\n"
+"<li>Russian: Daniel from <a "
+"href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a>\n"
 "and Night_Pryanik</li>\n"
 "<li>Italian: Rettiliano Verace from <a\n"
-"href=\"http://emigrantebestemmiante.blogspot.com\">Emigrante Bestemmiante</"
-"a></li>\n"
+"href=\"http://emigrantebestemmiante.blogspot.com\">Emigrante "
+"Bestemmiante</a></li>\n"
 "<li>French: Rémy Roy</li>\n"
 "</ul>\n"
 "\n"
-"<p>アイコンを提供してくれた <a href=\"http://mattahan.deviantart.com/\">Paul "
-"Davey aka\n"
+"<p>アイコンを提供してくれた <a href=\"http://mattahan.deviantart.com/\">Paul Davey "
+"aka\n"
 "Mattahan</a> に感謝します。</p>\n"
 "\n"
 "<p>Copyright (c) 2015-2019 Rémy Roy</p>\n"
 "\n"
-"<p>Permission is hereby granted, free of charge, to any person obtaining a "
-"copy\n"
-"of this software and associated documentation files (the \"Software\"), to "
-"deal\n"
+"<p>Permission is hereby granted, free of charge, to any person obtaining "
+"a copy\n"
+"of this software and associated documentation files (the \"Software\"), "
+"to deal\n"
 "in the Software without restriction, including without limitation the "
 "rights\n"
-"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell"
+"\n"
 "copies of the Software, and to permit persons to whom the Software is\n"
 "furnished to do so, subject to the following conditions:</p>\n"
 "\n"
-"<p>The above copyright notice and this permission notice shall be included "
-"in\n"
+"<p>The above copyright notice and this permission notice shall be "
+"included in\n"
 "all copies or substantial portions of the Software.</p>\n"
 "\n"
-"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS "
-"OR\n"
+"<p>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, "
+"EXPRESS OR\n"
 "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
-"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL "
+"THE\n"
 "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
 "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
 "FROM,\n"
-"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN "
-"THE\n"
+"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN"
+" THE\n"
 "SOFTWARE.</p>\n"
 "\n"
 
-#: cddagl/ui.py:3424 cddagl/ui.py:3491
+#: cddagl/ui.py:3702 cddagl/ui.py:3769
 msgid "System language or best match ({locale})"
 msgstr "システム言語または推奨 ({locale})"
 
-#: cddagl/ui.py:3434
+#: cddagl/ui.py:3712
 msgid "{locale_name} - {english_name}"
 msgstr ""
 
-#: cddagl/ui.py:3486
+#: cddagl/ui.py:3764
 msgid "Command line parameters:"
 msgstr "コマンドラインパラメータ:"
 
-#: cddagl/ui.py:3488
+#: cddagl/ui.py:3766
 msgid "Keep the launcher opened after launching the game"
 msgstr "ゲーム起動後にランチャーを閉じない"
 
-#: cddagl/ui.py:3489
+#: cddagl/ui.py:3767
 msgid "Language:"
 msgstr "言語:"
 
-#: cddagl/ui.py:3493
+#: cddagl/ui.py:3771
 msgid "Allow multiple instances of the launcher to be started"
 msgstr "複数起動を許可する"
 
-#: cddagl/ui.py:3496
+#: cddagl/ui.py:3774
 msgid "Use the launcher directory as the game directory"
 msgstr "ランチャーが存在するディレクトリをゲームティレクトリとする"
 
-#: cddagl/ui.py:3500
+#: cddagl/ui.py:3778
 msgid "Launcher"
 msgstr "ランチャー"
 
-#: cddagl/ui.py:3688
+#: cddagl/ui.py:3976
 msgid "Do not copy or move the save directory"
 msgstr "セーブディレクトリをコピー・移動しない"
 
-#: cddagl/ui.py:3690
+#: cddagl/ui.py:3978
 msgid ""
-"If your save directory size is large, it might take a long time to copy it "
-"during the update process.\n"
-"This option might help you speed the whole thing but your previous version "
-"will lack the save directory."
+"If your save directory size is large, it might take a long time to copy "
+"it during the update process.\n"
+"This option might help you speed the whole thing but your previous "
+"version will lack the save directory."
 msgstr ""
-"セーブディレクトリが巨大になると、アップデートの際それをコピーするために長時"
-"間を要します。\n"
-"この設定を有効にすることで高速化できますが、以前のバージョンのセーブディレク"
-"トリは欠落します。"
+"セーブディレクトリが巨大になると、アップデートの際それをコピーするために長時間を要します。\n"
+"この設定を有効にすることで高速化できますが、以前のバージョンのセーブディレクトリは欠落します。"
 
-#: cddagl/ui.py:3695
+#: cddagl/ui.py:3983
 msgid "Keep a copy of the downloaded archive in the following directory:"
 msgstr "ダウンロードしたアーカイブのコピーを保存するディレクトリ:"
 
-#: cddagl/ui.py:3698
+#: cddagl/ui.py:3986
 msgid "Automatically refresh builds list every"
 msgstr "ビルド一覧の自動更新間隔"
 
-#: cddagl/ui.py:3699
+#: cddagl/ui.py:3987
 msgid "minutes"
 msgstr "分"
 
-#: cddagl/ui.py:3700
+#: cddagl/ui.py:3988
 msgid "Remove previous version after update (not recommended)"
 msgstr "アップデート後に以前のバージョンを削除する(非推奨)"
 
-#: cddagl/ui.py:3751
+#: cddagl/ui.py:3990
+msgid ""
+"Permanently delete files instead of moving them in the recycle bin (not "
+"recommended)"
+msgstr ""
+
+#: cddagl/ui.py:4045
 msgid "Archive directory"
 msgstr "アーカイブディレクトリ"
 
-#: cddagl/ui.py:3782
+#: cddagl/ui.py:4076
 msgid "Progress:"
 msgstr "進捗:"
 
-#: cddagl/ui.py:3791 cddagl/ui.py:4233 cddagl/ui.py:4914 cddagl/ui.py:4942
-#: cddagl/ui.py:6585 cddagl/ui.py:7426 cddagl/ui.py:7454
+#: cddagl/ui.py:4085 cddagl/ui.py:4526 cddagl/ui.py:5285 cddagl/ui.py:5312
+#: cddagl/ui.py:6960 cddagl/ui.py:7795 cddagl/ui.py:7822
 msgid "Url:"
 msgstr "URL:"
 
-#: cddagl/ui.py:3802 cddagl/ui.py:4237 cddagl/ui.py:6589
+#: cddagl/ui.py:4096 cddagl/ui.py:4530 cddagl/ui.py:6964
 msgid "Size:"
 msgstr "サイズ:"
 
-#: cddagl/ui.py:3811
+#: cddagl/ui.py:4105
 msgid "Speed:"
 msgstr "速度:"
 
-#: cddagl/ui.py:3830
+#: cddagl/ui.py:4124
 msgid "CDDA Game Launcher self-update"
 msgstr "CDDA Game Launcher セルフアップデート"
 
-#: cddagl/ui.py:3963
+#: cddagl/ui.py:4237
 msgid ""
-"This {name} cannot be directly downloaded by the launcher. You have to use "
-"your browser to download it."
-msgstr ""
-"{name}はランチャーから直接ダウンロード出来ません。ブラウザからダウンロードし"
-"て下さい。"
+"This {name} cannot be directly downloaded by the launcher. You have to "
+"use your browser to download it."
+msgstr "{name}はランチャーから直接ダウンロード出来ません。ブラウザからダウンロードして下さい。"
 
-#: cddagl/ui.py:3970
+#: cddagl/ui.py:4244
 msgid "1. Open the URL in your browser."
 msgstr "1. URLをブラウザで開く。"
 
-#: cddagl/ui.py:3985
-msgid ""
-"2. Download the {name} on that page and wait for the download to complete."
+#: cddagl/ui.py:4259
+msgid "2. Download the {name} on that page and wait for the download to complete."
 msgstr "2. {name}のダウンロードが完了するのを待つ。"
 
-#: cddagl/ui.py:3991
+#: cddagl/ui.py:4265
 msgid "3. Select the downloaded archive."
 msgstr "3. ダウンロードしたアーカイブを選択する。"
 
-#: cddagl/ui.py:4016
+#: cddagl/ui.py:4290
 msgid "Install this {name}"
 msgstr "{name}をインストール"
 
-#: cddagl/ui.py:4022
+#: cddagl/ui.py:4296
 msgid "Do not install"
 msgstr "インストールしない"
 
-#: cddagl/ui.py:4033
+#: cddagl/ui.py:4307
 msgid "Browser download"
 msgstr "ブラウザダウンロード"
 
-#: cddagl/ui.py:4038
+#: cddagl/ui.py:4312
 msgid "Downloaded archive"
 msgstr "アーカイブをダウンロードしました"
 
-#: cddagl/ui.py:4039
+#: cddagl/ui.py:4313
 msgid "Archive files {formats}"
 msgstr "アーカイブファイル {formats}"
 
-#: cddagl/ui.py:4210 cddagl/ui.py:6560
+#: cddagl/ui.py:4322
+#, fuzzy
+msgid "File not found"
+msgstr "実行ファイルがありません"
+
+#: cddagl/ui.py:4324
+msgid ""
+"{filepath} is not an existing file on your system. Make sure to download "
+"the archive with your browser. Make sure to select the downloaded archive"
+" afterwards."
+msgstr ""
+
+#: cddagl/ui.py:4331
+msgid "I will try again"
+msgstr ""
+
+#: cddagl/ui.py:4503 cddagl/ui.py:6935
 msgid "Installed"
 msgstr "インストール完了"
 
-#: cddagl/ui.py:4211 cddagl/ui.py:4831 cddagl/ui.py:4887 cddagl/ui.py:6561
-#: cddagl/ui.py:7312 cddagl/ui.py:7384
+#: cddagl/ui.py:4504 cddagl/ui.py:5202 cddagl/ui.py:5258 cddagl/ui.py:6936
+#: cddagl/ui.py:7681 cddagl/ui.py:7753
 msgid "Disable"
 msgstr "無効"
 
-#: cddagl/ui.py:4212 cddagl/ui.py:6562
+#: cddagl/ui.py:4505 cddagl/ui.py:6937
 msgid "Delete"
 msgstr "削除"
 
-#: cddagl/ui.py:4213 cddagl/ui.py:6574
+#: cddagl/ui.py:4506 cddagl/ui.py:6949
 msgid "Repository"
 msgstr "リポジトリ"
 
-#: cddagl/ui.py:4215
+#: cddagl/ui.py:4508
 msgid "Add this new soundpack to the repository"
 msgstr "この新しいサウンドパックをリポジトリに追加する"
 
-#: cddagl/ui.py:4216
+#: cddagl/ui.py:4509
 msgid ""
 "* Name: [Enter the name of the soundpack]\n"
 "* Url: [Enter the Url where we can find the soundpack]\n"
 "* Author: [Enter the name of the author]\n"
-"* Homepage: [Enter the Url of the author website or where the soundpack was "
-"published]\n"
+"* Homepage: [Enter the Url of the author website or where the soundpack "
+"was published]\n"
 "* Soundpack not found in version: {version}\n"
 msgstr ""
 "* Name: [サウンドパックの名前]\n"
@@ -994,328 +993,323 @@ msgstr ""
 "* Homepage: [作者の公式サイトまたは配布されている場所のURL]\n"
 "* Soundpack not found in version: {version}\n"
 
-#: cddagl/ui.py:4224
+#: cddagl/ui.py:4517
 msgid "<a href=\"{url}\">Suggest a new soundpack on GitHub</a>"
 msgstr "<a href=\"{url}\">GitHubで新しいサウンドパックを提案する</a>"
 
-#: cddagl/ui.py:4226 cddagl/ui.py:4633
+#: cddagl/ui.py:4519 cddagl/ui.py:4978
 msgid "Install this soundpack"
 msgstr "このサウンドパックをインストールする"
 
-#: cddagl/ui.py:4227 cddagl/ui.py:6576
+#: cddagl/ui.py:4520 cddagl/ui.py:6951
 msgid "Details"
 msgstr "詳細"
 
-#: cddagl/ui.py:4228
+#: cddagl/ui.py:4521
 msgid "View name:"
 msgstr "表示名:"
 
-#: cddagl/ui.py:4229 cddagl/ui.py:5303 cddagl/ui.py:6577
+#: cddagl/ui.py:4522 cddagl/ui.py:5673 cddagl/ui.py:6952
 msgid "Name:"
 msgstr "名前:"
 
-#: cddagl/ui.py:4235 cddagl/ui.py:4881 cddagl/ui.py:6587 cddagl/ui.py:7374
+#: cddagl/ui.py:4528 cddagl/ui.py:5252 cddagl/ui.py:6962 cddagl/ui.py:7743
 msgid "Path:"
 msgstr "パス:"
 
-#: cddagl/ui.py:4238 cddagl/ui.py:6590
+#: cddagl/ui.py:4531 cddagl/ui.py:6965
 msgid "Home page:"
 msgstr "ホームページ:"
 
-#: cddagl/ui.py:4335
+#: cddagl/ui.py:4628
 msgid "Soundpack already present"
 msgstr "サウンドパックがすでに存在しています"
 
-#: cddagl/ui.py:4337
+#: cddagl/ui.py:4630
 msgid ""
 "It seems this soundpack is already installed. The launcher will not "
-"overwrite the soundpack if it has the same directory name. You might want to "
-"delete the soundpack first if you want to update it. Also, there can only be "
-"a single soundpack with the same name value available in the game."
-msgstr ""
-"このサウンドパックはすでにインストールされているようです。同じ名前のディレク"
-"トリが存在する場合、本ランチャーはサウンドパックを上書きしません。アップデー"
-"トする場合はまずサウンドパックを削除してください。同じ名前のサウンドパックは"
-"ゲーム中で1つしか有効になりません。"
+"overwrite the soundpack if it has the same directory name. You might want"
+" to delete the soundpack first if you want to update it. Also, there can "
+"only be a single soundpack with the same name value available in the "
+"game."
+msgstr "このサウンドパックはすでにインストールされているようです。同じ名前のディレクトリが存在する場合、本ランチャーはサウンドパックを上書きしません。アップデートする場合はまずサウンドパックを削除してください。同じ名前のサウンドパックはゲーム中で1つしか有効になりません。"
 
-#: cddagl/ui.py:4344
+#: cddagl/ui.py:4637
 msgid "Are you sure you want to install the {view} soundpack?"
 msgstr "サウンドパック {view} をインストールしますか？"
 
-#: cddagl/ui.py:4347
+#: cddagl/ui.py:4640
 msgid "Install the soundpack"
 msgstr "サウンドパックをインストール"
 
-#: cddagl/ui.py:4349 cddagl/ui.py:6707
+#: cddagl/ui.py:4642 cddagl/ui.py:7082
 msgid "Do not install again"
 msgstr "もう一度インストールしない"
 
-#: cddagl/ui.py:4433 cddagl/ui.py:4452
+#: cddagl/ui.py:4714 cddagl/ui.py:4733
 msgid "Cancel soundpack installation"
 msgstr "サウンドパックのインストールを中止"
 
-#: cddagl/ui.py:4489 cddagl/ui.py:6837 cddagl/ui.py:6871 cddagl/ui.py:6995
-#: cddagl/ui.py:7038
+#: cddagl/ui.py:4755 cddagl/ui.py:4800 cddagl/ui.py:4918 cddagl/ui.py:4962
+#: cddagl/ui.py:7202 cddagl/ui.py:7236 cddagl/ui.py:7364 cddagl/ui.py:7407
 msgid "Selected file is a bad archive file"
 msgstr "選択されたアーカイブファイルが壊れています"
 
-#: cddagl/ui.py:4524 cddagl/ui.py:6907
+#: cddagl/ui.py:4762 cddagl/ui.py:4925 cddagl/ui.py:7209 cddagl/ui.py:7371
+msgid "Selected file is a password protected archive file"
+msgstr "選択されたアーカイブにはパスワードがかかっています"
+
+#: cddagl/ui.py:4782 cddagl/ui.py:4944 cddagl/ui.py:7389
+msgid "Unknown downloaded archive format ({extension})"
+msgstr "不明な圧縮フォーマットです ({extension})"
+
+#: cddagl/ui.py:4835 cddagl/ui.py:7272
 msgid "Soundpack installation cancelled"
 msgstr "サウンドパックのインストールを中止しました"
 
-#: cddagl/ui.py:4614
-msgid "Could not download soundpack"
-msgstr "サウンドパックをダウンロード出来ませんでした"
-
-#: cddagl/ui.py:4747
+#: cddagl/ui.py:5118
 msgid "Finding the soundpack"
 msgstr "サウンドパックを探しています"
 
-#: cddagl/ui.py:4775
+#: cddagl/ui.py:5146
 msgid ""
-"Soundpack installation cancelled - There is no soundpack in the downloaded "
-"archive"
-msgstr ""
-"サウンドパックのインストールを中止しました - ダウンロードしたアーカイブの中に"
-"サウンドパックが存在しません"
+"Soundpack installation cancelled - There is no soundpack in the "
+"downloaded archive"
+msgstr "サウンドパックのインストールを中止しました - ダウンロードしたアーカイブの中にサウンドパックが存在しません"
 
-#: cddagl/ui.py:4785
+#: cddagl/ui.py:5156
 msgid ""
-"Soundpack installation cancelled - There is already a {basename} directory "
-"in {soundpacks_dir}"
-msgstr ""
-"サウンドパックのインストールを中止しました - すでに {basename} が "
-"{soundpacks_dir} に存在しています"
+"Soundpack installation cancelled - There is already a {basename} "
+"directory in {soundpacks_dir}"
+msgstr "サウンドパックのインストールを中止しました - すでに {basename} が {soundpacks_dir} に存在しています"
 
-#: cddagl/ui.py:4791
+#: cddagl/ui.py:5162
 msgid "Soundpack installation completed"
 msgstr "サウンドパックのインストールが完了しました"
 
-#: cddagl/ui.py:4815 cddagl/ui.py:5034 cddagl/ui.py:7295 cddagl/ui.py:7550
+#: cddagl/ui.py:5186 cddagl/ui.py:5404 cddagl/ui.py:7664 cddagl/ui.py:7918
 msgid " (Disabled)"
 msgstr "(無効)"
 
-#: cddagl/ui.py:4816 cddagl/ui.py:4889 cddagl/ui.py:7296 cddagl/ui.py:7386
+#: cddagl/ui.py:5187 cddagl/ui.py:5260 cddagl/ui.py:7665 cddagl/ui.py:7755
 msgid "Enable"
 msgstr "有効"
 
-#: cddagl/ui.py:4847
+#: cddagl/ui.py:5218
 msgid "Delete soundpack"
 msgstr "サウンドパックを削除"
 
-#: cddagl/ui.py:4848
+#: cddagl/ui.py:5219
 msgid "This will delete the soundpack directory. It cannot be undone."
 msgstr "サウンドパックをディレクトリごと削除します。この操作は元に戻せません。"
 
-#: cddagl/ui.py:4850
+#: cddagl/ui.py:5221
 msgid "Are you sure you want to delete the {view} soundpack?"
 msgstr "サウンドパック {view} を削除してよろしいですか?"
 
-#: cddagl/ui.py:4852
+#: cddagl/ui.py:5223
 msgid "Delete the soundpack"
 msgstr "サウンドパックを削除"
 
-#: cddagl/ui.py:4854
+#: cddagl/ui.py:5225
 msgid "I want to keep the soundpack"
 msgstr "サウンドパックを削除しない"
 
-#: cddagl/ui.py:4863
+#: cddagl/ui.py:5234
 msgid "Soundpack deletion cancelled"
 msgstr "サウンドパックの削除を中止しました"
 
-#: cddagl/ui.py:4868
+#: cddagl/ui.py:5239
 msgid "Soundpack deleted"
 msgstr "サウンドパックを削除しました"
 
-#: cddagl/ui.py:4929 cddagl/ui.py:7441
+#: cddagl/ui.py:5300 cddagl/ui.py:7810
 msgid "Getting remote size"
 msgstr "リモートサイズ取得中"
 
-#: cddagl/ui.py:5290
+#: cddagl/ui.py:5660
 msgid "Backups available"
 msgstr "バックアップ使用可能"
 
-#: cddagl/ui.py:5291
+#: cddagl/ui.py:5661
 msgid "Manual backup"
 msgstr "手動バックアップ"
 
-#: cddagl/ui.py:5292
+#: cddagl/ui.py:5662
 msgid "Automatic backups"
 msgstr "自動バックアップ"
 
-#: cddagl/ui.py:5294 cddagl/ui.py:5418 cddagl/ui.py:5447 cddagl/ui.py:5734
+#: cddagl/ui.py:5664 cddagl/ui.py:5788 cddagl/ui.py:5817 cddagl/ui.py:6104
 msgid "Restore backup"
 msgstr "バックアップを復元"
 
-#: cddagl/ui.py:5295
+#: cddagl/ui.py:5665
 msgid "Refresh list"
 msgstr "一覧を更新"
 
-#: cddagl/ui.py:5296 cddagl/ui.py:5754
+#: cddagl/ui.py:5666 cddagl/ui.py:6124
 msgid "Delete backup"
 msgstr "バックアップを削除"
 
-#: cddagl/ui.py:5297
+#: cddagl/ui.py:5667
 msgid "Do not backup the current saves before restoring a backup"
 msgstr "バックアップ復元前に現在のセーブをバックアップしない"
 
-#: cddagl/ui.py:5299
+#: cddagl/ui.py:5669
 msgid "Name"
 msgstr "名前"
 
-#: cddagl/ui.py:5300
+#: cddagl/ui.py:5670
 msgid "Modified"
 msgstr "変更"
 
-#: cddagl/ui.py:5300
+#: cddagl/ui.py:5670
 msgid "Worlds"
 msgstr "ワールド"
 
-#: cddagl/ui.py:5300
+#: cddagl/ui.py:5670
 msgid "Characters"
 msgstr "キャラクター"
 
-#: cddagl/ui.py:5300
+#: cddagl/ui.py:5670
 msgid "Actual size"
 msgstr "無圧縮サイズ"
 
-#: cddagl/ui.py:5301
+#: cddagl/ui.py:5671
 msgid "Compressed size"
 msgstr "圧縮後サイズ"
 
-#: cddagl/ui.py:5301
+#: cddagl/ui.py:5671
 msgid "Compression ratio"
 msgstr "圧縮率"
 
-#: cddagl/ui.py:5301
+#: cddagl/ui.py:5671
 msgid "Modified date"
 msgstr "変更日"
 
-#: cddagl/ui.py:5304 cddagl/ui.py:6168
+#: cddagl/ui.py:5674 cddagl/ui.py:6542
 msgid "Backup current saves"
 msgstr "現在のセーブをバックアップ"
 
-#: cddagl/ui.py:5306
+#: cddagl/ui.py:5676
 msgid "Backup saves before game launch"
 msgstr "ゲーム起動前にセーブをバックアップ"
 
-#: cddagl/ui.py:5307
+#: cddagl/ui.py:5677
 msgid "Backup saves after game end"
 msgstr "ゲーム終了後にセーブをバックアップ"
 
-#: cddagl/ui.py:5309
+#: cddagl/ui.py:5679
 msgid ""
-"This option will only work if you also have the option to keep the launcher "
-"opened after launching the game in the settings tab."
-msgstr ""
-"この設定を使用するには、設定タブの「ゲーム起動後にランチャーを閉じない」を有"
-"効にして下さい。"
+"This option will only work if you also have the option to keep the "
+"launcher opened after launching the game in the settings tab."
+msgstr "この設定を使用するには、設定タブの「ゲーム起動後にランチャーを閉じない」を有効にして下さい。"
 
-#: cddagl/ui.py:5313
+#: cddagl/ui.py:5683
 msgid "Maximum automatic backups count:"
 msgstr "自動バックアップ作成数上限:"
 
-#: cddagl/ui.py:5416 cddagl/ui.py:5445 cddagl/ui.py:5477
+#: cddagl/ui.py:5786 cddagl/ui.py:5815 cddagl/ui.py:5847
 msgid "Restore backup cancelled"
 msgstr "バックアップの復元が中止されました"
 
-#: cddagl/ui.py:5501
+#: cddagl/ui.py:5871
 msgid "before_last_restore"
 msgstr ""
 
-#: cddagl/ui.py:5543 cddagl/ui.py:5634
+#: cddagl/ui.py:5913 cddagl/ui.py:6004
 msgid "Cancel restore backup"
 msgstr "バックアップの復元を中止"
 
-#: cddagl/ui.py:5575
+#: cddagl/ui.py:5945
 msgid "Could not rename the save directory"
 msgstr "セーブディレクトリをリネーム出来ませんでした"
 
-#: cddagl/ui.py:5580
+#: cddagl/ui.py:5950
 msgid "Could not remove the save file"
 msgstr "セーブファイルを削除出来ませんでした"
 
-#: cddagl/ui.py:5595
+#: cddagl/ui.py:5965
 msgid "Extracting backup"
 msgstr "バックアップ展開中"
 
-#: cddagl/ui.py:5657
+#: cddagl/ui.py:6027
 msgid "Extracting {filename}"
 msgstr "展開中 {filename}"
 
-#: cddagl/ui.py:5678
+#: cddagl/ui.py:6048
 msgid "{backup_name} backup restored"
 msgstr "{backup_name} バックアップを復元しました"
 
-#: cddagl/ui.py:5755
+#: cddagl/ui.py:6125
 msgid "This will delete the backup file. It cannot be undone."
 msgstr "バックアップファイルを削除します。この操作は元に戻せません。"
 
-#: cddagl/ui.py:5757
+#: cddagl/ui.py:6127
 msgid "Are you sure you want to delete the <strong>{filename}</strong> backup?"
 msgstr "<strong>{filename}</strong> のバックアップを削除してよろしいですか？"
 
-#: cddagl/ui.py:5760
+#: cddagl/ui.py:6130
 msgid "Delete the backup"
 msgstr "バックアップを削除"
 
-#: cddagl/ui.py:5762
+#: cddagl/ui.py:6132
 msgid "I want to keep the backup"
 msgstr "バックアップを削除しない"
 
-#: cddagl/ui.py:5771
+#: cddagl/ui.py:6141
 msgid "Backup deletion cancelled"
 msgstr "バックアップ削除を中止しました"
 
-#: cddagl/ui.py:5776
+#: cddagl/ui.py:6146
 msgid "Backup deleted"
 msgstr "バックアップを削除しました"
 
-#: cddagl/ui.py:5791 cddagl/ui.py:5833
+#: cddagl/ui.py:6161 cddagl/ui.py:6203
 msgid "Manual backup cancelled"
 msgstr "手動バックアップを中止しました"
 
-#: cddagl/ui.py:5839
+#: cddagl/ui.py:6209
 msgid "manual_backup"
 msgstr ""
 
-#: cddagl/ui.py:5886
+#: cddagl/ui.py:6256
 msgid "Save directory not found"
 msgstr "セーブディレクトリが見つかりません"
 
-#: cddagl/ui.py:5902
+#: cddagl/ui.py:6275
 msgid "Could not delete previous backup archive"
 msgstr "以前のバックアップアーカイブを削除出来ませんでした"
 
-#: cddagl/ui.py:5991
+#: cddagl/ui.py:6364
 msgid "Cancel backup"
 msgstr "バックアップを中止"
 
-#: cddagl/ui.py:5994
+#: cddagl/ui.py:6367
 msgid "Searching for save files"
 msgstr "セーブファイル検索中"
 
-#: cddagl/ui.py:6005
+#: cddagl/ui.py:6378
 msgid "Found {filename} in {path}"
 msgstr "場所 {path} で {filename} を発見しました"
 
-#: cddagl/ui.py:6024
+#: cddagl/ui.py:6397
 msgid "Compressing save files"
 msgstr "セーブファイル圧縮中"
 
-#: cddagl/ui.py:6089
+#: cddagl/ui.py:6463
 msgid "Compressing {filename}"
 msgstr "圧縮中 {filename}"
 
-#: cddagl/ui.py:6111
+#: cddagl/ui.py:6485
 msgid "Saves backup completed"
 msgstr "セーブのバックアップが完了しました"
 
-#: cddagl/ui.py:6564
+#: cddagl/ui.py:6939
 msgid "Add this new mod to the repository"
 msgstr "この新しいModをリポジトリに追加する"
 
-#: cddagl/ui.py:6565
+#: cddagl/ui.py:6940
 msgid ""
 "* Name: [Enter the name of the mod]\n"
 "* Url: [Enter the Url where we can find the mod]\n"
@@ -1330,145 +1324,135 @@ msgstr ""
 "* Homepage: [作者の公式サイトまたは配布されている場所のURL]\n"
 "* Mod not found in version: {version}\n"
 
-#: cddagl/ui.py:6572
+#: cddagl/ui.py:6947
 msgid "<a href=\"{url}\">Suggest a new mod on GitHub</a>"
 msgstr "<a href=\"{url}\">GitHubで新しいModを提案する</a>"
 
-#: cddagl/ui.py:6575 cddagl/ui.py:7054
+#: cddagl/ui.py:6950 cddagl/ui.py:7423
 msgid "Install this mod"
 msgstr "このModをインストールする"
 
-#: cddagl/ui.py:6578
+#: cddagl/ui.py:6953
 msgid "Ident:"
 msgstr "ID:"
 
-#: cddagl/ui.py:6579
+#: cddagl/ui.py:6954
 msgid "Author:"
 msgstr "作者:"
 
-#: cddagl/ui.py:6580
+#: cddagl/ui.py:6955
 msgid "Description:"
 msgstr "説明:"
 
-#: cddagl/ui.py:6581
+#: cddagl/ui.py:6956
 msgid "Category:"
 msgstr "分類:"
 
-#: cddagl/ui.py:6694
+#: cddagl/ui.py:7069
 msgid "Mod already present"
 msgstr "Modがすでに存在しています"
 
-#: cddagl/ui.py:6695
+#: cddagl/ui.py:7070
 msgid ""
-"It seems this mod is already installed. The launcher will not overwrite the "
-"mod if it has the same directory name. You might want to delete the mod "
-"first if you want to update it. Also, there can only be a single mod with "
-"the same ident value available in the game."
-msgstr ""
-"このModはすでにインストールされているようです。同じ名前のディレクトリが存在す"
-"る場合、本ランチャーはModを上書きしません。アップデートする場合はまずModを削"
-"除してください。同じ名前のModはゲーム中で1つしか有効になりません。"
+"It seems this mod is already installed. The launcher will not overwrite "
+"the mod if it has the same directory name. You might want to delete the "
+"mod first if you want to update it. Also, there can only be a single mod "
+"with the same ident value available in the game."
+msgstr "このModはすでにインストールされているようです。同じ名前のディレクトリが存在する場合、本ランチャーはModを上書きしません。アップデートする場合はまずModを削除してください。同じ名前のModはゲーム中で1つしか有効になりません。"
 
-#: cddagl/ui.py:6702
+#: cddagl/ui.py:7077
 msgid "Are you sure you want to install the {name} mod?"
 msgstr "Mod {name} をインストールしてよろしいですか？"
 
-#: cddagl/ui.py:6705
+#: cddagl/ui.py:7080
 msgid "Install the mod"
 msgstr "Modをインストール"
 
-#: cddagl/ui.py:6791 cddagl/ui.py:6817
+#: cddagl/ui.py:7156 cddagl/ui.py:7182
 msgid "Cancel mod installation"
 msgstr "Modのインストールを中止"
 
-#: cddagl/ui.py:6811
+#: cddagl/ui.py:7176
 msgid "Could not find downloaded file archive"
 msgstr "ダウンロードしたアーカイブが見つかりませんでした"
 
-#: cddagl/ui.py:6844 cddagl/ui.py:7002
-msgid "Selected file is a password protected archive file"
-msgstr "選択されたアーカイブにはパスワードがかかっています"
-
-#: cddagl/ui.py:6980
+#: cddagl/ui.py:7349
 msgid "Could not find downloaded archive ({file})"
 msgstr "ダウンロードしたアーカイブが見つかりませんでした ({file})"
 
-#: cddagl/ui.py:7020
-msgid "Unknown downloaded archive format ({extension})"
-msgstr "不明な圧縮フォーマットです ({extension})"
-
-#: cddagl/ui.py:7218
+#: cddagl/ui.py:7587
 msgid "Finding the mod(s)"
 msgstr "Mod検索中"
 
-#: cddagl/ui.py:7249
+#: cddagl/ui.py:7618
 msgid "Mod installation cancelled - There is no mod in the downloaded archive"
-msgstr ""
-"Modのインストールを中止しました - ダウンロードしたアーカイブの中にModが存在し"
-"ません"
+msgstr "Modのインストールを中止しました - ダウンロードしたアーカイブの中にModが存在しません"
 
-#: cddagl/ui.py:7261
+#: cddagl/ui.py:7630
 msgid ""
 "Mod installation cancelled - There is already a {basename} directory in "
 "{mods_dir}"
-msgstr ""
-"Modのインストールを中止しました - すでに {basename} が {mods_dir} に存在して"
-"います。"
+msgstr "Modのインストールを中止しました - すでに {basename} が {mods_dir} に存在しています。"
 
-#: cddagl/ui.py:7270
+#: cddagl/ui.py:7639
 msgid "Mod installation completed"
 msgstr "Modのインストールが完了しました"
 
-#: cddagl/ui.py:7294 cddagl/ui.py:7311 cddagl/ui.py:7552
+#: cddagl/ui.py:7663 cddagl/ui.py:7680 cddagl/ui.py:7920
 msgid "*Error*"
 msgstr "*エラー*"
 
-#: cddagl/ui.py:7328
+#: cddagl/ui.py:7697
 msgid "Delete mod"
 msgstr "Modを削除"
 
-#: cddagl/ui.py:7329
+#: cddagl/ui.py:7698
 msgid "This will delete the mod directory. It cannot be undone."
 msgstr "Modディレクトリを削除します。この操作は元に戻せません。"
 
-#: cddagl/ui.py:7331
+#: cddagl/ui.py:7700
 msgid "Are you sure you want to delete the {view} mod?"
 msgstr "Mod {view} を削除してよろしいですか？"
 
-#: cddagl/ui.py:7333
+#: cddagl/ui.py:7702
 msgid "Delete the mod"
 msgstr "Modを削除"
 
-#: cddagl/ui.py:7335
+#: cddagl/ui.py:7704
 msgid "I want to keep the mod"
 msgstr "Modを削除しない"
 
-#: cddagl/ui.py:7344
+#: cddagl/ui.py:7713
 msgid "Mod deletion cancelled"
 msgstr "Modの削除を中止しました"
 
-#: cddagl/ui.py:7349
+#: cddagl/ui.py:7718
 msgid "Mod deleted"
 msgstr "Modを削除しました"
 
-#: cddagl/ui.py:7752 cddagl/ui.py:7988
+#: cddagl/ui.py:8168 cddagl/ui.py:8404
 #, python-format
 msgid "Source path '%s' is not a directory"
 msgstr "ソースの場所 '%s' はディレクトリではありません"
 
-#: cddagl/ui.py:7783 cddagl/ui.py:8031
+#: cddagl/ui.py:8199 cddagl/ui.py:8447
 msgid "file"
 msgid_plural "files"
 msgstr[0] "ファイル"
 
-#: cddagl/ui.py:7785
+#: cddagl/ui.py:8201
 msgid "Analysing {name} - Found {file_count} {files}"
 msgstr "解析中 {name} - 検出 {file_count} {files}"
 
-#: cddagl/ui.py:7837 cddagl/ui.py:7900
+#: cddagl/ui.py:8246 cddagl/ui.py:8310
+msgid "Cannot remove directory"
+msgstr "ディレクトリを削除できません"
+
+#: cddagl/ui.py:8253 cddagl/ui.py:8316
 msgid ""
 "\n"
-"<p>The launcher failed to remove the following directory: {directory}</p>\n"
+"<p>The launcher failed to remove the following directory: {directory}</p>"
+"\n"
 "<p>When trying to remove or access {filename}, the launcher raised the\n"
 "following error: {error}</p>"
 msgstr ""
@@ -1477,7 +1461,7 @@ msgstr ""
 "<p>{filename}へのアクセスを試みましたがエラーが発生しました\n"
 ": {error}</p>"
 
-#: cddagl/ui.py:7846 cddagl/ui.py:7909
+#: cddagl/ui.py:8262 cddagl/ui.py:8325
 msgid ""
 "\n"
 "<p>No process seems to be using that file or directory.</p>"
@@ -1485,7 +1469,7 @@ msgstr ""
 "\n"
 "<p>選択されたファイルまたはディレクトリを使用中のプロセスはありません。</p>"
 
-#: cddagl/ui.py:7849 cddagl/ui.py:7912
+#: cddagl/ui.py:8265 cddagl/ui.py:8328
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently "
@@ -1494,39 +1478,44 @@ msgid ""
 msgstr ""
 "\n"
 "<p>プロセス <strong>{image_file_name} ({pid})</strong> が、指定された\n"
-"ファイルまたはディレクトリを使用中です。 上記プロセス終了後に再試行して下さ"
-"い。</p>"
+"ファイルまたはディレクトリを使用中です。 上記プロセス終了後に再試行して下さい。</p>"
 
-#: cddagl/ui.py:7941
+#: cddagl/ui.py:8273 cddagl/ui.py:8335
+msgid "Do you want to retry removing this directory?"
+msgstr "ディレクトリの削除を再試行しますか？"
+
+#: cddagl/ui.py:8276 cddagl/ui.py:8338
+msgid "Retry removing the directory"
+msgstr "ディレクトリの削除を再試行する"
+
+#: cddagl/ui.py:8357
 msgid "Deleting {name} - {entry}"
 msgstr "削除中 {name} - {entry}"
 
-#: cddagl/ui.py:7951 cddagl/ui.py:8160
+#: cddagl/ui.py:8367 cddagl/ui.py:8576
 msgid "Analysing {name}"
 msgstr "解析中 {name}"
 
-#: cddagl/ui.py:7990
+#: cddagl/ui.py:8406
 #, python-format
 msgid "Destination path '%s' already exists"
 msgstr "実行パス '%s' はすでに存在します"
 
-#: cddagl/ui.py:8034
+#: cddagl/ui.py:8450
 msgid "Analysing {name} - Found {file_count} {files} ({size})"
 msgstr "解析中 {name} - 検出 {file_count} {files} ({size})"
 
-#: cddagl/ui.py:8150
+#: cddagl/ui.py:8566
 msgid "Copying {name} - {entry}"
 msgstr "コピー中 {name} - {entry}"
 
-#: cddagl/ui.py:8207
+#: cddagl/ui.py:8623
 msgid ""
-"The CDDA Game Launcher just crashed. An unhandled exception was raised. Here "
-"are the details."
-msgstr ""
-"不明な例外処理が発生し、The CDDA Game Launcher は動作を停止しました。詳細はこ"
-"ちら。"
+"The CDDA Game Launcher just crashed. An unhandled exception was raised. "
+"Here are the details."
+msgstr "不明な例外処理が発生し、The CDDA Game Launcher は動作を停止しました。詳細はこちら。"
 
-#: cddagl/ui.py:8219
+#: cddagl/ui.py:8635
 msgid ""
 "\n"
 "<p>CDDA Game Launcher version: {version}</p>\n"
@@ -1537,11 +1526,11 @@ msgid ""
 "<code>{traceback}</code>\n"
 msgstr ""
 
-#: cddagl/ui.py:8234
+#: cddagl/ui.py:8650
 msgid "Unhandled exception: [Enter a title]"
 msgstr ""
 
-#: cddagl/ui.py:8235
+#: cddagl/ui.py:8651
 msgid ""
 "* Description: [Enter what you did and what happened]\n"
 "* Version: {version}\n"
@@ -1554,20 +1543,99 @@ msgid ""
 "```\n"
 msgstr ""
 
-#: cddagl/ui.py:8250
+#: cddagl/ui.py:8666
 msgid ""
-"Please help us make a better launcher <a href=\"{url}\">by reporting this "
-"issue on GitHub</a>."
+"Please help us make a better launcher <a href=\"{url}\">by reporting this"
+" issue on GitHub</a>."
 msgstr ""
 
-#: cddagl/ui.py:8257
+#: cddagl/ui.py:8673
 msgid "Exit"
 msgstr "終了"
 
-#: cddagl/ui.py:8263
+#: cddagl/ui.py:8679
 msgid "Something went wrong"
 msgstr "何かが間違っています"
 
-#: cddagl/ui.py:8277
+#: cddagl/ui.py:8693
 msgid "Could not find translations for {locale} in {locale_dir} ({info})"
 msgstr "{locale} のための翻訳を {locale_dir} 内に発見出来ませんでした({info})"
+
+#~ msgid ""
+#~ "\n"
+#~ "<p>The launcher failed to remove the "
+#~ "following directory: {directory}</p>\n"
+#~ "<p>When trying to remove or access "
+#~ "{filename}, the launcher raised the\n"
+#~ "following error: {error}</p>\n"
+#~ msgstr ""
+#~ "\n"
+#~ "<p>以下のディレクトリの削除に失敗しました: {directory}</p>\n"
+#~ "<p>{filename}へのアクセスを試みましたがエラーが発生しました\n"
+#~ ": {error}</p>\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "<p>No process seems to be using that file or directory.</p>\n"
+#~ msgstr ""
+#~ "\n"
+#~ "<p>指定されたファイルまたはディレクトリを使用中のプロセスはありません。</p>\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "<p>The process <strong>{image_file_name} "
+#~ "({pid})</strong> is currently using\n"
+#~ "that file or directory. You might "
+#~ "need to end it if you want "
+#~ "to retry.</p>\n"
+#~ msgstr ""
+#~ "\n"
+#~ "<p>プロセス <strong>{image_file_name} ({pid})</strong> が、指定された\n"
+#~ "ファイルまたはディレクトリを使用中です。 上記プロセス終了後に再試行して下さい。</p>\n"
+
+#~ msgid "Cannot delete file"
+#~ msgstr "ファイルを削除できません"
+
+#~ msgid ""
+#~ "\n"
+#~ "<p>The launcher failed to delete the following file: {path}</p>\n"
+#~ "<p>When trying to remove or access "
+#~ "{filename}, the launcher raised the\n"
+#~ "following error: {error}</p>\n"
+#~ msgstr ""
+#~ "\n"
+#~ "<p>以下のファイルの削除に失敗しました: {path}</p>\n"
+#~ "<p>{filename},へのアクセスを試みましたがエラーが発生しました\n"
+#~ ": {error}</p>\n"
+
+#~ msgid "Do you want to retry deleting this file?"
+#~ msgstr "ファイルの削除を再試行しますか？"
+
+#~ msgid "Retry deleting the file"
+#~ msgstr "ファイルの削除を再試行"
+
+#~ msgid "Graphics:"
+#~ msgstr "グラフィック:"
+
+#~ msgid "Tiles"
+#~ msgstr "タイル"
+
+#~ msgid "Console"
+#~ msgstr "コンソール"
+
+#~ msgid ""
+#~ "Update cancelled - Your previous_version "
+#~ "directory is most likely unusable now."
+#~ " Restoring your previous version will "
+#~ "most likely give you a broken "
+#~ "game."
+#~ msgstr ""
+#~ "アップデートが中止されました - "
+#~ "以前のバージョンのディレクトリが利用できません。以前のバージョンを復元した場合、正常に動作しないと思われます。"
+
+#~ msgid "{number} ({delta}) - latest"
+#~ msgstr "{number} ({delta}) - 最新版"
+
+#~ msgid "Could not download soundpack"
+#~ msgstr "サウンドパックをダウンロード出来ませんでした"
+
