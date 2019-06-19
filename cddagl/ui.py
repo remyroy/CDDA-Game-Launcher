@@ -135,6 +135,16 @@ FAKE_USER_AGENT = (b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
 
 TEMP_PREFIX = 'cddagl'
 
+
+def log_exception(extype, value, tb):
+    tb_io = StringIO()
+    traceback.print_tb(tb, file=tb_io)
+
+    logger.critical(_('Global error:\nLauncher version: {version}\nType: '
+                      '{extype}\nValue: {value}\nTraceback:\n{traceback}').format(
+        version=cddagl.__version__, extype=str(extype), value=str(value),
+        traceback=tb_io.getvalue()))
+
 def unique(seq):
     """Return unique entries in a unordered sequence while original order."""
     seen = set()
@@ -1821,8 +1831,17 @@ class ChangelogParsingThread(QThread):
     def run(self):
         changelog_html = StringIO()
         self.changelog_http_data.seek(0)
-        changelog_xml = xml.etree.ElementTree.fromstring(
-                            self.changelog_http_data.read())
+        try:
+            changelog_xml = xml.etree.ElementTree.fromstring(
+                                self.changelog_http_data.read())
+        except xml.etree.ElementTree.ParseError as err:
+            log_exception(*sys.exc_info())
+            changelog_html.write(
+                '<h3 style="color:red">{0}</h3>'.format(
+                    _('Error parsing Changelog data. Retry later.')))
+            self.completed.emit(changelog_html)
+            return
+
 
         ### "((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))" is like a \b
         ### that accepts "#" as word char too.
