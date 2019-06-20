@@ -73,7 +73,6 @@ import cddagl
 version = cddagl.__version__
 
 
-main_app = None
 basedir = None
 available_locales = None
 app_locale = 'en'
@@ -3766,8 +3765,8 @@ class LauncherSettingsGroupBox(QGroupBox):
         app_locale = locale_to_change
         load_gettext_locale(get_locale_path(), locale_to_change)
 
+        main_app = QApplication.instance()
         main_app.main_win.set_text()
-
         central_widget = main_app.main_win.central_widget
         main_tab = central_widget.main_tab
         game_dir_group_box = main_tab.game_dir_group_box
@@ -3809,6 +3808,7 @@ class LauncherSettingsGroupBox(QGroupBox):
         checked = state != Qt.Unchecked
         set_config_value('use_launcher_dir', str(checked))
 
+        main_app = QApplication.instance()
         central_widget = main_app.main_win.central_widget
         main_tab = central_widget.main_tab
         game_dir_group_box = main_tab.game_dir_group_box
@@ -8649,7 +8649,6 @@ class ExceptionWindow(QWidget):
         self.setMinimumSize(350, 0)
 
 def start_ui(bdir, locale, locales, single_instance):
-    global main_app
     global basedir
     global available_locales
     global app_locale
@@ -8677,7 +8676,7 @@ def start_ui(bdir, locale, locales, single_instance):
     sys.exit(main_app.exec_())
 
 def ui_exception(extype, value, tb):
-    global main_app
+    main_app = QApplication.instance()
 
     main_app.closeAllWindows()
     ex_win = ExceptionWindow(extype, value, tb)
