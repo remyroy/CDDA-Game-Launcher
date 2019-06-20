@@ -14,14 +14,6 @@ try:
 except ImportError:
     from scandir import scandir
 
-if getattr(sys, 'frozen', False):
-    # we are running in a bundle
-    basedir = sys._MEIPASS
-else:
-    # we are running in a normal Python environment
-    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    sys.path.append(basedir)
-
 from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _
 from cddagl.sql.functions import init_config, get_config_value, config_true
 from cddagl.ui import start_ui, ui_exception
@@ -36,6 +28,19 @@ MAX_LOG_SIZE = 1024 * 1024
 MAX_LOG_FILES = 5
 
 
+def get_basedir():
+    if getattr(sys, 'frozen', False):
+        # we are running in a bundle
+        return sys._MEIPASS
+    else:
+        # we are running in a normal Python environment
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+
+def get_locale_path():
+    return os.path.join(get_basedir(), 'cddagl', 'locale')
+
+
 def init_single_instance():
     if not config_true(get_config_value('allow_multiple_instances', 'False')):
         single_instance = SingleInstance()
@@ -47,9 +52,6 @@ def init_single_instance():
         return single_instance
 
     return None
-
-def get_locale_path():
-    return os.path.join(basedir, 'cddagl', 'locale')
 
 def get_available_locales():
     available_locales = []
@@ -153,6 +155,6 @@ if __name__ == '__main__':
     init_logging()
     init_exception_catcher()
 
-    init_config(basedir)
+    init_config(get_basedir())
 
-    start_ui(basedir, get_preferred_locale(), get_available_locales(), init_single_instance())
+    start_ui(get_basedir(), get_preferred_locale(), get_available_locales(), init_single_instance())
