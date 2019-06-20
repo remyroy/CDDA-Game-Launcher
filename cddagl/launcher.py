@@ -37,7 +37,6 @@ version = cddagl.__version__
 MAX_LOG_SIZE = 1024 * 1024
 MAX_LOG_FILES = 5
 
-app_locale = None
 
 def init_single_instance():
     if not config_true(get_config_value('allow_multiple_instances', 'False')):
@@ -65,7 +64,7 @@ def get_available_locales():
     available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
     return available_locales
 
-def init_gettext():
+def get_preferred_locale():
     preferred_locales = []
 
     selected_locale = get_config_value('locale', None)
@@ -157,4 +156,4 @@ if __name__ == '__main__':
 
     init_config(basedir)
 
-    start_ui(basedir, init_gettext(), get_available_locales(), init_single_instance())
+    start_ui(basedir, get_preferred_locale(), get_available_locales(), init_single_instance())
