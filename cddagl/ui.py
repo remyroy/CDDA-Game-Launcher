@@ -59,7 +59,7 @@ from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QMenu)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
-from cddagl.i18n import init_gettext
+from cddagl.i18n import load_gettext_locale
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build, config_true)
@@ -3763,7 +3763,7 @@ class LauncherSettingsGroupBox(QGroupBox):
 
         global app_locale
         app_locale = locale
-        init_gettext(get_locale_path(), locale)
+        load_gettext_locale(get_locale_path(), locale)
 
         main_app.main_win.set_text()
 
@@ -8657,7 +8657,7 @@ def start_ui(bdir, locale, locales, single_instance):
     available_locales = locales
 
     app_locale = locale
-    init_gettext(get_locale_path(), locale)
+    load_gettext_locale(get_locale_path(), locale)
 
     if getattr(sys, 'frozen', False):
         rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')

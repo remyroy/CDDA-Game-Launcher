@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def init_gettext(locale_dir, locale, domain='cddagl'):
+def load_gettext_locale(locale_dir, locale, domain='cddagl'):
     """Load specified locale file into gettext for the application.
 
     Fallback to default untranslated strings if locale file is not found.
