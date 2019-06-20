@@ -37,7 +37,6 @@ version = cddagl.__version__
 MAX_LOG_SIZE = 1024 * 1024
 MAX_LOG_FILES = 5
 
-available_locales = []
 app_locale = None
 
 def init_single_instance():
@@ -52,8 +51,21 @@ def init_single_instance():
 
     return None
 
+def get_locale_path():
+    return os.path.join(basedir, 'cddagl', 'locale')
+
+def get_available_locales():
+    available_locales = []
+    if os.path.isdir(get_locale_path()):
+        entries = scandir(get_locale_path())
+        for entry in entries:
+            if entry.is_dir():
+                available_locales.append(entry.name)
+
+    available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
+    return available_locales
+
 def init_gettext():
-    locale_dir = os.path.join(basedir, 'cddagl', 'locale')
     preferred_locales = []
 
     selected_locale = get_config_value('locale', None)
@@ -66,15 +78,7 @@ def init_gettext():
     if system_locale is not None:
         preferred_locales.append(system_locale)
 
-    if os.path.isdir(locale_dir):
-        entries = scandir(locale_dir)
-        for entry in entries:
-            if entry.is_dir():
-                available_locales.append(entry.name)
-
-    available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
-
-    app_locale = Locale.negotiate(preferred_locales, available_locales)
+    app_locale = Locale.negotiate(preferred_locales, get_available_locales())
     if app_locale is None:
         app_locale = 'en'
     else:
@@ -160,8 +164,5 @@ if __name__ == '__main__':
     init_exception_catcher()
 
     init_config(basedir)
-    single_instance = init_single_instance()
 
-    app_locale = init_gettext()
-
-    start_ui(basedir, app_locale, available_locales, single_instance)
+    start_ui(basedir, init_gettext(), get_available_locales(), init_single_instance())
