@@ -24,10 +24,6 @@ except ImportError:
 from datetime import datetime, timedelta, timezone
 import arrow
 
-import gettext
-_ = gettext.gettext
-ngettext = gettext.ngettext
-
 from babel.core import Locale
 from babel.numbers import format_percent
 from babel.dates import format_datetime
@@ -63,6 +59,7 @@ from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QMenu)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
+from cddagl.i18n import init_gettext
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build, config_true)
@@ -147,6 +144,9 @@ def sizeof_fmt(num, suffix=None):
 
 def get_data_path():
     return os.path.join(basedir, 'data')
+
+def get_locale_path():
+    return os.path.join(basedir, 'cddagl', 'locale')
 
 def delete_path(path):
     ''' Move directory or file in the recycle bin (or permanently delete it
@@ -3748,9 +3748,7 @@ class LauncherSettingsGroupBox(QGroupBox):
         locale = self.locale_combo.currentData()
         set_config_value('locale', str(locale))
 
-        if locale is not None:
-            init_gettext(locale)
-        else:
+        if locale is None:
             preferred_locales = []
 
             system_locale = get_ui_locale()
@@ -3762,7 +3760,10 @@ class LauncherSettingsGroupBox(QGroupBox):
                 locale = 'en'
             else:
                 locale = str(locale)
-            init_gettext(locale)
+
+        global app_locale
+        app_locale = locale
+        init_gettext(get_locale_path(), locale)
 
         main_app.main_win.set_text()
 
@@ -8646,33 +8647,17 @@ class ExceptionWindow(QWidget):
         self.setWindowTitle(_('Something went wrong'))
         self.setMinimumSize(350, 0)
 
-def init_gettext(locale):
-    locale_dir = os.path.join(basedir, 'cddagl', 'locale')
-
-    try:
-        t = gettext.translation('cddagl', localedir=locale_dir,
-            languages=[locale])
-        global _
-        _ = t.gettext
-        global ngettext
-        ngettext = t.ngettext
-    except FileNotFoundError as e:
-        logger.warning(_('Could not find translations for {locale} in '
-            '{locale_dir} ({info})'
-            ).format(locale=locale, locale_dir=locale_dir, info=str(e)))
-
-    global app_locale
-    app_locale = locale
-
 def start_ui(bdir, locale, locales, single_instance):
     global main_app
     global basedir
     global available_locales
+    global app_locale
 
     basedir = bdir
     available_locales = locales
 
-    init_gettext(locale)
+    app_locale = locale
+    init_gettext(get_locale_path(), locale)
 
     if getattr(sys, 'frozen', False):
         rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')
