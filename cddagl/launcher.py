@@ -99,10 +99,9 @@ def init_logging():
 
     logging_file = os.path.join(logging_dir, 'app.log')
 
-    handler = RotatingFileHandler(logging_file, maxBytes=cons.MAX_LOG_SIZE,
-        backupCount=cons.MAX_LOG_FILES, encoding='utf8')
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler = RotatingFileHandler(logging_file,maxBytes=cons.MAX_LOG_SIZE,
+                                  backupCount=cons.MAX_LOG_FILES, encoding='utf8')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
     logger.addHandler(handler)
@@ -131,8 +130,7 @@ def init_logging():
         sys.stdout = LoggerWriter(logger, logging.INFO, sys._stdout)
         sys.stderr = LoggerWriter(logger, logging.ERROR, sys._stderr)'''
 
-    logger.info(_('CDDA Game Launcher started: {version}').format(
-        version=version))
+    logger.info(_('CDDA Game Launcher started: {version}').format(version=version))
 
 
 def handle_exception(extype, value, tb):
@@ -141,11 +139,14 @@ def handle_exception(extype, value, tb):
     tb_io = StringIO()
     traceback.print_tb(tb, file=tb_io)
 
-    logger.critical(_('Global error:\nLauncher version: {version}\nType: '
-        '{extype}\nValue: {value}\nTraceback:\n{traceback}').format(
-            version=version, extype=str(extype), value=str(value),
-            traceback=tb_io.getvalue()))
-
+    logger.critical(
+        _('Global error:\n'
+          'Launcher version: {version}\n'
+          'Type: {extype}\n'
+          'Value: {value}\n'
+          'Traceback:\n{traceback}')
+        .format(version=version, extype=str(extype), value=str(value),traceback=tb_io.getvalue())
+    )
     ui_exception(extype, value, tb)
 
 
