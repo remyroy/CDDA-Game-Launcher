@@ -1,4 +1,5 @@
 import os
+import threading
 
 from alembic import command
 from alembic.config import Config
@@ -10,7 +11,21 @@ from sqlalchemy.orm import sessionmaker, joinedload
 from cddagl.configmodel import ConfigValue, GameVersion, GameBuild
 
 
-_session = None
+class ThreadSafeSessionManager():
+    def __init__(self):
+        self._lock = threading.Lock()
+        self.sessions = {}
+
+    def has_session(self, thread_id):
+        return thread_id in self.sessions
+
+    def get_session(self, thread_id):
+        return self.sessions[thread_id]
+
+    def save_session(self, thread_id, session):
+        self._lock.acquire()
+        self.sessions[thread_id] = session
+        self._lock.release()
 
 
 def get_db_url():
@@ -46,14 +61,19 @@ def get_config_path():
 
 
 def get_session():
-    global _session
+    global _session_manager
+    try:
+        _session_manager
+    except NameError:
+        _session_manager = ThreadSafeSessionManager()
 
-    if _session is None:
+    thread_id = threading.current_thread().ident
+    if not _session_manager.has_session(thread_id):
         db_engine = create_engine(get_db_url())
         Session = sessionmaker(bind=db_engine)
-        _session = Session()
+        _session_manager.save_session(thread_id, Session())
 
-    return _session
+    return _session_manager.get_session(thread_id)
 
 
 def get_config_value(name, default=None):
