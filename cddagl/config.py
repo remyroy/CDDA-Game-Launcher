@@ -118,9 +118,11 @@ def new_version(version, sha256):
 def new_build(version, sha256, number, release_date):
     session = get_session()
 
-    game_version = session.query(GameVersion).filter_by(sha256=sha256
-        ).options(joinedload('game_build')
-        ).first()
+    game_version = (session
+                    .query(GameVersion)
+                    .filter_by(sha256=sha256)
+                    .options(joinedload('game_build'))
+                    .first())
 
     if game_version is None:
         game_version = GameVersion()
@@ -142,9 +144,11 @@ def new_build(version, sha256, number, release_date):
 def get_build_from_sha256(sha256):
     session = get_session()
 
-    game_version = session.query(GameVersion).filter_by(sha256=sha256
-        ).options(joinedload('game_build')
-        ).first()
+    game_version = (session
+                    .query(GameVersion)
+                    .filter_by(sha256=sha256)
+                    .options(joinedload('game_build'))
+                    .first())
 
     if game_version is not None and game_version.game_build is not None:
         game_build = game_version.game_build
