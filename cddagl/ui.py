@@ -70,6 +70,7 @@ from cddagl.win32 import (
     find_process_with_file_handle, get_downloads_directory, get_ui_locale,
     activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
     wait_for_pid)
+import cddagl.constants as cons
 
 import cddagl
 version = cddagl.__version__
@@ -81,59 +82,6 @@ available_locales = None
 app_locale = 'en'
 
 logger = logging.getLogger('cddagl')
-
-READ_BUFFER_SIZE = 16 * 1024
-
-MAX_GAME_DIRECTORIES = 6
-
-GITHUB_REST_API_URL = 'https://api.github.com'
-GITHUB_API_VERSION = b'application/vnd.github.v3+json'
-
-GITHUB_XRL_REMAINING = b'X-RateLimit-Remaining'
-GITHUB_XRL_RESET = b'X-RateLimit-Reset'
-
-CDDA_RELEASES = '/repos/CleverRaven/Cataclysm-DDA/releases'
-CDDAGL_LATEST_RELEASE = '/repos/remyroy/CDDA-Game-Launcher/releases/latest'
-
-BASE_ASSETS = {
-    'Tiles': {
-        'x64': {
-            'Platform': 'Windows_x64',
-            'Graphics': 'Tiles'
-        },
-        'x86': {
-            'Platform': 'Windows',
-            'Graphics': 'Tiles'
-        }
-    },
-    'Console': {
-        'x64': {
-            'Platform': 'Windows_x64',
-            'Graphics': 'Curses'
-        },
-        'x86': {
-            'Platform': 'Windows',
-            'Graphics': 'Curses'
-        },
-    }
-}
-
-SAVES_WARNING_SIZE = 150 * 1024 * 1024
-
-NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
-
-CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/api/xml?tree=builds[number,timestamp,building,result,changeSet[items[msg]],runs[result,fullDisplayName]]&xpath=//build&wrapper=builds'
-CDDA_ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
-CDDAGL_ISSUE_URL_ROOT = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/'
-
-BUILD_CHANGES_URL = lambda bn: f'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/{bn}/changes'
-
-WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
-
-FAKE_USER_AGENT = (b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-    b'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36')
-
-TEMP_PREFIX = 'cddagl'
 
 
 def log_exception(extype, value, tb):
@@ -389,12 +337,12 @@ class MainWindow(QMainWindow):
     def check_new_launcher_version(self):
         self.lv_html = BytesIO()
 
-        url = GITHUB_REST_API_URL + CDDAGL_LATEST_RELEASE
+        url = cons.GITHUB_REST_API_URL + cons.CDDAGL_LATEST_RELEASE
 
         request = QNetworkRequest(QUrl(url))
         request.setRawHeader(b'User-Agent',
             b'CDDA-Game-Launcher/' + version.encode('utf8'))
-        request.setRawHeader(b'Accept', GITHUB_API_VERSION)
+        request.setRawHeader(b'Accept', cons.GITHUB_API_VERSION)
 
         self.http_reply = self.qnam.get(request)
         self.http_reply.finished.connect(self.lv_http_finished)
@@ -413,7 +361,7 @@ class MainWindow(QMainWindow):
             request = QNetworkRequest(QUrl(redirected_url))
             request.setRawHeader(b'User-Agent',
                 b'CDDA-Game-Launcher/' + version.encode('utf8'))
-            request.setRawHeader(b'Accept', GITHUB_API_VERSION)
+            request.setRawHeader(b'Accept', cons.GITHUB_API_VERSION)
 
             self.http_reply = self.qnam.get(request)
             self.http_reply.finished.connect(self.lv_http_finished)
@@ -493,7 +441,7 @@ class MainWindow(QMainWindow):
 
             # Replace number signs with issue links
             number_pattern = ' \\#(?P<id>\\d+)'
-            replacement_pattern = (' [#\\g<id>](' + CDDAGL_ISSUE_URL_ROOT +
+            replacement_pattern = (' [#\\g<id>](' + cons.CDDAGL_ISSUE_URL_ROOT +
                 '\\g<id>)')
             markdown_desc = re.sub(number_pattern, replacement_pattern,
                 markdown_desc)
@@ -988,7 +936,7 @@ class GameDirGroupBox(QGroupBox):
 
             if os.path.isdir(previous_version_dir) and os.path.isdir(game_dir):
 
-                with tempfile.TemporaryDirectory(prefix=TEMP_PREFIX
+                with tempfile.TemporaryDirectory(prefix=cons.TEMP_PREFIX
                     ) as temp_move_dir:
 
                     excluded_entries = set(['previous_version'])
@@ -1380,7 +1328,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         self.opened_exe = open(self.exe_path, 'rb')
 
         def timeout():
-            bytes = self.opened_exe.read(READ_BUFFER_SIZE)
+            bytes = self.opened_exe.read(cons.READ_BUFFER_SIZE)
             if len(bytes) == 0:
                 self.opened_exe.close()
                 self.exe_reading_timer.stop()
@@ -1570,8 +1518,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         except ValueError:
             game_dirs.insert(0, new_game_dir)
 
-        if len(game_dirs) > MAX_GAME_DIRECTORIES:
-            del game_dirs[MAX_GAME_DIRECTORIES:]
+        if len(game_dirs) > cons.MAX_GAME_DIRECTORIES:
+            del game_dirs[cons.MAX_GAME_DIRECTORIES:]
 
         set_config_value('game_directories', json.dumps(game_dirs))
 
@@ -1613,7 +1561,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                         if self.save_dir == os.path.dirname(world_dir):
                             self.saves_characters += 1
 
-                    if entry.name in WORLD_FILES:
+                    if entry.name in cons.WORLD_FILES:
                         world_dir = os.path.dirname(entry.path)
                         if (world_dir not in self.world_dirs
                             and self.save_dir == os.path.dirname(world_dir)):
@@ -1641,7 +1589,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     self.update_saves_timer = None
 
                     # Warning about saves size
-                    if (self.saves_size > SAVES_WARNING_SIZE and
+                    if (self.saves_size > cons.SAVES_WARNING_SIZE and
                         not config_true(get_config_value('prevent_save_move',
                             'False'))):
                         self.saves_warning_label.show()
@@ -1731,7 +1679,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             self.opened_exe = open(self.exe_path, 'rb')
 
             def timeout():
-                bytes = self.opened_exe.read(READ_BUFFER_SIZE)
+                bytes = self.opened_exe.read(cons.READ_BUFFER_SIZE)
                 if len(bytes) == 0:
                     self.opened_exe.close()
                     self.exe_reading_timer.stop()
@@ -1871,7 +1819,7 @@ class ChangelogParsingThread(QThread):
                                 build_changes)
             build_changes = list(unique(build_changes))
             build_number = int(build_data.find('number').text)
-            build_link = f'<a href="{BUILD_CHANGES_URL(build_number)}">' \
+            build_link = f'<a href="{cons.BUILD_CHANGES_URL(build_number)}">' \
                          f'Build #{build_number}</a>'
 
             if build_status == 'IN_PROGRESS':
@@ -1908,7 +1856,7 @@ class ChangelogParsingThread(QThread):
                     .format(_('No changes, same code as previous build!')))
             else:
                 for change in build_changes:
-                    link_repl = rf'<a href="{CDDA_ISSUE_URL_ROOT}\g<id>">#\g<id></a>'
+                    link_repl = rf'<a href="{cons.CDDA_ISSUE_URL_ROOT}\g<id>">#\g<id></a>'
                     change = id_regex.sub(link_repl, change)
                     changelog_html.write(f'<li>{change}</li>')
             changelog_html.write('</ul>')
@@ -2035,7 +1983,7 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'x86':
                 self.x86_radio_button.setChecked(True)
 
-            self.start_lb_request(BASE_ASSETS['Tiles'][platform])
+            self.start_lb_request(cons.BASE_ASSETS['Tiles'][platform])
             self.refresh_changelog()
 
         self.shown = True
@@ -2129,7 +2077,7 @@ class UpdateGroupBox(QGroupBox):
                     self.finish_updating()
                     return
 
-                download_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
+                download_dir = tempfile.mkdtemp(prefix=cons.TEMP_PREFIX)
 
                 download_url = self.selected_build['url']
 
@@ -2278,7 +2226,7 @@ class UpdateGroupBox(QGroupBox):
             len(dir_list) == 1 and dir_list[0] == 'previous_version'):
             return None
 
-        temp_move_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
+        temp_move_dir = tempfile.mkdtemp(prefix=cons.TEMP_PREFIX)
 
         excluded_entries = set(['previous_version'])
         if config_true(get_config_value('prevent_save_move', 'False')):
@@ -3238,7 +3186,7 @@ class UpdateGroupBox(QGroupBox):
         self.builds_combo.clear()
         self.builds_combo.addItem(_('Fetching remote builds'))
 
-        url = GITHUB_REST_API_URL + CDDA_RELEASES
+        url = cons.GITHUB_REST_API_URL + cons.CDDA_RELEASES
         self.base_asset = base_asset
 
         fetching_label = QLabel()
@@ -3258,7 +3206,7 @@ class UpdateGroupBox(QGroupBox):
         request = QNetworkRequest(QUrl(url))
         request.setRawHeader(b'User-Agent',
             b'CDDA-Game-Launcher/' + version.encode('utf8'))
-        request.setRawHeader(b'Accept', GITHUB_API_VERSION)
+        request.setRawHeader(b'Accept', cons.GITHUB_API_VERSION)
 
         self.http_reply = self.qnam.get(request)
         self.http_reply.finished.connect(self.lb_http_finished)
@@ -3297,7 +3245,7 @@ class UpdateGroupBox(QGroupBox):
             request = QNetworkRequest(QUrl(redirected_url))
             request.setRawHeader(b'User-Agent',
                 b'CDDA-Game-Launcher/' + version.encode('utf8'))
-            request.setRawHeader(b'Accept', GITHUB_API_VERSION)
+            request.setRawHeader(b'Accept', cons.GITHUB_API_VERSION)
 
             self.http_reply = self.qnam.get(request)
             self.http_reply.finished.connect(self.lb_http_finished)
@@ -3320,13 +3268,13 @@ class UpdateGroupBox(QGroupBox):
                 status_bar.showMessage(_('Game process is running'))
 
         requests_remaining = None
-        if self.http_reply.hasRawHeader(GITHUB_XRL_REMAINING):
-            requests_remaining = self.http_reply.rawHeader(GITHUB_XRL_REMAINING)
+        if self.http_reply.hasRawHeader(cons.GITHUB_XRL_REMAINING):
+            requests_remaining = self.http_reply.rawHeader(cons.GITHUB_XRL_REMAINING)
             requests_remaining = tryint(requests_remaining)
 
         reset_dt = None
-        if self.http_reply.hasRawHeader(GITHUB_XRL_RESET):
-            reset_dt = self.http_reply.rawHeader(GITHUB_XRL_RESET)
+        if self.http_reply.hasRawHeader(cons.GITHUB_XRL_RESET):
+            reset_dt = self.http_reply.rawHeader(cons.GITHUB_XRL_RESET)
             reset_dt = tryint(reset_dt)
             reset_dt = arrow.get(reset_dt)
 
@@ -3502,7 +3450,7 @@ class UpdateGroupBox(QGroupBox):
         elif selected_platform is self.x86_radio_button:
             selected_platform = 'x86'
 
-        release_asset = BASE_ASSETS['Tiles'][selected_platform]
+        release_asset = cons.BASE_ASSETS['Tiles'][selected_platform]
 
         self.start_lb_request(release_asset)
         self.refresh_changelog()
@@ -3534,7 +3482,7 @@ class UpdateGroupBox(QGroupBox):
 
         self.changelog_http_data = BytesIO()
 
-        request = QNetworkRequest(QUrl(CHANGELOG_URL))
+        request = QNetworkRequest(QUrl(cons.CHANGELOG_URL))
         request.setRawHeader(b'User-Agent',
             b'CDDA-Game-Launcher/' + version.encode('utf8'))
 
@@ -4044,7 +3992,7 @@ class UpdateSettingsGroupBox(QGroupBox):
         if state != Qt.Unchecked:
             saves_warning_label.hide()
         else:
-            if game_dir_group_box.saves_size > SAVES_WARNING_SIZE:
+            if game_dir_group_box.saves_size > cons.SAVES_WARNING_SIZE:
                 saves_warning_label.show()
             else:
                 saves_warning_label.hide()
@@ -4144,7 +4092,7 @@ class LauncherUpdateDialog(QDialog):
 
     def showEvent(self, event):
         if not self.shown:
-            temp_dl_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
+            temp_dl_dir = tempfile.mkdtemp(prefix=cons.TEMP_PREFIX)
 
             exe_name = os.path.basename(sys.executable)
 
@@ -4523,7 +4471,7 @@ class SoundpacksTab(QTabWidget):
         self.disable_existing_button.setText(_('Disable'))
         self.delete_existing_button.setText(_('Delete'))
         self.repository_gb.setTitle(_('Repository'))
-        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
+        suggest_url = cons.NEW_ISSUE_URL + '?' + urlencode({
             'title': _('Add this new soundpack to the repository'),
             'body': _('''* Name: [Enter the name of the soundpack]
 * Url: [Enter the Url where we can find the soundpack]
@@ -4676,7 +4624,7 @@ class SoundpacksTab(QTabWidget):
                 self.installing_new_soundpack = True
                 self.download_aborted = False
 
-                download_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
+                download_dir = tempfile.mkdtemp(prefix=cons.TEMP_PREFIX)
 
                 download_url = selected_info['url']
 
@@ -4720,7 +4668,7 @@ class SoundpacksTab(QTabWidget):
                 self.downloading_new_soundpack = True
 
                 request = QNetworkRequest(QUrl(url))
-                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
+                request.setRawHeader(b'User-Agent', cons.FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -4915,7 +4863,7 @@ class SoundpacksTab(QTabWidget):
                 progress_bar.setValue(0)
 
                 request = QNetworkRequest(QUrl(redirected_url))
-                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
+                request.setRawHeader(b'User-Agent', cons.FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -5320,7 +5268,7 @@ class SoundpacksTab(QTabWidget):
                         self.current_repo_info = selected_info
 
                         request = QNetworkRequest(QUrl(selected_info['url']))
-                        request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
+                        request.setRawHeader(b'User-Agent', cons.FAKE_USER_AGENT)
 
                         self.http_reply = self.qnam.head(request)
                         self.http_reply.finished.connect(
@@ -6656,7 +6604,7 @@ class BackupsTab(QTabWidget):
                                     save_file = path_items[-1]
                                     if save_file.endswith('.sav'):
                                         character_count += 1
-                                    if save_file in WORLD_FILES:
+                                    if save_file in cons.WORLD_FILES:
                                         worlds_set.add(path_items[1])
                     except zipfile.BadZipFile:
                         pass
@@ -6954,7 +6902,7 @@ class ModsTab(QTabWidget):
         self.installed_gb.setTitle(_('Installed'))
         self.disable_existing_button.setText(_('Disable'))
         self.delete_existing_button.setText(_('Delete'))
-        suggest_url = NEW_ISSUE_URL + '?' + urlencode({
+        suggest_url = cons.NEW_ISSUE_URL + '?' + urlencode({
             'title': _('Add this new mod to the repository'),
             'body': _('''* Name: [Enter the name of the mod]
 * Url: [Enter the Url where we can find the mod]
@@ -7116,7 +7064,7 @@ class ModsTab(QTabWidget):
                 self.installing_new_mod = True
                 self.download_aborted = False
 
-                download_dir = tempfile.mkdtemp(prefix=TEMP_PREFIX)
+                download_dir = tempfile.mkdtemp(prefix=cons.TEMP_PREFIX)
                 self.download_dir = download_dir
 
                 download_url = selected_info['url']
@@ -7162,7 +7110,7 @@ class ModsTab(QTabWidget):
                 self.downloading_new_mod = True
 
                 request = QNetworkRequest(QUrl(url))
-                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
+                request.setRawHeader(b'User-Agent', cons.FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -7352,7 +7300,7 @@ class ModsTab(QTabWidget):
                 self.downloading_file = None
 
                 request = QNetworkRequest(QUrl(redirected_url))
-                request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
+                request.setRawHeader(b'User-Agent', cons.FAKE_USER_AGENT)
 
                 self.download_http_reply = self.qnam.get(request)
                 self.download_http_reply.finished.connect(
@@ -7470,7 +7418,7 @@ class ModsTab(QTabWidget):
             self.downloading_file = open(self.downloaded_file, 'wb')
 
         while True:
-            data = self.download_http_reply.read(READ_BUFFER_SIZE)
+            data = self.download_http_reply.read(cons.READ_BUFFER_SIZE)
             if not data:
                 break
             self.downloading_file.write(data)
@@ -7830,7 +7778,7 @@ class ModsTab(QTabWidget):
                         self.current_repo_info = selected_info
 
                         request = QNetworkRequest(QUrl(selected_info['url']))
-                        request.setRawHeader(b'User-Agent', FAKE_USER_AGENT)
+                        request.setRawHeader(b'User-Agent', cons.FAKE_USER_AGENT)
 
                         self.http_reply = self.qnam.head(request)
                         self.http_reply.finished.connect(
@@ -8540,7 +8488,7 @@ class ProgressCopyTree(QTimer):
                     self.source_file = open(self.current_entry.path, 'rb')
                     self.destination_file = open(dstpath, 'wb')
             else:
-                buf = self.source_file.read(READ_BUFFER_SIZE)
+                buf = self.source_file.read(cons.READ_BUFFER_SIZE)
                 buf_len = len(buf)
                 if buf_len == 0:
                     self.source_file.close()
@@ -8665,7 +8613,7 @@ class ExceptionWindow(QWidget):
         layout.addWidget(text_content, 1, 0)
         self.text_content = text_content
 
-        report_url = NEW_ISSUE_URL + '?' + urlencode({
+        report_url = cons.NEW_ISSUE_URL + '?' + urlencode({
             'title': _('Unhandled exception: [Enter a title]'),
             'body': _('''* Description: [Enter what you did and what happened]
 * Version: {version}
