@@ -1,10 +1,35 @@
 import gettext
 import logging
+import builtins
 
 
 logger = logging.getLogger(__name__)
 
 default_names_to_install = ('gettext', 'ngettext')
+
+
+def proxy_gettext(*args, **kwargs):
+    """Proxy calls this function to the real built-in gettext() function.
+
+    This is not required for normal operation of the application, could be not imported at all,
+    but will help development.
+    """
+    ### this would load gettext in case it wasn't done before use, but could hide an app bug.
+    #if 'gettext' not in builtins.__dict__:
+    #    load_gettext_no_locale()
+    return builtins.__dict__['gettext'](*args, **kwargs)
+
+
+def proxy_ngettext(*args, **kwargs):
+    """Proxy calls to this function to the real built-in ngettext() function.
+
+    This is not required for normal operation of the application, could be not imported at all,
+    but will help development.
+    """
+    ### this would load gettext in case it wasn't done before use, but could hide an app bug.
+    #if 'ngettext' not in builtins.__dict__:
+    #    load_gettext_no_locale()
+    return builtins.__dict__['ngettext'](*args, **kwargs)
 
 
 def load_gettext_no_locale():

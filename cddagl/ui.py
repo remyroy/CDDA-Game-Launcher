@@ -59,7 +59,7 @@ from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QMenu)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
-from cddagl.i18n import load_gettext_locale
+from cddagl.i18n import load_gettext_locale, proxy_gettext as _, proxy_ngettext as ngettext
 from cddagl.config import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build, config_true)
