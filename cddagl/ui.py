@@ -3745,25 +3745,26 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.setTitle(_('Launcher'))
 
     def locale_combo_changed(self, index):
-        locale = self.locale_combo.currentData()
-        set_config_value('locale', str(locale))
+        selected_locale = self.locale_combo.currentData()
+        locale_to_change = str(selected_locale)
+        set_config_value('locale', locale_to_change)
 
-        if locale is None:
+        if selected_locale is None:
             preferred_locales = []
 
             system_locale = get_ui_locale()
             if system_locale is not None:
                 preferred_locales.append(system_locale)
 
-            locale = Locale.negotiate(preferred_locales, available_locales)
-            if locale is None:
-                locale = 'en'
+            negotiated_locale = Locale.negotiate(preferred_locales, available_locales)
+            if negotiated_locale is None:
+                locale_to_change = 'en'
             else:
-                locale = str(locale)
+                locale_to_change = str(negotiated_locale)
 
         global app_locale
-        app_locale = locale
-        load_gettext_locale(get_locale_path(), locale)
+        app_locale = locale_to_change
+        load_gettext_locale(get_locale_path(), locale_to_change)
 
         main_app.main_win.set_text()
 
