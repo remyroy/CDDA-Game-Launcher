@@ -84,14 +84,6 @@ def init_gettext():
     else:
         app_locale = str(app_locale)
 
-    try:
-        t = gettext.translation('cddagl', localedir=locale_dir,
-            languages=[app_locale])
-        global _
-        _ = t.gettext
-    except FileNotFoundError as e:
-        pass
-
     return app_locale
 
 def init_logging():
