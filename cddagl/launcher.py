@@ -53,6 +53,7 @@ def init_single_instance():
 
     return None
 
+
 def get_available_locales():
     available_locales = []
     if os.path.isdir(get_locale_path()):
@@ -63,6 +64,7 @@ def get_available_locales():
 
     available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
     return available_locales
+
 
 def get_preferred_locale():
     preferred_locales = []
@@ -84,6 +86,7 @@ def get_preferred_locale():
         app_locale = str(app_locale)
 
     return app_locale
+
 
 def init_logging():
     logger = logging.getLogger('cddagl')
@@ -134,6 +137,7 @@ def init_logging():
     logger.info(_('CDDA Game Launcher started: {version}').format(
         version=version))
 
+
 def handle_exception(extype, value, tb):
     logger = logging.getLogger('cddagl')
 
@@ -147,8 +151,10 @@ def handle_exception(extype, value, tb):
 
     ui_exception(extype, value, tb)
 
+
 def init_exception_catcher():
     sys.excepthook = handle_exception
+
 
 if __name__ == '__main__':
     load_gettext_no_locale()
