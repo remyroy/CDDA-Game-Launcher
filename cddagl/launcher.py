@@ -5,9 +5,6 @@ import traceback
 import logging
 from logging.handlers import RotatingFileHandler
 
-import gettext
-_ = gettext.gettext
-
 from io import StringIO
 
 from babel.core import Locale
@@ -25,6 +22,7 @@ else:
     basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     sys.path.append(basedir)
 
+from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _
 from cddagl.config import init_config, get_config_value, config_true
 from cddagl.ui import start_ui, ui_exception
 
@@ -151,6 +149,7 @@ def init_exception_catcher():
     sys.excepthook = handle_exception
 
 if __name__ == '__main__':
+    load_gettext_no_locale()
     init_logging()
     init_exception_catcher()
 
