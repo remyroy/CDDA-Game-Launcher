@@ -14,6 +14,7 @@ try:
 except ImportError:
     from scandir import scandir
 
+import cddagl.constants as cons
 from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _
 from cddagl.sql.functions import init_config, get_config_value, config_true
 from cddagl.ui import start_ui, ui_exception
@@ -22,10 +23,6 @@ from cddagl.win32 import get_ui_locale, SingleInstance, write_named_pipe
 
 import cddagl
 version = cddagl.__version__
-
-
-MAX_LOG_SIZE = 1024 * 1024
-MAX_LOG_FILES = 5
 
 
 def get_basedir():
@@ -102,8 +99,8 @@ def init_logging():
 
     logging_file = os.path.join(logging_dir, 'app.log')
 
-    handler = RotatingFileHandler(logging_file, maxBytes=MAX_LOG_SIZE,
-        backupCount=MAX_LOG_FILES, encoding='utf8')
+    handler = RotatingFileHandler(logging_file, maxBytes=cons.MAX_LOG_SIZE,
+        backupCount=cons.MAX_LOG_FILES, encoding='utf8')
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
