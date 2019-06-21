@@ -99,8 +99,8 @@ def init_logging():
 
     logging_file = os.path.join(logging_dir, 'app.log')
 
-    handler = RotatingFileHandler(logging_file,maxBytes=cons.MAX_LOG_SIZE,
-                                  backupCount=cons.MAX_LOG_FILES, encoding='utf8')
+    handler = RotatingFileHandler(logging_file, encoding='utf8',
+                                  maxBytes=cons.MAX_LOG_SIZE, backupCount=cons.MAX_LOG_FILES)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
