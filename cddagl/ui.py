@@ -66,13 +66,12 @@ from cddagl.win32 import (
     activate_window, SimpleNamedPipe, process_id_from_path,
     wait_for_pid)
 import cddagl.constants as cons
-from cddagl.constants import get_locale_path, get_data_path, get_resource_path
+from cddagl.constants import get_locale_path, get_data_path, get_resource_path, get_cddagl_path
 
 import cddagl
 version = cddagl.__version__
 
 
-basedir = None
 app_locale = 'en'
 
 logger = logging.getLogger('cddagl')
@@ -8641,17 +8640,14 @@ class ExceptionWindow(QWidget):
         self.setWindowTitle(_('Something went wrong'))
         self.setMinimumSize(350, 0)
 
-def start_ui(bdir, locale, single_instance):
-    global basedir
+def start_ui(locale, single_instance):
     global app_locale
-
-    basedir = bdir
 
     app_locale = locale
     load_gettext_locale(get_locale_path(), locale)
 
     if getattr(sys, 'frozen', False):
-        rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')
+        rarfile.UNRAR_TOOL = get_cddagl_path('UnRAR.exe')
 
     main_app = QApplication(sys.argv)
     main_app.setWindowIcon(QIcon(get_resource_path('launcher.ico')))
