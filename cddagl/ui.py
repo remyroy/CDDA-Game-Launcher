@@ -8571,8 +8571,10 @@ class ProgressCopyTree(QTimer):
 
 
 class ExceptionWindow(QWidget):
-    def __init__(self, extype, value, tb):
+    def __init__(self, app, extype, value, tb):
         super(ExceptionWindow, self).__init__()
+
+        self.app = app
 
         layout = QGridLayout()
 
@@ -8628,7 +8630,7 @@ class ExceptionWindow(QWidget):
 
         exit_button = QPushButton()
         exit_button.setText(_('Exit'))
-        exit_button.clicked.connect(self.close)
+        exit_button.clicked.connect(lambda: self.app.exit(-100))
         layout.addWidget(exit_button, 3, 0, Qt.AlignRight)
         self.exit_button = exit_button
 
@@ -8663,7 +8665,16 @@ def start_ui(bdir, locale, locales, single_instance):
 def ui_exception(extype, value, tb):
     main_app = QApplication.instance()
 
-    main_app.closeAllWindows()
-    ex_win = ExceptionWindow(extype, value, tb)
+    if main_app is not None:
+        main_app_still_up = True
+        main_app.closeAllWindows()
+    else:
+        main_app_still_up = False
+        main_app = QApplication(sys.argv)
+
+    ex_win = ExceptionWindow(main_app, extype, value, tb)
     ex_win.show()
     main_app.ex_win = ex_win
+
+    if not main_app_still_up:
+        sys.exit(main_app.exec_())
