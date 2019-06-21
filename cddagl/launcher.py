@@ -9,14 +9,9 @@ from io import StringIO
 
 from babel.core import Locale
 
-try:
-    from os import scandir
-except ImportError:
-    from scandir import scandir
-
 import cddagl.constants as cons
 from cddagl.constants import get_cddagl_path, get_locale_path
-from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _
+from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _, get_available_locales
 from cddagl.sql.functions import init_config, get_config_value, config_true
 from cddagl.ui import start_ui, ui_exception
 
@@ -37,18 +32,6 @@ def init_single_instance():
         return single_instance
 
     return None
-
-
-def get_available_locales(locale_dir):
-    available_locales = []
-    if os.path.isdir(locale_dir):
-        entries = scandir(locale_dir)
-        for entry in entries:
-            if entry.is_dir():
-                available_locales.append(entry.name)
-
-    available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
-    return available_locales
 
 
 def get_preferred_locale(available_locales):
