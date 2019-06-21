@@ -53,3 +53,27 @@ BASE_ASSETS = {
         },
     }
 }
+
+
+### Path to Dirs and Files used in CDDAGL
+### TODO: (kurzed) centralize here and then move to a better place?
+import sys
+import os
+
+
+def get_cddagl_path(*subpaths):
+    if getattr(sys, 'frozen', False):
+        # we are running in a bundle
+        basedir = sys._MEIPASS
+    else:
+        # we are running in a normal Python environment
+        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+    return os.path.join(basedir, *subpaths)
+
+
+def get_locale_path(*subpaths):
+    return os.path.join(get_cddagl_path(), 'cddagl', 'locale', *subpaths)
+
+def get_data_path(*subpaths):
+    return os.path.join(get_cddagl_path(), 'data', *subpaths)

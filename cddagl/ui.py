@@ -68,6 +68,7 @@ from cddagl.win32 import (
     activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
     wait_for_pid)
 import cddagl.constants as cons
+from cddagl.constants import get_locale_path, get_data_path
 
 import cddagl
 version = cddagl.__version__
@@ -140,12 +141,6 @@ def sizeof_fmt(num, suffix=None):
             return _("%3.1f %s%s") % (num, unit, suffix)
         num /= 1024.0
     return _("%.1f %s%s") % (num, _('Yi'), suffix)
-
-def get_data_path():
-    return os.path.join(basedir, 'data')
-
-def get_locale_path():
-    return os.path.join(basedir, 'cddagl', 'locale')
 
 def delete_path(path):
     ''' Move directory or file in the recycle bin (or permanently delete it
@@ -4560,7 +4555,7 @@ class SoundpacksTab(QTabWidget):
         self.repository_lv.selectionModel().currentChanged.connect(
             self.repository_selection)
 
-        json_file = os.path.join(get_data_path(), 'soundpacks.json')
+        json_file = get_data_path('soundpacks.json')
 
         if os.path.isfile(json_file):
             with open(json_file, 'r', encoding='utf8') as f:
@@ -6995,7 +6990,7 @@ class ModsTab(QTabWidget):
         self.repository_lv.selectionModel().currentChanged.connect(
             self.repository_selection)
 
-        json_file = os.path.join(get_data_path(), 'mods.json')
+        json_file = get_data_path('mods.json')
 
         if os.path.isfile(json_file):
             with open(json_file, 'r', encoding='utf8') as f:

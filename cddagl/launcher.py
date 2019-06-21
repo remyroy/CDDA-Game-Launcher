@@ -15,6 +15,7 @@ except ImportError:
     from scandir import scandir
 
 import cddagl.constants as cons
+from cddagl.constants import get_cddagl_path, get_locale_path
 from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _
 from cddagl.sql.functions import init_config, get_config_value, config_true
 from cddagl.ui import start_ui, ui_exception
@@ -23,19 +24,6 @@ from cddagl.win32 import get_ui_locale, SingleInstance, write_named_pipe
 
 import cddagl
 version = cddagl.__version__
-
-
-def get_basedir():
-    if getattr(sys, 'frozen', False):
-        # we are running in a bundle
-        return sys._MEIPASS
-    else:
-        # we are running in a normal Python environment
-        return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-
-
-def get_locale_path():
-    return os.path.join(get_basedir(), 'cddagl', 'locale')
 
 
 def init_single_instance():
@@ -159,10 +147,10 @@ if __name__ == '__main__':
     init_logging()
     init_exception_catcher()
 
-    init_config(get_basedir())
+    init_config(get_cddagl_path())
 
     available_locales = get_available_locales(get_locale_path())
-    start_ui(get_basedir(),
+    start_ui(get_cddagl_path(),
              get_preferred_locale(available_locales),
              available_locales,
              init_single_instance())
