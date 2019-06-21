@@ -2797,12 +2797,11 @@ class UpdateGroupBox(QGroupBox):
             self.previous_version_dir = previous_version_dir
 
             # Skip debug files
-            previous_dirs_skips = set()
-            previous_dirs_skips.add(os.path.join(previous_version_dir, 'config',
-                'debug.log'))
-            previous_dirs_skips.add(os.path.join(previous_version_dir, 'config',
-                'debug.log.prev'))
-            self.previous_dirs_skips = previous_dirs_skips
+            self.previous_dirs_skips = set()
+            self.previous_dirs_skips.update((
+                 os.path.join(previous_version_dir, 'config', 'debug.log'),
+                 os.path.join(previous_version_dir, 'config', 'debug.log.prev')
+            ))
 
             self.progress_copy = None
             self.copy_next_dir()
