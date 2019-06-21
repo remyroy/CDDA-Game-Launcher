@@ -72,8 +72,13 @@ def get_cddagl_path(*subpaths):
     return os.path.join(basedir, *subpaths)
 
 
+def get_resource_path(*subpaths):
+    return os.path.join(get_cddagl_path(), 'cddagl', 'resources', *subpaths)
+
+
 def get_locale_path(*subpaths):
     return os.path.join(get_cddagl_path(), 'cddagl', 'locale', *subpaths)
+
 
 def get_data_path(*subpaths):
     return os.path.join(get_cddagl_path(), 'data', *subpaths)

@@ -63,7 +63,7 @@ from cddagl.win32 import (
     activate_window, SimpleNamedPipe, process_id_from_path,
     wait_for_pid)
 import cddagl.constants as cons
-from cddagl.constants import get_locale_path, get_data_path
+from cddagl.constants import get_locale_path, get_data_path, get_resource_path
 
 import cddagl
 version = cddagl.__version__
@@ -3543,8 +3543,7 @@ class AboutDialog(QDialog):
         text_content.setReadOnly(True)
         text_content.setOpenExternalLinks(True)
 
-        text_content.setSearchPaths([os.path.join(basedir, 'cddagl',
-            'resources')])
+        text_content.setSearchPaths([get_resource_path()])
         layout.addWidget(text_content, 0, 0)
         self.text_content = text_content
 
@@ -8653,10 +8652,7 @@ def start_ui(bdir, locale, locales, single_instance):
         rarfile.UNRAR_TOOL = os.path.join(bdir, 'UnRAR.exe')
 
     main_app = QApplication(sys.argv)
-
-    launcher_icon_path = os.path.join(basedir, 'cddagl', 'resources',
-        'launcher.ico')
-    main_app.setWindowIcon(QIcon(launcher_icon_path))
+    main_app.setWindowIcon(QIcon(get_resource_path('launcher.ico')))
 
     main_win = MainWindow('CDDA Game Launcher')
     main_win.show()
