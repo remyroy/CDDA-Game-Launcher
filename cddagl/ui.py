@@ -16,10 +16,7 @@ import tempfile
 import xml.etree.ElementTree
 import markdown
 
-try:
-    from os import scandir
-except ImportError:
-    from scandir import scandir
+from os import scandir
 
 from datetime import datetime, timedelta, timezone
 import arrow
@@ -33,8 +30,6 @@ from collections import deque
 
 from rfc6266 import parse_headers as parse_cd_headers
 
-import html5lib
-from lxml import etree
 from urllib.parse import urljoin, urlencode
 
 import rarfile
@@ -49,9 +44,9 @@ import winutils
 from PyQt5.QtCore import (
     Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QByteArray, QStringListModel,
     QSize, QRect, QThread, QItemSelectionModel, QItemSelection)
-from PyQt5.QtGui import QIcon, QPalette, QPainter, QColor, QFont
+from PyQt5.QtGui import QIcon, QPainter, QColor, QFont
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QStatusBar, QGridLayout, QGroupBox, QMainWindow,
+    QApplication, QWidget, QGridLayout, QGroupBox, QMainWindow,
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog, QToolButton,
     QProgressBar, QButtonGroup, QRadioButton, QComboBox, QAction, QDialog,
     QTextBrowser, QTabWidget, QCheckBox, QMessageBox, QStyle, QHBoxLayout,
@@ -65,7 +60,7 @@ from cddagl.sql.functions import (
     new_build, config_true)
 from cddagl.win32 import (
     find_process_with_file_handle, get_downloads_directory, get_ui_locale,
-    activate_window, SimpleNamedPipe, SingleInstance, process_id_from_path,
+    activate_window, SimpleNamedPipe, process_id_from_path,
     wait_for_pid)
 import cddagl.constants as cons
 from cddagl.constants import get_locale_path, get_data_path
