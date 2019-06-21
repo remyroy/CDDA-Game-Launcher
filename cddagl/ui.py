@@ -54,7 +54,10 @@ from PyQt5.QtWidgets import (
     QTableWidget, QTableWidgetItem, QMenu)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
-from cddagl.i18n import load_gettext_locale, proxy_gettext as _, proxy_ngettext as ngettext
+from cddagl.i18n import (
+    load_gettext_locale, get_available_locales,
+    proxy_ngettext as ngettext, proxy_gettext as _
+)
 from cddagl.sql.functions import (
     get_config_value, set_config_value, new_version, get_build_from_sha256,
     new_build, config_true)
@@ -70,7 +73,6 @@ version = cddagl.__version__
 
 
 basedir = None
-available_locales = None
 app_locale = 'en'
 
 logger = logging.getLogger('cddagl')
@@ -3656,7 +3658,7 @@ class LauncherSettingsGroupBox(QGroupBox):
         locale_combo.addItem(_('System language or best match ({locale})'
             ).format(locale=get_ui_locale()), None)
         selected_index = 0
-        for index, locale in enumerate(available_locales):
+        for index, locale in enumerate(get_available_locales(get_locale_path())):
             if locale == current_locale:
                 selected_index = index + 1
             locale = Locale.parse(locale)
@@ -3743,7 +3745,8 @@ class LauncherSettingsGroupBox(QGroupBox):
             if system_locale is not None:
                 preferred_locales.append(system_locale)
 
-            negotiated_locale = Locale.negotiate(preferred_locales, available_locales)
+            negotiated_locale = Locale.negotiate(preferred_locales,
+                                                 get_available_locales(get_locale_path()))
             if negotiated_locale is None:
                 locale_to_change = 'en'
             else:
@@ -8638,13 +8641,11 @@ class ExceptionWindow(QWidget):
         self.setWindowTitle(_('Something went wrong'))
         self.setMinimumSize(350, 0)
 
-def start_ui(bdir, locale, locales, single_instance):
+def start_ui(bdir, locale, single_instance):
     global basedir
-    global available_locales
     global app_locale
 
     basedir = bdir
-    available_locales = locales
 
     app_locale = locale
     load_gettext_locale(get_locale_path(), locale)

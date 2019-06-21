@@ -132,8 +132,6 @@ if __name__ == '__main__':
 
     init_config(get_cddagl_path())
 
-    available_locales = get_available_locales(get_locale_path())
     start_ui(get_cddagl_path(),
-             get_preferred_locale(available_locales),
-             available_locales,
+             get_preferred_locale(get_available_locales(get_locale_path())),
              init_single_instance())
