@@ -51,10 +51,10 @@ def init_single_instance():
     return None
 
 
-def get_available_locales():
+def get_available_locales(locale_dir):
     available_locales = []
-    if os.path.isdir(get_locale_path()):
-        entries = scandir(get_locale_path())
+    if os.path.isdir(locale_dir):
+        entries = scandir(locale_dir)
         for entry in entries:
             if entry.is_dir():
                 available_locales.append(entry.name)
@@ -63,7 +63,7 @@ def get_available_locales():
     return available_locales
 
 
-def get_preferred_locale():
+def get_preferred_locale(available_locales):
     preferred_locales = []
 
     selected_locale = get_config_value('locale', None)
@@ -76,7 +76,7 @@ def get_preferred_locale():
     if system_locale is not None:
         preferred_locales.append(system_locale)
 
-    app_locale = Locale.negotiate(preferred_locales, get_available_locales())
+    app_locale = Locale.negotiate(preferred_locales, available_locales)
     if app_locale is None:
         app_locale = 'en'
     else:
@@ -161,4 +161,8 @@ if __name__ == '__main__':
 
     init_config(get_basedir())
 
-    start_ui(get_basedir(), get_preferred_locale(), get_available_locales(), init_single_instance())
+    available_locales = get_available_locales(get_locale_path())
+    start_ui(get_basedir(),
+             get_preferred_locale(available_locales),
+             available_locales,
+             init_single_instance())
