@@ -77,6 +77,7 @@ from cddagl.ui.views.dialogs import AboutDialog, BrowserDownloadDialog
 from cddagl.ui.views.settings import SettingsTab
 from cddagl.ui.views.backups import BackupsTab
 from cddagl.ui.views.fonts import FontsTab
+from cddagl.ui.views.tilesets import TilesetsTab
 
 import cddagl
 version = cddagl.__version__
@@ -3522,20 +3523,6 @@ class LauncherUpdateDialog(QDialog):
 
         if not from_close:
             self.close()
-
-
-class TilesetsTab(QTabWidget):
-    def __init__(self):
-        super(TilesetsTab, self).__init__()
-
-    def set_text(self):
-        pass
-
-    def get_main_window(self):
-        return self.parentWidget().parentWidget().parentWidget()
-
-    def get_main_tab(self):
-        return self.parentWidget().parentWidget().main_tab
 
 
 # Recursively delete an entire directory tree while showing progress in a
