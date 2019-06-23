@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import (
 )
 from babel.core import Locale
 
-import cddagl
 import cddagl.constants as cons
 from cddagl.constants import get_locale_path
 from cddagl.functions import clean_qt_path
@@ -18,7 +17,6 @@ from cddagl.i18n import load_gettext_locale, get_available_locales, proxy_gettex
 from cddagl.sql.functions import get_config_value, set_config_value, config_true
 from cddagl.win32 import get_ui_locale
 
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

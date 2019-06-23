@@ -12,14 +12,13 @@ from PyQt5.QtWidgets import (
     QDialog, QTextBrowser, QMessageBox, QHBoxLayout, QTextEdit
 )
 
-import cddagl
 import cddagl.constants as cons
+from cddagl import __version__ as version
 from cddagl.constants import get_resource_path
 from cddagl.functions import clean_qt_path, bitness
 from cddagl.i18n import proxy_gettext as _
 from cddagl.win32 import get_downloads_directory
 
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

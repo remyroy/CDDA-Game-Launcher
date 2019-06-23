@@ -20,8 +20,8 @@ from PyQt5.QtWidgets import (
 )
 from pywintypes import error as PyWinError
 
-import cddagl
 import cddagl.constants as cons
+from cddagl import __version__ as version
 from cddagl.functions import sizeof_fmt, delete_path
 from cddagl.i18n import proxy_gettext as _
 from cddagl.sql.functions import get_config_value, set_config_value, config_true
@@ -35,7 +35,6 @@ from cddagl.ui.views.soundpacks import SoundpacksTab
 from cddagl.ui.views.tilesets import TilesetsTab
 from cddagl.win32 import SimpleNamedPipe
 
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

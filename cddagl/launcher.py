@@ -9,18 +9,18 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 from babel.core import Locale
 
-import cddagl
 import cddagl.constants as cons
-from cddagl.constants import get_cddagl_path
-from cddagl.constants import get_locale_path, get_resource_path
-from cddagl.i18n import load_gettext_locale
-from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _, get_available_locales
+from cddagl import __version__ as version
+from cddagl.constants import get_cddagl_path, get_locale_path, get_resource_path
+from cddagl.i18n import (
+    load_gettext_locale, load_gettext_no_locale,
+    proxy_gettext as _, get_available_locales
+)
 from cddagl.sql.functions import init_config, get_config_value, config_true
 from cddagl.ui.views.dialogs import ExceptionWindow
 from cddagl.ui.views.tabbed import TabbedWindow
 from cddagl.win32 import get_ui_locale, SingleInstance, write_named_pipe
 
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

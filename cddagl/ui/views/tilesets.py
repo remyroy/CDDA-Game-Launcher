@@ -2,9 +2,6 @@ import logging
 
 from PyQt5.QtWidgets import QTabWidget
 
-import cddagl
-
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

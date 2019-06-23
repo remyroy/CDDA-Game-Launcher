@@ -28,8 +28,8 @@ from PyQt5.QtWidgets import (
 from babel.dates import format_datetime
 from pywintypes import error as PyWinError
 
-import cddagl
 import cddagl.constants as cons
+from cddagl import __version__ as version
 from cddagl.functions import (
     tryint, move_path, is_64_windows, sizeof_fmt, delete_path,
     clean_qt_path, unique, log_exception
@@ -43,7 +43,6 @@ from cddagl.win32 import (
     find_process_with_file_handle, activate_window, process_id_from_path, wait_for_pid
 )
 
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

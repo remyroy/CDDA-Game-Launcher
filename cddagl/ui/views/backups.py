@@ -18,14 +18,12 @@ from PyQt5.QtWidgets import (
 from babel.dates import format_datetime
 from babel.numbers import format_percent
 
-import cddagl
 import cddagl.constants as cons
 from cddagl.functions import sizeof_fmt, safe_filename, alphanum_key, delete_path
 from cddagl.i18n import proxy_gettext as _
 from cddagl.sql.functions import get_config_value, set_config_value, config_true
 from cddagl.win32 import find_process_with_file_handle
 
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

@@ -4,9 +4,6 @@ from PyQt5.QtCore import Qt, QSize, QRect
 from PyQt5.QtGui import QPainter, QColor, QFont
 from PyQt5.QtWidgets import QWidget, QGridLayout, QTabWidget
 
-import cddagl
-
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 

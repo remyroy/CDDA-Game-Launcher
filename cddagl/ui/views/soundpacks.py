@@ -22,14 +22,13 @@ from PyQt5.QtWidgets import (
 )
 from py7zlib import Archive7z, NoPasswordGivenError, FormatError
 
-import cddagl
 import cddagl.constants as cons
+from cddagl import __version__ as version
 from cddagl.constants import get_data_path, get_cddagl_path
 from cddagl.functions import sizeof_fmt, delete_path
 from cddagl.i18n import proxy_gettext as _
 from cddagl.ui.views.dialogs import BrowserDownloadDialog
 
-version = cddagl.__version__
 logger = logging.getLogger('cddagl')
 
 if getattr(sys, 'frozen', False):
