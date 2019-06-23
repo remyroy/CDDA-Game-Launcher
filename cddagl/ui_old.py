@@ -73,7 +73,7 @@ from cddagl.functions import (
 )
 from cddagl.ui.views.soundpacks import SoundpacksTab
 from cddagl.ui.views.mods import ModsTab
-from cddagl.ui.views.dialogs import AboutDialog, BrowserDownloadDialog
+from cddagl.ui.views.dialogs import AboutDialog, BrowserDownloadDialog, ExceptionWindow
 from cddagl.ui.views.settings import SettingsTab
 from cddagl.ui.views.backups import BackupsTab
 from cddagl.ui.views.fonts import FontsTab
@@ -3980,74 +3980,6 @@ class ProgressCopyTree(QTimer):
         else:
             self.aborted.emit()
 
-
-class ExceptionWindow(QWidget):
-    def __init__(self, app, extype, value, tb):
-        super(ExceptionWindow, self).__init__()
-
-        self.app = app
-
-        layout = QGridLayout()
-
-        information_label = QLabel()
-        information_label.setText(_('The CDDA Game Launcher just crashed. An '
-            'unhandled exception was raised. Here are the details.'))
-        layout.addWidget(information_label, 0, 0)
-        self.information_label = information_label
-
-        tb_io = StringIO()
-        traceback.print_tb(tb, file=tb_io)
-        traceback_content = html.escape(tb_io.getvalue()).replace('\n', '<br>')
-
-        text_content = QTextBrowser()
-        text_content.setReadOnly(True)
-        text_content.setOpenExternalLinks(True)
-        text_content.setHtml(_('''
-<p>CDDA Game Launcher version: {version}</p>
-<p>OS: {os} ({bitness})</p>
-<p>Type: {extype}</p>
-<p>Value: {value}</p>
-<p>Traceback:</p>
-<code>{traceback}</code>
-''').format(version=html.escape(version), extype=html.escape(str(extype)),
-    value=html.escape(str(value)), os=html.escape(platform.platform()),
-    traceback=traceback_content, bitness=html.escape(bitness())))
-
-        layout.addWidget(text_content, 1, 0)
-        self.text_content = text_content
-
-        report_url = cons.NEW_ISSUE_URL + '?' + urlencode({
-            'title': _('Unhandled exception: [Enter a title]'),
-            'body': _('''* Description: [Enter what you did and what happened]
-* Version: {version}
-* OS: {os} ({bitness})
-* Type: `{extype}`
-* Value: {value}
-* Traceback:
-```
-{traceback}
-```
-''').format(version=version, extype=str(extype), value=str(value),
-    traceback=tb_io.getvalue(), os=platform.platform(), bitness=bitness())
-        })
-
-        report_label = QLabel()
-        report_label.setOpenExternalLinks(True)
-        report_label.setText(_('Please help us make a better launcher '
-            '<a href="{url}">by reporting this issue on GitHub</a>.').format(
-                url=html.escape(report_url)))
-        layout.addWidget(report_label, 2, 0)
-        self.report_label = report_label
-
-        exit_button = QPushButton()
-        exit_button.setText(_('Exit'))
-        exit_button.clicked.connect(lambda: self.app.exit(-100))
-        layout.addWidget(exit_button, 3, 0, Qt.AlignRight)
-        self.exit_button = exit_button
-
-        self.setLayout(layout)
-        self.setWindowTitle(_('Something went wrong'))
-        self.setMinimumSize(350, 0)
 
 def start_ui(locale, single_instance):
     load_gettext_locale(get_locale_path(), locale)
