@@ -1521,6 +1521,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                 and self.exe_reading_timer.isActive()):
                 self.exe_reading_timer.stop()
 
+                main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
                 status_bar.removeWidget(self.reading_label)
                 status_bar.removeWidget(self.reading_progress_bar)
