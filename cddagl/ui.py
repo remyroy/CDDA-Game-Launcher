@@ -76,8 +76,6 @@ import cddagl
 version = cddagl.__version__
 
 
-app_locale = 'en'
-
 logger = logging.getLogger('cddagl')
 
 if getattr(sys, 'frozen', False):
@@ -1169,6 +1167,10 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             and config_true(get_config_value('use_launcher_dir', 'False'))):
             set_config_value('game_directory', directory)
 
+    @property
+    def app_locale(self):
+        return QApplication.instance().app_locale
+
     def update_version(self):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
@@ -1248,7 +1250,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                 if build is not None:
                     build_date = arrow.get(build['released_on'], 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow(),
-                        locale=app_locale)
+                        locale=self.app_locale)
                     self.build_value_label.setText(_('{build} ({time_delta})'
                         ).format(build=build['build'], time_delta=human_delta))
                     self.current_build = build['build']
@@ -1576,7 +1578,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                     build_date = arrow.get(self.build_date, 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow(),
-                        locale=app_locale)
+                        locale=self.app_locale)
                     self.build_value_label.setText(_('{build} ({time_delta})'
                         ).format(build=self.build_number,
                             time_delta=human_delta))
@@ -1657,6 +1659,10 @@ class ChangelogParsingThread(QThread):
                      for x in build_platforms
                      if platform_display_name(x) is not None)
 
+    @property
+    def app_locale(self):
+        return QApplication.instance().app_locale
+
     def run(self):
         changelog_html = StringIO()
         self.changelog_http_data.seek(0)
@@ -1693,7 +1699,7 @@ class ChangelogParsingThread(QThread):
             build_date_utc = build_date_utc.replace(tzinfo=timezone.utc)
             build_date_local = build_date_utc.astimezone(tz=None)
             build_date_text = format_datetime(build_date_local,
-                format='long', locale=app_locale)
+                format='long', locale=self.app_locale)
 
             build_changes = build_data.findall(r'.//changeSet/item/msg')
             build_changes = map(lambda x: html.escape(x.text.strip(), True),
@@ -3093,6 +3099,10 @@ class UpdateGroupBox(QGroupBox):
         self.http_reply.readyRead.connect(self.lb_http_ready_read)
         self.http_reply.downloadProgress.connect(self.lb_dl_progress)
 
+    @property
+    def app_locale(self):
+        return QApplication.instance().app_locale
+
     def lb_http_finished(self):
         main_window = self.get_main_window()
 
@@ -3164,7 +3174,7 @@ class UpdateGroupBox(QGroupBox):
             if reset_dt is not None:
                 reset_dt_local = reset_dt.astimezone(tz=None)
                 reset_dt_display = format_datetime(reset_dt_local,
-                    format='long', locale=app_locale)
+                    format='long', locale=self.app_locale)
 
             self.refresh_warning_label.show()
             self.refresh_warning_label.setToolTip(_('You have {remaining} '
@@ -3258,7 +3268,7 @@ class UpdateGroupBox(QGroupBox):
                 if build['date'] is not None:
                     build_date = arrow.get(build['date'], 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow(),
-                        locale=app_locale)
+                        locale=self.app_locale)
                 else:
                     human_delta = _('Unknown')
 
@@ -3623,6 +3633,14 @@ class LauncherSettingsGroupBox(QGroupBox):
                 'for new version of the CDDA Game Launcher on launch'))
         self.setTitle(_('Launcher'))
 
+    @property
+    def app_locale(self):
+        return QApplication.instance().app_locale
+
+    @app_locale.setter
+    def app_locale(self, locale):
+        QApplication.instance().app_locale = locale
+
     def locale_combo_changed(self, index):
         selected_locale = self.locale_combo.currentData()
         locale_to_change = str(selected_locale)
@@ -3642,8 +3660,7 @@ class LauncherSettingsGroupBox(QGroupBox):
             else:
                 locale_to_change = str(negotiated_locale)
 
-        global app_locale
-        app_locale = locale_to_change
+        self.app_locale = locale_to_change
         load_gettext_locale(get_locale_path(), locale_to_change)
 
         main_app = QApplication.instance()
@@ -6426,6 +6443,10 @@ class BackupsTab(QTabWidget):
         for i in range(self.backups_table.rowCount()):
             self.backups_table.removeRow(0)
 
+    @property
+    def app_locale(self):
+        return QApplication.instance().app_locale
+
     def update_backups_table(self):
         selection_model = self.backups_table.selectionModel()
         if selection_model is None or not selection_model.hasSelection():
@@ -6498,10 +6519,10 @@ class BackupsTab(QTabWidget):
                     modified_date = datetime.fromtimestamp(
                         entry.stat().st_mtime)
                     formated_date = format_datetime(modified_date,
-                        format='short', locale=app_locale)
+                        format='short', locale=self.app_locale)
                     arrow_date = arrow.get(entry.stat().st_mtime)
                     human_delta = arrow_date.humanize(arrow.utcnow(),
-                        locale=app_locale)
+                        locale=self.app_locale)
 
                     row_index = self.backups_table.rowCount()
                     self.backups_table.insertRow(row_index)
@@ -6515,7 +6536,7 @@ class BackupsTab(QTabWidget):
                             uncompressed_size)
                     rounded_ratio = round(compression_ratio, 4)
                     ratio_percent = format_percent(rounded_ratio,
-                        format='#.##%', locale=app_locale)
+                        format='#.##%', locale=self.app_locale)
 
                     if self.previous_selection is not None:
                         if entry.path == self.previous_selection:
@@ -8532,9 +8553,6 @@ class ExceptionWindow(QWidget):
         self.setMinimumSize(350, 0)
 
 def start_ui(locale, single_instance):
-    global app_locale
-
-    app_locale = locale
     load_gettext_locale(get_locale_path(), locale)
 
     main_app = QApplication(sys.argv)
@@ -8545,6 +8563,7 @@ def start_ui(locale, single_instance):
 
     main_app.main_win = main_win
     main_app.single_instance = single_instance
+    main_app.app_locale = locale
     sys.exit(main_app.exec_())
 
 def ui_exception(extype, value, tb):
