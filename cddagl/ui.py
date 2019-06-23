@@ -76,6 +76,9 @@ app_locale = 'en'
 
 logger = logging.getLogger('cddagl')
 
+if getattr(sys, 'frozen', False):
+    rarfile.UNRAR_TOOL = get_cddagl_path('UnRAR.exe')
+
 
 def log_exception(extype, value, tb):
     tb_io = StringIO()
@@ -8645,9 +8648,6 @@ def start_ui(locale, single_instance):
 
     app_locale = locale
     load_gettext_locale(get_locale_path(), locale)
-
-    if getattr(sys, 'frozen', False):
-        rarfile.UNRAR_TOOL = get_cddagl_path('UnRAR.exe')
 
     main_app = QApplication(sys.argv)
     main_app.setWindowIcon(QIcon(get_resource_path('launcher.ico')))
