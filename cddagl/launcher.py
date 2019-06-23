@@ -13,7 +13,7 @@ import cddagl.constants as cons
 from cddagl.constants import get_cddagl_path, get_locale_path
 from cddagl.i18n import load_gettext_no_locale, proxy_gettext as _, get_available_locales
 from cddagl.sql.functions import init_config, get_config_value, config_true
-from cddagl.ui import start_ui, ui_exception
+from cddagl.ui_old import start_ui, ui_exception
 
 from cddagl.win32 import get_ui_locale, SingleInstance, write_named_pipe
 
