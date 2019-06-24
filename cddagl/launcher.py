@@ -10,7 +10,8 @@ from PyQt5.QtWidgets import QApplication
 from babel.core import Locale
 
 ### to avoid import errors when not setting PYTHONPATH
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+if getattr(sys, 'frozen', False):
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import cddagl.constants as cons
 from cddagl import __version__ as version
