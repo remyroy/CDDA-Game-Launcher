@@ -164,7 +164,7 @@ def init_exception_catcher():
     sys.excepthook = handle_exception
 
 
-if __name__ == '__main__':
+def run_cddagl():
     load_gettext_no_locale()
     init_logging()
     init_exception_catcher()
@@ -173,3 +173,7 @@ if __name__ == '__main__':
 
     start_ui(get_preferred_locale(get_available_locales(get_locale_path())),
              init_single_instance())
+
+
+if __name__ == '__main__':
+    run_cddagl()
