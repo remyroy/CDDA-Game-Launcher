@@ -1,44 +1,32 @@
-import sys
-import os
-import traceback
-
 import logging
+import os
+import sys
+import traceback
+from io import StringIO
 from logging.handlers import RotatingFileHandler
 
-import gettext
-_ = gettext.gettext
-
-from io import StringIO
-
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication
 from babel.core import Locale
 
-try:
-    from os import scandir
-except ImportError:
-    from scandir import scandir
+### to avoid import errors when not setting PYTHONPATH
+if not getattr(sys, 'frozen', False):
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-if getattr(sys, 'frozen', False):
-    # we are running in a bundle
-    basedir = sys._MEIPASS
-else:
-    # we are running in a normal Python environment
-    basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    sys.path.append(basedir)
-
-from cddagl.config import init_config, get_config_value, config_true
-from cddagl.ui import start_ui, ui_exception
-
+import cddagl.constants as cons
+from cddagl import __version__ as version
+from cddagl.constants import get_cddagl_path, get_locale_path, get_resource_path
+from cddagl.i18n import (
+    load_gettext_locale, load_gettext_no_locale,
+    proxy_gettext as _, get_available_locales
+)
+from cddagl.sql.functions import init_config, get_config_value, config_true
+from cddagl.ui.views.dialogs import ExceptionWindow
+from cddagl.ui.views.tabbed import TabbedWindow
 from cddagl.win32 import get_ui_locale, SingleInstance, write_named_pipe
 
-import cddagl
-version = cddagl.__version__
+logger = logging.getLogger('cddagl')
 
-
-MAX_LOG_SIZE = 1024 * 1024
-MAX_LOG_FILES = 5
-
-available_locales = []
-app_locale = None
 
 def init_single_instance():
     if not config_true(get_config_value('allow_multiple_instances', 'False')):
@@ -52,8 +40,8 @@ def init_single_instance():
 
     return None
 
-def init_gettext():
-    locale_dir = os.path.join(basedir, 'cddagl', 'locale')
+
+def get_preferred_locale(available_locales):
     preferred_locales = []
 
     selected_locale = get_config_value('locale', None)
@@ -66,29 +54,14 @@ def init_gettext():
     if system_locale is not None:
         preferred_locales.append(system_locale)
 
-    if os.path.isdir(locale_dir):
-        entries = scandir(locale_dir)
-        for entry in entries:
-            if entry.is_dir():
-                available_locales.append(entry.name)
-
-    available_locales.sort(key=lambda x: 0 if x == 'en' else 1)
-
     app_locale = Locale.negotiate(preferred_locales, available_locales)
     if app_locale is None:
         app_locale = 'en'
     else:
         app_locale = str(app_locale)
 
-    try:
-        t = gettext.translation('cddagl', localedir=locale_dir,
-            languages=[app_locale])
-        global _
-        _ = t.gettext
-    except FileNotFoundError as e:
-        pass
-
     return app_locale
+
 
 def init_logging():
     logger = logging.getLogger('cddagl')
@@ -104,10 +77,9 @@ def init_logging():
 
     logging_file = os.path.join(logging_dir, 'app.log')
 
-    handler = RotatingFileHandler(logging_file, maxBytes=MAX_LOG_SIZE,
-        backupCount=MAX_LOG_FILES, encoding='utf8')
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler = RotatingFileHandler(logging_file, encoding='utf8',
+                                  maxBytes=cons.MAX_LOG_SIZE, backupCount=cons.MAX_LOG_FILES)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
 
     logger.addHandler(handler)
@@ -136,8 +108,8 @@ def init_logging():
         sys.stdout = LoggerWriter(logger, logging.INFO, sys._stdout)
         sys.stderr = LoggerWriter(logger, logging.ERROR, sys._stderr)'''
 
-    logger.info(_('CDDA Game Launcher started: {version}').format(
-        version=version))
+    logger.info(_('CDDA Game Launcher started: {version}').format(version=version))
+
 
 def handle_exception(extype, value, tb):
     logger = logging.getLogger('cddagl')
@@ -145,23 +117,64 @@ def handle_exception(extype, value, tb):
     tb_io = StringIO()
     traceback.print_tb(tb, file=tb_io)
 
-    logger.critical(_('Global error:\nLauncher version: {version}\nType: '
-        '{extype}\nValue: {value}\nTraceback:\n{traceback}').format(
-            version=version, extype=str(extype), value=str(value),
-            traceback=tb_io.getvalue()))
-
+    logger.critical(
+        _('Global error:\n'
+          'Launcher version: {version}\n'
+          'Type: {extype}\n'
+          'Value: {value}\n'
+          'Traceback:\n{traceback}')
+        .format(version=version, extype=str(extype), value=str(value),traceback=tb_io.getvalue())
+    )
     ui_exception(extype, value, tb)
+
+
+def start_ui(locale, single_instance):
+    load_gettext_locale(get_locale_path(), locale)
+
+    main_app = QApplication(sys.argv)
+    main_app.setWindowIcon(QIcon(get_resource_path('launcher.ico')))
+
+    main_win = TabbedWindow('CDDA Game Launcher')
+    main_win.show()
+
+    main_app.main_win = main_win
+    main_app.single_instance = single_instance
+    main_app.app_locale = locale
+    sys.exit(main_app.exec_())
+
+
+def ui_exception(extype, value, tb):
+    main_app = QApplication.instance()
+
+    if main_app is not None:
+        main_app_still_up = True
+        main_app.closeAllWindows()
+    else:
+        main_app_still_up = False
+        main_app = QApplication(sys.argv)
+
+    ex_win = ExceptionWindow(main_app, extype, value, tb)
+    ex_win.show()
+    main_app.ex_win = ex_win
+
+    if not main_app_still_up:
+        sys.exit(main_app.exec_())
+
 
 def init_exception_catcher():
     sys.excepthook = handle_exception
 
-if __name__ == '__main__':
+
+def run_cddagl():
+    load_gettext_no_locale()
     init_logging()
     init_exception_catcher()
 
-    init_config(basedir)
-    single_instance = init_single_instance()
+    init_config(get_cddagl_path())
 
-    app_locale = init_gettext()
+    start_ui(get_preferred_locale(get_available_locales(get_locale_path())),
+             init_single_instance())
 
-    start_ui(basedir, app_locale, available_locales, single_instance)
+
+if __name__ == '__main__':
+    run_cddagl()
