@@ -140,7 +140,14 @@ begin
     if iMsgBoxAnswer = IDYES then
     begin
       if UnInstallOldVersion() <> 0 then
-        Result := 'Failed to uninstall existing installation of {#SetupSetting("AppName")}!';
+      begin
+        iMsgBoxAnswer := MsgBox('Failed to uninstall existing installation!' + #13#10
+                                + 'Try to install anyways?' + #13#10
+                                + '(This may work, specially if you manually delete installed files)',
+                                mbInformation, MB_YESNO);
+        if iMsgBoxAnswer = IDNO then
+          Result := 'Failed to uninstall existing installation of {#SetupSetting("AppName")}!';
+      end
     end
     else
       Result := 'Please, uninstall existing installation of {#SetupSetting("AppName")} before running this setup!';
