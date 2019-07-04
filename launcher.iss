@@ -63,6 +63,10 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
 
+[Dirs]
+Name: "{app}"; Flags: uninsalwaysuninstall;
+
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
@@ -152,13 +156,4 @@ begin
     else
       Result := 'Please, uninstall existing installation of {#SetupSetting("AppName")} before running this setup!';
   end;
-end;
-
-
-//// Uninstall seems to delete all files but leaves empty directories behind
-//// Makes sure it deletes all empty directories after uninstall
-procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-begin
-  if CurUninstallStep = usPostUninstall then
-    DelTree(ExpandConstant('{app}'), True, False, True);
 end;
