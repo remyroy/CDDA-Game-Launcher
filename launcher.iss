@@ -140,7 +140,9 @@ begin
 
   if IsInstalled() then
   begin
-    iMsgBoxAnswer := MsgBox('{#SetupSetting("AppName")} is already installed. Uninstall it before proceeding?', mbInformation, MB_YESNO);
+    iMsgBoxAnswer := MsgBox('{#SetupSetting("AppName")} is already installed.' + #13#10
+                            + 'Uninstall it before proceeding?',
+                            mbInformation, MB_YESNO);
     if iMsgBoxAnswer = IDYES then
     begin
       if UnInstallOldVersion() <> 0 then
