@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<config xmlns="http://zanata.org/namespace/config/">
+
+  <url>https://translate.zanata.org/</url>
+  <project>cdda-launcher-test</project>
+  <project-version>main</project-version>
+  <project-type>gettext</project-type>
+
+  <src-dir>cddagl\locale</src-dir>
+  <trans-dir>cddagl\locale</trans-dir>
+
+  <rules>
+    <rule pattern="**/*.pot">{path}/{locale}/LC_MESSAGES/{filename}.po</rule>
+  </rules>
+
+</config>
