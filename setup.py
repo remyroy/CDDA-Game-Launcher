@@ -169,10 +169,10 @@ class ExtractUpdateMessages(Command):
         pass
 
     def run(self):
-        call('python setup.py extract_messages -o cddagl\locale\messages.pot '
+        call('python setup.py extract_messages -o cddagl\locale\cddagl.pot '
             '-F cddagl\locale\mapping.cfg')
 
-        call('python setup.py update_catalog -i cddagl\locale\messages.pot -d '
+        call('python setup.py update_catalog -i cddagl\locale\cddagl.pot -d '
             'cddagl\locale -D cddagl')
 
 
