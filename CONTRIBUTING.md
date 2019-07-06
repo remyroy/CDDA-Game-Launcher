@@ -22,6 +22,16 @@ requests](#pull-requests), but please respect the following restrictions:
   respect the opinions of others.
 
 
+<a name="translations"></a>
+## Translations
+
+CDDA Game Launcher translations are hosted in Zanata. Zanata is a service
+with a straightforward web interface to let contributors help with untranslated text.
+
+Anyone is welcome to create or improve translations by registering in Zanata and
+opening [our project's page in Zanata](https://translate.zanata.org/iteration/view/cdda-launcher-test/main)
+
+
 <a name="bugs"></a>
 ## Bug reports
 
