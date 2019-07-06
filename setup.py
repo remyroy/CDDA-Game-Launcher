@@ -216,14 +216,16 @@ class ZanataPull(Command):
 
 
 class ZanataPush(Command):
-    description = 'Push translation file to Zanata service'
+    description = 'Push untranslated project strings to Zanata service'
     user_options = [
         ('zanata=', None, 'Specify the path to zanata-cli.'),
+        ('push-translations', None, 'Push translations too, this will overwrite translations!'),
     ]
 
     def initialize_options(self):
         ### by default, we expect it to find already in PATH
         self.zanata = r'zanata-cli.bat'
+        self.push_translations = False
 
     def finalize_options(self):
         pass
@@ -233,7 +235,10 @@ class ZanataPush(Command):
         os.chdir(get_setup_dir())
         ### Workaround a bug of zanata-cli that corrupts unicode characters.
         os.environ['JAVA_TOOL_OPTIONS'] = '-Dfile.encoding=UTF8'
-        call([self.zanata, 'push', '--batch-mode'])
+        zanata_push = [self.zanata, 'push', '--batch-mode']
+        if self.push_translations:
+            zanata_push.extend(('--push-type', 'both', '--merge-type', 'import'))
+        call(zanata_push)
 
 
 class ZanataExtractPush(ExtendedCommand):
