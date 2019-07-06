@@ -1,22 +1,15 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
-from distutils.cmd import Command
-
-from babel.messages import frontend as babel
-
-from subprocess import call, check_output, CalledProcessError
-
 import os
+import os.path
 import pathlib
 import winreg
+from distutils.cmd import Command
+from distutils.core import setup
+from os import scandir
+from subprocess import call, check_output, CalledProcessError, DEVNULL
 
-import os.path
-
-try:
-    from os import scandir
-except ImportError:
-    from scandir import scandir
+from babel.messages import frontend as babel
 
 
 def get_setup_dir():
@@ -35,11 +28,24 @@ def get_version():
         return version_file.read().strip()
 
 
-class FreezeWithPyInstaller(Command):
+class ExtendedCommand(Command):
+    def run_other_command(self, command_name, **kwargs):
+        """Runs another command with specified parameters."""
+        command = self.reinitialize_command(command_name)
+
+        vars(command).update(**kwargs)
+        command.ensure_finalized()
+
+        self.announce(f'running {command_name}', 2)
+        command.run()
+
+        return command
+
+
+class FreezeWithPyInstaller(ExtendedCommand):
     description = 'Build CDDAGL with PyInstaller'
     user_options = [
-        ('debug=', None,
-            'Specify if we are using a debug build with PyInstaller.'),
+        ('debug=', None, 'Specify if we are using a debug build with PyInstaller.')
     ]
 
     def initialize_options(self):
@@ -49,10 +55,8 @@ class FreezeWithPyInstaller(Command):
         pass
 
     def run(self):
-        window_mode = '-w' # -w for no console and -c for console
-
-        if bool(self.debug):
-            window_mode = '-c'
+        # -w for no console and -c for console
+        window_mode = '-c' if bool(self.debug) else '-w'
 
         makespec_call = ['pyi-makespec', '-D', window_mode, '--noupx',
             '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
@@ -62,13 +66,13 @@ class FreezeWithPyInstaller(Command):
         windowskit_path = None
         try:
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                r'SOFTWARE\Microsoft\Windows Kits\Installed Roots',
-                access=winreg.KEY_READ | winreg.KEY_WOW64_32KEY)
+                                 r'SOFTWARE\Microsoft\Windows Kits\Installed Roots',
+                                 access=winreg.KEY_READ | winreg.KEY_WOW64_32KEY)
             value = winreg.QueryValueEx(key, 'KitsRoot10')
             windowskit_path = value[0]
             winreg.CloseKey(key)
         except OSError:
-            windowskit_path = None
+            pass
 
         if windowskit_path is not None:
             ucrt_path = windowskit_path + 'Redist\\ucrt\\DLLs\\x86\\'
@@ -86,23 +90,21 @@ class FreezeWithPyInstaller(Command):
 
         # Let's find and add unrar if available
         try:
-            unrar_path = check_output(['where', 'unrar.exe']).strip().decode(
-                'cp437')
+            unrar_path = check_output(['where', 'unrar.exe'], stderr=DEVNULL)
+            unrar_path = unrar_path.strip().decode('cp437')
             added_files.append((unrar_path, '.'))
         except CalledProcessError:
-            pass
+            print("'unrar.exe' couldn't be found.")
 
         # Add mo files for localization
         locale_dir = os.path.join('cddagl', 'locale')
 
-        call('python setup.py compile_catalog -D cddagl -d {locale_dir}'.format(
-            locale_dir=locale_dir))
+        self.run_other_command('compile_catalog', domain='cddagl', directory=locale_dir)
 
         if os.path.isdir(locale_dir):
             for entry in scandir(locale_dir):
                 if entry.is_dir():
-                    mo_path = os.path.join(entry.path, 'LC_MESSAGES',
-                        'cddagl.mo')
+                    mo_path = os.path.join(entry.path, 'LC_MESSAGES', 'cddagl.mo')
                     if os.path.isfile(mo_path):
                         mo_dir = os.path.dirname(mo_path).replace('\\', '/')
                         mo_path = mo_path.replace('\\', '/')
@@ -132,16 +134,16 @@ class FreezeWithPyInstaller(Command):
             pyinstaller_call.append('--clean')
             pyinstaller_call.extend(('--log-level', 'DEBUG'))
 
+        pyinstaller_call.append('--noconfirm')
         pyinstaller_call.append('launcher.spec')
 
         call(pyinstaller_call)
 
 
-class CreateInnoSetupInstaller(Command):
+class CreateInnoSetupInstaller(ExtendedCommand):
     description = 'Creates a Windows Installer for the project'
     user_options = [
-        ('compiler=', None,
-            'Specify the path to Inno Setup Compiler (Compil32.exe).'),
+        ('compiler=', None, 'Specify the path to Inno Setup Compiler (Compil32.exe).'),
     ]
 
     def initialize_options(self):
@@ -154,42 +156,125 @@ class CreateInnoSetupInstaller(Command):
     def run(self):
         #### Make sure we are running Inno Setup from the project directory
         os.chdir(get_setup_dir())
-        freeze_cmd = FreezeWithPyInstaller(self.distribution)
-        freeze_cmd.run()
+        self.run_other_command('freeze')
         call([self.compiler, '/cc', 'launcher.iss'])
 
 
-class ExtractUpdateMessages(Command):
-    user_options = []
+class ExtractUpdateMessages(ExtendedCommand):
+    description = 'Extract new messages that require translation.'
+    user_options = [
+        ('output_pot_file=', None, 'path to store the generated .pot file.'),
+        ('catalog_mapping=', None, 'path to the mapping configuration file.'),
+        ('catalog_dir=', None, 'output directory for generated catalogs.'),
+        ('catalog_domain=', None, 'domain of PO files.')
+    ]
 
     def initialize_options(self):
-        pass
+        self.output_pot_file = r'cddagl\locale\cddagl.pot'
+        self.catalog_mapping = r'cddagl\locale\mapping.cfg'
+        self.catalog_dir = r'cddagl\locale'
+        self.catalog_domain = 'cddagl'
 
     def finalize_options(self):
         pass
 
     def run(self):
-        call('python setup.py extract_messages -o cddagl\locale\cddagl.pot '
-            '-F cddagl\locale\mapping.cfg')
+        self.run_other_command('extract_messages',
+                               output_file=self.output_pot_file,
+                               mapping_file=self.catalog_mapping)
+        self.run_other_command('update_catalog',
+                               input_file=self.output_pot_file,
+                               output_dir=self.catalog_dir,
+                               domain=self.catalog_domain)
 
-        call('python setup.py update_catalog -i cddagl\locale\cddagl.pot -d '
-            'cddagl\locale -D cddagl')
+
+class ZanataPull(Command):
+    description = 'Download translated messages from Zanata service.'
+    user_options = [
+        ('zanata=', None, 'Specify the path to zanata-cli.'),
+        ('approved-only', None, 'Download only approved translations.'),
+    ]
+
+    def initialize_options(self):
+        ### by default, we expect it to find already in PATH
+        self.zanata = r'zanata-cli.bat'
+        self.approved_only = False
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        ### Make sure we are running the commands from project directory
+        os.chdir(get_setup_dir())
+        ### Workaround a bug of zanata-cli that corrupts unicode characters.
+        os.environ['JAVA_TOOL_OPTIONS'] = '-Dfile.encoding=UTF8'
+
+        zanata_pull = [self.zanata, 'pull', '--batch-mode']
+        if self.approved_only:
+            zanata_pull.append('--approved-only')
+        call(zanata_pull)
 
 
-setup(name='cddagl',
-      version=get_version(),
-      description=(
-          'A Cataclysm: Dark Days Ahead launcher with additional features'),
-      author='Rémy Roy',
-      author_email='remyroy@remyroy.com',
-      url='https://github.com/remyroy/CDDA-Game-Launcher',
-      packages=['cddagl'],
-      package_data={'cddagl': ['VERSION']},
-      cmdclass={'freeze': FreezeWithPyInstaller,
+class ZanataPush(Command):
+    description = 'Push translation file to Zanata service'
+    user_options = [
+        ('zanata=', None, 'Specify the path to zanata-cli.'),
+    ]
+
+    def initialize_options(self):
+        ### by default, we expect it to find already in PATH
+        self.zanata = r'zanata-cli.bat'
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        ### Make sure we are running the commands from project directory
+        os.chdir(get_setup_dir())
+        ### Workaround a bug of zanata-cli that corrupts unicode characters.
+        os.environ['JAVA_TOOL_OPTIONS'] = '-Dfile.encoding=UTF8'
+        call([self.zanata, 'push', '--batch-mode'])
+
+
+class ZanataExtractPush(ExtendedCommand):
+    description = 'Extract new translation messages and push translation file to Zanata service.'
+    user_options = [
+        ('zanata=', None, 'Specify the path to zanata-cli.'),
+    ]
+
+    def initialize_options(self):
+        ### by default, we expect it to find already in PATH
+        self.zanata = r'zanata-cli.bat'
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        ### Make sure we are running the commands from project directory
+        os.chdir(get_setup_dir())
+        self.run_other_command('exup_messages')
+        self.run_other_command('zanata_push', zanata=self.zanata)
+
+
+setup(
+    name='cddagl',
+    version=get_version(),
+    description=('A Cataclysm: Dark Days Ahead launcher with additional features'),
+    author='Rémy Roy',
+    author_email='remyroy@remyroy.com',
+    url='https://github.com/remyroy/CDDA-Game-Launcher',
+    packages=['cddagl'],
+    package_data={'cddagl': ['VERSION']},
+    cmdclass={
+        'freeze': FreezeWithPyInstaller,
         'create_installer': CreateInnoSetupInstaller,
         'exup_messages': ExtractUpdateMessages,
         'compile_catalog': babel.compile_catalog,
         'extract_messages': babel.extract_messages,
         'init_catalog': babel.init_catalog,
-        'update_catalog': babel.update_catalog},
+        'update_catalog': babel.update_catalog,
+        'zanata_push': ZanataPush,
+        'zanata_pull': ZanataPull,
+        'zanata_expush': ZanataExtractPush,
+    },
 )
