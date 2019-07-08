@@ -63,6 +63,10 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
 
+[Dirs]
+Name: "{app}"; Flags: uninsalwaysuninstall;
+
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
@@ -136,22 +140,22 @@ begin
 
   if IsInstalled() then
   begin
-    iMsgBoxAnswer := MsgBox('{#SetupSetting("AppName")} is already installed. Uninstall it before proceeding?', mbInformation, MB_YESNO);
+    iMsgBoxAnswer := MsgBox('{#SetupSetting("AppName")} is already installed.' + #13#10
+                            + 'Uninstall it before proceeding?',
+                            mbInformation, MB_YESNO);
     if iMsgBoxAnswer = IDYES then
     begin
       if UnInstallOldVersion() <> 0 then
-        Result := 'Failed to uninstall existing installation of {#SetupSetting("AppName")}!';
+      begin
+        iMsgBoxAnswer := MsgBox('Failed to uninstall existing installation!' + #13#10
+                                + 'Try to reinstall anyways?' + #13#10
+                                + '(This has a good chance to fix it.)',
+                                mbInformation, MB_YESNO);
+        if iMsgBoxAnswer = IDNO then
+          Result := 'Failed to uninstall existing installation of {#SetupSetting("AppName")}!';
+      end
     end
     else
       Result := 'Please, uninstall existing installation of {#SetupSetting("AppName")} before running this setup!';
   end;
-end;
-
-
-//// Uninstall seems to delete all files but leaves empty directories behind
-//// Makes sure it deletes all empty directories after uninstall
-procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-begin
-  if CurUninstallStep = usPostUninstall then
-    DelTree(ExpandConstant('{app}'), True, False, True);
 end;
