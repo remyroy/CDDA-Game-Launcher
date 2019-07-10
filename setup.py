@@ -237,7 +237,7 @@ class ZanataPush(Command):
         os.environ['JAVA_TOOL_OPTIONS'] = '-Dfile.encoding=UTF8'
         zanata_push = [self.zanata, 'push', '--batch-mode']
         if self.push_translations:
-            zanata_push.extend(('--push-type', 'both', '--merge-type', 'import'))
+            zanata_push.extend(('--push-type', 'both'))
         call(zanata_push)
 
 
