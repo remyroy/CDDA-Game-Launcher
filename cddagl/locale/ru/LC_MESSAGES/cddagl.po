@@ -723,20 +723,6 @@ msgstr "Доступно новое обновление"
 msgid "Not found"
 msgstr "Не найдено"
 
-#: cddagl/ui/views/main.py:922
-msgid "World"
-msgid_plural "Worlds"
-msgstr[0] "Мир"
-msgstr[1] "Мира"
-msgstr[2] "Миров"
-
-#: cddagl/ui/views/main.py:924
-msgid "Character"
-msgid_plural "Characters"
-msgstr[0] "Персонаж"
-msgstr[1] "Персонажа"
-msgstr[2] "Персонажей"
-
 #: cddagl/ui/views/main.py:927
 msgid "{world_count} {worlds} - {character_count} {characters} ({size})"
 msgstr "{world_count} {worlds} - {character_count} {characters} ({size})"
@@ -1007,13 +993,6 @@ msgstr ""
 #, python-format
 msgid "Source path '%s' is not a directory"
 msgstr "Указанный путь '%s' не является директорией"
-
-#: cddagl/ui/views/main.py:2945 cddagl/ui/views/main.py:3194
-msgid "file"
-msgid_plural "files"
-msgstr[0] "файл"
-msgstr[1] "файла"
-msgstr[2] "файлов"
 
 #: cddagl/ui/views/main.py:2947
 msgid "Analysing {name} - Found {file_count} {files}"
