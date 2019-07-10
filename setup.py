@@ -208,9 +208,9 @@ class TransifexPull(Command):
 
         args = ['--no-interactive', '--all']
         if self.reviewed_only:
-            args.extend(['--mode', 'onlytranslated'])
-        else:
             args.extend(['--mode', 'onlyreviewed'])
+        else:
+            args.extend(['--mode', 'onlytranslated'])
 
         txclib.utils.DISABLE_COLORS = True
         txclib.commands.cmd_pull(args, get_setup_dir())
