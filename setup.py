@@ -258,7 +258,7 @@ class ZanataExtractPush(ExtendedCommand):
         ### Make sure we are running the commands from project directory
         os.chdir(get_setup_dir())
         self.run_other_command('exup_messages')
-        self.run_other_command('zanata_push', zanata=self.zanata)
+        self.run_other_command('translation_push', zanata=self.zanata)
 
 
 setup(
@@ -278,8 +278,8 @@ setup(
         'extract_messages': babel.extract_messages,
         'init_catalog': babel.init_catalog,
         'update_catalog': babel.update_catalog,
-        'zanata_push': ZanataPush,
-        'zanata_pull': ZanataPull,
-        'zanata_expush': ZanataExtractPush,
+        'translation_push': ZanataPush,
+        'translation_expush': ZanataExtractPush,
+        'translation_pull': ZanataPull,
     },
 )
