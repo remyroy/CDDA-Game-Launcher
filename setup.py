@@ -206,7 +206,7 @@ class TransifexPull(Command):
         ### Make sure we are running the commands from project directory
         os.chdir(get_setup_dir())
 
-        args = ['--no-interactive', '--all']
+        args = ['--no-interactive', '--all', '--force']
         if self.reviewed_only:
             args.extend(['--mode', 'onlyreviewed'])
         else:
@@ -232,7 +232,7 @@ class TransifexPush(Command):
         ### Make sure we are running the commands from project directory
         os.chdir(get_setup_dir())
 
-        args = ['--no-interactive', '--source']
+        args = ['--no-interactive', '--source', '--force']
         if self.push_translations:
             args.append('--translations')
 
