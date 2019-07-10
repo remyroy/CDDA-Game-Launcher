@@ -9,6 +9,8 @@ from distutils.core import setup
 from os import scandir
 from subprocess import call, check_output, CalledProcessError, DEVNULL
 
+import txclib.commands
+import txclib.utils
 from babel.messages import frontend as babel
 
 
@@ -188,6 +190,73 @@ class ExtractUpdateMessages(ExtendedCommand):
                                domain=self.catalog_domain)
 
 
+class TransifexPull(Command):
+    description = 'Download translated strings from Transifex service.'
+    user_options = [
+        ('reviewed-only', None, 'Download only reviewed translations.'),
+    ]
+
+    def initialize_options(self):
+        self.reviewed_only = False
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        ### Make sure we are running the commands from project directory
+        os.chdir(get_setup_dir())
+
+        args = ['--no-interactive', '--all']
+        if self.reviewed_only:
+            args.extend(['--mode', 'onlytranslated'])
+        else:
+            args.extend(['--mode', 'onlyreviewed'])
+
+        txclib.utils.DISABLE_COLORS = True
+        txclib.commands.cmd_pull(args, get_setup_dir())
+
+
+class TransifexPush(Command):
+    description = 'Push untranslated project strings to Transifex service.'
+    user_options = [
+        ('push-translations', None, 'Push translations too, this will try to merge translations.'),
+    ]
+
+    def initialize_options(self):
+        self.push_translations = False
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        ### Make sure we are running the commands from project directory
+        os.chdir(get_setup_dir())
+
+        args = ['--no-interactive', '--source']
+        if self.push_translations:
+            args.append('--translations')
+
+        txclib.utils.DISABLE_COLORS = True
+        txclib.commands.cmd_push(args, get_setup_dir())
+
+
+class TransifexExtractPush(ExtendedCommand):
+    description = 'Extract all translatable strings and push them to Transifex service.'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        ### Make sure we are running the commands from project directory
+        os.chdir(get_setup_dir())
+        self.run_other_command('exup_messages')
+        self.run_other_command('translation_push')
+
+
 class ZanataPull(Command):
     description = 'Download translated strings from Zanata service.'
     user_options = [
@@ -278,8 +347,8 @@ setup(
         'extract_messages': babel.extract_messages,
         'init_catalog': babel.init_catalog,
         'update_catalog': babel.update_catalog,
-        'translation_push': ZanataPush,
-        'translation_expush': ZanataExtractPush,
-        'translation_pull': ZanataPull,
+        'translation_push': TransifexPush,
+        'translation_expush': TransifexExtractPush,
+        'translation_pull': TransifexPull,
     },
 )
