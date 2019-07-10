@@ -161,7 +161,7 @@ class CreateInnoSetupInstaller(ExtendedCommand):
 
 
 class ExtractUpdateMessages(ExtendedCommand):
-    description = 'Extract new messages that require translation.'
+    description = 'Extract all project strings that require translation.'
     user_options = [
         ('output_pot_file=', None, 'path to store the generated .pot file.'),
         ('catalog_mapping=', None, 'path to the mapping configuration file.'),
@@ -189,7 +189,7 @@ class ExtractUpdateMessages(ExtendedCommand):
 
 
 class ZanataPull(Command):
-    description = 'Download translated messages from Zanata service.'
+    description = 'Download translated strings from Zanata service.'
     user_options = [
         ('zanata=', None, 'Specify the path to zanata-cli.'),
         ('approved-only', None, 'Download only approved translations.'),
@@ -216,10 +216,10 @@ class ZanataPull(Command):
 
 
 class ZanataPush(Command):
-    description = 'Push untranslated project strings to Zanata service'
+    description = 'Push untranslated project strings to Zanata service.'
     user_options = [
         ('zanata=', None, 'Specify the path to zanata-cli.'),
-        ('push-translations', None, 'Push translations too, this will overwrite translations!'),
+        ('push-translations', None, 'Push translations too, this will try to merge translations.'),
     ]
 
     def initialize_options(self):
@@ -242,7 +242,7 @@ class ZanataPush(Command):
 
 
 class ZanataExtractPush(ExtendedCommand):
-    description = 'Extract new translation messages and push translation file to Zanata service.'
+    description = 'Extract all translatable strings and push them to Zanata service.'
     user_options = [
         ('zanata=', None, 'Specify the path to zanata-cli.'),
     ]
