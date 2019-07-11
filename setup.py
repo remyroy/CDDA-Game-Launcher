@@ -162,7 +162,7 @@ class CreateInnoSetupInstaller(ExtendedCommand):
         call([self.compiler, '/cc', 'launcher.iss'])
 
 
-class TransifexPull(Command):
+class TransifexPull(ExtendedCommand):
     description = 'Download translated strings from Transifex service.'
     user_options = [
         ('reviewed-only', None, 'Download only reviewed translations.'),
@@ -186,6 +186,7 @@ class TransifexPull(Command):
 
         txclib.utils.DISABLE_COLORS = True
         txclib.commands.cmd_pull(args, get_setup_dir())
+        self.run_other_command('compile_catalog')
 
 
 class TransifexPush(Command):
