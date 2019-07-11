@@ -30,6 +30,10 @@ def get_version():
         return version_file.read().strip()
 
 
+def log(msg):
+    print(msg)
+
+
 class ExtendedCommand(Command):
     def run_other_command(self, command_name, **kwargs):
         """Runs another command with specified parameters."""
@@ -96,7 +100,7 @@ class FreezeWithPyInstaller(ExtendedCommand):
             unrar_path = unrar_path.strip().decode('cp437')
             added_files.append((unrar_path, '.'))
         except CalledProcessError:
-            print("'unrar.exe' couldn't be found.")
+            log("'unrar.exe' couldn't be found.")
 
         # Add mo files for localization
         locale_dir = os.path.join('cddagl', 'locale')
@@ -126,6 +130,7 @@ class FreezeWithPyInstaller(ExtendedCommand):
             makespec_call.extend(('-d', 'all'))
 
         # Call the makespec util
+        log(f'executing {makespec_call}')
         call(makespec_call)
 
         # Call pyinstaller
@@ -139,6 +144,7 @@ class FreezeWithPyInstaller(ExtendedCommand):
         pyinstaller_call.append('--noconfirm')
         pyinstaller_call.append('launcher.spec')
 
+        log(f'executing {pyinstaller_call}')
         call(pyinstaller_call)
 
 
@@ -158,8 +164,11 @@ class CreateInnoSetupInstaller(ExtendedCommand):
     def run(self):
         #### Make sure we are running Inno Setup from the project directory
         os.chdir(get_setup_dir())
+
         self.run_other_command('freeze')
-        call([self.compiler, '/cc', 'launcher.iss'])
+        inno_call = [self.compiler, '/cc', 'launcher.iss']
+        log(f'executing {inno_call}')
+        call(inno_call)
 
 
 class TransifexPull(ExtendedCommand):
@@ -254,6 +263,7 @@ class ZanataPull(Command):
         zanata_pull = [self.zanata, 'pull', '--batch-mode']
         if self.approved_only:
             zanata_pull.append('--approved-only')
+        log(f'executing {zanata_pull}')
         call(zanata_pull)
 
 
@@ -280,6 +290,7 @@ class ZanataPush(Command):
         zanata_push = [self.zanata, 'push', '--batch-mode']
         if self.push_translations:
             zanata_push.extend(('--push-type', 'both'))
+        log(f'executing {zanata_push}')
         call(zanata_push)
 
 
