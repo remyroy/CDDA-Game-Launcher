@@ -162,34 +162,6 @@ class CreateInnoSetupInstaller(ExtendedCommand):
         call([self.compiler, '/cc', 'launcher.iss'])
 
 
-class ExtractUpdateMessages(ExtendedCommand):
-    description = 'Extract all project strings that require translation.'
-    user_options = [
-        ('output-pot-file=', None, 'path to store the generated .pot file.'),
-        ('catalog-mapping=', None, 'path to the mapping configuration file.'),
-        ('catalog-dir=', None, 'output directory for generated catalogs.'),
-        ('catalog-domain=', None, 'domain of PO files.')
-    ]
-
-    def initialize_options(self):
-        self.output_pot_file = r'cddagl\locale\cddagl.pot'
-        self.catalog_mapping = r'cddagl\locale\mapping.cfg'
-        self.catalog_dir = r'cddagl\locale'
-        self.catalog_domain = 'cddagl'
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        self.run_other_command('extract_messages',
-                               output_file=self.output_pot_file,
-                               mapping_file=self.catalog_mapping)
-        self.run_other_command('update_catalog',
-                               input_file=self.output_pot_file,
-                               output_dir=self.catalog_dir,
-                               domain=self.catalog_domain)
-
-
 class TransifexPull(Command):
     description = 'Download translated strings from Transifex service.'
     user_options = [
@@ -330,6 +302,47 @@ class ZanataExtractPush(ExtendedCommand):
         self.run_other_command('translation_push', zanata=self.zanata)
 
 
+class ExtractMessagesWithDefaults(babel.extract_messages):
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.output_file = r'cddagl\locale\cddagl.pot'
+        self.mapping_file = r'cddagl\locale\mapping.cfg'
+
+
+class UpdateCatalogWithDefaults(babel.update_catalog):
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.input_file = r'cddagl\locale\cddagl.pot'
+        self.output_dir = r'cddagl\locale'
+        self.domain = 'cddagl'
+
+
+class CompileCatalogWithDefauls(babel.compile_catalog):
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.directory = r'cddagl\locale'
+        self.domain = 'cddagl'
+        self.use_fuzzy = True
+
+
+class ExtractUpdateMessages(ExtendedCommand):
+    description = 'Extract all project strings that require translation and update catalogs.'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        self.run_other_command('extract_messages')
+        self.run_other_command('update_catalog')
+
+
 setup(
     name='cddagl',
     version=get_version(),
@@ -340,13 +353,16 @@ setup(
     packages=['cddagl'],
     package_data={'cddagl': ['VERSION']},
     cmdclass={
+        ### freeze & installer commands
         'freeze': FreezeWithPyInstaller,
         'create_installer': CreateInnoSetupInstaller,
-        'exup_messages': ExtractUpdateMessages,
-        'compile_catalog': babel.compile_catalog,
-        'extract_messages': babel.extract_messages,
+        ### babel commands
+        'extract_messages': ExtractMessagesWithDefaults,
+        'compile_catalog': CompileCatalogWithDefauls,
         'init_catalog': babel.init_catalog,
-        'update_catalog': babel.update_catalog,
+        'update_catalog': UpdateCatalogWithDefaults,
+        'exup_messages': ExtractUpdateMessages,
+        ### transifex related commands
         'translation_push': TransifexPush,
         'translation_expush': TransifexExtractPush,
         'translation_pull': TransifexPull,
