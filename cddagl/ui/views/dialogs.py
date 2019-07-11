@@ -203,7 +203,9 @@ class AboutDialog(QDialog):
                '</ul>')
         m += _('<p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka Mattahan</a>'
                ' for the permission to use his artwork for the launcher icon.</p>')
-        m += _('<p>This software is distributed under the MIT License</p>')
+        m += _('<p>This software is distributed under the MIT License. That means this is'
+               ' 100% free software, completely free to use, modify and/or distribute.'
+               ' If you like more details check the following boring legal stuff...')
         m += '<p>Copyright (c) 2015-2019 Rémy Roy</p>'
         m += ('<p>Permission is hereby granted, free of charge, to any person obtaining a copy'
               ' of this software and associated documentation files (the "Software"), to deal'
