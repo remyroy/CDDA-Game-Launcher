@@ -338,7 +338,7 @@ class UpdateSettingsGroupBox(QGroupBox):
         self.auto_refresh_builds_checkbox = auto_refresh_builds_checkbox
 
         arb_min_spinbox = QSpinBox()
-        arb_min_spinbox.setMinimum(1)
+        arb_min_spinbox.setMinimum(5)
         arb_min_spinbox.setValue(int(get_config_value(
             'auto_refresh_builds_minutes', '30')))
         arb_min_spinbox.valueChanged.connect(self.ams_changed)
