@@ -589,9 +589,10 @@ class LauncherUpdateDialog(QDialog):
 
         self.download_speed_count += 1
 
-        self.size_value_label.setText(_('{bytes_read}/{total_bytes}').format(
-            bytes_read=sizeof_fmt(bytes_read),
-            total_bytes=sizeof_fmt(total_bytes)))
+        self.size_value_label.setText(
+            '{bytes_read}/{total_bytes}'
+            .format(bytes_read=sizeof_fmt(bytes_read), total_bytes=sizeof_fmt(total_bytes))
+        )
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read

@@ -2383,9 +2383,10 @@ class UpdateGroupBox(QGroupBox):
 
         self.download_speed_count += 1
 
-        self.downloading_size_label.setText(_('{bytes_read}/{total_bytes}'
-            ).format(bytes_read=sizeof_fmt(bytes_read),
-                total_bytes=sizeof_fmt(total_bytes)))
+        self.downloading_size_label.setText(
+            '{bytes_read}/{total_bytes}'
+            .format(bytes_read=sizeof_fmt(bytes_read), total_bytes=sizeof_fmt(total_bytes))
+        )
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read
@@ -3219,9 +3220,10 @@ class ProgressCopyTree(QTimer):
 
                             copying_size_label = QLabel()
                             copying_size_label.setText(
-                                _('{bytes_read}/{total_bytes}').format(
-                                bytes_read=sizeof_fmt(0),
-                                total_bytes=sizeof_fmt(self.total_copy_size)))
+                                '{bytes_read}/{total_bytes}'
+                                .format(bytes_read=sizeof_fmt(0),
+                                        total_bytes=sizeof_fmt(self.total_copy_size))
+                            )
                             self.status_bar.addWidget(copying_size_label)
                             self.copying_size_label = copying_size_label
 
@@ -3288,9 +3290,10 @@ class ProgressCopyTree(QTimer):
 
                     if self.copy_speed_count % 10 == 0:
                         self.copying_size_label.setText(
-                            _('{bytes_read}/{total_bytes}').format(
-                            bytes_read=sizeof_fmt(self.copied_size),
-                            total_bytes=sizeof_fmt(self.total_copy_size)))
+                            '{bytes_read}/{total_bytes}'
+                            .format(bytes_read=sizeof_fmt(self.copied_size),
+                                    total_bytes=sizeof_fmt(self.total_copy_size))
+                        )
 
                         delta_bytes = self.copied_size - self.last_copied_bytes
                         delta_time = datetime.utcnow() - self.last_copied
