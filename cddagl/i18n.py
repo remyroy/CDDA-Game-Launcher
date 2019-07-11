@@ -34,7 +34,7 @@ def proxy_ngettext(*args, **kwargs):
 
 def get_available_locales(locale_dir):
     """Return a list of available locales in the specified directory."""
-    available_locales = []
+    available_locales = ['en']
     if os.path.isdir(locale_dir):
         entries = os.scandir(locale_dir)
         for entry in entries:
@@ -57,6 +57,9 @@ def load_gettext_locale(locale_dir, locale, domain='cddagl'):
 
     Fallback to default untranslated strings if locale file is not found.
     """
+    if locale == 'en':
+        return load_gettext_no_locale()
+
     try:
         translation = gettext.translation(domain, localedir=locale_dir, languages=[locale])
     except FileNotFoundError as err:
