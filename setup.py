@@ -101,7 +101,7 @@ class FreezeWithPyInstaller(ExtendedCommand):
         # Add mo files for localization
         locale_dir = os.path.join('cddagl', 'locale')
 
-        self.run_other_command('compile_catalog', domain='cddagl', directory=locale_dir)
+        self.run_other_command('compile_catalog')
 
         if os.path.isdir(locale_dir):
             for entry in scandir(locale_dir):
@@ -225,7 +225,7 @@ class TransifexExtractPush(ExtendedCommand):
     def run(self):
         ### Make sure we are running the commands from project directory
         os.chdir(get_setup_dir())
-        self.run_other_command('exup_messages')
+        self.run_other_command('extract_messages')
         self.run_other_command('translation_push')
 
 
@@ -298,7 +298,7 @@ class ZanataExtractPush(ExtendedCommand):
     def run(self):
         ### Make sure we are running the commands from project directory
         os.chdir(get_setup_dir())
-        self.run_other_command('exup_messages')
+        self.run_other_command('extract_messages')
         self.run_other_command('translation_push', zanata=self.zanata)
 
 
