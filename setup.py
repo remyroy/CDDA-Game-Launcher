@@ -165,10 +165,10 @@ class CreateInnoSetupInstaller(ExtendedCommand):
 class ExtractUpdateMessages(ExtendedCommand):
     description = 'Extract all project strings that require translation.'
     user_options = [
-        ('output_pot_file=', None, 'path to store the generated .pot file.'),
-        ('catalog_mapping=', None, 'path to the mapping configuration file.'),
-        ('catalog_dir=', None, 'output directory for generated catalogs.'),
-        ('catalog_domain=', None, 'domain of PO files.')
+        ('output-pot-file=', None, 'path to store the generated .pot file.'),
+        ('catalog-mapping=', None, 'path to the mapping configuration file.'),
+        ('catalog-dir=', None, 'output directory for generated catalogs.'),
+        ('catalog-domain=', None, 'domain of PO files.')
     ]
 
     def initialize_options(self):
