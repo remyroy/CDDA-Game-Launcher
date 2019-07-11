@@ -103,8 +103,7 @@ class LauncherSettingsGroupBox(QGroupBox):
             locale_name = locale.display_name
             english_name = locale.english_name
             if locale_name != english_name:
-                formatted_name = _('{locale_name} - {english_name}'
-                    ).format(locale_name=locale_name, english_name=english_name)
+                formatted_name = f'{locale_name} - {english_name}'
             else:
                 formatted_name = locale_name
             locale_combo.addItem(formatted_name, str(locale))

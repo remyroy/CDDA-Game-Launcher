@@ -162,14 +162,10 @@ class TabbedWindow(QMainWindow):
             reason = self.http_reply.attribute(
                 QNetworkRequest.HttpReasonPhraseAttribute)
             url = self.http_reply.request().url().toString()
-            msg = _('Could not find launcher latest release '
-                '[HTTP {status_code}] ({reason}) when requesting {url}'
-                ).format(
-                    status_code=status_code,
-                    reason=reason,
-                    url=url
-                )
-            logger.warning(msg)
+            logger.warning(
+                _('Could not find launcher latest release when requesting {url}. Error: {error}')
+                .format(url=url, error=f'[HTTP {status_code}] ({reason})')
+            )
 
             if self.in_manual_update_check:
                 self.in_manual_update_check = False

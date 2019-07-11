@@ -692,8 +692,9 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     self.add_game_dir()
 
                 self.version_value_label.setText(
-                    _('{version} ({type})').format(version=self.game_version,
-                    type=self.version_type))
+                    '{version} ({type})'
+                    .format(version=self.game_version, type=self.version_type)
+                )
 
                 status_bar.removeWidget(self.reading_label)
                 status_bar.removeWidget(self.reading_progress_bar)
@@ -717,19 +718,20 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                 if build is not None:
                     build_date = arrow.get(build['released_on'], 'UTC')
-                    human_delta = build_date.humanize(arrow.utcnow(),
-                        locale=self.app_locale)
-                    self.build_value_label.setText(_('{build} ({time_delta})'
-                        ).format(build=build['build'], time_delta=human_delta))
+                    human_delta = build_date.humanize(arrow.utcnow(), locale=self.app_locale)
+                    self.build_value_label.setText(
+                        '{build} ({time_delta})'
+                        .format(build=build['build'], time_delta=human_delta)
+                    )
                     self.current_build = build['build']
 
                     main_tab = self.get_main_tab()
                     update_group_box = main_tab.update_group_box
 
                     if (update_group_box.builds is not None
-                        and len(update_group_box.builds) > 0
-                        and status_bar.busy == 0
-                        and not self.game_started):
+                            and len(update_group_box.builds) > 0
+                            and status_bar.busy == 0
+                            and not self.game_started):
                         last_build = update_group_box.builds[0]
 
                         message = status_bar.currentMessage()
@@ -739,8 +741,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                         if last_build['number'] == self.current_build:
                             message = message + _('Your game is up to date')
                         else:
-                            message = message + _('There is a new update '
-                            'available')
+                            message = message + _('There is a new update available')
                         status_bar.showMessage(message)
 
                 else:
@@ -921,16 +922,18 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                 worlds_text = ngettext('World', 'Worlds', self.saves_worlds)
 
-                characters_text = ngettext('Character', 'Characters',
-                    self.saves_characters)
+                characters_text = ngettext('Character', 'Characters', self.saves_characters)
 
-                self.saves_value_edit.setText(_('{world_count} {worlds} - '
-                    '{character_count} {characters} ({size})').format(
-                    world_count=self.saves_worlds,
-                    character_count=self.saves_characters,
-                    size=sizeof_fmt(self.saves_size),
-                    worlds=worlds_text,
-                    characters=characters_text))
+                self.saves_value_edit.setText(
+                    '{world_count} {worlds} - {character_count} {characters} ({size})'
+                    .format(
+                        world_count=self.saves_worlds,
+                        character_count=self.saves_characters,
+                        size=sizeof_fmt(self.saves_size),
+                        worlds=worlds_text,
+                        characters=characters_text
+                    )
+                )
             except StopIteration:
                 if len(self.next_scans) > 0:
                     self.saves_scan = scandir(self.next_scans.pop())
@@ -1041,16 +1044,16 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     if self.game_version == '':
                         self.game_version = _('Unknown')
                     self.version_value_label.setText(
-                        _('{version} ({type})').format(
-                            version=self.game_version,
-                            type=self.version_type))
+                        '{version} ({type})'
+                        .format(version=self.game_version, type=self.version_type)
+                    )
 
                     build_date = arrow.get(self.build_date, 'UTC')
-                    human_delta = build_date.humanize(arrow.utcnow(),
-                        locale=self.app_locale)
-                    self.build_value_label.setText(_('{build} ({time_delta})'
-                        ).format(build=self.build_number,
-                            time_delta=human_delta))
+                    human_delta = build_date.humanize(arrow.utcnow(), locale=self.app_locale)
+                    self.build_value_label.setText(
+                        '{build} ({time_delta})'
+                        .format(build=self.build_number, time_delta=human_delta)
+                    )
                     self.current_build = self.build_number
 
                     status_bar.removeWidget(self.reading_label)
@@ -2249,14 +2252,12 @@ class UpdateGroupBox(QGroupBox):
             return
 
         # Copy user-default-mods.json if present
-        user_default_mods_file = os.path.join(mods_dir,
-            'user-default-mods.json')
-        previous_user_default_mods_file = os.path.join(previous_mods_dir,
-            'user-default-mods.json')
+        user_default_mods_file = os.path.join(mods_dir, 'user-default-mods.json')
+        previous_user_default_mods_file = os.path.join(previous_mods_dir, 'user-default-mods.json')
 
         if (not os.path.exists(user_default_mods_file)
             and os.path.isfile(previous_user_default_mods_file)):
-            status_bar.showMessage(_('Restoring user-default-mods.json'))
+            status_bar.showMessage(_('Restoring {0}').format('user-default-mods.json'))
 
             shutil.copy2(previous_user_default_mods_file,
                 user_default_mods_file)
@@ -2520,7 +2521,7 @@ class UpdateGroupBox(QGroupBox):
             'request(s) remaining for accessing GitHub API.\nYou will have to '
             'wait until {datetime} to get more requests.\nThose requests are '
             'needed to get the available builds.\nIf you keep running low on '
-            'those remaining requests, avoid quickly refreshing often\n for the'
+            'those remaining requests, avoid quickly refreshing often\n for the '
             'available builds. For more information, search GitHub API rate '
             'limiting.').format(
                 remaining=requests_remaining,
@@ -2533,12 +2534,10 @@ class UpdateGroupBox(QGroupBox):
             reason = self.http_reply.attribute(
                 QNetworkRequest.HttpReasonPhraseAttribute)
             url = self.http_reply.request().url().toString()
-            msg = _('Could not find remote builds [HTTP {status_code}] '
-                '({reason}) when requesting {url}').format(
-                    status_code=status_code,
-                    reason=reason,
-                    url=url
-                )
+            msg = (
+                _('Could not find launcher latest release when requesting {url}. Error: {error}')
+                .format(url=url, error=f'[HTTP {status_code}] ({reason})')
+            )
             if status_bar.busy == 0:
                 status_bar.showMessage(msg)
             logger.warning(msg)
@@ -2612,9 +2611,9 @@ class UpdateGroupBox(QGroupBox):
                     human_delta = _('Unknown')
 
                 self.builds_combo.addItem(
-                    _('{number} ({delta})').format(
-                    number=build['number'], delta=human_delta),
-                    userData=build)
+                    '{number} ({delta})'.format(number=build['number'], delta=human_delta),
+                    userData=build
+                )
 
             combo_model = self.builds_combo.model()
             default_set = False
