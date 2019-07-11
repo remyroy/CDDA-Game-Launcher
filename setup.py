@@ -56,6 +56,7 @@ class FreezeWithPyInstaller(ExtendedCommand):
 
     def initialize_options(self):
         self.debug = None
+        self.locale_dir = os.path.join('cddagl', 'locale')
 
     def finalize_options(self):
         pass
@@ -64,9 +65,13 @@ class FreezeWithPyInstaller(ExtendedCommand):
         # -w for no console and -c for console
         window_mode = '-c' if bool(self.debug) else '-w'
 
-        makespec_call = ['pyi-makespec', '-D', window_mode, '--noupx',
-            '--hidden-import=lxml.cssselect', '--hidden-import=babel.numbers',
-            'cddagl\launcher.py', '-i', r'cddagl\resources\launcher.ico']
+        makespec_call = [
+            'pyi-makespec', '-D', window_mode, '--noupx',
+            '--hidden-import=lxml.cssselect',
+            '--hidden-import=babel.numbers',
+            'cddagl\launcher.py',
+            '-i', r'cddagl\resources\launcher.ico'
+        ]
 
         # Check if we have Windows Kits 10 path and add ucrt path
         windowskit_path = None
@@ -103,12 +108,10 @@ class FreezeWithPyInstaller(ExtendedCommand):
             log("'unrar.exe' couldn't be found.")
 
         # Add mo files for localization
-        locale_dir = os.path.join('cddagl', 'locale')
-
         self.run_other_command('compile_catalog')
 
-        if os.path.isdir(locale_dir):
-            for entry in scandir(locale_dir):
+        if os.path.isdir(self.locale_dir):
+            for entry in scandir(self.locale_dir):
                 if entry.is_dir():
                     mo_path = os.path.join(entry.path, 'LC_MESSAGES', 'cddagl.mo')
                     if os.path.isfile(mo_path):
