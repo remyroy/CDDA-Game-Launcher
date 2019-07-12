@@ -2793,9 +2793,9 @@ class ChangelogParsingThread(QThread):
             code_name = regex.sub(r'\g<ui>-\g<plat>',
                                   code_name.find('fullDisplayName').text)
 
-            if code_name == 'Tiles-Windows': return 'Windows x86'
-            if code_name == 'Tiles-Windows_x64': return 'Windows x64'
-            if code_name == 'Curses-Linux_x64': return 'All Platforms'
+            if code_name == 'Tiles-Windows': return _('Windows x86')
+            if code_name == 'Tiles-Windows_x64': return _('Windows x64')
+            if code_name == 'Curses-Linux_x64': return _('All Platforms')
             return None
 
         build_platforms = build_data.findall(r'.//run')
@@ -2858,8 +2858,8 @@ class ChangelogParsingThread(QThread):
                                 build_changes)
             build_changes = list(unique(build_changes))
             build_number = int(build_data.find('number').text)
-            build_link = f'<a href="{cons.BUILD_CHANGES_URL(build_number)}">' \
-                         f'Build #{build_number}</a>'
+            build_desc = _('Build #{build_number}').format(build_number=build_number)
+            build_link = f'<a href="{cons.BUILD_CHANGES_URL(build_number)}">{build_desc}</a>'
 
             if build_status == 'IN_PROGRESS':
                 changelog_html.write(
