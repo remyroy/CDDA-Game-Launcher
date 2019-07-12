@@ -1184,8 +1184,8 @@ class UpdateGroupBox(QGroupBox):
 
     def set_text(self):
         self.platform_label.setText(_('Platform:'))
-        self.x64_radio_button.setText(_('Windows x64 (64-bit)'))
-        self.x86_radio_button.setText(_('Windows x86 (32-bit)'))
+        self.x64_radio_button.setText('{so} ({bit})'.format(so=_('Windows x64'), bit=_('64-bit')))
+        self.x86_radio_button.setText('{so} ({bit})'.format(so=_('Windows x86'), bit=_('32-bit')))
         self.available_builds_label.setText(_('Available builds:'))
         self.refresh_builds_button.setText(_('Refresh'))
         self.changelog_groupbox.setTitle(_('Changelog'))
