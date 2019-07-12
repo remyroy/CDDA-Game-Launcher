@@ -61,6 +61,3 @@ target/
 
 # PyCharm
 .idea/
-
-# Zanata translation
-.zanata-cache/
