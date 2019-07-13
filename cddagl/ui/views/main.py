@@ -2694,7 +2694,6 @@ class UpdateGroupBox(QGroupBox):
                 self.builds_combo.setEnabled(True)
             else:
                 self.previous_bc_enabled = True
-                self.previous_ub_enabled = True
 
             if game_dir_group_box.exe_path is not None:
                 self.update_button.setText(_('Update game'))
