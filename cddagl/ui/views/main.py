@@ -1580,7 +1580,7 @@ class UpdateGroupBox(QGroupBox):
         if update_button:
             self.update_button.setEnabled(False)
 
-    def enable_controls(self, builds_combo=False, update_button=False):
+    def enable_controls(self, builds_combo=False):
         if is_64_windows():
             self.x64_radio_button.setEnabled(True)
         self.x86_radio_button.setEnabled(True)
@@ -1592,10 +1592,7 @@ class UpdateGroupBox(QGroupBox):
         else:
             self.builds_combo.setEnabled(self.previous_bc_enabled)
 
-        if update_button:
-            self.update_button.setEnabled(True)
-        else:
-            self.update_button.setEnabled(self.previous_ub_enabled)
+        self.update_button.setEnabled(self.previous_ub_enabled)
 
     def download_game_update(self, url):
         main_window = self.get_main_window()
