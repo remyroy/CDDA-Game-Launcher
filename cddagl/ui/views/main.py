@@ -23,12 +23,13 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QGridLayout, QGroupBox, QVBoxLayout, QLabel, QLineEdit,
     QPushButton, QFileDialog, QToolButton, QProgressBar, QButtonGroup, QRadioButton,
-    QComboBox, QTextBrowser, QMessageBox, QStyle, QHBoxLayout
+    QComboBox, QTextBrowser, QMessageBox, QStyle, QHBoxLayout, QSizePolicy
 )
 from babel.dates import format_datetime
 from pywintypes import error as PyWinError
 
 import cddagl.constants as cons
+from cddagl.constants import get_cddagl_path
 from cddagl import __version__ as version
 from cddagl.functions import (
     tryint, move_path, is_64_windows, sizeof_fmt, delete_path,
@@ -114,17 +115,24 @@ class GameDirGroupBox(QGroupBox):
         layout.addWidget(dir_label, 0, 0, Qt.AlignRight)
         self.dir_label = dir_label
 
-        dir_combo = QComboBox()
-        dir_combo.setEditable(True)
-        dir_combo.setInsertPolicy(QComboBox.InsertAtTop)
-        dir_combo.currentIndexChanged.connect(self.dc_index_changed)
-        self.dir_combo = dir_combo
-        layout.addWidget(dir_combo, 0, 1)
+        self.layout_dir = QHBoxLayout()
 
-        dir_combo_model = QStringListModel(json.loads(get_config_value(
-            'game_directories', '[]')), self)
-        dir_combo.setModel(dir_combo_model)
-        self.dir_combo_model = dir_combo_model
+        self.dir_state_icon = QLabel()
+        self.layout_dir.addWidget(self.dir_state_icon)
+        self.dir_state_icon.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.dir_state_icon.hide()
+
+        self.dir_combo = QComboBox()
+        self.dir_combo.setEditable(True)
+        self.dir_combo.setInsertPolicy(QComboBox.InsertAtTop)
+        self.dir_combo.currentIndexChanged.connect(self.dc_index_changed)
+        self.dir_combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.layout_dir.addWidget(self.dir_combo)
+        layout.addLayout(self.layout_dir, 0, 1)
+
+        game_directories = json.loads(get_config_value('game_directories', '[]'))
+        self.dir_combo_model = QStringListModel(game_directories, self)
+        self.dir_combo.setModel(self.dir_combo_model)
 
         dir_change_button = QToolButton()
         dir_change_button.setText('...')
@@ -206,6 +214,21 @@ class GameDirGroupBox(QGroupBox):
         self.launch_game_button.setText(_('Launch game'))
         self.restore_button.setText(_('Restore previous version'))
         self.setTitle(_('Game'))
+
+    def set_dir_state_icon(self, state):
+        style = QApplication.style()
+        if state == 'critical':
+            icon = style.standardIcon(QStyle.SP_MessageBoxCritical).pixmap(16, 16)
+        elif state == 'warning':
+            icon = style.standardIcon(QStyle.SP_MessageBoxWarning).pixmap(16, 16)
+        elif state == 'ok':
+            icon = style.standardIcon(QStyle.SP_DialogApplyButton).pixmap(16, 16)
+        elif state == 'hide':
+            self.dir_state_icon.hide()
+            return
+
+        self.dir_state_icon.setPixmap(icon)
+        self.dir_state_icon.show()
 
     def showEvent(self, event):
         if not self.shown:
@@ -575,14 +598,35 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
         status_bar.clearMessage()
+        self.set_dir_state_icon('hide')
 
         self.exe_path = None
 
         main_tab = self.get_main_tab()
         update_group_box = main_tab.update_group_box
 
-        if not os.path.isdir(directory):
-            self.version_value_label.setText(_('Not a valid directory'))
+        dir_state = None
+        if get_cddagl_path().startswith(directory):
+            dir_state = 'critical'
+            self.set_dir_state_icon(dir_state)
+            self.version_value_label.setText(
+                _('Unknown version - Reason:') + ' ' +
+                _('CDDA Game Launcher files cannot be inside Game directory!')
+            )
+        elif os.path.isfile(directory):
+            dir_state = 'critical'
+            self.set_dir_state_icon(dir_state)
+            self.version_value_label.setText(
+                _('Unknown version - Reason:') + ' ' +
+                _('Game directory was set to a file!')
+            )
+        elif not os.path.isdir(directory):
+            dir_state = 'warning'
+            self.set_dir_state_icon(dir_state)
+            self.version_value_label.setText(
+                _('Unknown version - Reason:') + ' ' +
+                _("Game directory doesn't exist, Game is not installed here.")
+            )
         else:
             # Check for previous version
             previous_version_dir = os.path.join(directory, 'previous_version')
@@ -602,11 +646,21 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                 exe_path = tiles_exe
 
             if version_type is None:
-                self.version_value_label.setText(_('Not a CDDA directory'))
+                dir_state = 'warning'
+                self.set_dir_state_icon(dir_state)
+                self.version_value_label.setText(
+                    _('Unknown version - Reason:') + ' ' +
+                    _("Game is not installed in this directory.")
+                )
             else:
+                dir_state = 'ok'
+                self.set_dir_state_icon(dir_state)
                 self.exe_path = exe_path
                 self.version_type = version_type
                 if self.last_game_directory != directory:
+                    self.version_value_label.setText(_('Analyzing...'))
+                    self.build_value_label.setText(_('Analyzing...'))
+                    self.saves_value_edit.setText(_('Analyzing...'))
                     self.update_version()
                     self.update_saves()
                     self.update_soundpacks()
@@ -615,7 +669,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
-            update_group_box.update_button.setText(_('Install game'))
+            if dir_state != 'critical':
+                update_group_box.update_button.setText(_('Install game'))
             self.restored_previous = False
 
             self.current_build = None
@@ -1250,6 +1305,12 @@ class UpdateGroupBox(QGroupBox):
                         'game directory is not empty'))
                     return
 
+            logger.info(
+                'Updating CDDA...\n'
+                'CDDAGL Directory: {}\n'
+                'CDDA Directory: {}'
+                .format(get_cddagl_path(), game_dir)
+            )
             self.updating = True
             self.download_aborted = False
             self.clearing_previous_dir = False
