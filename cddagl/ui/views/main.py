@@ -683,6 +683,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         else:
             self.launch_game_button.setEnabled(True)
             update_group_box.update_button.setText(_('Update game'))
+            update_group_box.update_button.setEnabled(dir_state == 'ok')
 
             self.check_running_process(self.exe_path)
 
