@@ -669,8 +669,9 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
         if self.exe_path is None:
             self.launch_game_button.setEnabled(False)
-            if dir_state != 'critical':
-                update_group_box.update_button.setText(_('Install game'))
+            update_group_box.update_button.setText(_('Install game'))
+            update_group_box.update_button.setEnabled(dir_state != 'critical')
+
             self.restored_previous = False
 
             self.current_build = None
