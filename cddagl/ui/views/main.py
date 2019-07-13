@@ -29,7 +29,7 @@ from babel.dates import format_datetime
 from pywintypes import error as PyWinError
 
 import cddagl.constants as cons
-from cddagl.constants import get_cddagl_path
+from cddagl.constants import get_cddagl_path, get_cdda_uld_path
 from cddagl import __version__ as version
 from cddagl.functions import (
     tryint, move_path, is_64_windows, sizeof_fmt, delete_path,
@@ -237,9 +237,8 @@ class GameDirGroupBox(QGroupBox):
             self.last_game_directory = None
 
             if (getattr(sys, 'frozen', False)
-                and config_true(get_config_value('use_launcher_dir', 'False'))):
-                game_directory = os.path.dirname(os.path.abspath(
-                    os.path.realpath(sys.executable)))
+                    and config_true(get_config_value('use_launcher_dir', 'False'))):
+                game_directory = get_cdda_uld_path()
 
                 self.dir_combo.setEnabled(False)
                 self.dir_change_button.setEnabled(False)

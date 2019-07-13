@@ -82,3 +82,7 @@ def get_locale_path(*subpaths):
 
 def get_data_path(*subpaths):
     return os.path.join(get_cddagl_path(), 'data', *subpaths)
+
+def get_cdda_uld_path(*subpaths):
+    """Returns path used for CDDA when 'Use the launcher directory as game directory' is set."""
+    return os.path.join(get_cddagl_path(), 'cdda', *subpaths)
