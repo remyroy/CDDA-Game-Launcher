@@ -1194,6 +1194,7 @@ class UpdateGroupBox(QGroupBox):
 
         builds_combo = QComboBox()
         builds_combo.setEnabled(False)
+        self.previous_bc_enabled = False
         builds_combo.addItem(_('Unknown'))
         layout.addWidget(builds_combo, 1, 1, 1, 2)
         self.builds_combo = builds_combo
@@ -1225,6 +1226,7 @@ class UpdateGroupBox(QGroupBox):
 
         update_button = QPushButton()
         update_button.setEnabled(False)
+        self.previous_ub_enabled = False
         update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
         layout.addWidget(update_button, 3, 0, 1, 5)
