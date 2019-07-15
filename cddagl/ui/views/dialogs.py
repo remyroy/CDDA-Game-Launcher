@@ -171,57 +171,58 @@ class AboutDialog(QDialog):
     def set_text(self):
         self.setWindowTitle(_('About CDDA Game Launcher'))
         self.ok_button.setText(_('OK'))
-        self.text_content.setHtml(_('''
-<p>CDDA Game Launcher version {version}</p>
-
-<p>Get the latest release <a
-href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.</p>
-
-<p>Please report any issue <a
-href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.
-</p>
-
-<p>If you like the CDDA Game Launcher, you can buy me a beer by donating
-bitcoins to <a href="bitcoin:3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV">
-3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV</a> <img src="btc-qr.png"> or by donating
-ethers to <a href="https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b">
-0xDb731476e913d75061A78105C3D1b5A7a03Aa21B</a>
-<img src="eth-qr.png">.</p>
-
-<p>Thanks to the following people for their efforts in translating the CDDA Game
-Launcher</p>
-<ul>
-<li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a>
-and Night_Pryanik</li>
-<li>Italian: Rettiliano Verace from <a
-href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a></li>
-<li>French: Rémy Roy</li>
-</ul>
-
-<p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka
-Mattahan</a> for the permission to use his artwork for the launcher icon.</p>
-
-<p>Copyright (c) 2015-2019 Rémy Roy</p>
-
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-
-<p>The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.</p>
-
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
-
-''').format(version=version))
+        m = _('<p>CDDA Game Launcher version {version}</p>').format(version=version)
+        m += _('<p>Get the latest release'
+               ' <a href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.'
+               '</p>')
+        m += _('<p>Please report any issue'
+               ' <a href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.'
+               '</p>')
+        bitcoin_text = r'3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV'
+        bitcoin_link = r'bitcoin:3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV'
+        ether_link = r'https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b'
+        ether_text = r'0xdb731476e913d75061a78105c3d1b5a7a03aa21b'
+        m += _('<p>If you like the CDDA Game Launcher, you can buy me a beer by:</p>'
+               '<p>donating bitcoins to <a href="{bitcoin_link}">{bitcoin_text}</a></p>'
+               '<p><img src="btc-qr.png" /></p>'
+               '<p>or by donating ethers to <a href="{ether_link}">{ether_text}</a></p>'
+               '<p><img src="eth-qr.png" /></p>').format(bitcoin_text=bitcoin_text,
+                                                         bitcoin_link=bitcoin_link,
+                                                         ether_link=ether_link,
+                                                         ether_text=ether_text)
+        m += _('<p>Thanks to the following people for their efforts in'
+               ' translating the CDDA Game Launcher</p>'
+               '<ul>'
+               '<li>Russian: Daniel from <a href="http://cataclysmdda.ru/">cataclysmdda.ru</a>'
+               ' and Night_Pryanik'
+               '</li>'
+               '<li>Italian: Rettiliano Verace from'
+               ' <a href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a>'
+               '</li>'
+               '<li>French: Rémy Roy</li>'
+               '</ul>')
+        m += _('<p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka Mattahan</a>'
+               ' for the permission to use his artwork for the launcher icon.</p>')
+        m += _('<p>This software is distributed under the MIT License. That means this is'
+               ' 100&#37; free software, completely free to use, modify and/or distribute.'
+               ' If you like more details check the following boring legal stuff...</p>')
+        m += '<p>Copyright (c) 2015-2019 Rémy Roy</p>'
+        m += ('<p>Permission is hereby granted, free of charge, to any person obtaining a copy'
+              ' of this software and associated documentation files (the "Software"), to deal'
+              ' in the Software without restriction, including without limitation the rights'
+              ' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell'
+              ' copies of the Software, and to permit persons to whom the Software is'
+              ' furnished to do so, subject to the following conditions:</p>'
+              '<p>The above copyright notice and this permission notice shall be included in'
+              ' all copies or substantial portions of the Software.</p>'
+              '<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR'
+              ' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,'
+              ' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE'
+              ' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER'
+              ' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,'
+              ' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE'
+              ' SOFTWARE.</p>')
+        self.text_content.setHtml(m)
 
 
 class ExceptionWindow(QWidget):

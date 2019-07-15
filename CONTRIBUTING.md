@@ -22,6 +22,17 @@ requests](#pull-requests), but please respect the following restrictions:
   respect the opinions of others.
 
 
+<a name="translations"></a>
+## Translations
+
+CDDA Game Launcher translations are hosted in Transifex. Transifex is a service
+with a straightforward web interface to let contributors help with untranslated text.
+
+Anyone is welcome to create or improve translations directly from
+[our project's page in Transifex](https://www.transifex.com/cdda-game-launcher/cdda-game-launcher-project/)
+after a simple registration process.
+
+
 <a name="bugs"></a>
 ## Bug reports
 
