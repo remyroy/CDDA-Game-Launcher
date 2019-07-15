@@ -41,7 +41,6 @@ def get_available_locales(locale_dir):
             if entry.is_dir():
                 available_locales.add(entry.name)
 
-
     return sorted(available_locales, key=lambda x: 0 if x == 'en' else 1)
 
 
