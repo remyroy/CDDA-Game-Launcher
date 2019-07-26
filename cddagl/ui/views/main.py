@@ -933,8 +933,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
     def update_saves(self):
         self.game_dir = self.dir_combo.currentText()
 
-        if (self.update_saves_timer is not None
-            and self.update_saves_timer.isActive()):
+        if (self.update_saves_timer is not None and self.update_saves_timer.isActive()):
             self.update_saves_timer.stop()
             self.saves_value_edit.setText(_('Unknown'))
 
@@ -971,7 +970,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     if entry.name in cons.WORLD_FILES:
                         world_dir = os.path.dirname(entry.path)
                         if (world_dir not in self.world_dirs
-                            and self.save_dir == os.path.dirname(world_dir)):
+                                and self.save_dir == os.path.dirname(world_dir)):
                             self.world_dirs.add(world_dir)
                             self.saves_worlds += 1
 
@@ -997,8 +996,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                     # Warning about saves size
                     if (self.saves_size > cons.SAVES_WARNING_SIZE and
-                        not config_true(get_config_value('prevent_save_move',
-                            'False'))):
+                        not config_true(get_config_value('prevent_save_move', 'False'))):
                         self.saves_warning_label.show()
                     else:
                         self.saves_warning_label.hide()
