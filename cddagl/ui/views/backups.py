@@ -502,9 +502,9 @@ class BackupsTab(QTabWidget):
 
         extracting_size_label = QLabel()
         extracting_size_label.setText(
-            _('{bytes_read}/{total_bytes}').format(
-            bytes_read=sizeof_fmt(0),
-            total_bytes=sizeof_fmt(self.total_extract_size)))
+            '{bytes_read}/{total_bytes}'
+            .format(bytes_read=sizeof_fmt(0), total_bytes=sizeof_fmt(self.total_extract_size))
+        )
         status_bar.addWidget(extracting_size_label)
         self.extracting_size_label = (
             extracting_size_label)
@@ -581,9 +581,10 @@ class BackupsTab(QTabWidget):
             self.extracting_progress_bar.setValue(self.extract_size)
 
             self.extracting_size_label.setText(
-                _('{bytes_read}/{total_bytes}').format(
-                bytes_read=sizeof_fmt(self.extract_size),
-                total_bytes=sizeof_fmt(self.total_extract_size)))
+                '{bytes_read}/{total_bytes}'
+                .format(bytes_read=sizeof_fmt(self.extract_size),
+                        total_bytes=sizeof_fmt(self.total_extract_size))
+            )
 
             delta_bytes = self.extract_size - self.last_extract_bytes
             delta_time = datetime.utcnow() - self.last_extract
@@ -933,9 +934,10 @@ class BackupsTab(QTabWidget):
 
                         compressing_size_label = QLabel()
                         compressing_size_label.setText(
-                            _('{bytes_read}/{total_bytes}').format(
-                            bytes_read=sizeof_fmt(0),
-                            total_bytes=sizeof_fmt(self.total_backup_size)))
+                            '{bytes_read}/{total_bytes}'
+                            .format(bytes_read=sizeof_fmt(0),
+                                    total_bytes=sizeof_fmt(self.total_backup_size))
+                        )
                         status_bar.addWidget(compressing_size_label)
                         self.compressing_size_label = (
                             compressing_size_label)
@@ -1019,9 +1021,10 @@ class BackupsTab(QTabWidget):
             self.compressing_progress_bar.setValue(self.comp_size)
 
             self.compressing_size_label.setText(
-                _('{bytes_read}/{total_bytes}').format(
-                bytes_read=sizeof_fmt(self.comp_size),
-                total_bytes=sizeof_fmt(self.total_backup_size)))
+                '{bytes_read}/{total_bytes}'
+                .format(bytes_read=sizeof_fmt(self.comp_size),
+                        total_bytes=sizeof_fmt(self.total_backup_size))
+            )
 
             delta_bytes = self.comp_size - self.last_comp_bytes
             delta_time = datetime.utcnow() - self.last_comp

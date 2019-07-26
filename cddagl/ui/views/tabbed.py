@@ -162,14 +162,10 @@ class TabbedWindow(QMainWindow):
             reason = self.http_reply.attribute(
                 QNetworkRequest.HttpReasonPhraseAttribute)
             url = self.http_reply.request().url().toString()
-            msg = _('Could not find launcher latest release '
-                '[HTTP {status_code}] ({reason}) when requesting {url}'
-                ).format(
-                    status_code=status_code,
-                    reason=reason,
-                    url=url
-                )
-            logger.warning(msg)
+            logger.warning(
+                _('Could not find launcher latest release when requesting {url}. Error: {error}')
+                .format(url=url, error=f'[HTTP {status_code}] ({reason})')
+            )
 
             if self.in_manual_update_check:
                 self.in_manual_update_check = False
@@ -593,9 +589,10 @@ class LauncherUpdateDialog(QDialog):
 
         self.download_speed_count += 1
 
-        self.size_value_label.setText(_('{bytes_read}/{total_bytes}').format(
-            bytes_read=sizeof_fmt(bytes_read),
-            total_bytes=sizeof_fmt(total_bytes)))
+        self.size_value_label.setText(
+            '{bytes_read}/{total_bytes}'
+            .format(bytes_read=sizeof_fmt(bytes_read), total_bytes=sizeof_fmt(total_bytes))
+        )
 
         if self.download_speed_count % 5 == 0:
             delta_bytes = bytes_read - self.download_last_bytes_read

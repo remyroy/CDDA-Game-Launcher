@@ -72,9 +72,9 @@ def sizeof_fmt(num, suffix=None):
     for unit in ['', _('Ki'), _('Mi'), _('Gi'), _('Ti'), _('Pi'), _('Ei'),
         _('Zi')]:
         if abs(num) < 1024.0:
-            return _("%3.1f %s%s") % (num, unit, suffix)
+            return "%3.1f %s%s" % (num, unit, suffix)
         num /= 1024.0
-    return _("%.1f %s%s") % (num, _('Yi'), suffix)
+    return "%.1f %s%s" % (num, _('Yi'), suffix)
 
 def delete_path(path):
     ''' Move directory or file in the recycle bin (or permanently delete it
