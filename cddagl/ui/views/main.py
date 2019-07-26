@@ -654,7 +654,6 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                 )
             else:
                 dir_state = 'ok'
-                self.set_dir_state_icon(dir_state)
                 self.exe_path = exe_path
                 self.version_type = version_type
                 if self.last_game_directory != directory:
