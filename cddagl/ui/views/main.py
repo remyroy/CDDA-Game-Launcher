@@ -116,30 +116,28 @@ class GameDirGroupBox(QGroupBox):
         self.dir_label = dir_label
 
         self.layout_dir = QHBoxLayout()
+        layout.addLayout(self.layout_dir, 0, 1)
 
         self.dir_combo = QComboBox()
+        self.layout_dir.addWidget(self.dir_combo)
         self.dir_combo.setEditable(True)
         self.dir_combo.setInsertPolicy(QComboBox.InsertAtTop)
         self.dir_combo.currentIndexChanged.connect(self.dc_index_changed)
         self.dir_combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.layout_dir.addWidget(self.dir_combo)
+        game_directories = json.loads(get_config_value('game_directories', '[]'))
+        self.dir_combo_model = QStringListModel(game_directories, self)
+        self.dir_combo.setModel(self.dir_combo_model)
 
         dir_change_button = QToolButton()
+        self.layout_dir.addWidget(dir_change_button)
         dir_change_button.setText('...')
         dir_change_button.clicked.connect(self.set_game_directory)
-        self.layout_dir.addWidget(dir_change_button)
         self.dir_change_button = dir_change_button
 
         self.dir_state_icon = QLabel()
         self.layout_dir.addWidget(self.dir_state_icon)
         self.dir_state_icon.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.dir_state_icon.hide()
-
-        layout.addLayout(self.layout_dir, 0, 1)
-
-        game_directories = json.loads(get_config_value('game_directories', '[]'))
-        self.dir_combo_model = QStringListModel(game_directories, self)
-        self.dir_combo.setModel(self.dir_combo_model)
 
         version_label = QLabel()
         layout.addWidget(version_label, 1, 0, Qt.AlignRight)
