@@ -938,7 +938,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         save_dir = os.path.join(self.game_dir, 'save')
         if not os.path.isdir(save_dir):
             self.saves_value_edit.setText(
-                _('{world_count} {worlds} - {character_count} {characters}')
+                '{world_count} {worlds} - {character_count} {characters}'
                     .format(
                     world_count=0,
                     character_count=0,
@@ -983,7 +983,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                 worlds_text = ngettext('World', 'Worlds', self.saves_worlds)
                 characters_text = ngettext('Character', 'Characters',self.saves_characters)
                 self.saves_value_edit.setText(
-                    _('{world_count} {worlds} - {character_count} {characters} ({size})')
+                    '{world_count} {worlds} - {character_count} {characters} ({size})'
                     .format(
                         world_count=self.saves_worlds,
                         character_count=self.saves_characters,
@@ -1003,7 +1003,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     # no more path to scan but still 0 chars/worlds
                     if self.saves_worlds == 0 and self.saves_characters == 0:
                         self.saves_value_edit.setText(
-                            _('{world_count} {worlds} - {character_count} {characters}')
+                            '{world_count} {worlds} - {character_count} {characters}'
                             .format(
                                 world_count=0,
                                 character_count=0,
