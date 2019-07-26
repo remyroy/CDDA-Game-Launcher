@@ -939,7 +939,15 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
         save_dir = os.path.join(self.game_dir, 'save')
         if not os.path.isdir(save_dir):
-            self.saves_value_edit.setText(_('Not found'))
+            self.saves_value_edit.setText(
+                _('{world_count} {worlds} - {character_count} {characters}')
+                    .format(
+                    world_count=0,
+                    character_count=0,
+                    worlds=ngettext('World', 'Worlds', 0),
+                    characters=ngettext('Character', 'Characters', 0)
+                )
+            )
             return
 
         timer = QTimer(self)
@@ -975,17 +983,17 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                             self.saves_worlds += 1
 
                 worlds_text = ngettext('World', 'Worlds', self.saves_worlds)
-
-                characters_text = ngettext('Character', 'Characters',
-                    self.saves_characters)
-
-                self.saves_value_edit.setText(_('{world_count} {worlds} - '
-                    '{character_count} {characters} ({size})').format(
-                    world_count=self.saves_worlds,
-                    character_count=self.saves_characters,
-                    size=sizeof_fmt(self.saves_size),
-                    worlds=worlds_text,
-                    characters=characters_text))
+                characters_text = ngettext('Character', 'Characters',self.saves_characters)
+                self.saves_value_edit.setText(
+                    _('{world_count} {worlds} - {character_count} {characters} ({size})')
+                    .format(
+                        world_count=self.saves_worlds,
+                        character_count=self.saves_characters,
+                        size=sizeof_fmt(self.saves_size),
+                        worlds=worlds_text,
+                        characters=characters_text
+                    )
+                )
             except StopIteration:
                 if len(self.next_scans) > 0:
                     self.saves_scan = scandir(self.next_scans.pop())
@@ -993,6 +1001,18 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     # End of the tree
                     self.update_saves_timer.stop()
                     self.update_saves_timer = None
+
+                    # no more path to scan but still 0 chars/worlds
+                    if self.saves_worlds == 0 and self.saves_characters == 0:
+                        self.saves_value_edit.setText(
+                            _('{world_count} {worlds} - {character_count} {characters}')
+                            .format(
+                                world_count=0,
+                                character_count=0,
+                                worlds=ngettext('World', 'Worlds', 0),
+                                characters=ngettext('Character', 'Characters', 0)
+                            )
+                        )
 
                     # Warning about saves size
                     if (self.saves_size > cons.SAVES_WARNING_SIZE and
