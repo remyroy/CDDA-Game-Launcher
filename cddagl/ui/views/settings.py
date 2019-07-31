@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 from babel.core import Locale
 
 import cddagl.constants as cons
-from cddagl.constants import get_locale_path
+from cddagl.constants import get_locale_path, get_cdda_uld_path
 from cddagl.functions import clean_qt_path
 from cddagl.i18n import load_gettext_locale, get_available_locales, proxy_gettext as _
 from cddagl.sql.functions import get_config_value, set_config_value, config_true
@@ -254,17 +254,11 @@ class LauncherSettingsGroupBox(QGroupBox):
         game_dir_group_box.last_game_directory = None
 
         if getattr(sys, 'frozen', False) and checked:
-            game_directory = os.path.dirname(os.path.abspath(
-                os.path.realpath(sys.executable)))
-
-            game_dir_group_box.set_dir_combo_value(game_directory)
+            game_dir_group_box.set_dir_combo_value(get_cdda_uld_path())
         else:
             game_directory = get_config_value('game_directory')
             if game_directory is None:
-                cddagl_path = os.path.dirname(os.path.realpath(
-                    sys.executable))
-                default_dir = os.path.join(cddagl_path, 'cdda')
-                game_directory = default_dir
+                game_directory = get_cdda_uld_path()
 
             game_dir_group_box.set_dir_combo_value(game_directory)
 
