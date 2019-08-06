@@ -11,14 +11,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 1.4.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-07-12 18:57-0300\n"
+"POT-Creation-Date: 2019-08-06 15:28-0400\n"
 "PO-Revision-Date: 2019-07-10 19:53+0000\n"
 "Last-Translator: KurzedMetal <kurzedmetal@gmail.com>, 2019\n"
 "Language-Team: Japanese (https://www.transifex.com/cdda-game-launcher/teams/101126/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.6.0\n"
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
@@ -168,8 +168,8 @@ msgstr "バックアップを削除しました"
 msgid "Manual backup cancelled"
 msgstr "手動バックアップを中止しました"
 
-#: cddagl/ui/views/backups.py:749 cddagl/ui/views/main.py:355
-#: cddagl/ui/views/main.py:504 cddagl/ui/views/main.py:849
+#: cddagl/ui/views/backups.py:749 cddagl/ui/views/main.py:376
+#: cddagl/ui/views/main.py:525 cddagl/ui/views/main.py:903
 msgid "auto"
 msgstr "自動"
 
@@ -247,8 +247,8 @@ msgstr "ファイルのリネームを再試行しますか？"
 msgid "Retry renaming the file"
 msgstr "ファイルのリネームを再試行"
 
-#: cddagl/ui/views/backups.py:1310 cddagl/ui/views/main.py:3024
-#: cddagl/ui/views/main.py:3086
+#: cddagl/ui/views/backups.py:1310 cddagl/ui/views/main.py:3097
+#: cddagl/ui/views/main.py:3159
 msgid "Cancel the operation"
 msgstr "中止"
 
@@ -295,49 +295,49 @@ msgstr "アーカイブファイル {formats}"
 msgid "About CDDA Game Launcher"
 msgstr "About CDDA Game について"
 
-#: cddagl/ui/views/dialogs.py:237
+#: cddagl/ui/views/dialogs.py:238
 msgid ""
 "The CDDA Game Launcher just crashed. An unhandled exception was raised. Here"
 " are the details."
 msgstr "不明な例外処理が発生し、The CDDA Game Launcher は動作を停止しました。詳細はこちら。"
 
-#: cddagl/ui/views/dialogs.py:287
+#: cddagl/ui/views/dialogs.py:288
 msgid "Exit"
 msgstr "終了"
 
-#: cddagl/ui/views/dialogs.py:293
+#: cddagl/ui/views/dialogs.py:294
 msgid "Something went wrong"
 msgstr "何かが間違っています"
 
-#: cddagl/ui/views/main.py:150 cddagl/ui/views/main.py:160
-#: cddagl/ui/views/main.py:622 cddagl/ui/views/main.py:623
-#: cddagl/ui/views/main.py:690 cddagl/ui/views/main.py:748
-#: cddagl/ui/views/main.py:884 cddagl/ui/views/main.py:976
-#: cddagl/ui/views/main.py:1045 cddagl/ui/views/main.py:1143
-#: cddagl/ui/views/main.py:2514 cddagl/ui/views/main.py:2612
+#: cddagl/ui/views/main.py:157 cddagl/ui/views/main.py:167
+#: cddagl/ui/views/main.py:675 cddagl/ui/views/main.py:676
+#: cddagl/ui/views/main.py:744 cddagl/ui/views/main.py:802
+#: cddagl/ui/views/main.py:937 cddagl/ui/views/main.py:1046
+#: cddagl/ui/views/main.py:1115 cddagl/ui/views/main.py:1214
+#: cddagl/ui/views/main.py:2589 cddagl/ui/views/main.py:2687
 #: cddagl/ui/views/mods.py:1050 cddagl/ui/views/mods.py:1092
 #: cddagl/ui/views/mods.py:1129 cddagl/ui/views/mods.py:1165
 #: cddagl/ui/views/soundpacks.py:1013 cddagl/ui/views/soundpacks.py:1049
 msgid "Unknown"
 msgstr "不明"
 
-#: cddagl/ui/views/main.py:197
+#: cddagl/ui/views/main.py:204
 msgid "Directory:"
 msgstr "ディレクトリ:"
 
-#: cddagl/ui/views/main.py:198 cddagl/ui/views/mods.py:266
+#: cddagl/ui/views/main.py:205 cddagl/ui/views/mods.py:266
 msgid "Version:"
 msgstr "バージョン:"
 
-#: cddagl/ui/views/main.py:199
+#: cddagl/ui/views/main.py:206
 msgid "Build:"
 msgstr "ビルド:"
 
-#: cddagl/ui/views/main.py:200
+#: cddagl/ui/views/main.py:207
 msgid "Saves:"
 msgstr "セーブ:"
 
-#: cddagl/ui/views/main.py:202
+#: cddagl/ui/views/main.py:209
 msgid ""
 "Your save directory might be large enough to cause significant delays during the update process.\n"
 "You might want to enable the \"Do not copy or move the save directory\" option in the settings tab."
@@ -345,36 +345,36 @@ msgstr ""
 "アップデートプロセス中の重要な遅延のため、セーブディレクトリは十分な領域を必要とします。\n"
 "設定タブから \"セーブディレクトリをコピー・移動しない\" 設定ができます。"
 
-#: cddagl/ui/views/main.py:206 cddagl/ui/views/main.py:495
-#: cddagl/ui/views/main.py:840
+#: cddagl/ui/views/main.py:213 cddagl/ui/views/main.py:516
+#: cddagl/ui/views/main.py:894
 msgid "Launch game"
 msgstr "ゲーム起動"
 
-#: cddagl/ui/views/main.py:207
+#: cddagl/ui/views/main.py:214
 msgid "Restore previous version"
 msgstr "以前のバージョンを復元する"
 
-#: cddagl/ui/views/main.py:208
+#: cddagl/ui/views/main.py:215
 msgid "Game"
 msgstr "ゲーム"
 
-#: cddagl/ui/views/main.py:356
+#: cddagl/ui/views/main.py:377
 msgid "before_launch"
 msgstr "起動前"
 
-#: cddagl/ui/views/main.py:368
+#: cddagl/ui/views/main.py:389
 msgid "Game executable not found"
 msgstr "実行ファイルがありません"
 
-#: cddagl/ui/views/main.py:390
+#: cddagl/ui/views/main.py:411
 msgid "Could not launch the game executable"
 msgstr "実行ファイルの起動に失敗しました"
 
-#: cddagl/ui/views/main.py:393
+#: cddagl/ui/views/main.py:414
 msgid "Cannot launch game"
 msgstr "起動出来ませんでした"
 
-#: cddagl/ui/views/main.py:395
+#: cddagl/ui/views/main.py:416
 msgid ""
 "\n"
 "<p>The launcher failed to start the game executable in <strong>{filename}</strong> .</p>\n"
@@ -390,206 +390,204 @@ msgstr ""
 "まうことがあります。ゲームバイナリをホワイトリストに登録するか、ブロックされた際に「信頼す\n"
 "る」を選択することで回避できるかもしれません。\n"
 
-#: cddagl/ui/views/main.py:402
+#: cddagl/ui/views/main.py:423
 msgid "[unknown]"
 msgstr "[不明]"
 
-#: cddagl/ui/views/main.py:421 cddagl/ui/views/main.py:711
-#: cddagl/ui/views/main.py:788 cddagl/ui/views/main.py:2499
-#: cddagl/ui/views/main.py:2742
+#: cddagl/ui/views/main.py:442 cddagl/ui/views/main.py:765
+#: cddagl/ui/views/main.py:842 cddagl/ui/views/main.py:2574
+#: cddagl/ui/views/main.py:2815
 msgid "Game process is running"
 msgstr "ゲーム実行中"
 
-#: cddagl/ui/views/main.py:439 cddagl/ui/views/main.py:806
+#: cddagl/ui/views/main.py:460 cddagl/ui/views/main.py:860
 msgid "Show current game"
 msgstr "現在のゲームを表示"
 
-#: cddagl/ui/views/main.py:477 cddagl/ui/views/main.py:830
+#: cddagl/ui/views/main.py:498 cddagl/ui/views/main.py:884
 msgid "Game process has ended"
 msgstr "ゲーム実行終了"
 
-#: cddagl/ui/views/main.py:505 cddagl/ui/views/main.py:850
+#: cddagl/ui/views/main.py:526 cddagl/ui/views/main.py:904
 msgid "after_end"
 msgstr "終了後"
 
-#: cddagl/ui/views/main.py:563
+#: cddagl/ui/views/main.py:584
 msgid "Game directory"
 msgstr "ゲームディレクトリ"
 
-#: cddagl/ui/views/main.py:585
-msgid "Not a valid directory"
-msgstr "無効なディレクトリ"
-
-#: cddagl/ui/views/main.py:598 cddagl/ui/views/main.py:968
+#: cddagl/ui/views/main.py:640 cddagl/ui/views/main.py:1038
 msgid "console"
 msgstr "コンソール"
 
-#: cddagl/ui/views/main.py:601 cddagl/ui/views/main.py:971
+#: cddagl/ui/views/main.py:643 cddagl/ui/views/main.py:1041
 msgid "tiles"
 msgstr "タイル"
 
-#: cddagl/ui/views/main.py:605 cddagl/ui/views/main.py:975
-msgid "Not a CDDA directory"
-msgstr "CDDAディレクトリではありません"
-
-#: cddagl/ui/views/main.py:618 cddagl/ui/views/main.py:2372
-#: cddagl/ui/views/main.py:2658
+#: cddagl/ui/views/main.py:669 cddagl/ui/views/main.py:2447
+#: cddagl/ui/views/main.py:2731
 msgid "Install game"
 msgstr "インストール"
 
-#: cddagl/ui/views/main.py:629 cddagl/ui/views/main.py:1192
-#: cddagl/ui/views/main.py:2370 cddagl/ui/views/main.py:2641
+#: cddagl/ui/views/main.py:682 cddagl/ui/views/main.py:1264
+#: cddagl/ui/views/main.py:2445 cddagl/ui/views/main.py:2714
 msgid "Update game"
 msgstr "アップデート"
 
-#: cddagl/ui/views/main.py:660 cddagl/ui/views/main.py:1015
+#: cddagl/ui/views/main.py:714 cddagl/ui/views/main.py:1085
 msgid "Reading: {0}"
 msgstr "読み込み中: {0}"
 
-#: cddagl/ui/views/main.py:706
+#: cddagl/ui/views/main.py:760
 msgid "Previous version restored"
 msgstr "以前のバージョンが復元されました"
 
-#: cddagl/ui/views/main.py:708 cddagl/ui/views/main.py:2494
-#: cddagl/ui/views/main.py:2739 cddagl/ui/views/tabbed.py:85
+#: cddagl/ui/views/main.py:762 cddagl/ui/views/main.py:2569
+#: cddagl/ui/views/main.py:2812 cddagl/ui/views/tabbed.py:85
 msgid "Ready"
 msgstr "準備完了"
 
-#: cddagl/ui/views/main.py:742 cddagl/ui/views/main.py:2342
-#: cddagl/ui/views/main.py:2653
+#: cddagl/ui/views/main.py:796 cddagl/ui/views/main.py:2417
+#: cddagl/ui/views/main.py:2726
 msgid "Your game is up to date"
 msgstr "ゲームは最新版です"
 
-#: cddagl/ui/views/main.py:744 cddagl/ui/views/main.py:2344
-#: cddagl/ui/views/main.py:2655
+#: cddagl/ui/views/main.py:798 cddagl/ui/views/main.py:2419
+#: cddagl/ui/views/main.py:2728
 msgid "There is a new update available"
 msgstr "アップデート可能です"
 
-#: cddagl/ui/views/main.py:923
+#: cddagl/ui/views/main.py:946 cddagl/ui/views/main.py:984
+#: cddagl/ui/views/main.py:1011
 msgid "World"
 msgid_plural "Worlds"
 msgstr[0] "ワールド"
 
-#: cddagl/ui/views/main.py:925
+#: cddagl/ui/views/main.py:947 cddagl/ui/views/main.py:985
+#: cddagl/ui/views/main.py:1012
 msgid "Character"
 msgid_plural "Characters"
 msgstr[0] "キャラクター"
 
-#: cddagl/ui/views/main.py:987
+#: cddagl/ui/views/main.py:1045
+msgid "Not a CDDA directory"
+msgstr "CDDAディレクトリではありません"
+
+#: cddagl/ui/views/main.py:1057
 msgid ""
 "No executable found in the downloaded archive. You might want to restore "
 "your previous version."
 msgstr "ダウンロードしたアーカイブの中に実行ファイルがありません。以前のバージョンを復元することをおすすめします。"
 
-#: cddagl/ui/views/main.py:1186
+#: cddagl/ui/views/main.py:1258
 msgid "Platform:"
 msgstr "プラットフォーム:"
 
-#: cddagl/ui/views/main.py:1189
+#: cddagl/ui/views/main.py:1261
 msgid "Available builds:"
 msgstr "有効なビルド:"
 
-#: cddagl/ui/views/main.py:1190
+#: cddagl/ui/views/main.py:1262
 msgid "Refresh"
 msgstr "更新"
 
-#: cddagl/ui/views/main.py:1191
+#: cddagl/ui/views/main.py:1263
 msgid "Changelog"
 msgstr "更新履歴"
 
-#: cddagl/ui/views/main.py:1193 cddagl/ui/views/settings.py:397
+#: cddagl/ui/views/main.py:1265 cddagl/ui/views/settings.py:391
 msgid "Update/Installation"
 msgstr "アップデート/インストール"
 
-#: cddagl/ui/views/main.py:1269
+#: cddagl/ui/views/main.py:1347
 msgid "Game is up to date"
 msgstr "ゲームは最新版です"
 
-#: cddagl/ui/views/main.py:1270
+#: cddagl/ui/views/main.py:1348
 msgid "You already have the latest version."
 msgstr "すでに最新版がインストールされています。"
 
-#: cddagl/ui/views/main.py:1272
+#: cddagl/ui/views/main.py:1350
 msgid "Are you sure you want to update your game?"
 msgstr "アップデートを開始しますか？"
 
-#: cddagl/ui/views/main.py:1274
+#: cddagl/ui/views/main.py:1352
 msgid "Update the game again"
 msgstr "もう一度アップデートする"
 
-#: cddagl/ui/views/main.py:1276
+#: cddagl/ui/views/main.py:1354
 msgid "I do not need to update the game again"
 msgstr "もう一度アップデートしない"
 
-#: cddagl/ui/views/main.py:1304
+#: cddagl/ui/views/main.py:1382
 msgid "Cannot install game on a file"
 msgstr "ファイルへのインストールが出来ません"
 
-#: cddagl/ui/views/main.py:1344 cddagl/ui/views/main.py:1366
-#: cddagl/ui/views/main.py:1396 cddagl/ui/views/main.py:1421
-#: cddagl/ui/views/main.py:1444
+#: cddagl/ui/views/main.py:1422 cddagl/ui/views/main.py:1444
+#: cddagl/ui/views/main.py:1474 cddagl/ui/views/main.py:1499
+#: cddagl/ui/views/main.py:1522
 msgid "Update cancelled"
 msgstr "アップデートが中止されました"
 
-#: cddagl/ui/views/main.py:1347 cddagl/ui/views/main.py:1369
-#: cddagl/ui/views/main.py:1399 cddagl/ui/views/main.py:1424
-#: cddagl/ui/views/main.py:1447
+#: cddagl/ui/views/main.py:1425 cddagl/ui/views/main.py:1447
+#: cddagl/ui/views/main.py:1477 cddagl/ui/views/main.py:1502
+#: cddagl/ui/views/main.py:1525
 msgid "Installation cancelled"
 msgstr "インストールが中止されました"
 
-#: cddagl/ui/views/main.py:1549 cddagl/ui/views/main.py:1614
+#: cddagl/ui/views/main.py:1624 cddagl/ui/views/main.py:1689
 #: cddagl/ui/views/mods.py:421 cddagl/ui/views/mods.py:608
 #: cddagl/ui/views/soundpacks.py:372 cddagl/ui/views/soundpacks.py:567
 msgid "Downloading: {0}"
 msgstr "ダウンロード中: {0}"
 
-#: cddagl/ui/views/main.py:1585 cddagl/ui/views/tabbed.py:505
+#: cddagl/ui/views/main.py:1660 cddagl/ui/views/tabbed.py:505
 msgid "Cancel update"
 msgstr "アップデート中止"
 
-#: cddagl/ui/views/main.py:1587
+#: cddagl/ui/views/main.py:1662
 msgid "Cancel installation"
 msgstr "インストール中止"
 
-#: cddagl/ui/views/main.py:1653 cddagl/ui/views/mods.py:493
+#: cddagl/ui/views/main.py:1728 cddagl/ui/views/mods.py:493
 #: cddagl/ui/views/mods.py:656 cddagl/ui/views/soundpacks.py:440
 #: cddagl/ui/views/soundpacks.py:603
 msgid "Testing downloaded file archive"
 msgstr "ダウンロード済みのアーカイブをテスト中"
 
-#: cddagl/ui/views/main.py:1690 cddagl/ui/views/mods.py:530
+#: cddagl/ui/views/main.py:1765 cddagl/ui/views/mods.py:530
 #: cddagl/ui/views/mods.py:701 cddagl/ui/views/soundpacks.py:487
 #: cddagl/ui/views/soundpacks.py:649
 msgid "Downloaded archive is invalid"
 msgstr "ダウンロード済みのアーカイブが無効です"
 
-#: cddagl/ui/views/main.py:1700
+#: cddagl/ui/views/main.py:1775
 msgid "Could not download game"
 msgstr "ダウンロード出来ませんでした"
 
-#: cddagl/ui/views/main.py:1729 cddagl/ui/views/main.py:1735
-#: cddagl/ui/views/main.py:2308
+#: cddagl/ui/views/main.py:1804 cddagl/ui/views/main.py:1810
+#: cddagl/ui/views/main.py:2383
 msgid "previous_version directory"
 msgstr "以前のバージョンのディレクトリ"
 
-#: cddagl/ui/views/main.py:1773
+#: cddagl/ui/views/main.py:1848
 msgid "Backing up current game"
 msgstr "現在のゲームをバックアップ中"
 
-#: cddagl/ui/views/main.py:1817
+#: cddagl/ui/views/main.py:1892
 msgid "Backing up {0}"
 msgstr "バックアップ中 {0}"
 
-#: cddagl/ui/views/main.py:1919 cddagl/ui/views/mods.py:858
+#: cddagl/ui/views/main.py:1994 cddagl/ui/views/mods.py:858
 #: cddagl/ui/views/soundpacks.py:783
 msgid "Extracting {0}"
 msgstr "展開中 {0}"
 
-#: cddagl/ui/views/main.py:1929
+#: cddagl/ui/views/main.py:2004
 msgid "Cannot extract game archive"
 msgstr "展開に失敗しました"
 
-#: cddagl/ui/views/main.py:1931
+#: cddagl/ui/views/main.py:2006
 msgid ""
 "\n"
 "<p>The launcher failed to extract the game archive.</p>\n"
@@ -599,77 +597,77 @@ msgstr ""
 "<p>アーカイブの展開に失敗しました。</p>\n"
 "<p>システムから以下のエラーを受け取りました。: {error}</p>"
 
-#: cddagl/ui/views/main.py:2008
+#: cddagl/ui/views/main.py:2083
 msgid "{0} directory"
 msgstr "{0} ディレクトリ"
 
-#: cddagl/ui/views/main.py:2065
+#: cddagl/ui/views/main.py:2140
 msgid "Restoring custom tilesets"
 msgstr "カスタムタイルセットを復元中"
 
-#: cddagl/ui/views/main.py:2108
+#: cddagl/ui/views/main.py:2183
 msgid "Restoring custom soundpacks"
 msgstr "カスタムサウンドパックを復元中"
 
-#: cddagl/ui/views/main.py:2157
+#: cddagl/ui/views/main.py:2232
 msgid "{name} soundpack"
 msgstr "{name} サウンドパック"
 
-#: cddagl/ui/views/main.py:2187
+#: cddagl/ui/views/main.py:2262
 msgid "Restoring custom mods"
 msgstr "カスタムModを復元中"
 
-#: cddagl/ui/views/main.py:2274
+#: cddagl/ui/views/main.py:2349
 msgid "Restoring custom fonts"
 msgstr "カスタムフォントを復元中"
 
-#: cddagl/ui/views/main.py:2329
+#: cddagl/ui/views/main.py:2404
 msgid "Update completed"
 msgstr "アップデート完了"
 
-#: cddagl/ui/views/main.py:2331
+#: cddagl/ui/views/main.py:2406
 msgid "Installation completed"
 msgstr "インストール完了"
 
-#: cddagl/ui/views/main.py:2414
+#: cddagl/ui/views/main.py:2489
 msgid "Fetching remote builds"
 msgstr "リモートビルド取り込み中"
 
-#: cddagl/ui/views/main.py:2420 cddagl/ui/views/main.py:2462
+#: cddagl/ui/views/main.py:2495 cddagl/ui/views/main.py:2537
 msgid "Fetching: {url}"
 msgstr "取り込み中: {url}"
 
-#: cddagl/ui/views/main.py:2664
+#: cddagl/ui/views/main.py:2737
 msgid "Could not find remote builds"
 msgstr "リモートビルドがありません"
 
-#: cddagl/ui/views/main.py:2697
+#: cddagl/ui/views/main.py:2770
 msgid "<h3>Loading changelog...</h3>"
 msgstr "<h3>更新履歴を読み込み中...</h3>"
 
-#: cddagl/ui/views/main.py:2745
+#: cddagl/ui/views/main.py:2818
 msgid "<h3>Parsing changelog...</h3>"
 msgstr "<h3>更新履歴を解析中...</h3>"
 
-#: cddagl/ui/views/main.py:2914 cddagl/ui/views/main.py:3151
+#: cddagl/ui/views/main.py:2987 cddagl/ui/views/main.py:3224
 #, python-format
 msgid "Source path '%s' is not a directory"
 msgstr "ソースの場所 '%s' はディレクトリではありません"
 
-#: cddagl/ui/views/main.py:2945 cddagl/ui/views/main.py:3194
+#: cddagl/ui/views/main.py:3018 cddagl/ui/views/main.py:3267
 msgid "file"
 msgid_plural "files"
 msgstr[0] "ファイル"
 
-#: cddagl/ui/views/main.py:2947
+#: cddagl/ui/views/main.py:3020
 msgid "Analysing {name} - Found {file_count} {files}"
 msgstr "解析中 {name} - 検出 {file_count} {files}"
 
-#: cddagl/ui/views/main.py:2992 cddagl/ui/views/main.py:3056
+#: cddagl/ui/views/main.py:3065 cddagl/ui/views/main.py:3129
 msgid "Cannot remove directory"
 msgstr "ディレクトリを削除できません"
 
-#: cddagl/ui/views/main.py:2999 cddagl/ui/views/main.py:3062
+#: cddagl/ui/views/main.py:3072 cddagl/ui/views/main.py:3135
 msgid ""
 "\n"
 "<p>The launcher failed to remove the following directory: {directory}</p>\n"
@@ -681,7 +679,7 @@ msgstr ""
 "<p>{filename}へのアクセスを試みましたがエラーが発生しました\n"
 ": {error}</p>"
 
-#: cddagl/ui/views/main.py:3008 cddagl/ui/views/main.py:3071
+#: cddagl/ui/views/main.py:3081 cddagl/ui/views/main.py:3144
 msgid ""
 "\n"
 "<p>No process seems to be using that file or directory.</p>"
@@ -689,7 +687,7 @@ msgstr ""
 "\n"
 "<p>選択されたファイルまたはディレクトリを使用中のプロセスはありません。</p>"
 
-#: cddagl/ui/views/main.py:3011 cddagl/ui/views/main.py:3074
+#: cddagl/ui/views/main.py:3084 cddagl/ui/views/main.py:3147
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently using\n"
@@ -699,32 +697,32 @@ msgstr ""
 "<p>プロセス <strong>{image_file_name} ({pid})</strong> が、指定された\n"
 "ファイルまたはディレクトリを使用中です。 上記プロセス終了後に再試行して下さい。</p>"
 
-#: cddagl/ui/views/main.py:3019 cddagl/ui/views/main.py:3081
+#: cddagl/ui/views/main.py:3092 cddagl/ui/views/main.py:3154
 msgid "Do you want to retry removing this directory?"
 msgstr "ディレクトリの削除を再試行しますか？"
 
-#: cddagl/ui/views/main.py:3022 cddagl/ui/views/main.py:3084
+#: cddagl/ui/views/main.py:3095 cddagl/ui/views/main.py:3157
 msgid "Retry removing the directory"
 msgstr "ディレクトリの削除を再試行する"
 
-#: cddagl/ui/views/main.py:3103
+#: cddagl/ui/views/main.py:3176
 msgid "Deleting {name} - {entry}"
 msgstr "削除中 {name} - {entry}"
 
-#: cddagl/ui/views/main.py:3113 cddagl/ui/views/main.py:3325
+#: cddagl/ui/views/main.py:3186 cddagl/ui/views/main.py:3398
 msgid "Analysing {name}"
 msgstr "解析中 {name}"
 
-#: cddagl/ui/views/main.py:3153
+#: cddagl/ui/views/main.py:3226
 #, python-format
 msgid "Destination path '%s' already exists"
 msgstr "実行パス '%s' はすでに存在します"
 
-#: cddagl/ui/views/main.py:3197
+#: cddagl/ui/views/main.py:3270
 msgid "Analysing {name} - Found {file_count} {files} ({size})"
 msgstr "解析中 {name} - 検出 {file_count} {files} ({size})"
 
-#: cddagl/ui/views/main.py:3315
+#: cddagl/ui/views/main.py:3388
 msgid "Copying {name} - {entry}"
 msgstr "コピー中 {name} - {entry}"
 
@@ -968,11 +966,11 @@ msgstr "起動時に新しいバージョンをチェックしない"
 msgid "Launcher"
 msgstr "ランチャー"
 
-#: cddagl/ui/views/settings.py:380
+#: cddagl/ui/views/settings.py:374
 msgid "Do not copy or move the save directory"
 msgstr "セーブディレクトリをコピー・移動しない"
 
-#: cddagl/ui/views/settings.py:382
+#: cddagl/ui/views/settings.py:376
 msgid ""
 "If your save directory size is large, it might take a long time to copy it during the update process.\n"
 "This option might help you speed the whole thing but your previous version will lack the save directory."
@@ -980,23 +978,23 @@ msgstr ""
 "セーブディレクトリが巨大になると、アップデートの際それをコピーするために長時間を要します。\n"
 "この設定を有効にすることで高速化できますが、以前のバージョンのセーブディレクトリは欠落します。"
 
-#: cddagl/ui/views/settings.py:387
+#: cddagl/ui/views/settings.py:381
 msgid "Keep a copy of the downloaded archive in the following directory:"
 msgstr "ダウンロードしたアーカイブのコピーを保存するディレクトリ:"
 
-#: cddagl/ui/views/settings.py:390
+#: cddagl/ui/views/settings.py:384
 msgid "Automatically refresh builds list every"
 msgstr "ビルド一覧の自動更新間隔"
 
-#: cddagl/ui/views/settings.py:391
+#: cddagl/ui/views/settings.py:385
 msgid "minutes"
 msgstr "分"
 
-#: cddagl/ui/views/settings.py:392
+#: cddagl/ui/views/settings.py:386
 msgid "Remove previous version after update (not recommended)"
 msgstr "アップデート後に以前のバージョンを削除する(非推奨)"
 
-#: cddagl/ui/views/settings.py:449
+#: cddagl/ui/views/settings.py:443
 msgid "Archive directory"
 msgstr "アーカイブディレクトリ"
 

@@ -5,20 +5,21 @@
 # 
 # Translators:
 # KurzedMetal <kurzedmetal@gmail.com>, 2019
+# Rémy Roy <remyroy@remyroy.com>, 2019
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: cddagl 1.4.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-07-12 18:57-0300\n"
+"POT-Creation-Date: 2019-08-06 15:28-0400\n"
 "PO-Revision-Date: 2019-07-10 19:53+0000\n"
-"Last-Translator: KurzedMetal <kurzedmetal@gmail.com>, 2019\n"
+"Last-Translator: Rémy Roy <remyroy@remyroy.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/cdda-game-launcher/teams/101126/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.7.0\n"
+"Generated-By: Babel 2.6.0\n"
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -38,11 +39,11 @@ msgstr ""
 "Traceback:\n"
 "{traceback}"
 
-#: cddagl/functions.py:65 cddagl/ui/views/main.py:1187
+#: cddagl/functions.py:65 cddagl/ui/views/main.py:1259
 msgid "64-bit"
 msgstr "64-bit"
 
-#: cddagl/functions.py:67 cddagl/ui/views/main.py:1188
+#: cddagl/functions.py:67 cddagl/ui/views/main.py:1260
 msgid "32-bit"
 msgstr "32-bit"
 
@@ -204,8 +205,8 @@ msgstr "Extrayendo copia de seguridad"
 
 #: cddagl/ui/views/backups.py:498 cddagl/ui/views/backups.py:595
 #: cddagl/ui/views/backups.py:929 cddagl/ui/views/backups.py:1035
-#: cddagl/ui/views/main.py:2396 cddagl/ui/views/main.py:3216
-#: cddagl/ui/views/main.py:3304 cddagl/ui/views/mods.py:775
+#: cddagl/ui/views/main.py:2471 cddagl/ui/views/main.py:3289
+#: cddagl/ui/views/main.py:3377 cddagl/ui/views/mods.py:775
 #: cddagl/ui/views/soundpacks.py:700 cddagl/ui/views/tabbed.py:602
 msgid "{bytes_sec}/s"
 msgstr "{bytes_sec}/s"
@@ -251,8 +252,8 @@ msgstr "Copia de seguridad manual cancelada."
 msgid "manual_backup"
 msgstr "copia_de_seguridad_manual"
 
-#: cddagl/ui/views/backups.py:749 cddagl/ui/views/main.py:355
-#: cddagl/ui/views/main.py:504 cddagl/ui/views/main.py:849
+#: cddagl/ui/views/backups.py:749 cddagl/ui/views/main.py:376
+#: cddagl/ui/views/main.py:525 cddagl/ui/views/main.py:903
 msgid "auto"
 msgstr "copia_de_seguridad_automática"
 
@@ -329,8 +330,8 @@ msgstr "Quieres intentar renombrar este fichero nuevamente?"
 msgid "Retry renaming the file"
 msgstr "Intentar renombrar el fichero nuevamente"
 
-#: cddagl/ui/views/backups.py:1310 cddagl/ui/views/main.py:3024
-#: cddagl/ui/views/main.py:3086
+#: cddagl/ui/views/backups.py:1310 cddagl/ui/views/main.py:3097
+#: cddagl/ui/views/main.py:3159
 msgid "Cancel the operation"
 msgstr "Cancelar la operación"
 
@@ -399,8 +400,8 @@ msgstr "Voy a intentar nuevamente"
 msgid "About CDDA Game Launcher"
 msgstr "Acerca de CDDA Game Launcher"
 
-#: cddagl/ui/views/dialogs.py:173 cddagl/ui/views/main.py:406
-#: cddagl/ui/views/main.py:1937
+#: cddagl/ui/views/dialogs.py:173 cddagl/ui/views/main.py:427
+#: cddagl/ui/views/main.py:2012
 msgid "OK"
 msgstr "OK"
 
@@ -446,16 +447,18 @@ msgid ""
 "href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a> and "
 "Night_Pryanik</li><li>Italian: Rettiliano Verace from <a "
 "href=\"http://emigrantebestemmiante.blogspot.com\">Emigrante "
-"Bestemmiante</a></li><li>French: Rémy Roy</li></ul>"
+"Bestemmiante</a></li><li>French: Rémy Roy</li><li>Spanish: "
+"KurzedMetal</li></ul>"
 msgstr ""
 "<p>Gracias a las siguientes personas por sus esfuerzos en traducir el CDDA "
 "Game Launcher</p><ul><li>Ruso: Daniel de <a "
 "href=\"http://cataclysmdda.ru/\">cataclysmdda.ru</a> y "
 "Night_Pryanik</li><li>Italiano: Rettiliano Verace de <a "
 "href=\"http://emigrantebestemmiante.blogspot.com\">Emigrante "
-"Bestemmiante</a></li><li>Francés: Rémy Roy</li></ul>"
+"Bestemmiante</a></li><li>Francés: Rémy Roy</li><li>Español: "
+"KurzedMetal</li></ul>"
 
-#: cddagl/ui/views/dialogs.py:204
+#: cddagl/ui/views/dialogs.py:205
 msgid ""
 "<p>Thanks to <a href=\"http://mattahan.deviantart.com/\">Paul Davey aka "
 "Mattahan</a> for the permission to use his artwork for the launcher "
@@ -465,7 +468,7 @@ msgstr ""
 "conocido como \"Mattahan\"</a> por permitir el uso de sus gráfico como ícono"
 " del Launcher.</p>"
 
-#: cddagl/ui/views/dialogs.py:206
+#: cddagl/ui/views/dialogs.py:207
 msgid ""
 "<p>This software is distributed under the MIT License. That means this is "
 "100&#37; free software, completely free to use, modify and/or distribute. If"
@@ -476,7 +479,7 @@ msgstr ""
 "para ser usado, modificado y/o distribuido. Si quieres saber más detalles, "
 "revisar la siguiente aburrida sección legal...</p>"
 
-#: cddagl/ui/views/dialogs.py:237
+#: cddagl/ui/views/dialogs.py:238
 msgid ""
 "The CDDA Game Launcher just crashed. An unhandled exception was raised. Here"
 " are the details."
@@ -484,7 +487,7 @@ msgstr ""
 "Se ha producido un error en CDDA Game Launcher. Una excepción no capturada "
 "fue emitida. Estos son los detalles."
 
-#: cddagl/ui/views/dialogs.py:249
+#: cddagl/ui/views/dialogs.py:250
 msgid ""
 "\n"
 "<p>CDDA Game Launcher version: {version}</p>\n"
@@ -502,11 +505,11 @@ msgstr ""
 "<p>Traceback:</p>\n"
 "<code>{traceback}</code>\n"
 
-#: cddagl/ui/views/dialogs.py:264
+#: cddagl/ui/views/dialogs.py:265
 msgid "Unhandled exception: [Enter a title]"
 msgstr "Excepción no capturada: [Cargar un título]"
 
-#: cddagl/ui/views/dialogs.py:265
+#: cddagl/ui/views/dialogs.py:266
 msgid ""
 "* Description: [Enter what you did and what happened]\n"
 "* Version: {version}\n"
@@ -528,7 +531,7 @@ msgstr ""
 "{traceback}\n"
 "```\n"
 
-#: cddagl/ui/views/dialogs.py:280
+#: cddagl/ui/views/dialogs.py:281
 msgid ""
 "Please help us make a better launcher <a href=\"{url}\">by reporting this "
 "issue on GitHub</a>."
@@ -536,43 +539,43 @@ msgstr ""
 "Por favor, ayúdenos a hacer un mejor Launcher <a href=\"{url}\">reportando "
 "este problema en GitHub</a>."
 
-#: cddagl/ui/views/dialogs.py:287
+#: cddagl/ui/views/dialogs.py:288
 msgid "Exit"
 msgstr "Salir"
 
-#: cddagl/ui/views/dialogs.py:293
+#: cddagl/ui/views/dialogs.py:294
 msgid "Something went wrong"
 msgstr "Algo salió mal"
 
-#: cddagl/ui/views/main.py:150 cddagl/ui/views/main.py:160
-#: cddagl/ui/views/main.py:622 cddagl/ui/views/main.py:623
-#: cddagl/ui/views/main.py:690 cddagl/ui/views/main.py:748
-#: cddagl/ui/views/main.py:884 cddagl/ui/views/main.py:976
-#: cddagl/ui/views/main.py:1045 cddagl/ui/views/main.py:1143
-#: cddagl/ui/views/main.py:2514 cddagl/ui/views/main.py:2612
+#: cddagl/ui/views/main.py:157 cddagl/ui/views/main.py:167
+#: cddagl/ui/views/main.py:675 cddagl/ui/views/main.py:676
+#: cddagl/ui/views/main.py:744 cddagl/ui/views/main.py:802
+#: cddagl/ui/views/main.py:937 cddagl/ui/views/main.py:1046
+#: cddagl/ui/views/main.py:1115 cddagl/ui/views/main.py:1214
+#: cddagl/ui/views/main.py:2589 cddagl/ui/views/main.py:2687
 #: cddagl/ui/views/mods.py:1050 cddagl/ui/views/mods.py:1092
 #: cddagl/ui/views/mods.py:1129 cddagl/ui/views/mods.py:1165
 #: cddagl/ui/views/soundpacks.py:1013 cddagl/ui/views/soundpacks.py:1049
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: cddagl/ui/views/main.py:197
+#: cddagl/ui/views/main.py:204
 msgid "Directory:"
 msgstr "Directorio:"
 
-#: cddagl/ui/views/main.py:198 cddagl/ui/views/mods.py:266
+#: cddagl/ui/views/main.py:205 cddagl/ui/views/mods.py:266
 msgid "Version:"
 msgstr "Versión:"
 
-#: cddagl/ui/views/main.py:199
+#: cddagl/ui/views/main.py:206
 msgid "Build:"
 msgstr "Compilación:"
 
-#: cddagl/ui/views/main.py:200
+#: cddagl/ui/views/main.py:207
 msgid "Saves:"
 msgstr "Personajes guardados:"
 
-#: cddagl/ui/views/main.py:202
+#: cddagl/ui/views/main.py:209
 msgid ""
 "Your save directory might be large enough to cause significant delays during the update process.\n"
 "You might want to enable the \"Do not copy or move the save directory\" option in the settings tab."
@@ -580,36 +583,36 @@ msgstr ""
 "Es posible que tu directorio de personajes guardados sea lo suficientemente grande para causar retrasos durante el proceso de actualización.\n"
 "Es posible que quieras habilitar la opción \"No copiar o mover el directorio de personajes guardados\" en la pestaña de Preferencias."
 
-#: cddagl/ui/views/main.py:206 cddagl/ui/views/main.py:495
-#: cddagl/ui/views/main.py:840
+#: cddagl/ui/views/main.py:213 cddagl/ui/views/main.py:516
+#: cddagl/ui/views/main.py:894
 msgid "Launch game"
 msgstr "Iniciar juego"
 
-#: cddagl/ui/views/main.py:207
+#: cddagl/ui/views/main.py:214
 msgid "Restore previous version"
 msgstr "Restaurar versión anterior"
 
-#: cddagl/ui/views/main.py:208
+#: cddagl/ui/views/main.py:215
 msgid "Game"
 msgstr "Juego"
 
-#: cddagl/ui/views/main.py:356
+#: cddagl/ui/views/main.py:377
 msgid "before_launch"
 msgstr "antes_de_iniciar"
 
-#: cddagl/ui/views/main.py:368
+#: cddagl/ui/views/main.py:389
 msgid "Game executable not found"
 msgstr "No se encontró el ejecutable del juego"
 
-#: cddagl/ui/views/main.py:390
+#: cddagl/ui/views/main.py:411
 msgid "Could not launch the game executable"
 msgstr "No se pudo iniciar el ejecutable del juego"
 
-#: cddagl/ui/views/main.py:393
+#: cddagl/ui/views/main.py:414
 msgid "Cannot launch game"
 msgstr "No se puede iniciar el juego"
 
-#: cddagl/ui/views/main.py:395
+#: cddagl/ui/views/main.py:416
 msgid ""
 "\n"
 "<p>The launcher failed to start the game executable in <strong>{filename}</strong> .</p>\n"
@@ -623,98 +626,92 @@ msgstr ""
 "<p>Recibió el siguiente error del sistema operativo: {error}</p>\n"
 "<p>Anti-virus de baja calidad son propensos a detectar binarios de juegos como una amenaza y bloquea su ejecución. Una forma sencilla de evitar este problema es agregando el juego a la lista blanca del anti-virus, o seleccionar la opción de confiar en el ejecutable cuando es detectado como virus.</p>\n"
 
-#: cddagl/ui/views/main.py:402
+#: cddagl/ui/views/main.py:423
 msgid "[unknown]"
 msgstr "[desconocido]"
 
-#: cddagl/ui/views/main.py:421 cddagl/ui/views/main.py:711
-#: cddagl/ui/views/main.py:788 cddagl/ui/views/main.py:2499
-#: cddagl/ui/views/main.py:2742
+#: cddagl/ui/views/main.py:442 cddagl/ui/views/main.py:765
+#: cddagl/ui/views/main.py:842 cddagl/ui/views/main.py:2574
+#: cddagl/ui/views/main.py:2815
 msgid "Game process is running"
 msgstr "El proceso del juego está corriendo"
 
-#: cddagl/ui/views/main.py:439 cddagl/ui/views/main.py:806
+#: cddagl/ui/views/main.py:460 cddagl/ui/views/main.py:860
 msgid "Show current game"
 msgstr "Mostrar juego actual"
 
-#: cddagl/ui/views/main.py:477 cddagl/ui/views/main.py:830
+#: cddagl/ui/views/main.py:498 cddagl/ui/views/main.py:884
 msgid "Game process has ended"
 msgstr "El proceso del juego ha terminado"
 
-#: cddagl/ui/views/main.py:505 cddagl/ui/views/main.py:850
+#: cddagl/ui/views/main.py:526 cddagl/ui/views/main.py:904
 msgid "after_end"
 msgstr "después_de_finalizar"
 
-#: cddagl/ui/views/main.py:563
+#: cddagl/ui/views/main.py:584
 msgid "Game directory"
 msgstr "Directorio del juego"
 
-#: cddagl/ui/views/main.py:585
-msgid "Not a valid directory"
-msgstr "No es un directorio válido"
-
-#: cddagl/ui/views/main.py:598 cddagl/ui/views/main.py:968
+#: cddagl/ui/views/main.py:640 cddagl/ui/views/main.py:1038
 msgid "console"
 msgstr "consola"
 
-#: cddagl/ui/views/main.py:601 cddagl/ui/views/main.py:971
+#: cddagl/ui/views/main.py:643 cddagl/ui/views/main.py:1041
 msgid "tiles"
 msgstr "gráficos"
 
-#: cddagl/ui/views/main.py:605 cddagl/ui/views/main.py:975
-msgid "Not a CDDA directory"
-msgstr "No es un directorio de CDDA"
-
-#: cddagl/ui/views/main.py:618 cddagl/ui/views/main.py:2372
-#: cddagl/ui/views/main.py:2658
+#: cddagl/ui/views/main.py:669 cddagl/ui/views/main.py:2447
+#: cddagl/ui/views/main.py:2731
 msgid "Install game"
 msgstr "Instalar juego"
 
-#: cddagl/ui/views/main.py:629 cddagl/ui/views/main.py:1192
-#: cddagl/ui/views/main.py:2370 cddagl/ui/views/main.py:2641
+#: cddagl/ui/views/main.py:682 cddagl/ui/views/main.py:1264
+#: cddagl/ui/views/main.py:2445 cddagl/ui/views/main.py:2714
 msgid "Update game"
 msgstr "Actualizar juego"
 
-#: cddagl/ui/views/main.py:660 cddagl/ui/views/main.py:1015
+#: cddagl/ui/views/main.py:714 cddagl/ui/views/main.py:1085
 msgid "Reading: {0}"
 msgstr "Leyendo: {0}"
 
-#: cddagl/ui/views/main.py:706
+#: cddagl/ui/views/main.py:760
 msgid "Previous version restored"
 msgstr "Versión anterior restablecida"
 
-#: cddagl/ui/views/main.py:708 cddagl/ui/views/main.py:2494
-#: cddagl/ui/views/main.py:2739 cddagl/ui/views/tabbed.py:85
+#: cddagl/ui/views/main.py:762 cddagl/ui/views/main.py:2569
+#: cddagl/ui/views/main.py:2812 cddagl/ui/views/tabbed.py:85
 msgid "Ready"
 msgstr "Listo"
 
-#: cddagl/ui/views/main.py:742 cddagl/ui/views/main.py:2342
-#: cddagl/ui/views/main.py:2653
+#: cddagl/ui/views/main.py:796 cddagl/ui/views/main.py:2417
+#: cddagl/ui/views/main.py:2726
 msgid "Your game is up to date"
 msgstr "El juego está a la última versión"
 
-#: cddagl/ui/views/main.py:744 cddagl/ui/views/main.py:2344
-#: cddagl/ui/views/main.py:2655
+#: cddagl/ui/views/main.py:798 cddagl/ui/views/main.py:2419
+#: cddagl/ui/views/main.py:2728
 msgid "There is a new update available"
 msgstr "Hay una nueva versión disponible"
 
-#: cddagl/ui/views/main.py:888
-msgid "Not found"
-msgstr "No encontrado"
-
-#: cddagl/ui/views/main.py:923
+#: cddagl/ui/views/main.py:946 cddagl/ui/views/main.py:984
+#: cddagl/ui/views/main.py:1011
 msgid "World"
 msgid_plural "Worlds"
 msgstr[0] "Mundo"
 msgstr[1] "Mundos"
 
-#: cddagl/ui/views/main.py:925
+#: cddagl/ui/views/main.py:947 cddagl/ui/views/main.py:985
+#: cddagl/ui/views/main.py:1012
 msgid "Character"
 msgid_plural "Characters"
 msgstr[0] "Personaje"
 msgstr[1] "Personajes"
 
-#: cddagl/ui/views/main.py:987
+#: cddagl/ui/views/main.py:1045
+msgid "Not a CDDA directory"
+msgstr "No es un directorio de CDDA"
+
+#: cddagl/ui/views/main.py:1057
 msgid ""
 "No executable found in the downloaded archive. You might want to restore "
 "your previous version."
@@ -722,146 +719,146 @@ msgstr ""
 "Ningún ejecutable fue encontrado en el fichero comprimido descargado. Tal "
 "vez quieras restablecer la versión anterior."
 
-#: cddagl/ui/views/main.py:1186
+#: cddagl/ui/views/main.py:1258
 msgid "Platform:"
 msgstr "Plataforma:"
 
-#: cddagl/ui/views/main.py:1187 cddagl/ui/views/main.py:2797
+#: cddagl/ui/views/main.py:1259 cddagl/ui/views/main.py:2870
 msgid "Windows x64"
 msgstr "Windows x64"
 
-#: cddagl/ui/views/main.py:1188 cddagl/ui/views/main.py:2796
+#: cddagl/ui/views/main.py:1260 cddagl/ui/views/main.py:2869
 msgid "Windows x86"
 msgstr "Windows x86"
 
-#: cddagl/ui/views/main.py:1189
+#: cddagl/ui/views/main.py:1261
 msgid "Available builds:"
 msgstr "Compilaciones disponibles:"
 
-#: cddagl/ui/views/main.py:1190
+#: cddagl/ui/views/main.py:1262
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: cddagl/ui/views/main.py:1191
+#: cddagl/ui/views/main.py:1263
 msgid "Changelog"
 msgstr "Lista de cambios"
 
-#: cddagl/ui/views/main.py:1193 cddagl/ui/views/settings.py:397
+#: cddagl/ui/views/main.py:1265 cddagl/ui/views/settings.py:391
 msgid "Update/Installation"
 msgstr "Actualizar/Instalar"
 
-#: cddagl/ui/views/main.py:1226
+#: cddagl/ui/views/main.py:1298
 msgid "Cannot update or install the game since no build was found"
 msgstr ""
 "No se puede actualizar o instalar el juego porque no se encontró ninguna "
 "compilación."
 
-#: cddagl/ui/views/main.py:1252
+#: cddagl/ui/views/main.py:1324
 msgid "Cannot install the game if the game directory is not empty"
 msgstr ""
 "No se puede instalar el juego si el directorio de juego no está vacío."
 
-#: cddagl/ui/views/main.py:1269
+#: cddagl/ui/views/main.py:1347
 msgid "Game is up to date"
 msgstr "Juego está a la última versión"
 
-#: cddagl/ui/views/main.py:1270
+#: cddagl/ui/views/main.py:1348
 msgid "You already have the latest version."
 msgstr "Ya tienes la última versión."
 
-#: cddagl/ui/views/main.py:1272
+#: cddagl/ui/views/main.py:1350
 msgid "Are you sure you want to update your game?"
 msgstr "Estás seguro que quieres actualizar el juego?"
 
-#: cddagl/ui/views/main.py:1274
+#: cddagl/ui/views/main.py:1352
 msgid "Update the game again"
 msgstr "Actualizar el juego nuevamente"
 
-#: cddagl/ui/views/main.py:1276
+#: cddagl/ui/views/main.py:1354
 msgid "I do not need to update the game again"
 msgstr "No necesito actualizar el juego nuevamente"
 
-#: cddagl/ui/views/main.py:1304
+#: cddagl/ui/views/main.py:1382
 msgid "Cannot install game on a file"
 msgstr "No se puede instalar el juego en un fichero"
 
-#: cddagl/ui/views/main.py:1344 cddagl/ui/views/main.py:1366
-#: cddagl/ui/views/main.py:1396 cddagl/ui/views/main.py:1421
-#: cddagl/ui/views/main.py:1444
+#: cddagl/ui/views/main.py:1422 cddagl/ui/views/main.py:1444
+#: cddagl/ui/views/main.py:1474 cddagl/ui/views/main.py:1499
+#: cddagl/ui/views/main.py:1522
 msgid "Update cancelled"
 msgstr "Actualización cancelada"
 
-#: cddagl/ui/views/main.py:1347 cddagl/ui/views/main.py:1369
-#: cddagl/ui/views/main.py:1399 cddagl/ui/views/main.py:1424
-#: cddagl/ui/views/main.py:1447
+#: cddagl/ui/views/main.py:1425 cddagl/ui/views/main.py:1447
+#: cddagl/ui/views/main.py:1477 cddagl/ui/views/main.py:1502
+#: cddagl/ui/views/main.py:1525
 msgid "Installation cancelled"
 msgstr "Instalación cancelada"
 
-#: cddagl/ui/views/main.py:1549 cddagl/ui/views/main.py:1614
+#: cddagl/ui/views/main.py:1624 cddagl/ui/views/main.py:1689
 #: cddagl/ui/views/mods.py:421 cddagl/ui/views/mods.py:608
 #: cddagl/ui/views/soundpacks.py:372 cddagl/ui/views/soundpacks.py:567
 msgid "Downloading: {0}"
 msgstr "Descargando: {0}"
 
-#: cddagl/ui/views/main.py:1585 cddagl/ui/views/tabbed.py:505
+#: cddagl/ui/views/main.py:1660 cddagl/ui/views/tabbed.py:505
 msgid "Cancel update"
 msgstr "Cancelar actualización"
 
-#: cddagl/ui/views/main.py:1587
+#: cddagl/ui/views/main.py:1662
 msgid "Cancel installation"
 msgstr "Cancelar instalación"
 
-#: cddagl/ui/views/main.py:1653 cddagl/ui/views/mods.py:493
+#: cddagl/ui/views/main.py:1728 cddagl/ui/views/mods.py:493
 #: cddagl/ui/views/mods.py:656 cddagl/ui/views/soundpacks.py:440
 #: cddagl/ui/views/soundpacks.py:603
 msgid "Testing downloaded file archive"
 msgstr "Comprobando fichero comprimido descargado"
 
-#: cddagl/ui/views/main.py:1690 cddagl/ui/views/mods.py:530
+#: cddagl/ui/views/main.py:1765 cddagl/ui/views/mods.py:530
 #: cddagl/ui/views/mods.py:701 cddagl/ui/views/soundpacks.py:487
 #: cddagl/ui/views/soundpacks.py:649
 msgid "Downloaded archive is invalid"
 msgstr "El fichero comprimido descargado es inválido"
 
-#: cddagl/ui/views/main.py:1700
+#: cddagl/ui/views/main.py:1775
 msgid "Could not download game"
 msgstr "No se pudo descargar el juego"
 
-#: cddagl/ui/views/main.py:1728
+#: cddagl/ui/views/main.py:1803
 msgid "Deleting {name}"
 msgstr "Eliminando {name}"
 
-#: cddagl/ui/views/main.py:1729 cddagl/ui/views/main.py:1735
-#: cddagl/ui/views/main.py:2308
+#: cddagl/ui/views/main.py:1804 cddagl/ui/views/main.py:1810
+#: cddagl/ui/views/main.py:2383
 msgid "previous_version directory"
 msgstr "directorio versión_anterior"
 
-#: cddagl/ui/views/main.py:1734
+#: cddagl/ui/views/main.py:1809
 msgid "Update cancelled - Could not delete the {name}."
 msgstr "Actualización cancelada - No se pudo eliminar {name}."
 
-#: cddagl/ui/views/main.py:1773
+#: cddagl/ui/views/main.py:1848
 msgid "Backing up current game"
 msgstr "Respaldando versión actual del juego"
 
-#: cddagl/ui/views/main.py:1817
+#: cddagl/ui/views/main.py:1892
 msgid "Backing up {0}"
 msgstr "Respaldando {0}"
 
-#: cddagl/ui/views/main.py:1836
+#: cddagl/ui/views/main.py:1911
 msgid "Could not move {srcpath} in {dstpath} ."
 msgstr "No se pudo mover {srcpath} in {dstpath}"
 
-#: cddagl/ui/views/main.py:1919 cddagl/ui/views/mods.py:858
+#: cddagl/ui/views/main.py:1994 cddagl/ui/views/mods.py:858
 #: cddagl/ui/views/soundpacks.py:783
 msgid "Extracting {0}"
 msgstr "Extrayendo {0}"
 
-#: cddagl/ui/views/main.py:1929
+#: cddagl/ui/views/main.py:2004
 msgid "Cannot extract game archive"
 msgstr "No se puede extraer el fichero comprimido del juego"
 
-#: cddagl/ui/views/main.py:1931
+#: cddagl/ui/views/main.py:2006
 msgid ""
 "\n"
 "<p>The launcher failed to extract the game archive.</p>\n"
@@ -871,55 +868,55 @@ msgstr ""
 "<p>El Launcher falló en extraer el fichero comprimido del juego</p>\n"
 "<p>Recibió el siguiente error del sistema operativo: {error}</p>"
 
-#: cddagl/ui/views/main.py:2008
+#: cddagl/ui/views/main.py:2083
 msgid "{0} directory"
 msgstr "directorio {0}"
 
-#: cddagl/ui/views/main.py:2065
+#: cddagl/ui/views/main.py:2140
 msgid "Restoring custom tilesets"
 msgstr "Restableciendo gráficos personalizados"
 
-#: cddagl/ui/views/main.py:2108
+#: cddagl/ui/views/main.py:2183
 msgid "Restoring custom soundpacks"
 msgstr "Restableciendo pack de sonidos personalizados"
 
-#: cddagl/ui/views/main.py:2157
+#: cddagl/ui/views/main.py:2232
 msgid "{name} soundpack"
 msgstr "Pack de sonido {name}"
 
-#: cddagl/ui/views/main.py:2187
+#: cddagl/ui/views/main.py:2262
 msgid "Restoring custom mods"
 msgstr "Restableciendo mods personalizados"
 
-#: cddagl/ui/views/main.py:2222
+#: cddagl/ui/views/main.py:2297
 msgid "Restoring user custom mods"
 msgstr "Restableciendo mods personalizados"
 
-#: cddagl/ui/views/main.py:2260
+#: cddagl/ui/views/main.py:2335
 msgid "Restoring {0}"
 msgstr "Restaurando {0}"
 
-#: cddagl/ui/views/main.py:2274
+#: cddagl/ui/views/main.py:2349
 msgid "Restoring custom fonts"
 msgstr "Restableciendo fuentes personalizadas"
 
-#: cddagl/ui/views/main.py:2329
+#: cddagl/ui/views/main.py:2404
 msgid "Update completed"
 msgstr "Actualización finalizada"
 
-#: cddagl/ui/views/main.py:2331
+#: cddagl/ui/views/main.py:2406
 msgid "Installation completed"
 msgstr "Instalación finalizada"
 
-#: cddagl/ui/views/main.py:2414
+#: cddagl/ui/views/main.py:2489
 msgid "Fetching remote builds"
 msgstr "Obteniendo compilaciones remotas"
 
-#: cddagl/ui/views/main.py:2420 cddagl/ui/views/main.py:2462
+#: cddagl/ui/views/main.py:2495 cddagl/ui/views/main.py:2537
 msgid "Fetching: {url}"
 msgstr "Obteniendo: {url}"
 
-#: cddagl/ui/views/main.py:2521
+#: cddagl/ui/views/main.py:2596
 msgid ""
 "You have {remaining} request(s) remaining for accessing GitHub API.\n"
 "You will have to wait until {datetime} to get more requests.\n"
@@ -933,80 +930,80 @@ msgstr ""
 "Si te quedas sin peticiones, considera actualizar la lista de compilaciones con menos frecuencia en el futuro.\n"
 "Para más información, buscá en tu buscador favorito acerca de los límites de la API de GitHub."
 
-#: cddagl/ui/views/main.py:2539 cddagl/ui/views/tabbed.py:166
+#: cddagl/ui/views/main.py:2614 cddagl/ui/views/tabbed.py:166
 msgid ""
 "Could not find launcher latest release when requesting {url}. Error: {error}"
 msgstr ""
 "No se pudo encontrar la última versión del Launcher en {url}. Error: {error}"
 
-#: cddagl/ui/views/main.py:2625
+#: cddagl/ui/views/main.py:2700
 msgid " - build unavailable"
 msgstr " - compilación no disponible"
 
-#: cddagl/ui/views/main.py:2630
+#: cddagl/ui/views/main.py:2705
 msgid " - latest build available"
 msgstr " - última compilación disponible"
 
-#: cddagl/ui/views/main.py:2664
+#: cddagl/ui/views/main.py:2737
 msgid "Could not find remote builds"
 msgstr "No se pudo encontrar compilaciones remotas"
 
-#: cddagl/ui/views/main.py:2697
+#: cddagl/ui/views/main.py:2770
 msgid "<h3>Loading changelog...</h3>"
 msgstr "<h3>Cargando lista de cambios...</h3>"
 
-#: cddagl/ui/views/main.py:2702
+#: cddagl/ui/views/main.py:2775
 msgid "Fetching latest build changelogs"
 msgstr "Obteniendo lista de cambios de la última compilación"
 
-#: cddagl/ui/views/main.py:2745
+#: cddagl/ui/views/main.py:2818
 msgid "<h3>Parsing changelog...</h3>"
 msgstr "<h3>Analizando lista de cambios...</h3>"
 
-#: cddagl/ui/views/main.py:2798
+#: cddagl/ui/views/main.py:2871
 msgid "All Platforms"
 msgstr "Todas las plataformas"
 
-#: cddagl/ui/views/main.py:2828
+#: cddagl/ui/views/main.py:2901
 msgid "Error parsing Changelog data. Retry later."
 msgstr "Error analizando lista de cambios. Intentar nuevamente más tarde."
 
-#: cddagl/ui/views/main.py:2861
+#: cddagl/ui/views/main.py:2934
 msgid "Build #{build_number}"
 msgstr "Compilación #{build_number}"
 
-#: cddagl/ui/views/main.py:2870
+#: cddagl/ui/views/main.py:2943
 msgid "build still in progress!"
 msgstr "Compilación todavía en progreso!"
 
-#: cddagl/ui/views/main.py:2884
+#: cddagl/ui/views/main.py:2957
 msgid "but build failed for:"
 msgstr "pero la compilación falló para:"
 
-#: cddagl/ui/views/main.py:2895
+#: cddagl/ui/views/main.py:2968
 msgid "No changes, same code as previous build!"
 msgstr "Sin cambios, mismo código que la compilación anterior!"
 
-#: cddagl/ui/views/main.py:2914 cddagl/ui/views/main.py:3151
+#: cddagl/ui/views/main.py:2987 cddagl/ui/views/main.py:3224
 #, python-format
 msgid "Source path '%s' is not a directory"
 msgstr "Ruta origen '%s' no es un directorio"
 
-#: cddagl/ui/views/main.py:2945 cddagl/ui/views/main.py:3194
+#: cddagl/ui/views/main.py:3018 cddagl/ui/views/main.py:3267
 msgid "file"
 msgid_plural "files"
 msgstr[0] "fichero"
 msgstr[1] "ficheros"
 
-#: cddagl/ui/views/main.py:2947
+#: cddagl/ui/views/main.py:3020
 msgid "Analysing {name} - Found {file_count} {files}"
 msgstr "Analizando {name} - Se encontraron {file_count} {files}"
 
-#: cddagl/ui/views/main.py:2992 cddagl/ui/views/main.py:3056
+#: cddagl/ui/views/main.py:3065 cddagl/ui/views/main.py:3129
 msgid "Cannot remove directory"
 msgstr "No se puede eliminar el directorio"
 
-#: cddagl/ui/views/main.py:2999 cddagl/ui/views/main.py:3062
+#: cddagl/ui/views/main.py:3072 cddagl/ui/views/main.py:3135
 msgid ""
 "\n"
 "<p>The launcher failed to remove the following directory: {directory}</p>\n"
@@ -1017,7 +1014,7 @@ msgstr ""
 "<p>El Launcher falló en eliminar el siguiente directorio: {directory}</p>\n"
 "<p>Cuando se intentó eliminar o acceder {filename}, el Launcher generó el siguente error: {error}</p>"
 
-#: cddagl/ui/views/main.py:3008 cddagl/ui/views/main.py:3071
+#: cddagl/ui/views/main.py:3081 cddagl/ui/views/main.py:3144
 msgid ""
 "\n"
 "<p>No process seems to be using that file or directory.</p>"
@@ -1025,7 +1022,7 @@ msgstr ""
 "\n"
 "<p>Ningún proceso parece estar usando ese fichero o directorio.</p>"
 
-#: cddagl/ui/views/main.py:3011 cddagl/ui/views/main.py:3074
+#: cddagl/ui/views/main.py:3084 cddagl/ui/views/main.py:3147
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently using\n"
@@ -1034,32 +1031,32 @@ msgstr ""
 "\n"
 "<p>El proceso <strong>{image_file_name} ({pid})</strong> está actualmente usando ese fichero o directorio. Es probable que necesites terminarlo si quieres intentarlo la acción de nuevo.</p>"
 
-#: cddagl/ui/views/main.py:3019 cddagl/ui/views/main.py:3081
+#: cddagl/ui/views/main.py:3092 cddagl/ui/views/main.py:3154
 msgid "Do you want to retry removing this directory?"
 msgstr "Quieres intentar eliminar este directorio nuevamente?"
 
-#: cddagl/ui/views/main.py:3022 cddagl/ui/views/main.py:3084
+#: cddagl/ui/views/main.py:3095 cddagl/ui/views/main.py:3157
 msgid "Retry removing the directory"
 msgstr "Intentar eliminar el directorio nuevamente"
 
-#: cddagl/ui/views/main.py:3103
+#: cddagl/ui/views/main.py:3176
 msgid "Deleting {name} - {entry}"
 msgstr "Eliminando {name} - {entry}"
 
-#: cddagl/ui/views/main.py:3113 cddagl/ui/views/main.py:3325
+#: cddagl/ui/views/main.py:3186 cddagl/ui/views/main.py:3398
 msgid "Analysing {name}"
 msgstr "Analizando {name}"
 
-#: cddagl/ui/views/main.py:3153
+#: cddagl/ui/views/main.py:3226
 #, python-format
 msgid "Destination path '%s' already exists"
 msgstr "Ruta de destino '%s' ya existe"
 
-#: cddagl/ui/views/main.py:3197
+#: cddagl/ui/views/main.py:3270
 msgid "Analysing {name} - Found {file_count} {files} ({size})"
 msgstr "Analizando {name} - Se encontraron {file_count} {files} ({size})"
 
-#: cddagl/ui/views/main.py:3315
+#: cddagl/ui/views/main.py:3388
 msgid "Copying {name} - {entry}"
 msgstr "Copiando {name} - {entry}"
 
@@ -1311,11 +1308,11 @@ msgstr "No buscar nuevas versiones del Launcher en el inicio"
 msgid "Launcher"
 msgstr "Launcher"
 
-#: cddagl/ui/views/settings.py:380
+#: cddagl/ui/views/settings.py:374
 msgid "Do not copy or move the save directory"
 msgstr "No copiar o mover el directorio de personajes guardados"
 
-#: cddagl/ui/views/settings.py:382
+#: cddagl/ui/views/settings.py:376
 msgid ""
 "If your save directory size is large, it might take a long time to copy it during the update process.\n"
 "This option might help you speed the whole thing but your previous version will lack the save directory."
@@ -1323,26 +1320,26 @@ msgstr ""
 "Si tu directorio de personajes guardados es muy grande, puede tardar bastante tiempo en copiarse durante el proceso de actualización.\n"
 "Esta opción puede ayudar a acelerar todo el proceso pero tu  copia de versión anterior no tendrá tu directorio con personajes guardados."
 
-#: cddagl/ui/views/settings.py:387
+#: cddagl/ui/views/settings.py:381
 msgid "Keep a copy of the downloaded archive in the following directory:"
 msgstr ""
 "Mantener una copia del fichero comprimido descargado en el siguiente "
 "directorio:"
 
-#: cddagl/ui/views/settings.py:390
+#: cddagl/ui/views/settings.py:384
 msgid "Automatically refresh builds list every"
 msgstr "Refrescar la lista de compilaciones automáticamente cada"
 
-#: cddagl/ui/views/settings.py:391
+#: cddagl/ui/views/settings.py:385
 msgid "minutes"
 msgstr "minutos"
 
-#: cddagl/ui/views/settings.py:392
+#: cddagl/ui/views/settings.py:386
 msgid "Remove previous version after update (not recommended)"
 msgstr ""
 "Eliminar versión anterior después de una actualización (no recomendado)"
 
-#: cddagl/ui/views/settings.py:394
+#: cddagl/ui/views/settings.py:388
 msgid ""
 "Permanently delete files instead of moving them in the recycle bin (not "
 "recommended)"
@@ -1350,7 +1347,7 @@ msgstr ""
 "Eliminar ficheros permanentemente en vez de moverlos a la papelera de "
 "reciclaje (no recomendado)"
 
-#: cddagl/ui/views/settings.py:449
+#: cddagl/ui/views/settings.py:443
 msgid "Archive directory"
 msgstr "Comprimir directorio"
 

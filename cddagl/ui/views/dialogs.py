@@ -200,6 +200,7 @@ class AboutDialog(QDialog):
                ' <a href="http://emigrantebestemmiante.blogspot.com">Emigrante Bestemmiante</a>'
                '</li>'
                '<li>French: Rémy Roy</li>'
+               '<li>Spanish: KurzedMetal</li>'
                '</ul>')
         m += _('<p>Thanks to <a href="http://mattahan.deviantart.com/">Paul Davey aka Mattahan</a>'
                ' for the permission to use his artwork for the launcher icon.</p>')
