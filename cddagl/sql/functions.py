@@ -101,7 +101,7 @@ def set_config_value(name, value):
     session.commit()
 
 
-def new_version(version, sha256):
+def new_version(version, sha256, stable):
     session = get_session()
 
     game_version = session.query(GameVersion).filter_by(sha256=sha256).first()
@@ -110,12 +110,13 @@ def new_version(version, sha256):
         game_version = GameVersion()
         game_version.sha256 = sha256
         game_version.version = version
+        game_version.stable = stable
 
         session.add(game_version)
         session.commit()
 
 
-def new_build(version, sha256, number, release_date):
+def new_build(version, sha256, stable, number, release_date):
     session = get_session()
 
     game_version = (session
@@ -128,6 +129,7 @@ def new_build(version, sha256, number, release_date):
         game_version = GameVersion()
         game_version.sha256 = sha256
         game_version.version = version
+        game_version.stable = stable
 
         session.add(game_version)
 

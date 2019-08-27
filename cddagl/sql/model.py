@@ -25,6 +25,7 @@ class GameVersion(Base):
     id = sa.Column(sa.Integer, primary_key=True)
     sha256 = sa.Column(sa.String(64), nullable=False)
     version = sa.Column(sa.String(32), nullable=False)
+    stable = sa.Column(sa.Boolean, nullable=False)
 
     game_build = relationship('GameBuild', uselist=False)
 

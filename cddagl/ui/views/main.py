@@ -766,7 +766,13 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                 sha256 = self.exe_sha256.hexdigest()
 
-                new_version(self.game_version, sha256)
+                stable_version = cons.STABLE_SHA256.get(sha256, None)
+                is_stable = stable_version is not None
+
+                if is_stable:
+                    self.game_version = stable_version
+
+                new_version(self.game_version, sha256, is_stable)
 
                 build = get_build_from_sha256(sha256)
 
@@ -822,11 +828,6 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
         timer.timeout.connect(timeout)
         timer.start(0)
-
-        '''from PyQt5.QtCore import pyqtRemoveInputHook, pyqtRestoreInputHook
-        pyqtRemoveInputHook()
-        import pdb; pdb.set_trace()
-        pyqtRestoreInputHook()'''
 
     def check_running_process(self, exe_path):
         pid = process_id_from_path(exe_path)
@@ -1133,7 +1134,13 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                     sha256 = self.exe_sha256.hexdigest()
 
-                    new_build(self.game_version, sha256, self.build_number,
+                    stable_version = cons.STABLE_SHA256.get(sha256, None)
+                    is_stable = stable_version is not None
+
+                    if is_stable:
+                        self.game_version = stable_version
+
+                    new_build(self.game_version, sha256, is_stable, self.build_number,
                         self.build_date)
 
                     main_tab = self.get_main_tab()

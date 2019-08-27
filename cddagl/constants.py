@@ -54,6 +54,35 @@ BASE_ASSETS = {
     }
 }
 
+STABLE_ASSETS = {
+    '0.D': {
+        'name': '0.D Danny',
+        'number': '8574',
+        'date': '2019-03-08T04:22:54Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.D',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.D/cataclysmdda-0.D-8574-Win64-Tiles.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.D/cataclysmdda-0.D-8574-Win-Tiles.zip'
+        }
+    },
+    '0.C': {
+        'name': '0.C Cooper',
+        'number': '2834',
+        'date': '2015-03-09T16:21:48Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.C',
+        'Tiles': {
+            'x64': 'https://dev.narc.ro/cataclysm/jenkins-promoted/Windows_x64/Tiles/cataclysmdda-0.C-2834.zip',
+            'x86': 'https://dev.narc.ro/cataclysm/jenkins-promoted/Windows_x64/Tiles/cataclysmdda-0.C-2834.zip'
+        }
+    }
+}
+
+STABLE_SHA256 = {
+    '2d7bbf426572e2b21aede324c8d89c9ad84529a05a4ac99a914f22b2b1e1405e': '0.C',
+    '0454ed2bbc4a6c1c8cca5c360533513eb2a1d975816816d7c13ff60e276d431b': '0.D',
+    '7f914145248cebfd4d1a6d4b1ff932a478504b1e7e4c689aab97b8700e079f61': '0.D'
+}
+
 
 ### Path to Dirs and Files used in CDDAGL
 ### TODO: (kurzed) centralize here and then move to a better place?
