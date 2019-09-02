@@ -740,16 +740,6 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                 main_window = self.get_main_window()
                 status_bar = main_window.statusBar()
 
-                if self.game_version == '':
-                    self.game_version = _('Unknown')
-                else:
-                    self.add_game_dir()
-
-                self.version_value_label.setText(
-                    '{version} ({type})'
-                    .format(version=self.game_version, type=self.version_type)
-                )
-
                 status_bar.removeWidget(self.reading_label)
                 status_bar.removeWidget(self.reading_progress_bar)
 
@@ -771,6 +761,16 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                 if is_stable:
                     self.game_version = stable_version
+                
+                if self.game_version == '':
+                    self.game_version = _('Unknown')
+                else:
+                    self.add_game_dir()
+
+                self.version_value_label.setText(
+                    '{version} ({type})'
+                    .format(version=self.game_version, type=self.version_type)
+                )
 
                 new_version(self.game_version, sha256, is_stable)
 
@@ -1112,13 +1112,6 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     main_window = self.get_main_window()
                     status_bar = main_window.statusBar()
 
-                    if self.game_version == '':
-                        self.game_version = _('Unknown')
-                    self.version_value_label.setText(
-                        '{version} ({type})'
-                        .format(version=self.game_version, type=self.version_type)
-                    )
-
                     build_date = arrow.get(self.build_date, 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow(), locale=self.app_locale)
                     self.build_value_label.setText(
@@ -1139,6 +1132,13 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                     if is_stable:
                         self.game_version = stable_version
+
+                    if self.game_version == '':
+                        self.game_version = _('Unknown')
+                    self.version_value_label.setText(
+                        '{version} ({type})'
+                        .format(version=self.game_version, type=self.version_type)
+                    )
 
                     new_build(self.game_version, sha256, is_stable, self.build_number,
                         self.build_date)
@@ -1189,15 +1189,38 @@ class UpdateGroupBox(QGroupBox):
 
         layout = QGridLayout()
 
+        layout_row = 0
+
+        branch_label = QLabel()
+        layout.addWidget(branch_label, layout_row, 0, Qt.AlignRight)
+        self.branch_label = branch_label
+
+        branch_button_group = QButtonGroup()
+        self.branch_button_group = branch_button_group
+
+        stable_radio_button = QRadioButton()
+        layout.addWidget(stable_radio_button, layout_row, 1)
+        self.stable_radio_button = stable_radio_button
+        branch_button_group.addButton(stable_radio_button)
+
+        branch_button_group.buttonClicked.connect(self.branch_clicked)
+
+        experimental_radio_button = QRadioButton()
+        layout.addWidget(experimental_radio_button, layout_row, 2)
+        self.experimental_radio_button = experimental_radio_button
+        branch_button_group.addButton(experimental_radio_button)
+
+        layout_row = layout_row + 1
+
         platform_label = QLabel()
-        layout.addWidget(platform_label, 0, 0, Qt.AlignRight)
+        layout.addWidget(platform_label, layout_row, 0, Qt.AlignRight)
         self.platform_label = platform_label
 
         platform_button_group = QButtonGroup()
         self.platform_button_group = platform_button_group
 
         x64_radio_button = QRadioButton()
-        layout.addWidget(x64_radio_button, 0, 1)
+        layout.addWidget(x64_radio_button, layout_row, 1)
         self.x64_radio_button = x64_radio_button
         platform_button_group.addButton(x64_radio_button)
 
@@ -1207,37 +1230,41 @@ class UpdateGroupBox(QGroupBox):
             x64_radio_button.setEnabled(False)
 
         x86_radio_button = QRadioButton()
-        layout.addWidget(x86_radio_button, 0, 2)
+        layout.addWidget(x86_radio_button, layout_row, 2)
         self.x86_radio_button = x86_radio_button
         platform_button_group.addButton(x86_radio_button)
 
+        layout_row = layout_row + 1
+
         available_builds_label = QLabel()
-        layout.addWidget(available_builds_label, 1, 0, Qt.AlignRight)
+        layout.addWidget(available_builds_label, layout_row, 0, Qt.AlignRight)
         self.available_builds_label = available_builds_label
 
         builds_combo = QComboBox()
         builds_combo.setEnabled(False)
         self.previous_bc_enabled = False
         builds_combo.addItem(_('Unknown'))
-        layout.addWidget(builds_combo, 1, 1, 1, 2)
+        layout.addWidget(builds_combo, layout_row, 1, 1, 2)
         self.builds_combo = builds_combo
 
         refresh_warning_label = QLabel()
         icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
         refresh_warning_label.setPixmap(icon.pixmap(16, 16))
         refresh_warning_label.hide()
-        layout.addWidget(refresh_warning_label, 1, 3)
+        layout.addWidget(refresh_warning_label, layout_row, 3)
         self.refresh_warning_label = refresh_warning_label
 
         refresh_builds_button = QToolButton()
         refresh_builds_button.clicked.connect(self.refresh_builds)
-        layout.addWidget(refresh_builds_button, 1, 4)
+        layout.addWidget(refresh_builds_button, layout_row, 4)
         self.refresh_builds_button = refresh_builds_button
+
+        layout_row = layout_row + 1
 
         changelog_groupbox = QGroupBox()
         changelog_layout = QHBoxLayout()
         changelog_groupbox.setLayout(changelog_layout)
-        layout.addWidget(changelog_groupbox, 2, 0, 1, 5)
+        layout.addWidget(changelog_groupbox, layout_row, 0, 1, 5)
         self.changelog_groupbox = changelog_groupbox
         self.changelog_layout = changelog_layout
 
@@ -1247,12 +1274,14 @@ class UpdateGroupBox(QGroupBox):
         self.changelog_layout.addWidget(changelog_content)
         self.changelog_content = changelog_content
 
+        layout_row = layout_row + 1
+
         update_button = QPushButton()
         update_button.setEnabled(False)
         self.previous_ub_enabled = False
         update_button.setStyleSheet('font-size: 20px;')
         update_button.clicked.connect(self.update_game)
-        layout.addWidget(update_button, 3, 0, 1, 5)
+        layout.addWidget(update_button, layout_row, 0, 1, 5)
         self.update_button = update_button
 
         layout.setColumnStretch(1, 100)
@@ -1262,6 +1291,9 @@ class UpdateGroupBox(QGroupBox):
         self.set_text()
 
     def set_text(self):
+        self.branch_label.setText(_('Branch:'))
+        self.stable_radio_button.setText(_('Stable'))
+        self.experimental_radio_button.setText(_('Experimental'))
         self.platform_label.setText(_('Platform:'))
         self.x64_radio_button.setText('{so} ({bit})'.format(so=_('Windows x64'), bit=_('64-bit')))
         self.x86_radio_button.setText('{so} ({bit})'.format(so=_('Windows x86'), bit=_('32-bit')))
@@ -1273,6 +1305,17 @@ class UpdateGroupBox(QGroupBox):
 
     def showEvent(self, event):
         if not self.shown:
+            branch = get_config_value(cons.CONFIG_BRANCH_KEY)
+
+            if branch is None or branch not in (cons.CONFIG_BRANCH_STABLE,
+                cons.CONFIG_BRANCH_EXPERIMENTAL):
+                branch = cons.CONFIG_BRANCH_EXPERIMENTAL
+
+            if branch == cons.CONFIG_BRANCH_STABLE:
+                self.stable_radio_button.setChecked(True)
+            elif branch == cons.CONFIG_BRANCH_EXPERIMENTAL:
+                self.experimental_radio_button.setChecked(True)
+
             platform = get_config_value('platform')
 
             if platform == 'Windows x64':
@@ -1291,8 +1334,7 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'x86':
                 self.x86_radio_button.setChecked(True)
 
-            self.start_lb_request(cons.BASE_ASSETS['Tiles'][platform])
-            self.refresh_changelog()
+            self.refresh_builds()
 
         self.shown = True
 
@@ -1348,8 +1390,11 @@ class UpdateGroupBox(QGroupBox):
 
             self.selected_build = self.builds[self.builds_combo.currentIndex()]
 
+            selected_branch = self.branch_button_group.checkedButton()
+            experimental_selected = selected_branch is self.experimental_radio_button
+
             latest_build = self.builds[0]
-            if game_dir_group_box.current_build == latest_build['number']:
+            if experimental_selected and game_dir_group_box.current_build == latest_build['number']:
                 confirm_msgbox = QMessageBox()
                 confirm_msgbox.setWindowTitle(_('Game is up to date'))
                 confirm_msgbox.setText(_('You already have the latest version.'
@@ -1594,6 +1639,9 @@ class UpdateGroupBox(QGroupBox):
         return self.get_main_tab().get_main_window()
 
     def disable_controls(self, update_button=False):
+        self.stable_radio_button.setEnabled(False)
+        self.experimental_radio_button.setEnabled(False)
+
         self.x64_radio_button.setEnabled(False)
         self.x86_radio_button.setEnabled(False)
 
@@ -1606,6 +1654,9 @@ class UpdateGroupBox(QGroupBox):
             self.update_button.setEnabled(False)
 
     def enable_controls(self, builds_combo=False):
+        self.stable_radio_button.setEnabled(True)
+        self.experimental_radio_button.setEnabled(True)
+
         if is_64_windows():
             self.x64_radio_button.setEnabled(True)
         self.x86_radio_button.setEnabled(True)
@@ -2685,7 +2736,7 @@ class UpdateGroupBox(QGroupBox):
             self.builds = builds
 
             self.builds_combo.clear()
-            for index, build in enumerate(builds):
+            for build in builds:
                 if build['date'] is not None:
                     build_date = arrow.get(build['date'], 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow(),
@@ -2710,7 +2761,6 @@ class UpdateGroupBox(QGroupBox):
                     self.builds_combo.setCurrentIndex(x)
                     combo_model.item(x).setText(combo_model.item(x).text() +
                         _(' - latest build available'))
-
 
             if not game_dir_group_box.game_started:
                 self.builds_combo.setEnabled(True)
@@ -2752,6 +2802,8 @@ class UpdateGroupBox(QGroupBox):
         self.fetching_progress_bar.setValue(bytes_read)
 
     def refresh_builds(self):
+        selected_branch = self.branch_button_group.checkedButton()
+
         selected_platform = self.platform_button_group.checkedButton()
 
         if selected_platform is self.x64_radio_button:
@@ -2759,10 +2811,64 @@ class UpdateGroupBox(QGroupBox):
         elif selected_platform is self.x86_radio_button:
             selected_platform = 'x86'
 
-        release_asset = cons.BASE_ASSETS['Tiles'][selected_platform]
+        if selected_branch is self.stable_radio_button:
+            # Populate stable builds and stable changelog
 
-        self.start_lb_request(release_asset)
-        self.refresh_changelog()
+            # Add stable builds
+
+            builds = []
+
+            for stable_version in cons.STABLE_ASSETS:
+                version_details = cons.STABLE_ASSETS[stable_version]
+
+                build = {
+                    'url': version_details['Tiles'][selected_platform],
+                    'name': version_details['name'],
+                    'number': version_details['number'],
+                    'date': arrow.get(version_details['released_on']).datetime
+                }
+                builds.append(build)
+            
+            builds.sort(key=lambda x: (x['number'], x['date']), reverse=True)
+            self.builds = builds
+
+            self.builds_combo.clear()
+
+            for build in builds:
+                if build['date'] is not None:
+                    build_date = arrow.get(build['date'], 'UTC')
+                    human_delta = build_date.humanize(arrow.utcnow(),
+                        locale=self.app_locale)
+                else:
+                    human_delta = _('Unknown')
+
+                self.builds_combo.addItem(
+                    '{name} ({delta}) [{number}]'.format(name=build['name'], delta=human_delta,
+                        number=build['number']), userData=build)
+            
+            main_tab = self.get_main_tab()
+            game_dir_group_box = main_tab.game_dir_group_box
+
+            if not game_dir_group_box.game_started:
+                self.builds_combo.setEnabled(True)
+            else:
+                self.previous_bc_enabled = True
+
+            if game_dir_group_box.exe_path is not None:
+                self.update_button.setText(_('Update game'))
+            else:
+                self.update_button.setText(_('Install game'))
+
+            # Populate stable changelog
+
+            self.changelog_content.setHtml(cons.STABLE_CHANGELOG)
+
+            
+        elif selected_branch is self.experimental_radio_button:
+            release_asset = cons.BASE_ASSETS['Tiles'][selected_platform]
+
+            self.start_lb_request(release_asset)
+            self.refresh_changelog()
 
     def refresh_changelog(self):
         if self.changelog_http_reply is not None:
@@ -2841,6 +2947,22 @@ class UpdateGroupBox(QGroupBox):
             total_bytes = bytes_read * 2
         self.changelog_progress_bar.setMaximum(total_bytes)
         self.changelog_progress_bar.setValue(bytes_read)
+
+    def branch_clicked(self, button):
+        if button is self.stable_radio_button:
+            config_value = cons.CONFIG_BRANCH_STABLE
+        if button is self.experimental_radio_button:
+            config_value = cons.CONFIG_BRANCH_EXPERIMENTAL
+        
+        set_config_value(cons.CONFIG_BRANCH_KEY, config_value)
+
+        self.branch_changed()
+    
+    def branch_changed(self):
+        # Perform branch change
+        # Change available builds and changelog
+
+        self.refresh_builds()
 
     def platform_clicked(self, button):
         if button is self.x64_radio_button:

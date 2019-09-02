@@ -134,12 +134,14 @@ def start_ui(locale, single_instance):
     main_app = QApplication(sys.argv)
     main_app.setWindowIcon(QIcon(get_resource_path('launcher.ico')))
 
+    main_app.single_instance = single_instance
+    main_app.app_locale = locale
+
     main_win = TabbedWindow('CDDA Game Launcher')
     main_win.show()
 
     main_app.main_win = main_win
-    main_app.single_instance = single_instance
-    main_app.app_locale = locale
+
     sys.exit(main_app.exec_())
 
 
