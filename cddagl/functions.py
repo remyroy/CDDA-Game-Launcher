@@ -24,6 +24,10 @@ def log_exception(extype, value, tb):
         version=cddagl.__version__, extype=str(extype), value=str(value),
         traceback=tb_io.getvalue()))
 
+def ensure_slash(path):
+    """Return path making sure it has a trailing slash at the end."""
+    return os.path.join(path, '')
+
 def unique(seq):
     """Return unique entries in a unordered sequence while original order."""
     seen = set()
