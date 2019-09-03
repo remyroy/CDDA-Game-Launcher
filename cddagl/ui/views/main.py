@@ -33,7 +33,7 @@ from cddagl.constants import get_cddagl_path, get_cdda_uld_path
 from cddagl import __version__ as version
 from cddagl.functions import (
     tryint, move_path, is_64_windows, sizeof_fmt, delete_path,
-    clean_qt_path, unique, log_exception
+    clean_qt_path, unique, log_exception, ensure_slash
 )
 from cddagl.i18n import proxy_ngettext as ngettext, proxy_gettext as _
 from cddagl.sql.functions import (
@@ -604,7 +604,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         update_group_box = main_tab.update_group_box
 
         dir_state = None
-        if get_cddagl_path().startswith(directory):
+        if ensure_slash(get_cddagl_path()).startswith(ensure_slash(directory)):
             dir_state = 'critical'
             self.set_dir_state_icon(dir_state)
             self.version_value_label.setText(
