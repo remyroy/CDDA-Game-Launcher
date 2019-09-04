@@ -11,6 +11,8 @@ import sys
 import tempfile
 import xml.etree.ElementTree
 import zipfile
+import random
+
 from collections import deque
 from datetime import datetime, timedelta, timezone
 from io import BytesIO, StringIO, TextIOWrapper
@@ -1367,12 +1369,34 @@ class UpdateGroupBox(QGroupBox):
                     pass
 
                 if not game_dir_empty:
-                    main_window = self.get_main_window()
-                    status_bar = main_window.statusBar()
+                    subdir_name = 'cdda'
+                    subdir = os.path.join(game_dir, subdir_name)
 
-                    status_bar.showMessage(_('Cannot install the game if the '
-                        'game directory is not empty'))
-                    return
+                    while os.path.exists(subdir):
+                        subdir_name = 'cdda-{0}'.format('%08x' % random.randrange(16**8))
+                        subdir = os.path.join(game_dir, subdir_name)
+
+                    new_subdirectory_msgbox = QMessageBox()
+                    new_subdirectory_msgbox.setWindowTitle(_('Install directory is not empty'))
+                    new_subdirectory_msgbox.setText(_('You cannot install the game in a directory '
+                        'that is not empty. We can quickly proceed with a new subdirectory.'
+                        ))
+                    new_subdirectory_msgbox.setInformativeText(_('Can we create a new empty '
+                        'subdirectory to proceed?'))
+                    new_subdirectory_msgbox.addButton(_('Create the {name} subdirectory and '
+                        'proceed').format(name=subdir_name),
+                        QMessageBox.YesRole)
+                    new_subdirectory_msgbox.addButton(_('I will choose or create a different '
+                        'directory'), QMessageBox.NoRole)
+                    new_subdirectory_msgbox.setIcon(QMessageBox.Question)
+
+                    if new_subdirectory_msgbox.exec() == 1:
+                        return
+                    
+                    os.makedirs(subdir)
+                    game_dir = subdir
+                    game_dir_group_box.set_dir_combo_value(subdir)
+
 
             logger.info(
                 'Updating CDDA...\n'
