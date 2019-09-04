@@ -101,6 +101,7 @@ def delete_path(path):
         flags = shellcon.FOF_ALLOWUNDO
 
     flags = (flags |
+        shellcon.FOF_SILENT |
         shellcon.FOF_NOCONFIRMATION |
         shellcon.FOF_WANTNUKEWARNING
         )
