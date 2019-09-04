@@ -126,6 +126,7 @@ def move_path(srcpath, dstpath):
 
     flags = (
         shellcon.FOF_ALLOWUNDO |
+        shellcon.FOF_SILENT |
         shellcon.FOF_NOCONFIRMMKDIR |
         shellcon.FOF_NOCONFIRMATION |
         shellcon.FOF_WANTNUKEWARNING
