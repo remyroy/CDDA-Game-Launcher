@@ -37,7 +37,7 @@ The launcher goes to great lengths not to delete any file that could be importan
 
 ### How do I update to a new version of the game launcher?
 
-The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/remyroy/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher.
+The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/remyroy/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher. From the help menu, you can also check for new updates.
 
 ### The launcher keeps crashing when I start it. What can I do?
 
