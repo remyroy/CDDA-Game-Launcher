@@ -134,10 +134,10 @@
     "name": "Mutation Changes",
     "description": "Changes, rebalances and adds some more mutations. This a fixed version to cleanse the mod of the old bugs and problems. It also has some new mutations and additions.",
     "category": "rebalance",
-    "authors": [ "Peeved Penguin (Original Author)", "Bl4nk (Fixer)" ],
+    "authors": [ "Peeved Penguin (Original Author)", "Bl4nk (Fixer)", "Snofielf (Fixer)" ],
     "size": 32184,
-    "url": "https://github.com/Bl4nked/Mutation-Changes-Mod-Fix-/archive/master.zip",
-    "homepage": "https://github.com/Bl4nked/Mutation-Changes-Mod-Fix-"
+    "url": "https://github.com/Snofielf/Mutation-Changes-Snofielf-Patch/archive/master.zip",
+    "homepage": "https://github.com/Snofielf/Mutation-Changes-Snofielf-Patch"
   },
   {
     "type": "browser_download",
