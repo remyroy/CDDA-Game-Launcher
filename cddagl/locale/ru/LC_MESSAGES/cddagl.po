@@ -6,15 +6,16 @@
 # Translators:
 # KurzedMetal <kurzedmetal@gmail.com>, 2019
 # Semyon Glukhov <chopagovnoo@rambler.ru>, 2019
+# Nazar Emma-O <zakses87@gmail.com>, 2019
 # 
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cddagl 1.4.1\n"
+"Project-Id-Version: cddagl 1.4.3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-09-02 17:09-0400\n"
+"POT-Creation-Date: 2019-09-04 12:48-0400\n"
 "PO-Revision-Date: 2019-07-10 19:53+0000\n"
-"Last-Translator: Semyon Glukhov <chopagovnoo@rambler.ru>, 2019\n"
+"Last-Translator: Nazar Emma-O <zakses87@gmail.com>, 2019\n"
 "Language-Team: Russian (https://www.transifex.com/cdda-game-launcher/teams/101126/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,68 +34,76 @@ msgid ""
 "{traceback}"
 msgstr ""
 "Фатальная ошибка:\n"
-"Версия лаунчера: {version}\n"
+"Версия установщика: {version}\n"
 "Тип: {extype}\n"
 "Значение: {value}\n"
 "Диагностика:\n"
 "{traceback}"
 
-#: cddagl/functions.py:71
+#: cddagl/functions.py:69 cddagl/ui/views/main.py:1300
+msgid "64-bit"
+msgstr "64-bit"
+
+#: cddagl/functions.py:71 cddagl/ui/views/main.py:1301
+msgid "32-bit"
+msgstr "32-bit"
+
+#: cddagl/functions.py:75
 msgid "B"
 msgstr "б"
 
-#: cddagl/functions.py:72
+#: cddagl/functions.py:76
 msgid "Ki"
 msgstr "К"
 
-#: cddagl/functions.py:72
+#: cddagl/functions.py:76
 msgid "Mi"
 msgstr "М"
 
-#: cddagl/functions.py:72
+#: cddagl/functions.py:76
 msgid "Gi"
 msgstr "Г"
 
-#: cddagl/functions.py:72
+#: cddagl/functions.py:76
 msgid "Ti"
 msgstr "Т"
 
-#: cddagl/functions.py:72
+#: cddagl/functions.py:76
 msgid "Pi"
 msgstr "П"
 
-#: cddagl/functions.py:72
+#: cddagl/functions.py:76
 msgid "Ei"
 msgstr "Э"
 
-#: cddagl/functions.py:73
+#: cddagl/functions.py:77
 msgid "Zi"
 msgstr "З"
 
-#: cddagl/functions.py:77
+#: cddagl/functions.py:81
 msgid "Yi"
 msgstr "Y"
 
 #: cddagl/launcher.py:111
 msgid "CDDA Game Launcher started: {version}"
-msgstr "Версия лаунчера: {version}"
+msgstr "Версия игрового установщика CDDA {version}"
 
 #: cddagl/ui/views/backups.py:188
 msgid "Backups available"
-msgstr "Доступные бэкапы"
+msgstr "Доступные резервные копии"
 
 #: cddagl/ui/views/backups.py:189
 msgid "Manual backup"
-msgstr "Ручной бэкап"
+msgstr "В ручную созданная резервная копия "
 
 #: cddagl/ui/views/backups.py:190
 msgid "Automatic backups"
-msgstr "Автоматические бэкапы"
+msgstr "Автоматические резервные копии"
 
 #: cddagl/ui/views/backups.py:192 cddagl/ui/views/backups.py:316
 #: cddagl/ui/views/backups.py:345 cddagl/ui/views/backups.py:633
 msgid "Restore backup"
-msgstr "Восстановить бэкап"
+msgstr "Восстановить резервную копию"
 
 #: cddagl/ui/views/backups.py:193
 msgid "Refresh list"
@@ -102,11 +111,13 @@ msgstr "Обновить список"
 
 #: cddagl/ui/views/backups.py:194 cddagl/ui/views/backups.py:653
 msgid "Delete backup"
-msgstr "Удалить бэкап"
+msgstr "Удалить резервную копию"
 
 #: cddagl/ui/views/backups.py:195
 msgid "Do not backup the current saves before restoring a backup"
-msgstr "Не делать копию текущих сохранений перед восстановлением бэкапа"
+msgstr ""
+"Не делать резервную копию текущих сохранений перед восстановлением резервной"
+" копии"
 
 #: cddagl/ui/views/backups.py:197
 msgid "Name"
@@ -147,32 +158,32 @@ msgstr "Имя:"
 
 #: cddagl/ui/views/backups.py:202 cddagl/ui/views/backups.py:1073
 msgid "Backup current saves"
-msgstr "Сохранить текущие сейвы"
+msgstr "Создать резервные копии текущих сохранений"
 
 #: cddagl/ui/views/backups.py:204
 msgid "Backup saves before game launch"
-msgstr "Создать бэкап сейвов перед запуском игры"
+msgstr "Создать резервную копию сохранений перед запуском игры"
 
 #: cddagl/ui/views/backups.py:205
 msgid "Backup saves after game end"
-msgstr "Создать бэкап сейвов после закрытия игры"
+msgstr "Создать резервную копию сохранений после закрытия игры"
 
 #: cddagl/ui/views/backups.py:207
 msgid ""
 "This option will only work if you also have the option to keep the launcher "
 "opened after launching the game in the settings tab."
 msgstr ""
-"Опция будет работать только в том случае, если вы разрешили оставаться "
-"лаунчеру открытым после запуска игры."
+"Опция будет работать только если также включили настройку, которая позволяет"
+" установщику не закрываться после запуска игры. "
 
 #: cddagl/ui/views/backups.py:211
 msgid "Maximum automatic backups count:"
-msgstr "Максимальное количество автоматических бекапов:"
+msgstr "Максимальное количество автоматических резервных сохранений:"
 
 #: cddagl/ui/views/backups.py:314 cddagl/ui/views/backups.py:343
 #: cddagl/ui/views/backups.py:375
 msgid "Restore backup cancelled"
-msgstr "Восстановление бэкапа отменено"
+msgstr "Восстановление резервной копии отменено"
 
 #: cddagl/ui/views/backups.py:399
 msgid "before_last_restore"
@@ -180,24 +191,24 @@ msgstr "before_last_restore"
 
 #: cddagl/ui/views/backups.py:441 cddagl/ui/views/backups.py:532
 msgid "Cancel restore backup"
-msgstr "Отменить восстановление бэкапа"
+msgstr "Отменить восстановление резервной копии"
 
 #: cddagl/ui/views/backups.py:473
 msgid "Could not rename the save directory"
-msgstr "Не могу копировать или перенести папку с сохранениями"
+msgstr "Не возможно переименовать директорию сохранений"
 
 #: cddagl/ui/views/backups.py:478
 msgid "Could not remove the save file"
-msgstr "Не могу удалить файл сохранения"
+msgstr "Не возможно удалить файл сохранения"
 
 #: cddagl/ui/views/backups.py:493
 msgid "Extracting backup"
-msgstr "Извлечение бэкапа"
+msgstr "Извлечение резервной копии"
 
 #: cddagl/ui/views/backups.py:498 cddagl/ui/views/backups.py:595
 #: cddagl/ui/views/backups.py:929 cddagl/ui/views/backups.py:1035
-#: cddagl/ui/views/main.py:2529 cddagl/ui/views/main.py:3418
-#: cddagl/ui/views/main.py:3506 cddagl/ui/views/mods.py:775
+#: cddagl/ui/views/main.py:2553 cddagl/ui/views/main.py:3442
+#: cddagl/ui/views/main.py:3530 cddagl/ui/views/mods.py:775
 #: cddagl/ui/views/soundpacks.py:700 cddagl/ui/views/tabbed.py:602
 msgid "{bytes_sec}/s"
 msgstr "{bytes_sec}/с"
@@ -208,56 +219,63 @@ msgstr "Извлечение {filename}"
 
 #: cddagl/ui/views/backups.py:576
 msgid "{backup_name} backup restored"
-msgstr "{backup_name} бэкап восстановлен"
+msgstr "{backup_name} резервная копия восстановлен"
 
 #: cddagl/ui/views/backups.py:654
 msgid "This will delete the backup file. It cannot be undone."
-msgstr "Это действие удалит файл бэкапа."
+msgstr "Это удалит файл резервной копии. Процесс нельзя отменить."
 
 #: cddagl/ui/views/backups.py:656
 msgid ""
 "Are you sure you want to delete the <strong>{filename}</strong> backup?"
-msgstr "Вы уверены, что хотите удалить файл <strong>{filename}</strong>?"
+msgstr ""
+"Вы уверены, что хотите удалить файл  <strong>{filename}</strong>резервной "
+"копии?"
 
 #: cddagl/ui/views/backups.py:659
 msgid "Delete the backup"
-msgstr "Удалить бэкап"
+msgstr "Удалить резервную копию"
 
 #: cddagl/ui/views/backups.py:661
 msgid "I want to keep the backup"
-msgstr "Я хочу оставить бэкап"
+msgstr "Я хочу оставить резервную копию"
 
 #: cddagl/ui/views/backups.py:670
 msgid "Backup deletion cancelled"
-msgstr "Удаление бэкапа отменено"
+msgstr "Удаление резервной копии отменено"
 
 #: cddagl/ui/views/backups.py:675
 msgid "Backup deleted"
-msgstr "Бэкап удален"
+msgstr "Резервная копия удалена"
 
 #: cddagl/ui/views/backups.py:690 cddagl/ui/views/backups.py:732
 msgid "Manual backup cancelled"
-msgstr "Ручной бэкап отменен"
+msgstr "Ручной создание резервной копии отменено "
 
 #: cddagl/ui/views/backups.py:738
 msgid "manual_backup"
 msgstr "manual_backup"
 
+#: cddagl/ui/views/backups.py:749 cddagl/ui/views/main.py:378
+#: cddagl/ui/views/main.py:527 cddagl/ui/views/main.py:906
+msgid "auto"
+msgstr "автоматически"
+
 #: cddagl/ui/views/backups.py:785
 msgid "Save directory not found"
-msgstr "Папка с сохранениями не найдена"
+msgstr "Директория сохранений не найдена"
 
 #: cddagl/ui/views/backups.py:804
 msgid "Could not delete previous backup archive"
-msgstr "Не могу удалить предыдущий бэкап"
+msgstr "Не возможно удалить предыдущий архив резервной копии"
 
 #: cddagl/ui/views/backups.py:893
 msgid "Cancel backup"
-msgstr "Отменить бэкап"
+msgstr "Отменить резервную копию"
 
 #: cddagl/ui/views/backups.py:896
 msgid "Searching for save files"
-msgstr "Поиск файлов с сохранениями"
+msgstr "Поиск файлов сохранений"
 
 #: cddagl/ui/views/backups.py:907
 msgid "Found {filename} in {path}"
@@ -265,7 +283,7 @@ msgstr "Найден {filename} в {path}"
 
 #: cddagl/ui/views/backups.py:926
 msgid "Compressing save files"
-msgstr "Сжатие файлов с сохранениями"
+msgstr "Сжатие файлов сохранений"
 
 #: cddagl/ui/views/backups.py:993
 msgid "Compressing {filename}"
@@ -273,11 +291,11 @@ msgstr "Сжатие {filename}"
 
 #: cddagl/ui/views/backups.py:1015
 msgid "Saves backup completed"
-msgstr "Сейвы успешно сохранены"
+msgstr "Сохранение резервной копии прошло успешно"
 
 #: cddagl/ui/views/backups.py:1279
 msgid "Cannot rename file"
-msgstr "Не могу переименовать файл"
+msgstr "Не возможно переименовать файл"
 
 #: cddagl/ui/views/backups.py:1285
 msgid ""
@@ -317,8 +335,8 @@ msgstr "Хотите попробовать переименовать этот 
 msgid "Retry renaming the file"
 msgstr "Повторить переименование файла"
 
-#: cddagl/ui/views/backups.py:1310 cddagl/ui/views/main.py:3226
-#: cddagl/ui/views/main.py:3288
+#: cddagl/ui/views/backups.py:1310 cddagl/ui/views/main.py:3250
+#: cddagl/ui/views/main.py:3312
 msgid "Cancel the operation"
 msgstr "Отменить операцию"
 
@@ -327,17 +345,17 @@ msgid ""
 "This {name} cannot be directly downloaded by the launcher. You have to use "
 "your browser to download it."
 msgstr ""
-"Лаунчер не может самостоятельно скачать {name}. Используйте браузер для "
+"Установщик не может самостоятельно скачать {name}. Используйте браузер для "
 "этого."
 
 #: cddagl/ui/views/dialogs.py:44
 msgid "1. Open the URL in your browser."
-msgstr "1. Открыть ссылку в браузере"
+msgstr "1. Открыть URL в вашем браузере."
 
 #: cddagl/ui/views/dialogs.py:59
 msgid ""
 "2. Download the {name} on that page and wait for the download to complete."
-msgstr "2. Скачать {name} и дождаться окончания скачивания."
+msgstr "2. Скачать {name}на странице и ждать завершения загрузки."
 
 #: cddagl/ui/views/dialogs.py:65
 msgid "3. Select the downloaded archive."
@@ -363,14 +381,35 @@ msgstr "Скачанный архив"
 msgid "Archive files {formats}"
 msgstr "Файлы в архиве {formats}"
 
+#: cddagl/ui/views/dialogs.py:122
+msgid "File not found"
+msgstr "Файл не найден"
+
+#: cddagl/ui/views/dialogs.py:124
+msgid ""
+"{filepath} is not an existing file on your system. Make sure to download the"
+" archive with your browser. Make sure to select the downloaded archive "
+"afterwards."
+msgstr ""
+"{filepath}не существует в вашей системе. Обязательно скачайте архив с вашего"
+" браузера. После, убедитесь, что выбрали загруженный архив."
+
+#: cddagl/ui/views/dialogs.py:131
+msgid "I will try again"
+msgstr "Я попробую снова"
+
 #: cddagl/ui/views/dialogs.py:172
 msgid "About CDDA Game Launcher"
-msgstr "О лаунчере"
+msgstr "О Установщике CDDA"
 
-#: cddagl/ui/views/dialogs.py:173 cddagl/ui/views/main.py:427
-#: cddagl/ui/views/main.py:2070
+#: cddagl/ui/views/dialogs.py:173 cddagl/ui/views/main.py:429
+#: cddagl/ui/views/main.py:2094
 msgid "OK"
 msgstr "ОК"
+
+#: cddagl/ui/views/dialogs.py:174
+msgid "<p>CDDA Game Launcher version {version}</p>"
+msgstr "<p>Версия игрового установщика CDDA {version}</p>"
 
 #: cddagl/ui/views/dialogs.py:175
 msgid ""
@@ -387,6 +426,20 @@ msgid ""
 msgstr ""
 "<p>Сообщите нам о проблемах <a href=\"https://github.com/remyroy/CDDA-Game-"
 "Launcher/issues/new\">на GitHub</a>.</p>"
+
+#: cddagl/ui/views/dialogs.py:185
+msgid ""
+"<p>If you like the CDDA Game Launcher, you can buy me a beer "
+"by:</p><p>donating bitcoins to <a "
+"href=\"{bitcoin_link}\">{bitcoin_text}</a></p><p><img src=\"btc-qr.png\" "
+"/></p><p>or by donating ethers to <a "
+"href=\"{ether_link}\">{ether_text}</a></p><p><img src=\"eth-qr.png\" /></p>"
+msgstr ""
+"<p>Если вам нравиться Игровой Установщик CDDA, вы можете купить мне пиво: "
+"</p><p>жертвуя Bitcoin валюту сюда<a "
+"href=\"{bitcoin_link}\">{bitcoin_text}</a></p><p><img src=\"btc-qr.png\" "
+"/></p><p>или жертвую Ethereum валюту <a "
+"href=\"{ether_link}\">{ether_text}</a></p><p><img src=\"eth-qr.png\" /></p>"
 
 #: cddagl/ui/views/dialogs.py:193
 msgid ""
@@ -406,15 +459,76 @@ msgstr ""
 "Bestemmiante</a></li><li>Французский: Rémy Roy</li><li>Испанский: "
 "KurzedMetal</li></ul>"
 
+#: cddagl/ui/views/dialogs.py:205
+msgid ""
+"<p>Thanks to <a href=\"http://mattahan.deviantart.com/\">Paul Davey aka "
+"Mattahan</a> for the permission to use his artwork for the launcher "
+"icon.</p>"
+msgstr ""
+"<p>Благодарность<a href=\"http://mattahan.deviantart.com/\"> Полу Дэйви "
+"(Paul Davey) aka Mattahanза</a> разрешение использовать его рисунок для "
+"иконки установщика CDDA.</p>"
+
+#: cddagl/ui/views/dialogs.py:207
+msgid ""
+"<p>This software is distributed under the MIT License. That means this is "
+"100&#37; free software, completely free to use, modify and/or distribute. If"
+" you like more details check the following boring legal stuff...</p>"
+msgstr ""
+"<p>Это программное обеспечение выпускается под лицензией MIT. Это значит что"
+" это 100&#37; бесплатное программное обеспечение, свободное для "
+"использования, изменения и/или распространения. Если вам нравятся детали "
+"проверьте следующую скучную, легальную ерунду...</p>"
+
 #: cddagl/ui/views/dialogs.py:238
 msgid ""
 "The CDDA Game Launcher just crashed. An unhandled exception was raised. Here"
 " are the details."
 msgstr "Лаунчер только что завершился с ошибкой. Подробности ниже."
 
+#: cddagl/ui/views/dialogs.py:250
+msgid ""
+"\n"
+"<p>CDDA Game Launcher version: {version}</p>\n"
+"<p>OS: {os} ({bitness})</p>\n"
+"<p>Type: {extype}</p>\n"
+"<p>Value: {value}</p>\n"
+"<p>Traceback:</p>\n"
+"<code>{traceback}</code>\n"
+msgstr ""
+"\n"
+"<p>Версия Игрового Установщика CDDA: {version}</p>\n"
+"<p>ОС: {os} ({bitness})</p>\n"
+"<p>Тип:{extype}</p>\n"
+"<p>Значение:{value}</p>\n"
+"<p>Диагностика:</p>\n"
+"<code>{traceback}</code>\n"
+
 #: cddagl/ui/views/dialogs.py:265
 msgid "Unhandled exception: [Enter a title]"
 msgstr "Необрабатываемое исключение: [Введите заголовок]"
+
+#: cddagl/ui/views/dialogs.py:266
+msgid ""
+"* Description: [Enter what you did and what happened]\n"
+"* Version: {version}\n"
+"* OS: {os} ({bitness})\n"
+"* Type: `{extype}`\n"
+"* Value: {value}\n"
+"* Traceback:\n"
+"```\n"
+"{traceback}\n"
+"```\n"
+msgstr ""
+"* Описание: [Напишите, что вы делали и что произошло]\n"
+"* Версия: {version}\n"
+"* ОС: {os} ({bitness})\n"
+"* Тип: `{extype}`\n"
+"* Значение: {value}\n"
+"* Диагностика:\n"
+"```\n"
+"{traceback}\n"
+"```\n"
 
 #: cddagl/ui/views/dialogs.py:281
 msgid ""
@@ -432,36 +546,36 @@ msgstr "Выход"
 msgid "Something went wrong"
 msgstr "Что-то пошло не так"
 
-#: cddagl/ui/views/main.py:157 cddagl/ui/views/main.py:167
-#: cddagl/ui/views/main.py:675 cddagl/ui/views/main.py:676
-#: cddagl/ui/views/main.py:766 cddagl/ui/views/main.py:808
-#: cddagl/ui/views/main.py:938 cddagl/ui/views/main.py:1047
-#: cddagl/ui/views/main.py:1137 cddagl/ui/views/main.py:1246
-#: cddagl/ui/views/main.py:2647 cddagl/ui/views/main.py:2745
-#: cddagl/ui/views/main.py:2843 cddagl/ui/views/mods.py:1050
+#: cddagl/ui/views/main.py:159 cddagl/ui/views/main.py:169
+#: cddagl/ui/views/main.py:677 cddagl/ui/views/main.py:678
+#: cddagl/ui/views/main.py:768 cddagl/ui/views/main.py:810
+#: cddagl/ui/views/main.py:940 cddagl/ui/views/main.py:1049
+#: cddagl/ui/views/main.py:1139 cddagl/ui/views/main.py:1248
+#: cddagl/ui/views/main.py:2671 cddagl/ui/views/main.py:2769
+#: cddagl/ui/views/main.py:2867 cddagl/ui/views/mods.py:1050
 #: cddagl/ui/views/mods.py:1092 cddagl/ui/views/mods.py:1129
 #: cddagl/ui/views/mods.py:1165 cddagl/ui/views/soundpacks.py:1013
 #: cddagl/ui/views/soundpacks.py:1049
 msgid "Unknown"
 msgstr "Неизвестно"
 
-#: cddagl/ui/views/main.py:204
+#: cddagl/ui/views/main.py:206
 msgid "Directory:"
 msgstr "Директория:"
 
-#: cddagl/ui/views/main.py:205 cddagl/ui/views/mods.py:266
+#: cddagl/ui/views/main.py:207 cddagl/ui/views/mods.py:266
 msgid "Version:"
 msgstr "Версия:"
 
-#: cddagl/ui/views/main.py:206
+#: cddagl/ui/views/main.py:208
 msgid "Build:"
 msgstr "Билд:"
 
-#: cddagl/ui/views/main.py:207
+#: cddagl/ui/views/main.py:209
 msgid "Saves:"
 msgstr "Сохранения:"
 
-#: cddagl/ui/views/main.py:209
+#: cddagl/ui/views/main.py:211
 msgid ""
 "Your save directory might be large enough to cause significant delays during the update process.\n"
 "You might want to enable the \"Do not copy or move the save directory\" option in the settings tab."
@@ -469,256 +583,491 @@ msgstr ""
 "Ваша папка с сохранениями имеет большой вес. Это может сильно замедлить процесс обновления.\n"
 "Возможно, вам стоит включить опцию \"Не копировать и не переносить папку с сохранениями\" в настройках"
 
-#: cddagl/ui/views/main.py:213 cddagl/ui/views/main.py:516
-#: cddagl/ui/views/main.py:895
+#: cddagl/ui/views/main.py:215 cddagl/ui/views/main.py:518
+#: cddagl/ui/views/main.py:897
 msgid "Launch game"
 msgstr "Запустить игру"
 
-#: cddagl/ui/views/main.py:214
+#: cddagl/ui/views/main.py:216
 msgid "Restore previous version"
 msgstr "Восстановить предыдущую версию"
 
-#: cddagl/ui/views/main.py:215
+#: cddagl/ui/views/main.py:217
 msgid "Game"
 msgstr "Игра"
 
-#: cddagl/ui/views/main.py:389
+#: cddagl/ui/views/main.py:379
+msgid "before_launch"
+msgstr "before_launch"
+
+#: cddagl/ui/views/main.py:391
 msgid "Game executable not found"
 msgstr "Папка с сохранениями не найдена"
 
-#: cddagl/ui/views/main.py:411
+#: cddagl/ui/views/main.py:413
 msgid "Could not launch the game executable"
 msgstr "Не удалось запустить исполняемый файл игры"
 
-#: cddagl/ui/views/main.py:414
+#: cddagl/ui/views/main.py:416
 msgid "Cannot launch game"
 msgstr "Запустить игру"
 
-#: cddagl/ui/views/main.py:423
+#: cddagl/ui/views/main.py:418
+msgid ""
+"\n"
+"<p>The launcher failed to start the game executable in <strong>{filename}</strong> .</p>\n"
+"<p>It received the following error from the operating system: {error}</p>\n"
+"<p>Poor antivirus products are known to detect the game binary as a threat and\n"
+"block its execution. A simple workaround is to add the game binary in your\n"
+"antivirus whitelist or select the action to trust this binary when detected.</p>\n"
+msgstr ""
+"\n"
+"<p>Программе запуска не удалось запустить игру, исполняемую <strong>{filename}</strong>.</p>\n"
+"<p>Получена следующая ошибка из операционной системы:{error}</p>\n"
+"<p>Известно, что плохие антивирусы считают двоичный файл игры как угрозу и\n"
+"блокируют запуск. Простое решение проблемы, это добавить двоичный файл в белый список антивируса или выбрать опцию доверять ему когда он будет обнаружен. </p>\n"
+
+#: cddagl/ui/views/main.py:425
 msgid "[unknown]"
 msgstr "[Неизвестно]"
 
-#: cddagl/ui/views/main.py:442 cddagl/ui/views/main.py:755
-#: cddagl/ui/views/main.py:843 cddagl/ui/views/main.py:2632
-#: cddagl/ui/views/main.py:2928
+#: cddagl/ui/views/main.py:444 cddagl/ui/views/main.py:757
+#: cddagl/ui/views/main.py:845 cddagl/ui/views/main.py:2656
+#: cddagl/ui/views/main.py:2952
 msgid "Game process is running"
 msgstr "Игра запущена"
 
-#: cddagl/ui/views/main.py:460 cddagl/ui/views/main.py:861
+#: cddagl/ui/views/main.py:462 cddagl/ui/views/main.py:863
 msgid "Show current game"
 msgstr "Показать текущую игру"
 
-#: cddagl/ui/views/main.py:498 cddagl/ui/views/main.py:885
+#: cddagl/ui/views/main.py:500 cddagl/ui/views/main.py:887
 msgid "Game process has ended"
 msgstr "Процесс игры завершен"
 
-#: cddagl/ui/views/main.py:584
+#: cddagl/ui/views/main.py:528 cddagl/ui/views/main.py:907
+msgid "after_end"
+msgstr "after_end"
+
+#: cddagl/ui/views/main.py:586
 msgid "Game directory"
 msgstr "Директория игры"
 
-#: cddagl/ui/views/main.py:640 cddagl/ui/views/main.py:1039
+#: cddagl/ui/views/main.py:613 cddagl/ui/views/main.py:620
+#: cddagl/ui/views/main.py:627 cddagl/ui/views/main.py:652
+msgid "Unknown version - Reason:"
+msgstr "Неизвестная версия - Причина:"
+
+#: cddagl/ui/views/main.py:614
+msgid "CDDA Game Launcher files cannot be inside Game directory!"
+msgstr "Файл Игрового Установщика CDDA не может быть в директорию Игры!"
+
+#: cddagl/ui/views/main.py:621
+msgid "Game directory was set to a file!"
+msgstr "Игровая директория была установлена в файл!"
+
+#: cddagl/ui/views/main.py:628
+msgid "Game directory doesn't exist, Game is not installed here."
+msgstr "Директория игры не существует. Игра не установлена сюда."
+
+#: cddagl/ui/views/main.py:642 cddagl/ui/views/main.py:1041
 msgid "console"
 msgstr "консоль"
 
-#: cddagl/ui/views/main.py:643 cddagl/ui/views/main.py:1042
+#: cddagl/ui/views/main.py:645 cddagl/ui/views/main.py:1044
 msgid "tiles"
 msgstr "tайлы"
 
-#: cddagl/ui/views/main.py:669 cddagl/ui/views/main.py:2505
-#: cddagl/ui/views/main.py:2788 cddagl/ui/views/main.py:2860
+#: cddagl/ui/views/main.py:653
+msgid "Game is not installed in this directory."
+msgstr "Игра не установлена в эту директорию. "
+
+#: cddagl/ui/views/main.py:660 cddagl/ui/views/main.py:661
+#: cddagl/ui/views/main.py:662
+msgid "Analyzing..."
+msgstr "Анализируется..."
+
+#: cddagl/ui/views/main.py:671 cddagl/ui/views/main.py:2529
+#: cddagl/ui/views/main.py:2812 cddagl/ui/views/main.py:2884
 msgid "Install game"
 msgstr "Установить игру"
 
-#: cddagl/ui/views/main.py:682 cddagl/ui/views/main.py:1303
-#: cddagl/ui/views/main.py:2503 cddagl/ui/views/main.py:2771
-#: cddagl/ui/views/main.py:2858
+#: cddagl/ui/views/main.py:684 cddagl/ui/views/main.py:1305
+#: cddagl/ui/views/main.py:2527 cddagl/ui/views/main.py:2795
+#: cddagl/ui/views/main.py:2882
 msgid "Update game"
 msgstr "Обновить игру"
 
-#: cddagl/ui/views/main.py:714 cddagl/ui/views/main.py:1086
+#: cddagl/ui/views/main.py:716 cddagl/ui/views/main.py:1088
 msgid "Reading: {0}"
 msgstr "Чтение: {0}"
 
-#: cddagl/ui/views/main.py:750
+#: cddagl/ui/views/main.py:752
 msgid "Previous version restored"
 msgstr "Предыдущая версия восстановлена"
 
-#: cddagl/ui/views/main.py:752 cddagl/ui/views/main.py:2627
-#: cddagl/ui/views/main.py:2925 cddagl/ui/views/tabbed.py:85
+#: cddagl/ui/views/main.py:754 cddagl/ui/views/main.py:2651
+#: cddagl/ui/views/main.py:2949 cddagl/ui/views/tabbed.py:85
 msgid "Ready"
 msgstr "Готово"
 
-#: cddagl/ui/views/main.py:802 cddagl/ui/views/main.py:2475
-#: cddagl/ui/views/main.py:2783
+#: cddagl/ui/views/main.py:804 cddagl/ui/views/main.py:2499
+#: cddagl/ui/views/main.py:2807
 msgid "Your game is up to date"
 msgstr "Игра не требует обновления"
 
-#: cddagl/ui/views/main.py:804 cddagl/ui/views/main.py:2477
-#: cddagl/ui/views/main.py:2785
+#: cddagl/ui/views/main.py:806 cddagl/ui/views/main.py:2501
+#: cddagl/ui/views/main.py:2809
 msgid "There is a new update available"
 msgstr "Доступно новое обновление"
 
-#: cddagl/ui/views/main.py:1046
+#: cddagl/ui/views/main.py:949 cddagl/ui/views/main.py:987
+#: cddagl/ui/views/main.py:1014
+msgid "World"
+msgid_plural "Worlds"
+msgstr[0] "Мир"
+msgstr[1] "Миры"
+msgstr[2] "Миры"
+msgstr[3] "Миры"
+
+#: cddagl/ui/views/main.py:950 cddagl/ui/views/main.py:988
+#: cddagl/ui/views/main.py:1015
+msgid "Character"
+msgid_plural "Characters"
+msgstr[0] "Персонаж"
+msgstr[1] "Персонажи"
+msgstr[2] "Персонажи"
+msgstr[3] "Персонажи"
+
+#: cddagl/ui/views/main.py:1048
 msgid "Not a CDDA directory"
 msgstr "Это не директория CDDA"
 
+#: cddagl/ui/views/main.py:1060
+msgid ""
+"No executable found in the downloaded archive. You might want to restore "
+"your previous version."
+msgstr ""
+"Программа запуска не найдена в загруженном архиве. Возможно вы хотите "
+"восстановить предыдущую версию."
+
+#: cddagl/ui/views/main.py:1296
+msgid "Branch:"
+msgstr "Ветка:"
+
 #: cddagl/ui/views/main.py:1297
+msgid "Stable"
+msgstr "Стабильный"
+
+#: cddagl/ui/views/main.py:1298
+msgid "Experimental"
+msgstr "Экспериментальный "
+
+#: cddagl/ui/views/main.py:1299
 msgid "Platform:"
 msgstr "Платформа:"
 
-#: cddagl/ui/views/main.py:1300
+#: cddagl/ui/views/main.py:1300 cddagl/ui/views/main.py:3023
+msgid "Windows x64"
+msgstr "Windows x64"
+
+#: cddagl/ui/views/main.py:1301 cddagl/ui/views/main.py:3022
+msgid "Windows x86"
+msgstr "Windows x86"
+
+#: cddagl/ui/views/main.py:1302
 msgid "Available builds:"
 msgstr "Доступны билды:"
 
-#: cddagl/ui/views/main.py:1301
+#: cddagl/ui/views/main.py:1303
 msgid "Refresh"
 msgstr "Обновить"
 
-#: cddagl/ui/views/main.py:1302
+#: cddagl/ui/views/main.py:1304
 msgid "Changelog"
 msgstr "История версий"
 
-#: cddagl/ui/views/main.py:1304 cddagl/ui/views/settings.py:391
+#: cddagl/ui/views/main.py:1306 cddagl/ui/views/settings.py:391
 msgid "Update/Installation"
 msgstr "Обновление/Установка"
 
-#: cddagl/ui/views/main.py:1399
+#: cddagl/ui/views/main.py:1349
+msgid "Cannot update or install the game since no build was found"
+msgstr "Невозможно обновить или установить игру пока не будет найден билд. "
+
+#: cddagl/ui/views/main.py:1380
+msgid "Install directory is not empty"
+msgstr "Директория установки не пуста"
+
+#: cddagl/ui/views/main.py:1381
+msgid ""
+"You cannot install the game in a directory that is not empty. We can quickly"
+" proceed with a new subdirectory."
+msgstr ""
+"Игру можно установить только в пустую директорию. Мы можем продолжить создав"
+" новую под-директорию. "
+
+#: cddagl/ui/views/main.py:1384
+msgid "Can we create a new empty subdirectory to proceed?"
+msgstr "Можно создать новую пустую под-директорию для продолжения?"
+
+#: cddagl/ui/views/main.py:1386
+msgid "Create the {name} subdirectory and proceed"
+msgstr "Создать {name}под-директорию и продолжить"
+
+#: cddagl/ui/views/main.py:1389
+msgid "I will choose or create a different directory"
+msgstr "Я выберу или создам другую директорию"
+
+#: cddagl/ui/views/main.py:1423
 msgid "Game is up to date"
 msgstr "Игра обновлена"
 
-#: cddagl/ui/views/main.py:1400
+#: cddagl/ui/views/main.py:1424
 msgid "You already have the latest version."
 msgstr "У вас уже установлена самая свежая версия."
 
-#: cddagl/ui/views/main.py:1402
+#: cddagl/ui/views/main.py:1426
 msgid "Are you sure you want to update your game?"
 msgstr "Вы уверены, что хотите обновить игру?"
 
-#: cddagl/ui/views/main.py:1404
+#: cddagl/ui/views/main.py:1428
 msgid "Update the game again"
 msgstr "Обновить игру ещё раз"
 
-#: cddagl/ui/views/main.py:1406
+#: cddagl/ui/views/main.py:1430
 msgid "I do not need to update the game again"
 msgstr "Я не хочу обновлять игру ещё раз"
 
-#: cddagl/ui/views/main.py:1434
+#: cddagl/ui/views/main.py:1458
 msgid "Cannot install game on a file"
 msgstr "Не могу установить игру"
 
-#: cddagl/ui/views/main.py:1474 cddagl/ui/views/main.py:1496
-#: cddagl/ui/views/main.py:1526 cddagl/ui/views/main.py:1551
-#: cddagl/ui/views/main.py:1574
+#: cddagl/ui/views/main.py:1498 cddagl/ui/views/main.py:1520
+#: cddagl/ui/views/main.py:1550 cddagl/ui/views/main.py:1575
+#: cddagl/ui/views/main.py:1598
 msgid "Update cancelled"
 msgstr "Обновление прервано"
 
-#: cddagl/ui/views/main.py:1477 cddagl/ui/views/main.py:1499
-#: cddagl/ui/views/main.py:1529 cddagl/ui/views/main.py:1554
-#: cddagl/ui/views/main.py:1577
+#: cddagl/ui/views/main.py:1501 cddagl/ui/views/main.py:1523
+#: cddagl/ui/views/main.py:1553 cddagl/ui/views/main.py:1578
+#: cddagl/ui/views/main.py:1601
 msgid "Installation cancelled"
 msgstr "Установка прервана"
 
-#: cddagl/ui/views/main.py:1682 cddagl/ui/views/main.py:1747
+#: cddagl/ui/views/main.py:1706 cddagl/ui/views/main.py:1771
 #: cddagl/ui/views/mods.py:421 cddagl/ui/views/mods.py:608
 #: cddagl/ui/views/soundpacks.py:372 cddagl/ui/views/soundpacks.py:567
 msgid "Downloading: {0}"
 msgstr "Скачивание: {0}"
 
-#: cddagl/ui/views/main.py:1718 cddagl/ui/views/tabbed.py:505
+#: cddagl/ui/views/main.py:1742 cddagl/ui/views/tabbed.py:505
 msgid "Cancel update"
 msgstr "Отменить обновление"
 
-#: cddagl/ui/views/main.py:1720
+#: cddagl/ui/views/main.py:1744
 msgid "Cancel installation"
 msgstr "Отменить установку"
 
-#: cddagl/ui/views/main.py:1786 cddagl/ui/views/mods.py:493
+#: cddagl/ui/views/main.py:1810 cddagl/ui/views/mods.py:493
 #: cddagl/ui/views/mods.py:656 cddagl/ui/views/soundpacks.py:440
 #: cddagl/ui/views/soundpacks.py:603
 msgid "Testing downloaded file archive"
 msgstr "Проверка архива"
 
-#: cddagl/ui/views/main.py:1823 cddagl/ui/views/mods.py:530
+#: cddagl/ui/views/main.py:1847 cddagl/ui/views/mods.py:530
 #: cddagl/ui/views/mods.py:701 cddagl/ui/views/soundpacks.py:487
 #: cddagl/ui/views/soundpacks.py:649
 msgid "Downloaded archive is invalid"
 msgstr "Архив поврежден"
 
-#: cddagl/ui/views/main.py:1833
+#: cddagl/ui/views/main.py:1857
 msgid "Could not download game"
 msgstr "Не могу скачать игру"
 
-#: cddagl/ui/views/main.py:1906
+#: cddagl/ui/views/main.py:1885
+msgid "Deleting {name}"
+msgstr "Удаление{name}"
+
+#: cddagl/ui/views/main.py:1886 cddagl/ui/views/main.py:1892
+#: cddagl/ui/views/main.py:2465
+msgid "previous_version directory"
+msgstr "предыдущая_версия директории "
+
+#: cddagl/ui/views/main.py:1891
+msgid "Update cancelled - Could not delete the {name}."
+msgstr "Обновления отменено - Не вышло удалить {name}."
+
+#: cddagl/ui/views/main.py:1930
 msgid "Backing up current game"
 msgstr "Бэкап текущей игры"
 
-#: cddagl/ui/views/main.py:1950
+#: cddagl/ui/views/main.py:1974
 msgid "Backing up {0}"
 msgstr "Создание бэкапа {0}"
 
-#: cddagl/ui/views/main.py:2052 cddagl/ui/views/mods.py:858
+#: cddagl/ui/views/main.py:1993
+msgid "Could not move {srcpath} in {dstpath} ."
+msgstr "Не вышло переместить {srcpath}в {dstpath}."
+
+#: cddagl/ui/views/main.py:2076 cddagl/ui/views/mods.py:858
 #: cddagl/ui/views/soundpacks.py:783
 msgid "Extracting {0}"
 msgstr "Извлечение {0}"
 
-#: cddagl/ui/views/main.py:2141
+#: cddagl/ui/views/main.py:2086
+msgid "Cannot extract game archive"
+msgstr "Не выходит извлечь архив игры"
+
+#: cddagl/ui/views/main.py:2088
+msgid ""
+"\n"
+"<p>The launcher failed to extract the game archive.</p>\n"
+"<p>It received the following error from the operating system: {error}</p>"
+msgstr ""
+"\n"
+"<p>Установщик не справился с извлечением архива игры.</p>\n"
+"<p>Получена следующая ошибка от операционной системы:{error}</p>"
+
+#: cddagl/ui/views/main.py:2165
 msgid "{0} directory"
 msgstr "{0} директория"
 
-#: cddagl/ui/views/main.py:2198
+#: cddagl/ui/views/main.py:2222
 msgid "Restoring custom tilesets"
 msgstr "Восстановление кастомных тайлсетов"
 
-#: cddagl/ui/views/main.py:2241
+#: cddagl/ui/views/main.py:2265
 msgid "Restoring custom soundpacks"
 msgstr "Восстановление кастомных саундпаков"
 
-#: cddagl/ui/views/main.py:2290
+#: cddagl/ui/views/main.py:2314
 msgid "{name} soundpack"
 msgstr "{name} саундпак"
 
-#: cddagl/ui/views/main.py:2320
+#: cddagl/ui/views/main.py:2344
 msgid "Restoring custom mods"
-msgstr "Восстановление кастомных модов"
+msgstr "Восстановление самодельных модификаций"
 
-#: cddagl/ui/views/main.py:2407
+#: cddagl/ui/views/main.py:2379
+msgid "Restoring user custom mods"
+msgstr " Восстановление пользовательских настроек "
+
+#: cddagl/ui/views/main.py:2417
+msgid "Restoring {0}"
+msgstr "Восстановление{0}"
+
+#: cddagl/ui/views/main.py:2431
 msgid "Restoring custom fonts"
 msgstr "Восстановление кастомных шрифтов"
 
-#: cddagl/ui/views/main.py:2462
+#: cddagl/ui/views/main.py:2486
 msgid "Update completed"
 msgstr "Обновление завершено"
 
-#: cddagl/ui/views/main.py:2464
+#: cddagl/ui/views/main.py:2488
 msgid "Installation completed"
 msgstr "Установка завершена"
 
-#: cddagl/ui/views/main.py:2547
+#: cddagl/ui/views/main.py:2571
 msgid "Fetching remote builds"
 msgstr "Поиск внешних билдов"
 
-#: cddagl/ui/views/main.py:2553 cddagl/ui/views/main.py:2595
+#: cddagl/ui/views/main.py:2577 cddagl/ui/views/main.py:2619
 msgid "Fetching: {url}"
 msgstr "Поиск: {url}"
 
-#: cddagl/ui/views/main.py:2794
+#: cddagl/ui/views/main.py:2678
+msgid ""
+"You have {remaining} request(s) remaining for accessing GitHub API.\n"
+"You will have to wait until {datetime} to get more requests.\n"
+"Those requests are needed to get the available builds.\n"
+"If you keep running low on those remaining requests, avoid quickly refreshing often\n"
+" for the available builds. For more information, search GitHub API rate limiting."
+msgstr ""
+"У вас {remaining}запрос(ы) ожидать доступа GitHub API.\n"
+"Ожидайте до, {datetime}, чтобы получить больше запросов.\n"
+"Они нужны для доступа к новым билдам.\n"
+"Если у вас кончаются запросы, не обновляйтесь часто\n"
+" для получения новых билдов. Больше информации - GitHub API rate limiting."
+
+#: cddagl/ui/views/main.py:2696 cddagl/ui/views/tabbed.py:166
+msgid ""
+"Could not find launcher latest release when requesting {url}. Error: {error}"
+msgstr ""
+"Не возможно найти последнюю версию установщика, когда запрашивается {url}. "
+"Ошибка: {error}"
+
+#: cddagl/ui/views/main.py:2782
+msgid " - build unavailable"
+msgstr "- сборка недоступна"
+
+#: cddagl/ui/views/main.py:2787
+msgid " - latest build available"
+msgstr "- последняя сборка недоступна"
+
+#: cddagl/ui/views/main.py:2818
 msgid "Could not find remote builds"
 msgstr "Не могу найти внешние билды"
 
-#: cddagl/ui/views/main.py:3116 cddagl/ui/views/main.py:3353
+#: cddagl/ui/views/main.py:2907
+msgid "<h3>Loading changelog...</h3>"
+msgstr "<h3>Загрузка истории изменений...</h3>"
+
+#: cddagl/ui/views/main.py:2912
+msgid "Fetching latest build changelogs"
+msgstr "Получение истории изменения последней сборки"
+
+#: cddagl/ui/views/main.py:2955
+msgid "<h3>Parsing changelog...</h3>"
+msgstr "<h3>Анализ истории изменений...</h3>"
+
+#: cddagl/ui/views/main.py:3024
+msgid "All Platforms"
+msgstr "Все Платформы"
+
+#: cddagl/ui/views/main.py:3054
+msgid "Error parsing Changelog data. Retry later."
+msgstr "Ошибка анализа истории изменений данных. Попробуйте позже."
+
+#: cddagl/ui/views/main.py:3087
+msgid "Build #{build_number}"
+msgstr "Сборка#{build_number}"
+
+#: cddagl/ui/views/main.py:3096
+msgid "build still in progress!"
+msgstr "сборка всё ещё в разработке!"
+
+#: cddagl/ui/views/main.py:3110
+msgid "but build failed for:"
+msgstr "но сборка неудачна из-за:"
+
+#: cddagl/ui/views/main.py:3121
+msgid "No changes, same code as previous build!"
+msgstr "Нет изменений, код тот же, что и в прошлой сборке!"
+
+#: cddagl/ui/views/main.py:3140 cddagl/ui/views/main.py:3377
 #, python-format
 msgid "Source path '%s' is not a directory"
 msgstr "Указанный путь '%s' не является директорией"
 
-#: cddagl/ui/views/main.py:3149
+#: cddagl/ui/views/main.py:3171 cddagl/ui/views/main.py:3420
+msgid "file"
+msgid_plural "files"
+msgstr[0] "файл"
+msgstr[1] "файлы"
+msgstr[2] "файлы"
+msgstr[3] "файлы"
+
+#: cddagl/ui/views/main.py:3173
 msgid "Analysing {name} - Found {file_count} {files}"
 msgstr "Анализирую {name} - Найдено {file_count} {files}"
 
-#: cddagl/ui/views/main.py:3194 cddagl/ui/views/main.py:3258
+#: cddagl/ui/views/main.py:3218 cddagl/ui/views/main.py:3282
 msgid "Cannot remove directory"
 msgstr "Невозможно удалить директорию"
 
-#: cddagl/ui/views/main.py:3201 cddagl/ui/views/main.py:3264
+#: cddagl/ui/views/main.py:3225 cddagl/ui/views/main.py:3288
 msgid ""
 "\n"
 "<p>The launcher failed to remove the following directory: {directory}</p>\n"
@@ -730,7 +1079,7 @@ msgstr ""
 "<p>При попытке удаления или изменения файла {filename}, лаунчер получил \n"
 "следующую ошибку: {error}</p>\n"
 
-#: cddagl/ui/views/main.py:3210 cddagl/ui/views/main.py:3273
+#: cddagl/ui/views/main.py:3234 cddagl/ui/views/main.py:3297
 msgid ""
 "\n"
 "<p>No process seems to be using that file or directory.</p>"
@@ -738,7 +1087,7 @@ msgstr ""
 "\n"
 "<p>Похоже, что нет процессов, использующих этот файл или директорию</p>\n"
 
-#: cddagl/ui/views/main.py:3213 cddagl/ui/views/main.py:3276
+#: cddagl/ui/views/main.py:3237 cddagl/ui/views/main.py:3300
 msgid ""
 "\n"
 "<p>The process <strong>{image_file_name} ({pid})</strong> is currently using\n"
@@ -748,28 +1097,32 @@ msgstr ""
 "<p>Процесс <strong>{image_file_name} ({pid})</strong> сейчас использует \n"
 "этот файл или директорию. Закройте этот процесс, если хотите продолжить</p>\n"
 
-#: cddagl/ui/views/main.py:3221 cddagl/ui/views/main.py:3283
+#: cddagl/ui/views/main.py:3245 cddagl/ui/views/main.py:3307
 msgid "Do you want to retry removing this directory?"
 msgstr "Хотите попробовать удалить эту директорию ещё раз?"
 
-#: cddagl/ui/views/main.py:3224 cddagl/ui/views/main.py:3286
+#: cddagl/ui/views/main.py:3248 cddagl/ui/views/main.py:3310
 msgid "Retry removing the directory"
 msgstr "Повторить удаление директории"
 
-#: cddagl/ui/views/main.py:3315 cddagl/ui/views/main.py:3527
+#: cddagl/ui/views/main.py:3329
+msgid "Deleting {name} - {entry}"
+msgstr "Удаление{name}-{entry}"
+
+#: cddagl/ui/views/main.py:3339 cddagl/ui/views/main.py:3551
 msgid "Analysing {name}"
 msgstr "Анализирую {name}"
 
-#: cddagl/ui/views/main.py:3355
+#: cddagl/ui/views/main.py:3379
 #, python-format
 msgid "Destination path '%s' already exists"
 msgstr "Путь назначения '%s' уже существует"
 
-#: cddagl/ui/views/main.py:3399
+#: cddagl/ui/views/main.py:3423
 msgid "Analysing {name} - Found {file_count} {files} ({size})"
 msgstr "Анализирую {name} - Найдено {file_count} {files} ({size})"
 
-#: cddagl/ui/views/main.py:3517
+#: cddagl/ui/views/main.py:3541
 msgid "Copying {name} - {entry}"
 msgstr "Копирую {name} - {entry}"
 
@@ -789,7 +1142,7 @@ msgstr "Удалить"
 
 #: cddagl/ui/views/mods.py:239
 msgid "Add this new mod to the repository"
-msgstr "Добавить этот новый мод в репозиторий"
+msgstr "Добавить эту новую модификацию в хранилище"
 
 #: cddagl/ui/views/mods.py:240
 msgid ""
@@ -799,23 +1152,23 @@ msgid ""
 "* Homepage: [Enter the Url of the author website or where the mod was published]\n"
 "* Mod not found in version: {version}\n"
 msgstr ""
-"* Название: [Введите название мода]\n"
-"* Url: [Введите ссылку, где можно скачать мод]\n"
+"* Название: [Введите название модификации]\n"
+"* Url: [Введите ссылку, где можно скачать модификацию]\n"
 "* Автор: [Введите имя автора]\n"
 "* Сайт проекта: [Введите ссылку на сайт, где мод был опубликован]\n"
-"* Мод не найден в версии: {version}\n"
+"* Модификация не найдена в версии: {version}\n"
 
 #: cddagl/ui/views/mods.py:247
 msgid "<a href=\"{url}\">Suggest a new mod on GitHub</a>"
-msgstr "<a href=\"{url}\">Предложить новый мод на GitHub</a>"
+msgstr "<a href=\"{url}\">Предложить новую модификацию на GitHub</a>"
 
 #: cddagl/ui/views/mods.py:249 cddagl/ui/views/soundpacks.py:199
 msgid "Repository"
-msgstr "Репозиторий"
+msgstr "Хранилище"
 
 #: cddagl/ui/views/mods.py:250 cddagl/ui/views/mods.py:723
 msgid "Install this mod"
-msgstr "Установить этот мод"
+msgstr "Установить эту модификацию"
 
 #: cddagl/ui/views/mods.py:251 cddagl/ui/views/soundpacks.py:213
 msgid "Details"
@@ -856,11 +1209,11 @@ msgstr "Размер:"
 
 #: cddagl/ui/views/mods.py:265 cddagl/ui/views/soundpacks.py:224
 msgid "Home page:"
-msgstr "Сайт:"
+msgstr "Домашняя страница:"
 
 #: cddagl/ui/views/mods.py:369
 msgid "Mod already present"
-msgstr "Мод уже установлен"
+msgstr "Модификация уже установлена"
 
 #: cddagl/ui/views/mods.py:370
 msgid ""
@@ -869,16 +1222,16 @@ msgid ""
 "first if you want to update it. Also, there can only be a single mod with "
 "the same ident value available in the game."
 msgstr ""
-"Похоже, что этот мод уже установлен. Удалите файлы мода вручную, если вы "
-"хотите обновить его."
+"Похоже, что этот мод уже установлен. Удалите файлы модификации вручную, если"
+" вы хотите обновить его."
 
 #: cddagl/ui/views/mods.py:377
 msgid "Are you sure you want to install the {name} mod?"
-msgstr "Вы уверены, что хотите установить мод {name}?"
+msgstr "Вы уверены, что хотите установить модификацию {name}?"
 
 #: cddagl/ui/views/mods.py:380
 msgid "Install the mod"
-msgstr "Установить мод"
+msgstr "Установить модификацию"
 
 #: cddagl/ui/views/mods.py:382 cddagl/ui/views/soundpacks.py:335
 msgid "Do not install again"
@@ -886,46 +1239,57 @@ msgstr "Не устанавливать ещё раз"
 
 #: cddagl/ui/views/mods.py:456 cddagl/ui/views/mods.py:482
 msgid "Cancel mod installation"
-msgstr "Отменить установку мода"
+msgstr "Отменить установку модификации"
 
 #: cddagl/ui/views/mods.py:476
 msgid "Could not find downloaded file archive"
-msgstr "Не могу найти скачанный архив"
+msgstr "Не возможно найти скачанный архив"
 
 #: cddagl/ui/views/mods.py:502 cddagl/ui/views/mods.py:536
 #: cddagl/ui/views/mods.py:664 cddagl/ui/views/mods.py:707
 #: cddagl/ui/views/soundpacks.py:448 cddagl/ui/views/soundpacks.py:493
 #: cddagl/ui/views/soundpacks.py:611 cddagl/ui/views/soundpacks.py:655
 msgid "Selected file is a bad archive file"
-msgstr "Выбранный архив не подходит"
+msgstr "Выбранный файл - испорченный файл архива"
 
 #: cddagl/ui/views/mods.py:509 cddagl/ui/views/mods.py:671
 #: cddagl/ui/views/soundpacks.py:455 cddagl/ui/views/soundpacks.py:618
 msgid "Selected file is a password protected archive file"
-msgstr "Выбранный архив защищен паролем"
+msgstr "Выбранный файл - защищённый паролем файл архива"
 
 #: cddagl/ui/views/mods.py:572 cddagl/ui/views/soundpacks.py:528
 msgid "Soundpack installation cancelled"
-msgstr "Установка саундпака прервана"
+msgstr "Установка звукового пакета прервана"
 
 #: cddagl/ui/views/mods.py:649
 msgid "Could not find downloaded archive ({file})"
 msgstr "Не могу найти скачанный архив ({file})"
 
+#: cddagl/ui/views/mods.py:689 cddagl/ui/views/soundpacks.py:475
+#: cddagl/ui/views/soundpacks.py:637
+msgid "Unknown downloaded archive format ({extension})"
+msgstr "Загружен неизвестный формат архива ({extension})"
+
+#: cddagl/ui/views/mods.py:887
+msgid "Finding the mod(s)"
+msgstr "Поиск модификаци(и\\й)"
+
 #: cddagl/ui/views/mods.py:918
 msgid "Mod installation cancelled - There is no mod in the downloaded archive"
-msgstr "Установка мода прервана - Не найдены файлы мода в скачанном архиве"
+msgstr ""
+"Установка модификации прервана - Не найдены файлы мода в загруженном архиве"
 
 #: cddagl/ui/views/mods.py:930
 msgid ""
 "Mod installation cancelled - There is already a {basename} directory in "
 "{mods_dir}"
 msgstr ""
-"Установка мода прервана - Уже найдена директория {basename} в {mods_dir}"
+"Установка модификации прервана - Уже найдена директория {basename} в "
+"{mods_dir}"
 
 #: cddagl/ui/views/mods.py:939
 msgid "Mod installation completed"
-msgstr "Установка мода завершена"
+msgstr "Установка модификации завершена"
 
 #: cddagl/ui/views/mods.py:963 cddagl/ui/views/mods.py:980
 #: cddagl/ui/views/mods.py:1220
@@ -944,31 +1308,31 @@ msgstr "Включить"
 
 #: cddagl/ui/views/mods.py:997
 msgid "Delete mod"
-msgstr "Удалить мод"
+msgstr "Удалить модификацию"
 
 #: cddagl/ui/views/mods.py:998
 msgid "This will delete the mod directory. It cannot be undone."
-msgstr "Это действие удалит мод."
+msgstr "Это действие удалит модификацию."
 
 #: cddagl/ui/views/mods.py:1000
 msgid "Are you sure you want to delete the {view} mod?"
-msgstr "Вы уверены что хотите удалить мод {view}?"
+msgstr "Вы уверены что хотите удалить модификацию {view}?"
 
 #: cddagl/ui/views/mods.py:1002
 msgid "Delete the mod"
-msgstr "Удалить мод"
+msgstr "Удалить модификацию"
 
 #: cddagl/ui/views/mods.py:1004
 msgid "I want to keep the mod"
-msgstr "Я хочу оставить мод"
+msgstr "Я хочу оставить модификацию"
 
 #: cddagl/ui/views/mods.py:1013
 msgid "Mod deletion cancelled"
-msgstr "Удаление мода прервано"
+msgstr "Удаление модификации прервано"
 
 #: cddagl/ui/views/mods.py:1018
 msgid "Mod deleted"
-msgstr "Мод удален"
+msgstr "Модификация удалена"
 
 #: cddagl/ui/views/mods.py:1110 cddagl/ui/views/soundpacks.py:994
 msgid "Getting remote size"
@@ -984,7 +1348,7 @@ msgstr "Параметры запуска:"
 
 #: cddagl/ui/views/settings.py:159
 msgid "Keep the launcher opened after launching the game"
-msgstr "Не закрывать лаунчер при запуске игры"
+msgstr "Не закрывать установщик при запуске игры"
 
 #: cddagl/ui/views/settings.py:160
 msgid "Language:"
@@ -992,23 +1356,24 @@ msgstr "Язык:"
 
 #: cddagl/ui/views/settings.py:164
 msgid "Allow multiple instances of the launcher to be started"
-msgstr "Разрешить запускать несколько лаунчеров"
+msgstr "Разрешить запускать несколько установщиков"
 
 #: cddagl/ui/views/settings.py:167
 msgid "Use the launcher directory as the game directory"
-msgstr "Использовать директорию, где расположен лаунчер, как директорию игры"
+msgstr ""
+"Использовать директорию, где расположен установщик, как директорию игры"
 
 #: cddagl/ui/views/settings.py:169 cddagl/ui/views/tabbed.py:243
 msgid "Do not check for new version of the CDDA Game Launcher on launch"
-msgstr "Не проверять наличие новой версии лаунчера при запуске"
+msgstr "Не проверять наличие новой версии установщика при запуске"
 
 #: cddagl/ui/views/settings.py:171
 msgid "Launcher"
-msgstr "Лаунчер"
+msgstr "Установщик"
 
 #: cddagl/ui/views/settings.py:374
 msgid "Do not copy or move the save directory"
-msgstr "Не копировать и не переносить папку с сохранениями"
+msgstr "Не копировать и не переносить директорию сохранений"
 
 #: cddagl/ui/views/settings.py:376
 msgid ""
@@ -1024,7 +1389,7 @@ msgstr "Хранить копию скачанного архива в дире�
 
 #: cddagl/ui/views/settings.py:384
 msgid "Automatically refresh builds list every"
-msgstr "Автоматически обновлять список билдов каждые:"
+msgstr "Автоматически обновлять список сборок каждые:"
 
 #: cddagl/ui/views/settings.py:385
 msgid "minutes"
@@ -1043,11 +1408,11 @@ msgstr ""
 
 #: cddagl/ui/views/settings.py:443
 msgid "Archive directory"
-msgstr "Архив"
+msgstr "Директория архива"
 
 #: cddagl/ui/views/soundpacks.py:201
 msgid "Add this new soundpack to the repository"
-msgstr "Добавить новый саундпак в репозиторий"
+msgstr "Добавить новый звуковой пакет в хранилище"
 
 #: cddagl/ui/views/soundpacks.py:202
 msgid ""
@@ -1057,19 +1422,19 @@ msgid ""
 "* Homepage: [Enter the Url of the author website or where the soundpack was published]\n"
 "* Soundpack not found in version: {version}\n"
 msgstr ""
-"* Имя: [Введите имя саундпака]\n"
-"* Url: [Введите ссылку на саундпак]\n"
+"* Имя: [Введите имя звукового пакета]\n"
+"* Url: [Введите ссылку на звуковой пакет]\n"
 "* Автор: [Введите имя автора]\n"
-"* Сайт проекта: [Введите адрес сайта, где саундпак был представлен]\n"
-"* Саундпак не найден в версии: {version}\n"
+"* Сайт проекта: [Введите адрес сайта, где звуковой пакет был представлен]\n"
+"* Звуковой пакет не найден в версии: {version}\n"
 
 #: cddagl/ui/views/soundpacks.py:210
 msgid "<a href=\"{url}\">Suggest a new soundpack on GitHub</a>"
-msgstr "<a href=\"{url}\">Предложить новый саундпак на GitHub</a>"
+msgstr "<a href=\"{url}\">Предложить новый звуковой пакет на GitHub</a>"
 
 #: cddagl/ui/views/soundpacks.py:212 cddagl/ui/views/soundpacks.py:671
 msgid "Install this soundpack"
-msgstr "Установить этот саундпак"
+msgstr "Установить этот звуковой пакет"
 
 #: cddagl/ui/views/soundpacks.py:214
 msgid "View name:"
@@ -1077,7 +1442,7 @@ msgstr "Название:"
 
 #: cddagl/ui/views/soundpacks.py:321
 msgid "Soundpack already present"
-msgstr "Саундпак уже установлен"
+msgstr "Звуковой пакет уже установлен"
 
 #: cddagl/ui/views/soundpacks.py:323
 msgid ""
@@ -1086,31 +1451,32 @@ msgid ""
 " delete the soundpack first if you want to update it. Also, there can only "
 "be a single soundpack with the same name value available in the game."
 msgstr ""
-"Похоже что саундпак уже установлен. Вам нужно вручную удалить старые файлы "
-"саундпака, если вы хотите обновить его. "
+"Похоже что звуковой пакет уже установлен. Вам нужно вручную удалить его "
+"старые файлы для обновления."
 
 #: cddagl/ui/views/soundpacks.py:330
 msgid "Are you sure you want to install the {view} soundpack?"
-msgstr "Вы уверены, что хотите установить саундпак {view}?"
+msgstr "Вы уверены, что хотите установить звуковой пакет{view}?"
 
 #: cddagl/ui/views/soundpacks.py:333
 msgid "Install the soundpack"
-msgstr "Установить саундпак"
+msgstr "Установить звуковой пакет"
 
 #: cddagl/ui/views/soundpacks.py:407 cddagl/ui/views/soundpacks.py:426
 msgid "Cancel soundpack installation"
-msgstr "Отменить установку саундпака"
+msgstr "Отменить установку звукового пакета"
 
 #: cddagl/ui/views/soundpacks.py:812
 msgid "Finding the soundpack"
-msgstr "Поиск саундпака"
+msgstr "Поиск звукового пакета"
 
 #: cddagl/ui/views/soundpacks.py:840
 msgid ""
 "Soundpack installation cancelled - There is no soundpack in the downloaded "
 "archive"
 msgstr ""
-"Установка саундпака прервана - Не найдены файлы саундпака в скачанном архиве"
+"Установка звукового пакета прервана - Его файлы не найдены в скачанном "
+"архиве"
 
 #: cddagl/ui/views/soundpacks.py:850
 msgid ""
@@ -1122,35 +1488,35 @@ msgstr ""
 
 #: cddagl/ui/views/soundpacks.py:856
 msgid "Soundpack installation completed"
-msgstr "Установка саундпака завершена"
+msgstr "Установка звукового пакета завершена"
 
 #: cddagl/ui/views/soundpacks.py:912
 msgid "Delete soundpack"
-msgstr "Удалить саундпак"
+msgstr "Удалить звуковой пакет"
 
 #: cddagl/ui/views/soundpacks.py:913
 msgid "This will delete the soundpack directory. It cannot be undone."
-msgstr "Это действие удалит директорию с саундпаком."
+msgstr "Это действие удалит директорию с звуковым пакетом."
 
 #: cddagl/ui/views/soundpacks.py:915
 msgid "Are you sure you want to delete the {view} soundpack?"
-msgstr "Вы уверены, что хотите удалить саундпак {view}?"
+msgstr "Вы уверены, что хотите удалить звуковой пакет {view}?"
 
 #: cddagl/ui/views/soundpacks.py:917
 msgid "Delete the soundpack"
-msgstr "Удалить саундпак"
+msgstr "Удалить звуковой пакет"
 
 #: cddagl/ui/views/soundpacks.py:919
 msgid "I want to keep the soundpack"
-msgstr "Я хочу оставить саундпак"
+msgstr "Я хочу оставить звуковой пакет"
 
 #: cddagl/ui/views/soundpacks.py:928
 msgid "Soundpack deletion cancelled"
-msgstr "Удаление саундпака отменено"
+msgstr "Удаление звукового пакета отменено"
 
 #: cddagl/ui/views/soundpacks.py:933
 msgid "Soundpack deleted"
-msgstr "Саундпак удален"
+msgstr "Звуковой пакет удален"
 
 #: cddagl/ui/views/tabbed.py:70 cddagl/ui/views/tabbed.py:93
 msgid "&File"
@@ -1170,7 +1536,7 @@ msgstr "&Проверить обновления лаунчера"
 
 #: cddagl/ui/views/tabbed.py:75 cddagl/ui/views/tabbed.py:112
 msgid "&About CDDA Game Launcher"
-msgstr "О лаунчере"
+msgstr "О установщике"
 
 #: cddagl/ui/views/tabbed.py:254
 msgid "Launcher update"
@@ -1186,7 +1552,7 @@ msgstr ""
 
 #: cddagl/ui/views/tabbed.py:260
 msgid "Update the launcher"
-msgstr "Обновить лаунчер"
+msgstr "Обновить установщик"
 
 #: cddagl/ui/views/tabbed.py:262
 msgid "Not right now"
@@ -1206,15 +1572,15 @@ msgstr "Основные настройки"
 
 #: cddagl/ui/views/tabbed.py:402 cddagl/ui/views/tabbed.py:424
 msgid "Backups"
-msgstr "Бэкапы"
+msgstr "Резервные копии"
 
 #: cddagl/ui/views/tabbed.py:403 cddagl/ui/views/tabbed.py:429
 msgid "Mods"
-msgstr "Моды"
+msgstr "Модификации"
 
 #: cddagl/ui/views/tabbed.py:405 cddagl/ui/views/tabbed.py:439
 msgid "Soundpacks"
-msgstr "Саундпаки"
+msgstr "Звуковые пакеты"
 
 #: cddagl/ui/views/tabbed.py:407 cddagl/ui/views/tabbed.py:449
 msgid "Settings"
