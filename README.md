@@ -35,6 +35,12 @@ Is it stored in the `previous_version` directory inside your game directory.
 
 The launcher goes to great lengths not to delete any file that could be important to you. With the default and recommended settings, the launcher will always move files instead of deleting them. If you think you lost files during an update, check out the `previous_version` subdirectory. That is where you should be able to find your previous game version. You can also check for files in your recycle bin. Those are the main 2 places where files are moved and where you should be able to find them.
 
+### My antivirus product detected the launcher as a threat. What can I do?
+
+Poor antivirus products are known to detect the launcher as a threat and block its execution. A simple workaround is to add the launcher binary in your antivirus whitelist or select the action to trust this binary when detected.
+
+If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/remyroy/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
+
 ### How do I update to a new version of the game launcher?
 
 The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/remyroy/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher. From the help menu, you can also check for new updates.
