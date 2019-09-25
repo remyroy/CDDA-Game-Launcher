@@ -55,11 +55,11 @@
   {
     "type": "direct_download",
     "ident": "NM_wpns",
-    "name": "Nimian Manufacture Guns",
-    "description": "A new set of guns, light and accurate, as well as some other toys.",
-    "author": "...",
-    "size": 9625,
-    "url": "https://docs.google.com/uc?id=0BymjOrrNny5BdTk4NUNoNUFkcG8&export=download",
+    "name": "Compatible Nimian Manufacture Guns",
+    "description": "Modified by Malkeus: (Fix for magazines and guns with negative damage values) A new set of guns, light and accurate, as well as some other toys.",
+    "author": "Malkeus",
+    "size": 15779,
+    "url": "https://github.com/Malkeus/M_Nimian_Manufacture/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/nimians-manufacture-weapons-mod/10031/13"
   },
   {
