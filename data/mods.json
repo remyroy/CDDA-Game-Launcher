@@ -457,5 +457,16 @@
     "size": 26684,
     "url": "https://github.com/YukariMindGap/Necronica_Redux/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/nechronica-redux/19857"
+  },
+  {
+    "type": "direct_download",
+    "ident": "No_Zombies",
+    "name": "No Zombies",
+    "authors": [ "lcarus" ],
+    "description": "Removes all zombies from the game.",
+    "category": "monster_exclude",
+    "size": 960,
+    "url": "https://github.com/iamlcarus/nozombies/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/i-made-a-mod-to-remove-zombies-specifically/17921"
   }
 ]
