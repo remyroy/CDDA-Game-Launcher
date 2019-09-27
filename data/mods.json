@@ -479,5 +479,17 @@
     "size": 22840,
     "url": "https://github.com/chaosvolt/MST_Extra_Mod/archive/master.zip",
     "homepage": "https://github.com/chaosvolt/MST_Extra_Mod"
+  },
+  {
+    "type": "direct_download",
+    "ident": "Nonperishable_Overhaul",
+    "name": "Nonperishable Overhaul",
+    "authors": [ "Chaosvolt" ],
+    "maintainers": [ "Chaosvolt" ],
+    "description": "Reduces excessive use of spoilage for non-perishables.",
+    "category": "rebalance",
+    "size": 13897,
+    "url": "https://github.com/chaosvolt/CDDA_Nonperishable_Overhaul/archive/master.zip",
+    "homepage": "https://github.com/chaosvolt/CDDA_Nonperishable_Overhaul"
   }
 ]
