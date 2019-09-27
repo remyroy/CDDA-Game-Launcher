@@ -491,5 +491,16 @@
     "size": 13897,
     "url": "https://github.com/chaosvolt/CDDA_Nonperishable_Overhaul/archive/master.zip",
     "homepage": "https://github.com/chaosvolt/CDDA_Nonperishable_Overhaul"
+  },
+  {
+    "type": "direct_download",
+    "ident": "Dorf_Life",
+    "name": "Dorf Life",
+    "authors": [ "Chaosvolt" ],
+    "description": "Adds multi-level caverns hidden away in the underground, breaching the subways to add various strange sights to explore.",
+    "category": "buildings",
+    "size": 77500,
+    "url": "https://github.com/chaosvolt/Dorf-Life-CDDA/archive/master.zip",
+    "homepage": "https://github.com/chaosvolt/Dorf-Life-CDDA"
   }
 ]
