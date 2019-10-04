@@ -39,7 +39,7 @@ The launcher goes to great lengths not to delete any file that could be importan
 
 ### My antivirus product detected the launcher as a threat. What can I do?
 
-Poor antivirus products are known to detect the launcher as a threat and block its execution. A simple workaround is to add the launcher binary in your antivirus whitelist or select the action to trust this binary when detected.
+Poor antivirus products are known to detect the launcher as a threat and block its execution or delete the launcher. A simple workaround is to add the launcher binary in your antivirus whitelist or select the action to trust this binary when detected.
 
 If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/remyroy/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
 
