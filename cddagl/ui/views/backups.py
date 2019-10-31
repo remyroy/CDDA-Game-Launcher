@@ -153,6 +153,14 @@ class BackupsTab(QTabWidget):
         automatic_backups_layout.addWidget(backup_on_end_warning_label, 1, 1)
         self.backup_on_end_warning_label = backup_on_end_warning_label
 
+        backup_before_update_cb = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'backup_before_update', 'False')) else Qt.Unchecked)
+        backup_before_update_cb.setCheckState(check_state)
+        backup_before_update_cb.stateChanged.connect(self.bbu_changed)
+        automatic_backups_layout.addWidget(backup_before_update_cb, 2, 0)
+        self.backup_before_update_cb = backup_before_update_cb
+
         mab_group = QWidget()
         mab_group.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         mab_layout = QHBoxLayout()
@@ -172,7 +180,7 @@ class BackupsTab(QTabWidget):
         self.max_auto_backups_spinbox = max_auto_backups_spinbox
 
         mab_group.setLayout(mab_layout)
-        automatic_backups_layout.addWidget(mab_group, 2, 0, 1, 2)
+        automatic_backups_layout.addWidget(mab_group, 3, 0, 1, 2)
         self.mab_group = mab_group
         self.mab_layout = mab_layout
 
@@ -203,6 +211,7 @@ class BackupsTab(QTabWidget):
 
         self.backup_on_launch_cb.setText(_('Backup saves before game launch'))
         self.backup_on_end_cb.setText(_('Backup saves after game end'))
+        self.backup_before_update_cb.setText(_('Backup saves before updating'))
 
         self.backup_on_end_warning_label.setToolTip(_('This option will only '
             'work if you also have the option to keep the launcher opened '
@@ -282,6 +291,9 @@ class BackupsTab(QTabWidget):
             self.backup_on_end_warning_label.hide()
         else:
             self.backup_on_end_warning_label.show()
+    
+    def bbu_changed(self, state):
+        set_config_value('backup_before_update', str(state != Qt.Unchecked))
 
     def restore_button_clicked(self):
         class WaitingThread(QThread):

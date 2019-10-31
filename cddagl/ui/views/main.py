@@ -1397,90 +1397,22 @@ class UpdateGroupBox(QGroupBox):
                     game_dir = subdir
                     game_dir_group_box.set_dir_combo_value(subdir)
 
+            if config_true(get_config_value('backup_before_update', 'False')):
+                backups_tab = main_tab.get_backups_tab()
 
-            logger.info(
-                'Updating CDDA...\n'
-                'CDDAGL Directory: {}\n'
-                'CDDA Directory: {}'
-                .format(get_cddagl_path(), game_dir)
-            )
-            self.updating = True
-            self.download_aborted = False
-            self.clearing_previous_dir = False
-            self.backing_up_game = False
-            self.extracting_new_build = False
-            self.analysing_new_build = False
-            self.in_post_extraction = False
+                backups_tab.prune_auto_backups()
 
-            self.selected_build = self.builds[self.builds_combo.currentIndex()]
+                name = '{auto}_{name}'.format(auto=_('auto'),
+                    name=_('before_update'))
 
-            selected_branch = self.branch_button_group.checkedButton()
-            experimental_selected = selected_branch is self.experimental_radio_button
+                backups_tab.after_backup = self.update_game_process
+                backups_tab.backup_saves(name)
+            else:
+                self.update_game_process()
 
-            latest_build = self.builds[0]
-            if experimental_selected and game_dir_group_box.current_build == latest_build['number']:
-                confirm_msgbox = QMessageBox()
-                confirm_msgbox.setWindowTitle(_('Game is up to date'))
-                confirm_msgbox.setText(_('You already have the latest version.'
-                    ))
-                confirm_msgbox.setInformativeText(_('Are you sure you want to '
-                    'update your game?'))
-                confirm_msgbox.addButton(_('Update the game again'),
-                    QMessageBox.YesRole)
-                confirm_msgbox.addButton(_('I do not need to update the '
-                    'game again'), QMessageBox.NoRole)
-                confirm_msgbox.setIcon(QMessageBox.Question)
-
-                if confirm_msgbox.exec() == 1:
-                    self.updating = False
-                    return
-
-            game_dir_group_box.disable_controls()
-            self.disable_controls()
-
-            soundpacks_tab = main_tab.get_soundpacks_tab()
-            mods_tab = main_tab.get_mods_tab()
-            settings_tab = main_tab.get_settings_tab()
-            backups_tab = main_tab.get_backups_tab()
-
-            soundpacks_tab.disable_tab()
-            mods_tab.disable_tab()
-            settings_tab.disable_tab()
-            backups_tab.disable_tab()
-
-            try:
-                if not os.path.exists(game_dir):
-                    os.makedirs(game_dir)
-                elif os.path.isfile(game_dir):
-                    main_window = self.get_main_window()
-                    status_bar = main_window.statusBar()
-
-                    status_bar.showMessage(_('Cannot install game on a file'))
-
-                    self.finish_updating()
-                    return
-
-                download_dir = tempfile.mkdtemp(prefix=cons.TEMP_PREFIX)
-
-                download_url = self.selected_build['url']
-
-                url = QUrl(download_url)
-                file_info = QFileInfo(url.path())
-                file_name = file_info.fileName()
-
-                self.downloaded_file = os.path.join(download_dir, file_name)
-                self.downloading_file = open(self.downloaded_file, 'wb')
-
-                self.download_game_update(download_url)
-
-            except OSError as e:
-                main_window = self.get_main_window()
-                status_bar = main_window.statusBar()
-
-                self.finish_updating()
-
-                status_bar.showMessage(str(e))
         else:
+            # We are currently updating, try to cancel
+
             main_tab = self.get_main_tab()
             game_dir_group_box = main_tab.game_dir_group_box
 
@@ -1601,6 +1533,95 @@ class UpdateGroupBox(QGroupBox):
                         status_bar.showMessage(_('Installation cancelled'))
 
             self.finish_updating()
+
+    def update_game_process(self):
+        main_tab = self.get_main_tab()
+        game_dir_group_box = main_tab.game_dir_group_box
+        game_dir = game_dir_group_box.dir_combo.currentText()
+        
+        logger.info(
+            'Updating CDDA...\n'
+            'CDDAGL Directory: {}\n'
+            'CDDA Directory: {}'
+            .format(get_cddagl_path(), game_dir)
+        )
+
+        self.updating = True
+        self.download_aborted = False
+        self.clearing_previous_dir = False
+        self.backing_up_game = False
+        self.extracting_new_build = False
+        self.analysing_new_build = False
+        self.in_post_extraction = False
+
+        self.selected_build = self.builds[self.builds_combo.currentIndex()]
+
+        selected_branch = self.branch_button_group.checkedButton()
+        experimental_selected = selected_branch is self.experimental_radio_button
+
+        latest_build = self.builds[0]
+        if experimental_selected and game_dir_group_box.current_build == latest_build['number']:
+            confirm_msgbox = QMessageBox()
+            confirm_msgbox.setWindowTitle(_('Game is up to date'))
+            confirm_msgbox.setText(_('You already have the latest version.'
+                ))
+            confirm_msgbox.setInformativeText(_('Are you sure you want to '
+                'update your game?'))
+            confirm_msgbox.addButton(_('Update the game again'),
+                QMessageBox.YesRole)
+            confirm_msgbox.addButton(_('I do not need to update the '
+                'game again'), QMessageBox.NoRole)
+            confirm_msgbox.setIcon(QMessageBox.Question)
+
+            if confirm_msgbox.exec() == 1:
+                self.updating = False
+                return
+
+        game_dir_group_box.disable_controls()
+        self.disable_controls()
+
+        soundpacks_tab = main_tab.get_soundpacks_tab()
+        mods_tab = main_tab.get_mods_tab()
+        settings_tab = main_tab.get_settings_tab()
+        backups_tab = main_tab.get_backups_tab()
+
+        soundpacks_tab.disable_tab()
+        mods_tab.disable_tab()
+        settings_tab.disable_tab()
+        backups_tab.disable_tab()
+
+        try:
+            if not os.path.exists(game_dir):
+                os.makedirs(game_dir)
+            elif os.path.isfile(game_dir):
+                main_window = self.get_main_window()
+                status_bar = main_window.statusBar()
+
+                status_bar.showMessage(_('Cannot install game on a file'))
+
+                self.finish_updating()
+                return
+
+            download_dir = tempfile.mkdtemp(prefix=cons.TEMP_PREFIX)
+
+            download_url = self.selected_build['url']
+
+            url = QUrl(download_url)
+            file_info = QFileInfo(url.path())
+            file_name = file_info.fileName()
+
+            self.downloaded_file = os.path.join(download_dir, file_name)
+            self.downloading_file = open(self.downloaded_file, 'wb')
+
+            self.download_game_update(download_url)
+
+        except OSError as e:
+            main_window = self.get_main_window()
+            status_bar = main_window.statusBar()
+
+            self.finish_updating()
+
+            status_bar.showMessage(str(e))
 
     def clean_game_dir(self):
         game_dir = self.game_dir
