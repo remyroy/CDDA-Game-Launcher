@@ -51,7 +51,7 @@ The launcher will automatically check for updated version on start. If it finds 
 
 You might need to delete your configs file to work around this issue. That filename is `configs.db` and it is located in `%LOCALAPPDATA%\CDDA Game Launcher\`. Some users have reported and encountered unrelated starting issues. In some cases, running a debug version of the launcher to get more logs might help to locate the issue. [Creating an issue about this](https://github.com/remyroy/CDDA-Game-Launcher/issues) is probably the way to go.
 
-### A mod in the repository is crashing my game when enabled. What can I do? ###
+### A mod in the repository is broken or is crashing my game when enabled. What can I do? ###
 
 It is frequent for game updates to break mods especially on the experimental branch. You could try to see if there is an update for that mod. You could try updating that mod by removing it and installing it again. You could try to contact the mod author and ask him to update his mod.
 
