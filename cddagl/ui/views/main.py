@@ -2777,7 +2777,7 @@ class UpdateGroupBox(QGroupBox):
                 builds.append(build)
 
         if len(builds) > 0:
-            builds.sort(key=lambda x: (x['number'], x['date']), reverse=True)
+            builds.sort(key=lambda x: (int(x['number']), x['date']), reverse=True)
             self.builds = builds
 
             self.builds_combo.clear()
