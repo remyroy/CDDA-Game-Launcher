@@ -7,6 +7,7 @@
 # KurzedMetal <kurzedmetal@gmail.com>, 2019
 # Semyon Glukhov <chopagovnoo@rambler.ru>, 2019
 # Nazar Emma-O <zakses87@gmail.com>, 2019
+# 8street, 2020
 # 
 #, fuzzy
 msgid ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-09-04 12:48-0400\n"
 "PO-Revision-Date: 2019-07-10 19:53+0000\n"
-"Last-Translator: Nazar Emma-O <zakses87@gmail.com>, 2019\n"
+"Last-Translator: 8street, 2020\n"
 "Language-Team: Russian (https://www.transifex.com/cdda-game-launcher/teams/101126/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -757,11 +758,11 @@ msgstr "Ветка:"
 
 #: cddagl/ui/views/main.py:1297
 msgid "Stable"
-msgstr "Стабильный"
+msgstr "Стабильная"
 
 #: cddagl/ui/views/main.py:1298
 msgid "Experimental"
-msgstr "Экспериментальный "
+msgstr "Экспериментальная"
 
 #: cddagl/ui/views/main.py:1299
 msgid "Platform:"
@@ -777,7 +778,7 @@ msgstr "Windows x86"
 
 #: cddagl/ui/views/main.py:1302
 msgid "Available builds:"
-msgstr "Доступны билды:"
+msgstr "Доступные сборки:"
 
 #: cddagl/ui/views/main.py:1303
 msgid "Refresh"
@@ -887,12 +888,12 @@ msgstr "Не могу скачать игру"
 
 #: cddagl/ui/views/main.py:1885
 msgid "Deleting {name}"
-msgstr "Удаление{name}"
+msgstr "Удаление {name}"
 
 #: cddagl/ui/views/main.py:1886 cddagl/ui/views/main.py:1892
 #: cddagl/ui/views/main.py:2465
 msgid "previous_version directory"
-msgstr "предыдущая_версия директории "
+msgstr "директория предыдущей_версии"
 
 #: cddagl/ui/views/main.py:1891
 msgid "Update cancelled - Could not delete the {name}."
@@ -1004,7 +1005,7 @@ msgstr "- сборка недоступна"
 
 #: cddagl/ui/views/main.py:2787
 msgid " - latest build available"
-msgstr "- последняя сборка недоступна"
+msgstr " - последняя доступная сборка"
 
 #: cddagl/ui/views/main.py:2818
 msgid "Could not find remote builds"
@@ -1032,15 +1033,15 @@ msgstr "Ошибка анализа истории изменений данны
 
 #: cddagl/ui/views/main.py:3087
 msgid "Build #{build_number}"
-msgstr "Сборка#{build_number}"
+msgstr "Сборка #{build_number}"
 
 #: cddagl/ui/views/main.py:3096
 msgid "build still in progress!"
-msgstr "сборка всё ещё в разработке!"
+msgstr "сборка всё ещё продолжается!"
 
 #: cddagl/ui/views/main.py:3110
 msgid "but build failed for:"
-msgstr "но сборка неудачна из-за:"
+msgstr "но сборка неудачна для:"
 
 #: cddagl/ui/views/main.py:3121
 msgid "No changes, same code as previous build!"
@@ -1107,7 +1108,7 @@ msgstr "Повторить удаление директории"
 
 #: cddagl/ui/views/main.py:3329
 msgid "Deleting {name} - {entry}"
-msgstr "Удаление{name}-{entry}"
+msgstr "Удаление {name} - {entry}"
 
 #: cddagl/ui/views/main.py:3339 cddagl/ui/views/main.py:3551
 msgid "Analysing {name}"
