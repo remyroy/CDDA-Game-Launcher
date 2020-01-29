@@ -755,6 +755,9 @@ class BackupsTab(QTabWidget):
             self.backup_saves(name)
 
     def prune_auto_backups(self):
+        if self.game_dir is None:
+            return
+        
         max_auto_backups = max(int(get_config_value('max_auto_backups', '6'))
             , 1)
 
@@ -791,6 +794,13 @@ class BackupsTab(QTabWidget):
     def backup_saves(self, name, single=False):
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
+
+        if self.game_dir is None:
+            status_bar.showMessage(_('Game directory not found'))
+            if self.after_backup is not None:
+                self.after_backup()
+                self.after_backup = None
+            return
 
         save_dir = os.path.join(self.game_dir, 'save')
         if not os.path.isdir(save_dir):
