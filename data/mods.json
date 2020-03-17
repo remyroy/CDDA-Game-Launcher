@@ -267,17 +267,6 @@
   },
   {
     "type": "direct_download",
-    "ident": "Arcana",
-    "name": "Arcana and Magic Items",
-    "description": "Adds a new skill for creating and using magical items, and alters many anomalous monsters.",
-    "category": "magical",
-    "author": "Chaosvolt",
-    "size": 67754,
-    "url": "https://github.com/chaosvolt/cdda-arcana-mod/archive/master.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/magical-items-and-arcana-skill-no-longer-merged-hosted-on-github/10288"
-  },
-  {
-    "type": "direct_download",
     "ident": [ "dda-lua", "dda-lua-fun", "dda-lua-items", "dda-lua-skills", "dda-lua-traits" ],
     "name": "Dark Days Ahead: Lua",
     "description": "Shared LUA library for easier LUA modding of Dark Days Ahead and collection of mods based on this library.",
