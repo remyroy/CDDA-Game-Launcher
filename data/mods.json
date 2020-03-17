@@ -267,17 +267,6 @@
   },
   {
     "type": "direct_download",
-    "ident": "Arcana",
-    "name": "Arcana and Magic Items",
-    "description": "Adds a new skill for creating and using magical items, and alters many anomalous monsters.",
-    "category": "magical",
-    "author": "Chaosvolt",
-    "size": 67754,
-    "url": "https://github.com/chaosvolt/cdda-arcana-mod/archive/master.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/magical-items-and-arcana-skill-no-longer-merged-hosted-on-github/10288"
-  },
-  {
-    "type": "direct_download",
     "ident": [ "dda-lua", "dda-lua-fun", "dda-lua-items", "dda-lua-skills", "dda-lua-traits" ],
     "name": "Dark Days Ahead: Lua",
     "description": "Shared LUA library for easier LUA modding of Dark Days Ahead and collection of mods based on this library.",
@@ -468,39 +457,5 @@
     "size": 960,
     "url": "https://github.com/iamlcarus/nozombies/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/i-made-a-mod-to-remove-zombies-specifically/17921"
-  },
-  {
-    "type": "direct_download",
-    "ident": "MST_Extra",
-    "name": "MST Extra",
-    "authors": [ "Chaosvolt" ],
-    "description": "Addon for CDDA's More Survival Tools mod.  Adds a few additional useful innawoods recipes.",
-    "category": "items",
-    "size": 22840,
-    "url": "https://github.com/chaosvolt/MST_Extra_Mod/archive/master.zip",
-    "homepage": "https://github.com/chaosvolt/MST_Extra_Mod"
-  },
-  {
-    "type": "direct_download",
-    "ident": "Nonperishable_Overhaul",
-    "name": "Nonperishable Overhaul",
-    "authors": [ "Chaosvolt" ],
-    "maintainers": [ "Chaosvolt" ],
-    "description": "Reduces excessive use of spoilage for non-perishables.",
-    "category": "rebalance",
-    "size": 13897,
-    "url": "https://github.com/chaosvolt/CDDA_Nonperishable_Overhaul/archive/master.zip",
-    "homepage": "https://github.com/chaosvolt/CDDA_Nonperishable_Overhaul"
-  },
-  {
-    "type": "direct_download",
-    "ident": "Dorf_Life",
-    "name": "Dorf Life",
-    "authors": [ "Chaosvolt" ],
-    "description": "Adds multi-level caverns hidden away in the underground, breaching the subways to add various strange sights to explore.",
-    "category": "buildings",
-    "size": 77500,
-    "url": "https://github.com/chaosvolt/Dorf-Life-CDDA/archive/master.zip",
-    "homepage": "https://github.com/chaosvolt/Dorf-Life-CDDA"
   }
 ]
