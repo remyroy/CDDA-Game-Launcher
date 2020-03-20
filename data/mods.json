@@ -457,5 +457,27 @@
     "size": 960,
     "url": "https://github.com/iamlcarus/nozombies/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/i-made-a-mod-to-remove-zombies-specifically/17921"
+  },
+  {
+    "type": "direct_download",
+    "ident": "more_survivor_stuff",
+    "name": "More Survivor Stuff",
+    "authors": [ "pawnishoovy" ],
+    "description": "Adds more variety to survivor equipment, styles, crafts etc.",
+    "category": "misc_additions",
+    "size": 15225,
+    "url": "https://github.com/pawnishoovy/More-Survivor-Stuff/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/more-survivor-stuff-mainly-heavy-stuff/22254"
+  },
+  {
+    "type": "direct_download",
+    "ident": "XEAS",
+    "name": "XEAS",
+    "authors": [ "MrJet2020" ],
+    "description": "Add new Xeno-Adapted Stuff. Close to hi-tech content. Includ armor set (slightly better protection than survival armor, less encumbrance), new knife (better butchering, impression damage) and vortex bag (120 L, tiny size, no encumbrance). Craft recipes in vanilla lab journal. High price. Late game content!",
+    "category": "content",
+    "size": 8124,
+    "url": "https://github.com/MrJet2020/XEAS/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/mod-xeas-xeno-adapted-stuff/22407"
   }
 ]
