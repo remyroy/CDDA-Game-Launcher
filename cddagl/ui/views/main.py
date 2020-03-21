@@ -2347,6 +2347,57 @@ class UpdateGroupBox(QGroupBox):
 
             self.post_extraction_step3()
 
+    def preserve_custom_fonts(self):
+        """
+        Copy over any files in the previous font directory
+        that don't already exist in the current font directory.
+
+        This assumes that fonts distributed with CDDA have already
+        been extracted into the current font directory.
+        """
+        status_bar = self.get_main_window().statusBar()
+
+        join_parts = lambda parts: os.path.join(*parts)
+
+        font_locations = [
+            [self.game_dir, 'font'],        # User fonts
+            [self.game_dir, 'data', 'font'] # Game fonts
+        ]
+
+        prev_font_locations = [
+            [base, 'previous_version'] + parts for base, *parts in font_locations
+        ]
+
+        # A list of tuples with the shape (CURRENT_FONT_DIR, PREV_FONT_DIR)
+        # Only tuples that contain directories that exist are returned
+        font_paths = list(filter(
+            lambda p: os.path.isdir(p[0]) and os.path.isdir(p[1]),
+            tuple(zip(
+                map(join_parts, font_locations),
+                map(join_parts, prev_font_locations)
+            ))
+        ))
+
+
+        if (any(font_paths) and self.in_post_extraction):
+            status_bar.showMessage(_('Restoring custom fonts'))
+
+            for font_dir, prev_font_dir in font_paths:
+                current_set  = set(os.listdir(font_dir))
+                previous_set = set(os.listdir(prev_font_dir))
+                delta        = previous_set - current_set
+
+                for entry in delta:
+                    source = os.path.join(prev_font_dir, entry)
+                    target = os.path.join(font_dir, entry)
+
+                    if os.path.isfile(source):
+                        shutil.copy2(source, target)
+                    elif os.path.isdir(source):
+                        shutil.copytree(source, target)
+
+            status_bar.clearMessage()
+
     def post_extraction_step3(self):
         if not self.in_post_extraction:
             return
@@ -2442,28 +2493,7 @@ class UpdateGroupBox(QGroupBox):
 
             status_bar.clearMessage()
 
-        # Copy custom fonts
-        fonts_dir = os.path.join(self.game_dir, 'data', 'font')
-        previous_fonts_dir = os.path.join(self.game_dir, 'previous_version',
-            'data', 'font')
-
-        if (os.path.isdir(fonts_dir) and os.path.isdir(previous_fonts_dir) and
-            self.in_post_extraction):
-            status_bar.showMessage(_('Restoring custom fonts'))
-
-            official_set = set(os.listdir(fonts_dir))
-            previous_set = set(os.listdir(previous_fonts_dir))
-
-            custom_set = previous_set - official_set
-            for entry in custom_set:
-                source = os.path.join(previous_fonts_dir, entry)
-                target = os.path.join(fonts_dir, entry)
-                if os.path.isfile(source):
-                    shutil.copy2(source, target)
-                elif os.path.isdir(source):
-                    shutil.copytree(source, target)
-
-            status_bar.clearMessage()
+        self.preserve_custom_fonts()
 
         if not self.in_post_extraction:
             return
