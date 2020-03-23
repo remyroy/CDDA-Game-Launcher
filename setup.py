@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import os.path
 import pathlib
 import winreg
@@ -9,8 +10,13 @@ from distutils.core import setup
 from os import scandir
 from subprocess import call, check_output, CalledProcessError, DEVNULL
 
-import txclib.commands
-import txclib.utils
+try:
+    import txclib.commands
+    import txclib.utils
+except ImportError:
+    print('Transifex client not found. Consider installing it (`pip install transifex-client`) '
+        'if you need to interact with Transifex.', file=sys.stderr)
+
 from babel.messages import frontend as babel
 
 

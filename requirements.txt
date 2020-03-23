@@ -3,13 +3,14 @@ alembic
 PyQt5
 PyInstaller
 html5lib
-lxml
 cssselect
 arrow
 rarfile
-pylzma
 Babel
 pypiwin32
 pywinutils
 Markdown
 Werkzeug
+
+lxml
+pylzma
