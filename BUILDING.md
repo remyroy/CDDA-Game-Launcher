@@ -1,8 +1,6 @@
 # Building guide
 
-CDDA Game Launcher is developed using Python. In order to run or build the launcher, you will need to download a recent version of Python (<=3.7 for building) and install all the requirements.
-
-> The CDDA Game Launcher cannot be bundled with Python >= 3.8 because [our bundling tool (PyInstaller) does not support 3.8 yet](https://github.com/pyinstaller/pyinstaller/issues/4311). You can still run and debug the CDDA Game Launcher with Python >= 3.8 .
+CDDA Game Launcher is developed using Python. In order to run or build the launcher, you will need to download a recent version of Python and install all the requirements.
 
 ## Requirements
 
