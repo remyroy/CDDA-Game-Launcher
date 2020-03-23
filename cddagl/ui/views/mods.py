@@ -20,7 +20,8 @@ from PyQt5.QtWidgets import (
     QTabWidget, QMessageBox, QHBoxLayout, QListView, QAbstractItemView, QTextEdit
 )
 from py7zlib import Archive7z, NoPasswordGivenError, FormatError
-from rfc6266 import parse_headers as parse_cd_headers
+from werkzeug.http import parse_options_header
+from werkzeug.utils import secure_filename
 
 import cddagl.constants as cons
 from cddagl import __version__ as version
@@ -734,19 +735,13 @@ class ModsTab(QTabWidget):
         if self.download_first_ready:
             self.download_first_ready = False
 
-            # Inspect headers for file name
-            header_pairs = self.download_http_reply.rawHeaderPairs()
-
-            for pair in header_pairs:
-                header_name = pair[0].data().decode('iso-8859-1', 'ignore')
-                if header_name.lower() == 'content-disposition':
-                    parsed_cd = parse_cd_headers(pair[1].data())
-                    extension = os.path.splitext(parsed_cd.filename_unsafe)[1]
-                    if extension.startswith('.'):
-                        extension = extension[1:]
-                    file_name = parsed_cd.filename_sanitized(extension)
-                    self.downloaded_file = os.path.join(self.download_dir,
-                        file_name)
+            cd_header = self.download_http_reply.header(QNetworkRequest.ContentDispositionHeader)
+            
+            if cd_header is not None:
+                ctype, options = parse_options_header(cd_header)
+                if 'filename' in options:
+                    sfilename = secure_filename(options['filename'])
+                    self.downloaded_file = os.path.join(self.download_dir, sfilename)
 
             self.downloading_file = open(self.downloaded_file, 'wb')
 

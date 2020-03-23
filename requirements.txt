@@ -1,7 +1,7 @@
 SQLAlchemy
 alembic
 PyQt5
-PyInstaller>=3.4
+PyInstaller
 html5lib
 lxml
 cssselect
@@ -10,7 +10,6 @@ rarfile
 pylzma
 Babel
 pypiwin32
-rfc6266
 pywinutils
 Markdown
-transifex-client
+Werkzeug
