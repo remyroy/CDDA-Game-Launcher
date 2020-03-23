@@ -26,7 +26,7 @@ from cddagl.functions import sizeof_fmt, delete_path
 from cddagl.i18n import proxy_gettext as _
 from cddagl.sql.functions import get_config_value, set_config_value, config_true
 from cddagl.ui.views.backups import BackupsTab
-from cddagl.ui.views.dialogs import AboutDialog
+from cddagl.ui.views.dialogs import AboutDialog, FaqDialog
 from cddagl.ui.views.fonts import FontsTab
 from cddagl.ui.views.main import MainTab
 from cddagl.ui.views.mods import ModsTab
@@ -53,6 +53,7 @@ class TabbedWindow(QMainWindow):
         self.http_reply = None
         self.in_manual_update_check = False
 
+        self.faq_dialog = None
         self.about_dialog = None
 
         geometry = get_config_value('window_geometry')
@@ -70,6 +71,7 @@ class TabbedWindow(QMainWindow):
         self.file_menu.setTitle(_('&File'))
         self.exit_action.setText(_('E&xit'))
         self.help_menu.setTitle(_('&Help'))
+        self.faq_action.setText(_('&Frequently asked questions (FAQ)'))
         if getattr(sys, 'frozen', False):
             self.update_action.setText(_('&Check for update'))
         self.about_action.setText(_('&About CDDA Game Launcher'))
@@ -102,6 +104,13 @@ class TabbedWindow(QMainWindow):
         self.menuBar().addMenu(help_menu)
         self.help_menu = help_menu
 
+        faq_action = QAction(_('&Frequently asked questions (FAQ)'), self,
+            triggered=self.show_faq_dialog)
+        self.faq_action = faq_action
+        self.help_menu.addAction(faq_action)
+
+        self.help_menu.addSeparator()
+
         if getattr(sys, 'frozen', False):
             update_action = QAction(_('&Check for update'), self,
                 triggered=self.manual_update_check)
@@ -113,6 +122,14 @@ class TabbedWindow(QMainWindow):
             triggered=self.show_about_dialog)
         self.about_action = about_action
         self.help_menu.addAction(about_action)
+
+    def show_faq_dialog(self):
+        if self.faq_dialog is None:
+            faq_dialog = FaqDialog(self, Qt.WindowTitleHint |
+                Qt.WindowCloseButtonHint)
+            self.faq_dialog = faq_dialog
+
+        self.faq_dialog.exec()
 
     def show_about_dialog(self):
         if self.about_dialog is None:
