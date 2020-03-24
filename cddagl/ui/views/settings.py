@@ -126,14 +126,6 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.allow_mul_insts_checkbox = allow_mul_insts_checkbox
 
         if getattr(sys, 'frozen', False):
-            use_launcher_dir_checkbox = QCheckBox()
-            check_state = (Qt.Checked if config_true(get_config_value(
-                'use_launcher_dir', 'False')) else Qt.Unchecked)
-            use_launcher_dir_checkbox.setCheckState(check_state)
-            use_launcher_dir_checkbox.stateChanged.connect(self.uld_changed)
-            layout.addWidget(use_launcher_dir_checkbox, 4, 0, 1, 2)
-            self.use_launcher_dir_checkbox = use_launcher_dir_checkbox
-
             no_launcher_version_check_checkbox = QCheckBox()
             check_state = (Qt.Checked if config_true(get_config_value(
                 'prevent_version_check_launch', 'False'))
@@ -164,8 +156,6 @@ class LauncherSettingsGroupBox(QGroupBox):
         self.allow_mul_insts_checkbox.setText(_('Allow multiple instances of '
             'the launcher to be started'))
         if getattr(sys, 'frozen', False):
-            self.use_launcher_dir_checkbox.setText(_('Use the launcher '
-                'directory as the game directory'))
             self.no_launcher_version_check_checkbox.setText(_('Do not check '
                 'for new version of the CDDA Game Launcher on launch'))
         self.setTitle(_('Launcher'))
@@ -239,38 +229,11 @@ class LauncherSettingsGroupBox(QGroupBox):
         checked = state != Qt.Unchecked
         set_config_value('allow_multiple_instances', str(checked))
 
-    def uld_changed(self, state):
-        checked = state != Qt.Unchecked
-        set_config_value('use_launcher_dir', str(checked))
-
-        main_app = QApplication.instance()
-        central_widget = main_app.main_win.central_widget
-        main_tab = central_widget.main_tab
-        game_dir_group_box = main_tab.game_dir_group_box
-
-        game_dir_group_box.dir_combo.setEnabled(not checked)
-        game_dir_group_box.dir_change_button.setEnabled(not checked)
-
-        game_dir_group_box.last_game_directory = None
-
-        if getattr(sys, 'frozen', False) and checked:
-            game_dir_group_box.set_dir_combo_value(get_cdda_uld_path())
-        else:
-            game_directory = get_config_value('game_directory')
-            if game_directory is None:
-                game_directory = get_cdda_uld_path()
-
-            game_dir_group_box.set_dir_combo_value(game_directory)
-
     def disable_controls(self):
         self.locale_combo.setEnabled(False)
-        if getattr(sys, 'frozen', False):
-            self.use_launcher_dir_checkbox.setEnabled(False)
 
     def enable_controls(self):
         self.locale_combo.setEnabled(True)
-        if getattr(sys, 'frozen', False):
-            self.use_launcher_dir_checkbox.setEnabled(True)
 
 
 class UpdateSettingsGroupBox(QGroupBox):

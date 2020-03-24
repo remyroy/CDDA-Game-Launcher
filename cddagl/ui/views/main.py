@@ -237,23 +237,14 @@ class GameDirGroupBox(QGroupBox):
 
             self.last_game_directory = None
 
-            if (getattr(sys, 'frozen', False)
-                    and config_true(get_config_value('use_launcher_dir', 'False'))):
-                game_directory = get_cdda_uld_path()
+            game_directory = get_config_value('game_directory')
+            if game_directory is None:
+                cddagl_path = os.path.dirname(os.path.realpath(
+                    sys.executable))
+                default_dir = os.path.join(cddagl_path, 'cdda')
+                game_directory = default_dir
 
-                self.dir_combo.setEnabled(False)
-                self.dir_change_button.setEnabled(False)
-
-                self.set_dir_combo_value(game_directory)
-            else:
-                game_directory = get_config_value('game_directory')
-                if game_directory is None:
-                    cddagl_path = os.path.dirname(os.path.realpath(
-                        sys.executable))
-                    default_dir = os.path.join(cddagl_path, 'cdda')
-                    game_directory = default_dir
-
-                self.set_dir_combo_value(game_directory)
+            self.set_dir_combo_value(game_directory)
 
             self.game_directory_changed()
 
@@ -687,9 +678,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             self.check_running_process(self.exe_path)
 
         self.last_game_directory = directory
-        if not (getattr(sys, 'frozen', False)
-            and config_true(get_config_value('use_launcher_dir', 'False'))):
-            set_config_value('game_directory', directory)
+        
+        set_config_value('game_directory', directory)
 
     @property
     def app_locale(self):
