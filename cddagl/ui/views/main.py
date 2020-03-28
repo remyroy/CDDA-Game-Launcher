@@ -17,6 +17,7 @@ from collections import deque
 from datetime import datetime, timedelta, timezone
 from io import BytesIO, StringIO, TextIOWrapper
 from os import scandir
+from pathlib import Path
 from urllib.parse import urljoin
 
 import arrow
@@ -2357,7 +2358,7 @@ class UpdateGroupBox(QGroupBox):
         """
         status_bar = self.get_main_window().statusBar()
 
-        join_parts = lambda parts: os.path.join(*parts)
+        join_parts = lambda parts: Path(os.path.join(*parts))
 
         font_locations = [
             [self.game_dir, 'font'],        # User fonts
@@ -2369,31 +2370,54 @@ class UpdateGroupBox(QGroupBox):
         ]
 
         # A list of tuples with the shape (CURRENT_FONT_DIR, PREV_FONT_DIR)
-        # Only tuples that contain directories that exist are returned
+        # Only tuples that contain directories that exist in the previous version are returned
         font_paths = list(filter(
-            lambda p: os.path.isdir(p[0]) and os.path.isdir(p[1]),
+            lambda font_dir_map: os.path.isdir(font_dir_map[1]),
             tuple(zip(
                 map(join_parts, font_locations),
                 map(join_parts, prev_font_locations)
             ))
         ))
 
+        logger.info('Scanning the following user and game font directories:')
+        logger.info('{}'.format(font_locations))
+        logger.info('{}'.format(prev_font_locations))
+
+        logger.info('Mapped current to previous font dirs:')
+        logger.info('{}'.format(font_paths))
 
         if (any(font_paths) and self.in_post_extraction):
+            logger.debug('Restoring custom fonts')
             status_bar.showMessage(_('Restoring custom fonts'))
 
             for font_dir, prev_font_dir in font_paths:
-                current_set  = set(os.listdir(font_dir))
-                previous_set = set(os.listdir(prev_font_dir))
-                delta        = previous_set - current_set
+                # Skip the dir if we have nothing to restore
+                if not prev_font_dir.is_dir():
+                    pass
+
+                # Create a new font directory if it doesn't already exist
+                if not font_dir.is_dir():
+                    font_dir.mkdir(exist_ok=True)
+
+                previous_set = set(prev_font_dir.iterdir())
+                current_set  = set(font_dir.iterdir())                
+
+                # Determine what font files need to be restored
+                delta = previous_set - current_set
 
                 for entry in delta:
-                    source = os.path.join(prev_font_dir, entry)
-                    target = os.path.join(font_dir, entry)
+                    source = prev_font_dir.joinpath(entry)
+                    target =      font_dir.joinpath(entry)
+
+                    logger.debug('  Restoring {}'.format(entry))
+                    logger.debug('    Source: {}'.format(source))
+                    logger.debug('    Target: {}'.format(target))
 
                     if os.path.isfile(source):
+                        logger.debug('    Copying file')
                         shutil.copy2(source, target)
                     elif os.path.isdir(source):
+                        logger.debug('    Copying directory')
                         shutil.copytree(source, target)
 
             status_bar.clearMessage()
