@@ -9,7 +9,7 @@ The full list of requirements is available in [requirements.txt](requirements.tx
 * lxml
 * pylzma
 
-Compiled binaries for lxml and pylzma can be found on [Christoph Gohlke's Unofficial Windows Binaries](http://www.lfd.uci.edu/~gohlke/pythonlibs/). If you are using Python 3.5+, scandir should already be included.
+Compiled binaries for lxml and pylzma can be found on [Christoph Gohlke's Unofficial Windows Binaries](http://www.lfd.uci.edu/~gohlke/pythonlibs/). If you are using Python >= 3.5, scandir should already be included. If you are using Python <= 3.4, you can also find compiled binaries for scandir on that website.
 
 ## Running the launcher
 
