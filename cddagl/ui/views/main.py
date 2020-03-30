@@ -2370,13 +2370,11 @@ class UpdateGroupBox(QGroupBox):
         ]
 
         # A list of tuples with the shape (CURRENT_FONT_DIR, PREV_FONT_DIR)
-        # Only tuples that contain directories that exist in the previous version are returned
-        font_paths = list(filter(
-            lambda font_dir_map: os.path.isdir(font_dir_map[1]),
-            tuple(zip(
+        font_paths = list(tuple(
+            zip(
                 map(join_parts, font_locations),
                 map(join_parts, prev_font_locations)
-            ))
+            )
         ))
 
         logger.info('Scanning the following user and game font directories:')
