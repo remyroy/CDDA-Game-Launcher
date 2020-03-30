@@ -2397,8 +2397,11 @@ class UpdateGroupBox(QGroupBox):
                 if not font_dir.is_dir():
                     font_dir.mkdir(exist_ok=True)
 
-                previous_set = set(prev_font_dir.iterdir())
-                current_set  = set(font_dir.iterdir())                
+                with os.scandir(prev_font_dir) as entries:
+                    previous_set = set(map(Path, entries))
+
+                with os.scandir(font_dir) as entries:
+                    current_set = set(map(Path, entries))
 
                 # Determine what font files need to be restored
                 delta = previous_set - current_set
