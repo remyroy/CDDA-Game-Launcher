@@ -55,6 +55,16 @@ BASE_ASSETS = {
 }
 
 STABLE_ASSETS = {
+    '0.E': {
+        'name': '0.E Ellison',
+        'number': '10478',
+        'released_on': '2020-04-01T12:48:28Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.E',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E/cataclysmdda-0.E-Windows_x64-Tiles-10478.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E/cataclysmdda-0.E-Windows-Tiles-10478.zip'
+        }
+    },
     '0.D': {
         'name': '0.D Danny',
         'number': '8574',
@@ -78,6 +88,31 @@ STABLE_ASSETS = {
 }
 
 STABLE_CHANGELOG = '''
+<h3>0.E Ellison</h3>
+<p>The Ellison release adds a huge number of features and content that make the world feel more alive. From being able to climb onto building rooftops or hide behind cars, to building a camp for your followers in the wilderness, to exploring the new river and lake systems on a boat or raft, everything is more immersive and consistent. Also more STUFF. I didn’t think we would ever double the number of game entities with a release again, but we did.</p>
+<p>We aimed at a 6 month release cycle, and ended up spending 9 months adding features at a breakneck pace and 3 months putting the brakes on and stabilizing. I can’t honestly say that’s a huge disappointment, though toward the end the rest of the development team was really chomping at the bit to get back to feature work, so we’ll need to continue to adjust.</p>
+<p>We built a huge amount of infrastructure for having the game check its own consistency, which has and is going to continue to contribute to the amazing pace of feature and content additions we are experiencing. The development team is also larger and at the same time more cohesive than it has ever been before.</p>
+<p>Explore all the new features with the attached release archives. Speaking of exploring, the list of available tilesets has shuffled a bit, so this is a great time to find your new favorite.</p>
+<ul>
+  <li>Long distance automove feature for walking, driving and boating.</li>
+  <li>Extensive bugfixes to inter-level interactivity, on by default.</li>
+  <li>Riding animals and animal-pulled vehicles.</li>
+  <li>More flexible Basecamp construction options.</li>
+  <li>Default starting date changed to mid-spring for better survivability.</li>
+  <li>Time advancement is rationalized, a turn is now one second.</li>
+  <li>Extensive river and lake systems, and boat support for navigating them.</li>
+  <li>Expanded NPC usefulness and interactivity.</li>
+  <li>Massive increases in location variety and consistency, especially rooftops.</li>
+  <li>Expansion of mi-go faction with new enemies and locations.</li>
+  <li>Batteries now store charge instead of being pseudo-items.</li>
+  <li>Overhaul and rebalance of martial arts.</li>
+  <li>Zombie grabbing and biting more manageable and predictable.</li>
+  <li>Overhauled stamina and damage recovery for grittier gameplay.</li>
+  <li>Crouching movement mode allows hiding.</li>
+  <li>Magiclysm and Aftershock mods have first class support within the game.</li>
+</ul>
+<p>Finally, see the changelog for the more complete (but still not comprehensive) listing of new features and contents <a href="https://github.com/CleverRaven/Cataclysm-DDA/blob/0.E/data/changelog.txt">https://github.com/CleverRaven/Cataclysm-DDA/blob/0.E/data/changelog.txt</a></p>
+
 <h3>0.D Danny</h3>
 <p>The Danny release is characterized by MORE. More UI polish, more features, more content, more long-asked-for changes. It’s the longest-lived and largest in every way release we’ve ever done, and we hope to never do it again. Future releases are planned for roughly 6-month intervals. This release is made up of 37,604 commits authored by over 700 contributors, and it roughly doubled the number of everything in the game, items, monsters, map buildings, you name it, we doubled it.</p>
 <p>It’s honestly way too huge to summarize in any meaningful way, but here are the absolute biggest changes, and you’ll just have to dig into the <a href="https://github.com/CleverRaven/Cataclysm-DDA/blob/de1858337072bf1af0bc89cbe1d9df7796a773af/data/changelog.txt">changelog</a> or the game itself for more detail.</p>
@@ -98,6 +133,7 @@ STABLE_CHANGELOG = '''
   <li>Unheard-of levels of bugfixing.</li>
   <li>Full translations for Chinese, German, Japanese, Polish and Russian.</li>
 </ul>
+
 <h3>0.C Cooper</h3>
 <p>The Cooper release is named in honor of the new monster infighting system. Now you can sit back and watch as your enemies tear each other to pieces! Don’t get too close though, they’re still out for your blood.</p>
 <ul>
@@ -112,7 +148,9 @@ STABLE_CHANGELOG = '''
 STABLE_SHA256 = {
     '2d7bbf426572e2b21aede324c8d89c9ad84529a05a4ac99a914f22b2b1e1405e': '0.C',
     '0454ed2bbc4a6c1c8cca5c360533513eb2a1d975816816d7c13ff60e276d431b': '0.D',
-    '7f914145248cebfd4d1a6d4b1ff932a478504b1e7e4c689aab97b8700e079f61': '0.D'
+    '7f914145248cebfd4d1a6d4b1ff932a478504b1e7e4c689aab97b8700e079f61': '0.D',
+    'bdd4f539767fd970beeab271e0e3774ba3022faeff88c6186b389e6bbe84bc75': '0.E',
+    '8adea7b3bc81fa9e4594b19553faeb591846295f47b67110dbd16eed8b37e62b': '0.E'
 }
 
 CONFIG_BRANCH_KEY = 'branch'
