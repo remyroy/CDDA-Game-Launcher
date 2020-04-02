@@ -2377,15 +2377,12 @@ class UpdateGroupBox(QGroupBox):
             )
         ))
 
-        logger.info('Scanning the following user and game font directories:')
-        logger.info('{}'.format(font_locations))
-        logger.info('{}'.format(prev_font_locations))
-
-        logger.info('Mapped current to previous font dirs:')
-        logger.info('{}'.format(font_paths))
+        logger.debug('Scanning the following user and game font directories:')
+        logger.debug('  Fonts currently installed: {}'.format(font_locations))
+        logger.debug('  Fonts previously installed: {}'.format(prev_font_locations))
 
         if (any(font_paths) and self.in_post_extraction):
-            logger.debug('Restoring custom fonts')
+            logger.info('Restoring custom fonts')
             status_bar.showMessage(_('Restoring custom fonts'))
 
             for font_dir, prev_font_dir in font_paths:
@@ -2393,34 +2390,37 @@ class UpdateGroupBox(QGroupBox):
                 if not prev_font_dir.is_dir():
                     pass
 
-                # Create a new font directory if it doesn't already exist
-                if not font_dir.is_dir():
+                # Determine if the current version includes any bundled fonts
+                if font_dir.is_dir():
+                    with os.scandir(font_dir) as entries:
+                        current_set = set(entries)
+                else:
+                    # Create a new font directory if it doesn't already exist
                     font_dir.mkdir(exist_ok=True)
+                    current_set = set()
 
                 with os.scandir(prev_font_dir) as entries:
-                    previous_set = set(map(Path, entries))
-
-                with os.scandir(font_dir) as entries:
-                    current_set = set(map(Path, entries))
+                    previous_set = set(entries)
 
                 # Determine what font files need to be restored
                 delta = previous_set - current_set
 
                 for entry in delta:
-                    source = prev_font_dir.joinpath(entry)
-                    target =      font_dir.joinpath(entry)
+                    source = prev_font_dir.joinpath(entry.name)
+                    target =      font_dir.joinpath(entry.name)
 
-                    logger.debug('  Restoring {}'.format(entry))
+                    logger.debug('  Restoring {}'.format(entry.name))
                     logger.debug('    Source: {}'.format(source))
                     logger.debug('    Target: {}'.format(target))
 
-                    if os.path.isfile(source):
+                    if entry.is_file():
                         logger.debug('    Copying file')
                         shutil.copy2(source, target)
-                    elif os.path.isdir(source):
+                    elif entry.is_dir():
                         logger.debug('    Copying directory')
                         shutil.copytree(source, target)
 
+            logger.info('Restored {} fonts'.format(len(delta)))
             status_bar.clearMessage()
 
     def post_extraction_step3(self):
