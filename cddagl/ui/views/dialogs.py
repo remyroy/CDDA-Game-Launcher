@@ -198,6 +198,10 @@ Poor antivirus products are known to detect the launcher as a threat and block i
 
 If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/remyroy/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
 
+### I found an issue with the game itself or I would like to make a suggestion for the game itself. What should I do?
+
+You should [contact the game developpers](https://cataclysmdda.org/#ive-found-a-bug--i-would-like-to-make-a-suggestion-what-should-i-do) about this. We are mainly providing a tool to help with the game. We cannot provide support for the game itself.
+
 ### How do I update to a new version of the game launcher?
 
 The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/remyroy/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher. From the help menu, you can also check for new updates.
