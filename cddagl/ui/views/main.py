@@ -17,6 +17,7 @@ from collections import deque
 from datetime import datetime, timedelta, timezone
 from io import BytesIO, StringIO, TextIOWrapper
 from os import scandir
+from pathlib import Path
 from urllib.parse import urljoin
 
 import arrow
@@ -2337,6 +2338,81 @@ class UpdateGroupBox(QGroupBox):
 
             self.post_extraction_step3()
 
+    def preserve_custom_fonts(self):
+        """
+        Copy over any files in the previous font directory
+        that don't already exist in the current font directory.
+
+        This assumes that fonts distributed with CDDA have already
+        been extracted into the current font directory.
+        """
+        status_bar = self.get_main_window().statusBar()
+
+        join_parts = lambda parts: Path(os.path.join(*parts))
+
+        font_locations = [
+            [self.game_dir, 'font'],        # User fonts
+            [self.game_dir, 'data', 'font'] # Game fonts
+        ]
+
+        prev_font_locations = [
+            [base, 'previous_version'] + parts for base, *parts in font_locations
+        ]
+
+        # A list of tuples with the shape (CURRENT_FONT_DIR, PREV_FONT_DIR)
+        font_paths = list(tuple(
+            zip(
+                map(join_parts, font_locations),
+                map(join_parts, prev_font_locations)
+            )
+        ))
+
+        logger.debug('Scanning the following user and game font directories:')
+        logger.debug('  Fonts currently installed: {}'.format(font_locations))
+        logger.debug('  Fonts previously installed: {}'.format(prev_font_locations))
+
+        if (any(font_paths) and self.in_post_extraction):
+            logger.info('Restoring custom fonts')
+            status_bar.showMessage(_('Restoring custom fonts'))
+
+            for font_dir, prev_font_dir in font_paths:
+                # Skip the dir if we have nothing to restore
+                if not prev_font_dir.is_dir():
+                    pass
+
+                # Determine if the current version includes any bundled fonts
+                if font_dir.is_dir():
+                    with os.scandir(font_dir) as entries:
+                        current_set = set(entries)
+                else:
+                    # Create a new font directory if it doesn't already exist
+                    font_dir.mkdir(exist_ok=True)
+                    current_set = set()
+
+                with os.scandir(prev_font_dir) as entries:
+                    previous_set = set(entries)
+
+                # Determine what font files need to be restored
+                delta = previous_set - current_set
+
+                for entry in delta:
+                    source = prev_font_dir.joinpath(entry.name)
+                    target =      font_dir.joinpath(entry.name)
+
+                    logger.debug('  Restoring {}'.format(entry.name))
+                    logger.debug('    Source: {}'.format(source))
+                    logger.debug('    Target: {}'.format(target))
+
+                    if entry.is_file():
+                        logger.debug('    Copying file')
+                        shutil.copy2(source, target)
+                    elif entry.is_dir():
+                        logger.debug('    Copying directory')
+                        shutil.copytree(source, target)
+
+            logger.info('Restored {} fonts'.format(len(delta)))
+            status_bar.clearMessage()
+
     def post_extraction_step3(self):
         if not self.in_post_extraction:
             return
@@ -2432,28 +2508,7 @@ class UpdateGroupBox(QGroupBox):
 
             status_bar.clearMessage()
 
-        # Copy custom fonts
-        fonts_dir = os.path.join(self.game_dir, 'data', 'font')
-        previous_fonts_dir = os.path.join(self.game_dir, 'previous_version',
-            'data', 'font')
-
-        if (os.path.isdir(fonts_dir) and os.path.isdir(previous_fonts_dir) and
-            self.in_post_extraction):
-            status_bar.showMessage(_('Restoring custom fonts'))
-
-            official_set = set(os.listdir(fonts_dir))
-            previous_set = set(os.listdir(previous_fonts_dir))
-
-            custom_set = previous_set - official_set
-            for entry in custom_set:
-                source = os.path.join(previous_fonts_dir, entry)
-                target = os.path.join(fonts_dir, entry)
-                if os.path.isfile(source):
-                    shutil.copy2(source, target)
-                elif os.path.isdir(source):
-                    shutil.copytree(source, target)
-
-            status_bar.clearMessage()
+        self.preserve_custom_fonts()
 
         if not self.in_post_extraction:
             return
