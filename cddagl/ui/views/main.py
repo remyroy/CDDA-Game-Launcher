@@ -2367,10 +2367,6 @@ class UpdateGroupBox(QGroupBox):
             )
         ))
 
-        logger.debug('Scanning the following user and game font directories:')
-        logger.debug('  Fonts currently installed: {}'.format(font_locations))
-        logger.debug('  Fonts previously installed: {}'.format(prev_font_locations))
-
         if (any(font_paths) and self.in_post_extraction):
             logger.info('Restoring custom fonts')
             status_bar.showMessage(_('Restoring custom fonts'))
@@ -2399,18 +2395,11 @@ class UpdateGroupBox(QGroupBox):
                     source = prev_font_dir.joinpath(entry.name)
                     target =      font_dir.joinpath(entry.name)
 
-                    logger.debug('  Restoring {}'.format(entry.name))
-                    logger.debug('    Source: {}'.format(source))
-                    logger.debug('    Target: {}'.format(target))
-
                     if entry.is_file():
-                        logger.debug('    Copying file')
                         shutil.copy2(source, target)
                     elif entry.is_dir():
-                        logger.debug('    Copying directory')
                         shutil.copytree(source, target)
 
-            logger.info('Restored {} fonts'.format(len(delta)))
             status_bar.clearMessage()
 
     def post_extraction_step3(self):
