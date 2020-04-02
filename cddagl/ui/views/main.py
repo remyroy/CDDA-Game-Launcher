@@ -2377,8 +2377,8 @@ class UpdateGroupBox(QGroupBox):
 
             for font_dir, prev_font_dir in font_paths:
                 # Skip the dir if we have nothing to restore
-                if not prev_font_dir.is_dir():
-                    pass
+                if not prev_font_dir.exists() or not prev_font_dir.is_dir():
+                    continue
 
                 # Determine if the current version includes any bundled fonts
                 if font_dir.is_dir():
