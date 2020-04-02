@@ -116,7 +116,6 @@ class TabbedWindow(QMainWindow):
                 triggered=self.manual_update_check)
             self.update_action = update_action
             self.help_menu.addAction(update_action)
-            self.help_menu.addSeparator()
 
         about_action = QAction(_('&About CDDA Game Launcher'), self,
             triggered=self.show_about_dialog)
