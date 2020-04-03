@@ -1208,7 +1208,7 @@ class BackupsTab(QTabWidget):
                         format='short', locale=self.app_locale)
                     arrow_date = arrow.get(entry.stat().st_mtime)
                     human_delta = arrow_date.humanize(arrow.utcnow(),
-                        locale=self.app_locale)
+                        locale=self.app_locale, granularity='minute')
 
                     row_index = self.backups_table.rowCount()
                     self.backups_table.insertRow(row_index)

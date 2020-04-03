@@ -771,7 +771,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
                 if build is not None:
                     build_date = arrow.get(build['released_on'], 'UTC')
-                    human_delta = build_date.humanize(arrow.utcnow(), locale=self.app_locale)
+                    human_delta = build_date.humanize(arrow.utcnow(), locale=self.app_locale,
+                        granularity='minute')
                     self.build_value_label.setText(
                         '{build} ({time_delta})'
                         .format(build=build['build'], time_delta=human_delta)
@@ -1106,7 +1107,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     status_bar = main_window.statusBar()
 
                     build_date = arrow.get(self.build_date, 'UTC')
-                    human_delta = build_date.humanize(arrow.utcnow(), locale=self.app_locale)
+                    human_delta = build_date.humanize(arrow.utcnow(), locale=self.app_locale,
+                        granularity='minute')
                     self.build_value_label.setText(
                         '{build} ({time_delta})'
                         .format(build=self.build_number, time_delta=human_delta)
@@ -2819,7 +2821,7 @@ class UpdateGroupBox(QGroupBox):
                 if build['date'] is not None:
                     build_date = arrow.get(build['date'], 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow(),
-                        locale=self.app_locale)
+                        locale=self.app_locale, granularity='minute')
                 else:
                     human_delta = _('Unknown')
 
@@ -2917,7 +2919,7 @@ class UpdateGroupBox(QGroupBox):
                 if build['date'] is not None:
                     build_date = arrow.get(build['date'], 'UTC')
                     human_delta = build_date.humanize(arrow.utcnow(),
-                        locale=self.app_locale)
+                        locale=self.app_locale, granularity='minute')
                 else:
                     human_delta = _('Unknown')
 
