@@ -136,3 +136,18 @@ def move_path(srcpath, dstpath):
         return winutils.move(srcpath, dstpath, flags)
     except com_error:
         return False
+
+def safe_humanize(arrow_date, other=None, locale='en_us', only_distance=False, granularity='auto'):
+    try:
+        # Can we use the normal humanize method?
+        return arrow_date.humanize(other=other, locale=locale, only_distance=only_distance,
+            granularity=granularity)
+    except ValueError:
+        # On first fail, let's try with day granularity
+        try:
+            return arrow_date.humanize(other=other, locale=locale, only_distance=only_distance,
+                granularity='day')
+        except ValueError:
+            # On final fail, use en_us locale which should be translated
+            return arrow_date.humanize(other=other, locale='en_us', only_distance=only_distance,
+                granularity='auto')

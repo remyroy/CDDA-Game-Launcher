@@ -19,7 +19,7 @@ from babel.dates import format_datetime
 from babel.numbers import format_percent
 
 import cddagl.constants as cons
-from cddagl.functions import sizeof_fmt, safe_filename, alphanum_key, delete_path
+from cddagl.functions import sizeof_fmt, safe_filename, alphanum_key, delete_path, safe_humanize
 from cddagl.i18n import proxy_gettext as _
 from cddagl.sql.functions import get_config_value, set_config_value, config_true
 from cddagl.win32 import find_process_with_file_handle
@@ -1207,8 +1207,8 @@ class BackupsTab(QTabWidget):
                     formated_date = format_datetime(modified_date,
                         format='short', locale=self.app_locale)
                     arrow_date = arrow.get(entry.stat().st_mtime)
-                    human_delta = arrow_date.humanize(arrow.utcnow(),
-                        locale=self.app_locale, granularity='minute')
+                    human_delta = safe_humanize(arrow_date, arrow.utcnow(),
+                        locale=self.app_locale)
 
                     row_index = self.backups_table.rowCount()
                     self.backups_table.insertRow(row_index)
