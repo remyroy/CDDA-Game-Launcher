@@ -55,6 +55,16 @@ BASE_ASSETS = {
 }
 
 STABLE_ASSETS = {
+    '0.E-1': {
+        'name': '0.E-1 Ellison-1',
+        'number': '10478',
+        'released_on': '2020-05-16T09:16:41Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/0.E-1/',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E-1/cataclysmdda-0.E-Windows_x64-Tiles-0.E-1.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E-1/cataclysmdda-0.E-Windows-Tiles-0.E-1.zip'
+        }
+    },
     '0.E': {
         'name': '0.E Ellison',
         'number': '10478',
@@ -88,6 +98,14 @@ STABLE_ASSETS = {
 }
 
 STABLE_CHANGELOG = '''
+<h3>0.E-1 Ellison-1</h3>
+<p>Point release Ellison-1 includes a number of following important bugfixes to original Ellison release:</p>
+<ul>
+  <li>fixes for several errors and crashes;</li>
+  <li>savegame migration for obsolete items, recipes and overmap terrains;</li>
+  <li>enhanced Android builds.</li>
+</ul>
+<p>See differences between current point release and original release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.E…0.E-1">0.E…0.E-1</a></p>
 <h3>0.E Ellison</h3>
 <p>The Ellison release adds a huge number of features and content that make the world feel more alive. From being able to climb onto building rooftops or hide behind cars, to building a camp for your followers in the wilderness, to exploring the new river and lake systems on a boat or raft, everything is more immersive and consistent. Also more STUFF. I didn’t think we would ever double the number of game entities with a release again, but we did.</p>
 <p>We aimed at a 6 month release cycle, and ended up spending 9 months adding features at a breakneck pace and 3 months putting the brakes on and stabilizing. I can’t honestly say that’s a huge disappointment, though toward the end the rest of the development team was really chomping at the bit to get back to feature work, so we’ll need to continue to adjust.</p>
@@ -150,7 +168,9 @@ STABLE_SHA256 = {
     '0454ed2bbc4a6c1c8cca5c360533513eb2a1d975816816d7c13ff60e276d431b': '0.D',
     '7f914145248cebfd4d1a6d4b1ff932a478504b1e7e4c689aab97b8700e079f61': '0.D',
     'bdd4f539767fd970beeab271e0e3774ba3022faeff88c6186b389e6bbe84bc75': '0.E',
-    '8adea7b3bc81fa9e4594b19553faeb591846295f47b67110dbd16eed8b37e62b': '0.E'
+    '8adea7b3bc81fa9e4594b19553faeb591846295f47b67110dbd16eed8b37e62b': '0.E',
+    'fb7db2b3cf101e19565ce515c012a089a75f54da541cd458144dc8483b5e59c8': '0.E-1',
+    '1068867549c1a24ae241a886907651508830ccd9c091bad27bacbefabab99acc': '0.E-1'
 }
 
 CONFIG_BRANCH_KEY = 'branch'
