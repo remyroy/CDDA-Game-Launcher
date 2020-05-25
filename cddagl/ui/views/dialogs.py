@@ -198,6 +198,10 @@ Poor antivirus products are known to detect the launcher as a threat and block i
 
 If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/remyroy/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
 
+Many people are dying to know why antivirus products are identifying the launcher as a threat. There has been many wild speculations to try to pinpoint the root cause for this. The best way to find out would be to ask those antivirus product developers. Unfortunatly, they are unlikely to respond for many good reasons. We could also speculate on this for days on end. Our current best speculation is because we use a component called PyInstaller [that is commonly flagged as a threat](https://github.com/pyinstaller/pyinstaller/issues/4633). Now, if you want see how deep the rabbit hole goes, you can keep on searching or speculating on why PyInstaller itself is commonly flagged as a threat. This research is left as an exercise to the reader.
+
+Many people are also asking why not simply report the launcher as a false positive to those antivirus products. We welcome anyone who wants to take the time to do it, but we believe it is mostly unproductive. Those processes are often time-consuming and ignored. Someone would also have to do them all over again each time we make a new release or when one of the component we use is updated or changed. The current state of threat detection on PC is quite messy and sad especially for everyone using *free* antivirus products.
+
 ### I found an issue with the game itself or I would like to make a suggestion for the game itself. What should I do?
 
 You should [contact the game developpers](https://cataclysmdda.org/#ive-found-a-bug--i-would-like-to-make-a-suggestion-what-should-i-do) about this. We are mainly providing a tool to help with the game. We cannot provide support for the game itself.
