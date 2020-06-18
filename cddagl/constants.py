@@ -55,6 +55,16 @@ BASE_ASSETS = {
 }
 
 STABLE_ASSETS = {
+    '0.E-2': {
+        'name': '0.E-2 Ellison-2',
+        'number': '10478',
+        'released_on': '2020-05-20T12:21:59Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/0.E-2/',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E-2/cataclysmdda-0.E-Windows_x64-Tiles-0.E-2.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E-2/cataclysmdda-0.E-Windows-Tiles-0.E-2.zip'
+        }
+    },
     '0.E-1': {
         'name': '0.E-1 Ellison-1',
         'number': '10478',
@@ -98,6 +108,12 @@ STABLE_ASSETS = {
 }
 
 STABLE_CHANGELOG = '''
+<h3>0.E-2 Ellison-2</h3>
+<p>Point release Ellison-2 includes following important bugfixes to original Ellison release:</p>
+<ul>
+  <li>fixed virtual keyboard issue in Android builds.</li>
+</ul>
+<p>See differences between current point release and original release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.E...0.E-2">0.E…0.E-2</a></p>
 <h3>0.E-1 Ellison-1</h3>
 <p>Point release Ellison-1 includes a number of following important bugfixes to original Ellison release:</p>
 <ul>
@@ -170,7 +186,9 @@ STABLE_SHA256 = {
     'bdd4f539767fd970beeab271e0e3774ba3022faeff88c6186b389e6bbe84bc75': '0.E',
     '8adea7b3bc81fa9e4594b19553faeb591846295f47b67110dbd16eed8b37e62b': '0.E',
     'fb7db2b3cf101e19565ce515c012a089a75f54da541cd458144dc8483b5e59c8': '0.E-1',
-    '1068867549c1a24ae241a886907651508830ccd9c091bad27bacbefabab99acc': '0.E-1'
+    '1068867549c1a24ae241a886907651508830ccd9c091bad27bacbefabab99acc': '0.E-1',
+    '0ce61cdfc299661382e30da133f7356b4faea38865ec0947139a08f40b595728': '0.E-2',
+    'c9ca51bd1e7549b0820fe736c10b3e73d358700c3460a0227fade59e9754e03d': '0.E-2'
 }
 
 CONFIG_BRANCH_KEY = 'branch'
