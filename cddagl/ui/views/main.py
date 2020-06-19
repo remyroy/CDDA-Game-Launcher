@@ -543,6 +543,14 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         directory = self.dir_combo.currentText()
         mods_tab.game_dir_changed(directory)
 
+    def update_tilesets(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        tilesets_tab = central_widget.tilesets_tab
+
+        directory = self.dir_combo.currentText()
+        tilesets_tab.game_dir_changed(directory)
+
     def update_backups(self):
         main_window = self.get_main_window()
         central_widget = main_window.central_widget
@@ -564,6 +572,13 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         mods_tab = central_widget.mods_tab
 
         mods_tab.clear_mods()
+
+    def clear_tilesets(self):
+        main_window = self.get_main_window()
+        central_widget = main_window.central_widget
+        tilesets_tab = central_widget.tilesets_tab
+
+        tilesets_tab.clear_tilesets()
 
     def clear_backups(self):
         main_window = self.get_main_window()
@@ -656,6 +671,7 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     self.update_saves()
                     self.update_soundpacks()
                     self.update_mods()
+                    self.update_tilesets()
                     self.update_backups()
 
         if self.exe_path is None:
@@ -2566,6 +2582,7 @@ class UpdateGroupBox(QGroupBox):
 
         game_dir_group_box.update_soundpacks()
         game_dir_group_box.update_mods()
+        game_dir_group_box.update_tilesets()
         game_dir_group_box.update_backups()
 
         soundpacks_tab = main_tab.get_soundpacks_tab()

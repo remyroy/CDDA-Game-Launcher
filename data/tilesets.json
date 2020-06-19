@@ -1,0 +1,12 @@
+[
+    {
+        "type": "direct_download",
+        "viewname": "UNDEAD_PEOPLE",
+        "name": "UNDEAD_PEOPLE",
+        "knownas": "MSX++UndeadPeople",
+        "width": 32,
+        "height": 32,
+        "url": "https://github.com/SomeDeadGuy/UndeadPeopleTileset/archive/master.zip",
+        "homepage": "https://github.com/SomeDeadGuy/UndeadPeopleTileset"
+    }
+]

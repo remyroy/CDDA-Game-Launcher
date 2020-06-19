@@ -1051,7 +1051,7 @@ class SoundpacksTab(QTabWidget):
     def config_info(self, config_file):
         val = {}
         try:
-            with open(config_file, 'r', encoding='latin1') as f:
+            with open(config_file, 'r', encoding='utf8') as f:
                 for line in f:
                     if line.startswith('NAME'):
                         space_index = line.find(' ')
