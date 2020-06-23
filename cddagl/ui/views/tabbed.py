@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QGridLayout, QMainWindow, QLabel, QLineEdit, QPushButton, QProgressBar,
     QAction, QDialog, QTabWidget, QCheckBox, QMessageBox, QMenu
 )
+from PyQt5.QtGui import QDesktopServices
 from pywintypes import error as PyWinError
 
 import cddagl.constants as cons
@@ -72,6 +73,7 @@ class TabbedWindow(QMainWindow):
         self.exit_action.setText(_('E&xit'))
         self.help_menu.setTitle(_('&Help'))
         self.faq_action.setText(_('&Frequently asked questions (FAQ)'))
+        self.game_issue_action.setText(_('&Game issue'))
         if getattr(sys, 'frozen', False):
             self.update_action.setText(_('&Check for update'))
         self.about_action.setText(_('&About CDDA Game Launcher'))
@@ -111,6 +113,13 @@ class TabbedWindow(QMainWindow):
 
         self.help_menu.addSeparator()
 
+        game_issue_action = QAction(_('&Game issue'), self,
+            triggered=self.open_game_issue_url)
+        self.game_issue_action = game_issue_action
+        self.help_menu.addAction(game_issue_action)
+
+        self.help_menu.addSeparator()
+
         if getattr(sys, 'frozen', False):
             update_action = QAction(_('&Check for update'), self,
                 triggered=self.manual_update_check)
@@ -121,6 +130,9 @@ class TabbedWindow(QMainWindow):
             triggered=self.show_about_dialog)
         self.about_action = about_action
         self.help_menu.addAction(about_action)
+
+    def open_game_issue_url(self):
+        QDesktopServices.openUrl(QUrl(cons.GAME_ISSUE_URL))
 
     def show_faq_dialog(self):
         if self.faq_dialog is None:
