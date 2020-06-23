@@ -14,6 +14,7 @@ GITHUB_XRL_REMAINING = b'X-RateLimit-Remaining'
 GITHUB_XRL_RESET = b'X-RateLimit-Reset'
 
 CDDA_RELEASES = '/repos/CleverRaven/Cataclysm-DDA/releases'
+CDDA_RELEASE_BY_TAG = lambda tag: f'/repos/CleverRaven/Cataclysm-DDA/releases/tags/{tag}'
 CDDAGL_LATEST_RELEASE = '/repos/remyroy/CDDA-Game-Launcher/releases/latest'
 
 NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
@@ -25,6 +26,8 @@ CDDAGL_ISSUE_URL_ROOT = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/'
 GAME_ISSUE_URL = 'https://cataclysmdda.org/#ive-found-a-bug--i-would-like-to-make-a-suggestion-what-should-i-do'
 
 BUILD_CHANGES_URL = lambda bn: f'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/{bn}/changes'
+
+BUILD_TAG = lambda bn: f'cdda-jenkins-b{bn}'
 
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 

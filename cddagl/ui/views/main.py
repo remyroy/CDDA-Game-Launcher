@@ -28,6 +28,7 @@ from PyQt5.QtWidgets import (
     QPushButton, QFileDialog, QToolButton, QProgressBar, QButtonGroup, QRadioButton,
     QComboBox, QTextBrowser, QMessageBox, QStyle, QHBoxLayout, QSizePolicy
 )
+from PyQt5.QtGui import QIntValidator
 from babel.dates import format_datetime
 from pywintypes import error as PyWinError
 
@@ -1177,6 +1178,9 @@ class UpdateGroupBox(QGroupBox):
         self.qnam = QNetworkAccessManager()
         self.http_reply = None
 
+        self.api_reply = None
+        self.api_response_content = None
+
         self.changelog_http_reply = None
         self.changelog_http_data = None
 
@@ -1254,6 +1258,30 @@ class UpdateGroupBox(QGroupBox):
 
         layout_row = layout_row + 1
 
+        find_build_label = QLabel()
+        layout.addWidget(find_build_label, layout_row, 0, Qt.AlignRight)
+        self.find_build_label = find_build_label
+
+        find_build_value = QLineEdit()
+        find_build_value.setValidator(QIntValidator())
+        find_build_value.returnPressed.connect(self.find_build)
+        layout.addWidget(find_build_value, layout_row, 1, 1, 2)
+        self.find_build_value = find_build_value
+
+        find_build_warning_label = QLabel()
+        icon = QApplication.style().standardIcon(QStyle.SP_MessageBoxWarning)
+        find_build_warning_label.setPixmap(icon.pixmap(16, 16))
+        find_build_warning_label.hide()
+        layout.addWidget(find_build_warning_label, layout_row, 3)
+        self.find_build_warning_label = find_build_warning_label
+
+        find_build_button = QToolButton()
+        find_build_button.clicked.connect(self.find_build)
+        layout.addWidget(find_build_button, layout_row, 4)
+        self.find_build_button = find_build_button
+
+        layout_row = layout_row + 1
+
         changelog_groupbox = QGroupBox()
         changelog_layout = QHBoxLayout()
         changelog_groupbox.setLayout(changelog_layout)
@@ -1291,6 +1319,8 @@ class UpdateGroupBox(QGroupBox):
         self.x64_radio_button.setText('{so} ({bit})'.format(so=_('Windows x64'), bit=_('64-bit')))
         self.x86_radio_button.setText('{so} ({bit})'.format(so=_('Windows x86'), bit=_('32-bit')))
         self.available_builds_label.setText(_('Available builds:'))
+        self.find_build_label.setText(_('Find build #:'))
+        self.find_build_button.setText(_('Add to list'))
         self.refresh_builds_button.setText(_('Refresh'))
         self.changelog_groupbox.setTitle(_('Changelog'))
         self.update_button.setText(_('Update game'))
@@ -1330,6 +1360,178 @@ class UpdateGroupBox(QGroupBox):
             self.refresh_builds()
 
         self.shown = True
+
+    def find_build(self):
+        build_number = self.find_build_value.text()
+        build_number = build_number.strip()
+
+        if build_number == '':
+            return
+
+        url = cons.GITHUB_REST_API_URL + cons.CDDA_RELEASE_BY_TAG(cons.BUILD_TAG(build_number))
+
+        self.api_response_content = BytesIO()
+
+        request = QNetworkRequest(QUrl(url))
+        request.setRawHeader(b'User-Agent',
+            b'CDDA-Game-Launcher/' + version.encode('utf8'))
+        request.setRawHeader(b'Accept', cons.GITHUB_API_VERSION)
+
+        self.api_reply = self.qnam.get(request)
+        self.api_reply.finished.connect(self.find_build_finished)
+        self.api_reply.readyRead.connect(self.find_build_ready_read)
+
+    def find_build_finished(self):
+        redirect = self.api_reply.attribute(
+            QNetworkRequest.RedirectionTargetAttribute)
+        if redirect is not None:
+            redirected_url = urljoin(
+                self.api_reply.request().url().toString(),
+                redirect.toString())
+
+            self.api_response_content = BytesIO()
+
+            request = QNetworkRequest(QUrl(redirected_url))
+            request.setRawHeader(b'User-Agent',
+                b'CDDA-Game-Launcher/' + version.encode('utf8'))
+            request.setRawHeader(b'Accept', cons.GITHUB_API_VERSION)
+
+            self.api_reply = self.qnam.get(request)
+            self.api_reply.finished.connect(self.find_build_finished)
+            self.api_reply.readyRead.connect(self.find_build_ready_read)
+            return
+        
+        requests_remaining = None
+        if self.api_reply.hasRawHeader(cons.GITHUB_XRL_REMAINING):
+            requests_remaining = self.api_reply.rawHeader(cons.GITHUB_XRL_REMAINING)
+            requests_remaining = tryint(requests_remaining)
+
+        reset_dt = None
+        if self.api_reply.hasRawHeader(cons.GITHUB_XRL_RESET):
+            reset_dt = self.api_reply.rawHeader(cons.GITHUB_XRL_RESET)
+            reset_dt = tryint(reset_dt)
+            reset_dt = arrow.get(reset_dt)
+
+        if requests_remaining is not None and requests_remaining <= 10:
+            self.warn_rate_limit(requests_remaining, reset_dt)
+        
+        main_window = self.get_main_window()
+        status_bar = main_window.statusBar()
+
+        status_code = self.api_reply.attribute(
+            QNetworkRequest.HttpStatusCodeAttribute)
+        if status_code != 200:
+            self.api_response_content = None
+
+            build_number = self.find_build_value.text()
+            build_number = build_number.strip()
+
+            status_bar.showMessage(_('Build #{build} not found on GitHub'
+                ).format(build=build_number))
+            return
+
+        self.api_response_content.seek(0)
+        try:
+            release = json.loads(TextIOWrapper(self.api_response_content, encoding='utf8'
+                ).read())
+        except json.decoder.JSONDecodeError:
+            release = None
+        self.api_response_content = None
+
+        if release is None:
+            return
+        
+        builds = self.builds
+
+        asset_platform = self.base_asset['Platform']
+        asset_graphics = self.base_asset['Graphics']
+
+        target_regex = re.compile(r'cataclysmdda-(?P<major>.+)-' +
+            re.escape(asset_platform) + r'-' +
+            re.escape(asset_graphics) + r'-' +
+            r'b?(?P<build>\d+)\.zip'
+            )
+
+        build_regex = re.compile(r'build #(?P<build>\d+)')
+
+        if any(x not in release for x in ('name', 'created_at')):
+            return
+
+        build_match = build_regex.search(release['name'])
+        build_number = None
+        if build_match is not None:
+            asset = None
+            if 'assets' in release:
+                asset_iter = (
+                    x for x in release['assets']
+                    if 'browser_download_url' in x
+                        and 'name' in x
+                        and target_regex.search(x['name']) is not None
+                )
+                asset = next(asset_iter, None)
+
+            build = {
+                'url': asset['browser_download_url'] if asset is not None
+                                                        else None,
+                'name': asset['name'] if asset is not None else None,
+                'number': build_match.group('build'),
+                'date': arrow.get(release['created_at']).datetime
+            }
+            build_number = build['number']
+
+            self.find_build_value.setText('')
+
+            for existing_build in builds:
+                if existing_build['number'] == build_number:
+                    status_bar.showMessage(
+                        _('Build #{build} is already in the available builds list'
+                        ).format(build=build_number))
+                    return
+
+            builds.append(build)
+
+            status_bar.showMessage(_('Build #{build} found and added to the available builds list'
+                ).format(build=build_number))
+        else:
+            return
+
+        if len(builds) > 0:
+            builds.sort(key=lambda x: (int(x['number']), x['date']), reverse=True)
+            self.builds = builds
+
+            self.builds_combo.clear()
+            for build in builds:
+                if build['date'] is not None:
+                    build_date = arrow.get(build['date'], 'UTC')
+                    human_delta = safe_humanize(build_date, arrow.utcnow(),
+                        locale=self.app_locale)
+                else:
+                    human_delta = _('Unknown')
+
+                self.builds_combo.addItem(
+                    '{number} ({delta})'.format(number=build['number'], delta=human_delta),
+                    userData=build
+                )
+
+            combo_model = self.builds_combo.model()
+            default_set = False
+            for x in range(combo_model.rowCount()):
+                if combo_model.item(x).data(Qt.UserRole)['url'] is None:
+                    combo_model.item(x).setEnabled(False)
+                    combo_model.item(x).setText(combo_model.item(x).text() +
+                        _(' - build unavailable'))
+                elif not default_set:
+                    default_set = True
+                    combo_model.item(x).setText(combo_model.item(x).text() +
+                        _(' - latest build available'))
+
+                if (combo_model.item(x).data(Qt.UserRole)['number'] == build_number and
+                    combo_model.item(x).isEnabled()):
+                    self.builds_combo.setCurrentIndex(x)
+
+
+    def find_build_ready_read(self):
+        self.api_response_content.write(self.api_reply.readAll())
 
     def update_game(self):
         if not self.updating:
@@ -1684,6 +1886,8 @@ class UpdateGroupBox(QGroupBox):
         self.previous_bc_enabled = self.builds_combo.isEnabled()
         self.builds_combo.setEnabled(False)
         self.refresh_builds_button.setEnabled(False)
+        self.find_build_value.setEnabled(False)
+        self.find_build_button.setEnabled(False)
 
         self.previous_ub_enabled = self.update_button.isEnabled()
         if update_button:
@@ -1698,6 +1902,8 @@ class UpdateGroupBox(QGroupBox):
         self.x86_radio_button.setEnabled(True)
 
         self.refresh_builds_button.setEnabled(True)
+        self.find_build_value.setEnabled(True)
+        self.find_build_button.setEnabled(True)
 
         if builds_combo:
             self.builds_combo.setEnabled(True)
@@ -2368,7 +2574,6 @@ class UpdateGroupBox(QGroupBox):
         ))
 
         if (any(font_paths) and self.in_post_extraction):
-            logger.info('Restoring custom fonts')
             status_bar.showMessage(_('Restoring custom fonts'))
 
             for font_dir, prev_font_dir in font_paths:
@@ -2614,6 +2819,7 @@ class UpdateGroupBox(QGroupBox):
     def start_lb_request(self, base_asset):
         self.disable_controls(True)
         self.refresh_warning_label.hide()
+        self.find_build_warning_label.hide()
 
         main_window = self.get_main_window()
 
@@ -2655,6 +2861,33 @@ class UpdateGroupBox(QGroupBox):
     @property
     def app_locale(self):
         return QApplication.instance().app_locale
+
+    def warn_rate_limit(self, requests_remaining, reset_dt):
+        # Warn about remaining requests on GitHub API
+        reset_dt_display = _('Unknown')
+        if reset_dt is not None:
+            reset_dt_local = reset_dt.astimezone(tz=None)
+            reset_dt_display = format_datetime(reset_dt_local,
+                format='long', locale=self.app_locale)
+
+        message = _('You have {remaining} '
+        'request(s) remaining for accessing GitHub API.\nYou will have to '
+        'wait until {datetime} to get more requests.\nThose requests are '
+        'needed to get the available builds.\nIf you keep running low on '
+        'those remaining requests, avoid quickly refreshing often\n for the '
+        'available builds. For more information, search GitHub API rate '
+        'limiting.').format(
+            remaining=requests_remaining,
+            datetime=reset_dt_display
+        )
+
+        self.refresh_warning_label.show()
+        self.refresh_warning_label.setToolTip(message)
+        self.find_build_warning_label.setToolTip(message)
+
+        selected_branch = self.branch_button_group.checkedButton()
+        if selected_branch == self.experimental_radio_button:
+            self.find_build_warning_label.show()
 
     def lb_http_finished(self):
         main_window = self.get_main_window()
@@ -2722,24 +2955,7 @@ class UpdateGroupBox(QGroupBox):
             reset_dt = arrow.get(reset_dt)
 
         if requests_remaining is not None and requests_remaining <= 10:
-            # Warn about remaining requests on GitHub API
-            reset_dt_display = _('Unknown')
-            if reset_dt is not None:
-                reset_dt_local = reset_dt.astimezone(tz=None)
-                reset_dt_display = format_datetime(reset_dt_local,
-                    format='long', locale=self.app_locale)
-
-            self.refresh_warning_label.show()
-            self.refresh_warning_label.setToolTip(_('You have {remaining} '
-            'request(s) remaining for accessing GitHub API.\nYou will have to '
-            'wait until {datetime} to get more requests.\nThose requests are '
-            'needed to get the available builds.\nIf you keep running low on '
-            'those remaining requests, avoid quickly refreshing often\n for the '
-            'available builds. For more information, search GitHub API rate '
-            'limiting.').format(
-                remaining=requests_remaining,
-                datetime=reset_dt_display
-            ))
+            self.warn_rate_limit(requests_remaining, reset_dt)
 
         status_code = self.http_reply.attribute(
             QNetworkRequest.HttpStatusCodeAttribute)
@@ -2879,6 +3095,25 @@ class UpdateGroupBox(QGroupBox):
     def lb_dl_progress(self, bytes_read, total_bytes):
         self.fetching_progress_bar.setMaximum(total_bytes)
         self.fetching_progress_bar.setValue(bytes_read)
+
+    def show_hide_find_build(self):
+        selected_branch = self.branch_button_group.checkedButton()
+
+        widgets = (
+            self.find_build_label,
+            self.find_build_value,
+            self.find_build_button
+            )
+
+        if selected_branch is self.stable_radio_button:
+            for widget in widgets:
+                widget.hide()
+            self.find_build_warning_label.hide()
+        elif selected_branch is self.experimental_radio_button:
+            for widget in widgets:
+                widget.show()
+            if self.refresh_warning_label.isVisible():
+                self.find_build_warning_label.show()
 
     def refresh_builds(self):
         selected_branch = self.branch_button_group.checkedButton()
@@ -3039,8 +3274,10 @@ class UpdateGroupBox(QGroupBox):
     
     def branch_changed(self):
         # Perform branch change
-        # Change available builds and changelog
 
+        self.show_hide_find_build()
+
+        # Change available builds and changelog
         self.refresh_builds()
 
     def platform_clicked(self, button):
