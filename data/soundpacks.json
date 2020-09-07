@@ -61,5 +61,13 @@
         "url": "https://github.com/damalsk/damalsksoundpack/archive/v0.2.zip",
         "size": 164342384,
         "homepage": "https://discourse.cataclysmdda.org/t/soundpack-s-soundpack-vehicle-sounds-licensed-music-and-more/20131"
+    },
+    {
+        "type": "direct_download",
+        "viewname": "Otopack",
+        "name": "Otopack",
+        "url": "https://github.com/Kenan2000/Otopack-Mods-Updates/archive/master.zip",
+        "size": 139984997,
+        "homepage": "https://github.com/Kenan2000/Otopack-Mods-Updates"
     }
 ]
