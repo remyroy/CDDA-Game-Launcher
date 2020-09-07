@@ -97,6 +97,17 @@
   },
   {
     "type": "direct_download",
+    "mod-type": "content",
+    "ident": "BL9",
+    "name": "BL9",
+    "author": "Mrsecretguy1/Kenan, Axema Vales, Goat-God",
+    "description": "Are you daring enough to explore the BL9 mystery?Explore the custom lore about secret Cataclysm organizations, their dark plans and their attempts to use a new dangerous and unpredictable Blob-like organism type to seize power in this crazy world! Huge exotic locations - The Tainted Medieval Castle, The Secret Organization's Militarized Island, huge lush and dangerous underground biomes (over 175+ custom overmaps!), vile and horribly mutated dangerous monsters, new weapons (ballistics too!) and armor and misc stuff.",
+    "size": 409780,
+    "url": "https://github.com/Kenan2000/BL9/archive/master.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/the-grand-release-of-bl9-my-huge-resident-evil-inspired-mod/24663"
+  },
+  {
+    "type": "direct_download",
     "ident": "Mining_Mod",
     "name": "Mining Mod",
     "author": "DangerNoodle",
