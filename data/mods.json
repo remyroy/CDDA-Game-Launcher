@@ -490,5 +490,16 @@
     "size": 8124,
     "url": "https://github.com/MrJet2020/XEAS/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/mod-xeas-xeno-adapted-stuff/22407"
+  },
+  {
+    "type": "direct_download",
+    "ident": [ "clean_cbm", "manualbionicinstall", "portable_autodoc", "safe_autodoc" ],
+    "name": "Easy CBM Mods",
+    "authors": [ "Xhuis", "Fris0uman", "John Candlebury" ],
+    "description": "CDDA mods to make CBM easy again",
+    "category": "rebalance",
+    "size": 10486,
+    "url": "https://github.com/Fris0uman/Easy-CBM-Mods/archive/master.zip",
+    "homepage": "https://github.com/Fris0uman/Easy-CBM-Mods"
   }
 ]
