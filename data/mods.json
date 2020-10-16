@@ -501,5 +501,15 @@
     "size": 10486,
     "url": "https://github.com/Fris0uman/Easy-CBM-Mods/archive/master.zip",
     "homepage": "https://github.com/Fris0uman/Easy-CBM-Mods"
+  },
+  {
+    "type": "direct_download",
+    "ident": "useful_helicopters",
+    "name": "Useful Helicopters",
+    "authors": [ "SpadeDraco" ],
+    "description": "Helicopters can be built, modified and fly for more than 25 minutes.",
+    "category": "rebalance",
+    "url": "https://github.com/SpadeDraco/useful_helicopters/archive/master.zip",
+    "homepage": "https://github.com/SpadeDraco/useful_helicopters"
   }
 ]
