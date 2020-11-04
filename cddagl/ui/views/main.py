@@ -3372,8 +3372,8 @@ class ChangelogParsingThread(QThread):
                 format='long', locale=self.app_locale)
 
             build_changes = build_data.findall(r'.//changeSet/item/msg')
-            build_changes = map(lambda x: html.escape(x.text.strip(), True),
-                                build_changes)
+            build_changes = map(lambda x: html.escape(x.text.strip() if x.text is not None else '',
+                                True), build_changes)
             build_changes = list(unique(build_changes))
             build_number = int(build_data.find('number').text)
             build_desc = _('Build #{build_number}').format(build_number=build_number)
