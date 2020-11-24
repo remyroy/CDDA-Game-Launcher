@@ -1144,50 +1144,54 @@ class SoundpacksTab(QTabWidget):
         self.size_le.setText('')
         self.homepage_tb.setText('')
 
-        soundpacks_dir = os.path.join(new_dir, 'data', 'sound')
-        if os.path.isdir(soundpacks_dir):
-            self.soundpacks_dir = soundpacks_dir
+        soundpacks_dirs = [ 
+            os.path.join(new_dir, 'data', 'sound'),
+            os.path.join(new_dir,         'sound')  # User sound
+        ]
+        for soundpacks_dir in soundpacks_dirs:
+            if os.path.isdir(soundpacks_dir):
+                self.soundpacks_dir = soundpacks_dir
 
-            dir_scan = scandir(soundpacks_dir)
+                dir_scan = scandir(soundpacks_dir)
 
-            while True:
-                try:
-                    entry = next(dir_scan)
-                    if entry.is_dir():
-                        soundpack_path = entry.path
-                        config_file = os.path.join(soundpack_path,
-                            'soundpack.txt')
-                        if os.path.isfile(config_file):
-                            info = self.config_info(config_file)
-                            if 'NAME' in info and 'VIEW' in info:
-                                soundpack_info = {
-                                    'path': soundpack_path,
-                                    'enabled': True
-                                }
-                                soundpack_info.update(info)
+                while True:
+                    try:
+                        entry = next(dir_scan)
+                        if entry.is_dir():
+                            soundpack_path = entry.path
+                            config_file = os.path.join(soundpack_path,
+                                'soundpack.txt')
+                            if os.path.isfile(config_file):
+                                info = self.config_info(config_file)
+                                if 'NAME' in info and 'VIEW' in info:
+                                    soundpack_info = {
+                                        'path': soundpack_path,
+                                        'enabled': True
+                                    }
+                                    soundpack_info.update(info)
 
-                                self.soundpacks.append(soundpack_info)
-                                soundpack_info['size'] = (
-                                    self.scan_size(soundpack_info))
-                                self.add_soundpack(soundpack_info)
-                                continue
-                        disabled_config_file = os.path.join(soundpack_path,
-                            'soundpack.txt.disabled')
-                        if os.path.isfile(disabled_config_file):
-                            info = self.config_info(disabled_config_file)
-                            if 'NAME' in info and 'VIEW' in info:
-                                soundpack_info = {
-                                    'path': soundpack_path,
-                                    'enabled': False
-                                }
-                                soundpack_info.update(info)
+                                    self.soundpacks.append(soundpack_info)
+                                    soundpack_info['size'] = (
+                                        self.scan_size(soundpack_info))
+                                    self.add_soundpack(soundpack_info)
+                                    continue
+                            disabled_config_file = os.path.join(soundpack_path,
+                                'soundpack.txt.disabled')
+                            if os.path.isfile(disabled_config_file):
+                                info = self.config_info(disabled_config_file)
+                                if 'NAME' in info and 'VIEW' in info:
+                                    soundpack_info = {
+                                        'path': soundpack_path,
+                                        'enabled': False
+                                    }
+                                    soundpack_info.update(info)
 
-                                self.soundpacks.append(soundpack_info)
-                                soundpack_info['size'] = (
-                                    self.scan_size(soundpack_info))
-                                self.add_soundpack(soundpack_info)
+                                    self.soundpacks.append(soundpack_info)
+                                    soundpack_info['size'] = (
+                                        self.scan_size(soundpack_info))
+                                    self.add_soundpack(soundpack_info)
 
-                except StopIteration:
-                    break
-        else:
-            self.soundpacks_dir = None
+                    except StopIteration:
+                        break
+            else:
+                self.soundpacks_dir = None
