@@ -2494,7 +2494,7 @@ class UpdateGroupBox(QGroupBox):
         ))        
 
         for soundpack_dir, previous_soundpack_dir in soundpack_paths:
-            # Create sound dir if needed
+            # Create soundpack dir if needed
             Path(soundpack_dir).mkdir(parents=True, exist_ok=True)
             
             if (os.path.isdir(soundpack_dir) and os.path.isdir(
@@ -2727,7 +2727,7 @@ class UpdateGroupBox(QGroupBox):
             return
         
         # Check if any copying still in progress
-        # Fixing problem interruption copying next soundpack
+        # Fixing problem of interruption copying next soundpack
         if not self.progress_copy:
             self.in_post_extraction = False
 
