@@ -2532,10 +2532,7 @@ class UpdateGroupBox(QGroupBox):
                     self.copy_next_soundpack()
                 else:
                     status_bar.clearMessage()
-                    self.post_extraction_step3()
-
-            else:
-                self.post_extraction_step3()
+        self.post_extraction_step3
 
     def copy_next_soundpack(self):
         if self.in_post_extraction and len(self.custom_soundpacks) > 0:
@@ -2726,10 +2723,7 @@ class UpdateGroupBox(QGroupBox):
         if not self.in_post_extraction:
             return
         
-        # Check if any copying still in progress
-        # Fixing problem of interruption copying next soundpack
-        if not self.progress_copy:
-            self.in_post_extraction = False
+        self.in_post_extraction = False
 
         if config_true(get_config_value('remove_previous_version', 'False')):
             self.remove_previous_version()
