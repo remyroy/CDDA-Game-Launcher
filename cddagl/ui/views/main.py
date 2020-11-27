@@ -2494,6 +2494,9 @@ class UpdateGroupBox(QGroupBox):
         ))        
 
         for soundpack_dir, previous_soundpack_dir in soundpack_paths:
+            # Create sound dir if needed
+            Path(soundpack_dir).mkdir(parents=True, exist_ok=True)
+            
             if (os.path.isdir(soundpack_dir) and os.path.isdir(
                 previous_soundpack_dir) and self.in_post_extraction):
                 status_bar.showMessage(_('Restoring custom soundpacks'))
@@ -2722,8 +2725,11 @@ class UpdateGroupBox(QGroupBox):
 
         if not self.in_post_extraction:
             return
-
-        self.in_post_extraction = False
+        
+        # Check if any copying still in progress
+        # Fixing problem interruption copying next soundpack
+        if not self.progress_copy:
+            self.in_post_extraction = False
 
         if config_true(get_config_value('remove_previous_version', 'False')):
             self.remove_previous_version()
