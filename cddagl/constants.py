@@ -200,6 +200,7 @@ CONFIG_BRANCH_KEY = 'branch'
 CONFIG_BRANCH_STABLE = 'stable'
 CONFIG_BRANCH_EXPERIMENTAL = 'experimental'
 
+DURATION_FORMAT = '{D:02}d {H:02}h {M:02}m {S:02}s'
 
 ### Path to Dirs and Files used in CDDAGL
 ### TODO: (kurzed) centralize here and then move to a better place?
