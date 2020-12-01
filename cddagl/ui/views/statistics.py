@@ -62,7 +62,7 @@ class StatisticsTab(QTabWidget):
         self.game_start_time = None
         self.game_timer.stop()
         self.reset_current_button.setEnabled(True)
-        self.reset_total_button.setEnabled(False)
+        self.reset_total_button.setEnabled(True)
 
     def game_tick(self):
         elapsed = int(datetime.now().timestamp() - self.game_start_time.timestamp())
@@ -146,6 +146,6 @@ class TotalPlayedGroupBox(QGroupBox):
         self.setTitle(_('Total time in game:'))
     
     def set_label_text(self):
-        total_game_duration = int(get_config_value('total_played', 0)) + self.parentWidget().last_game_duration
+        total_game_duration = int(get_config_value('total_played', 0)) + int(self.parentWidget().last_game_duration)
         fmt_total_game_duration = strfdelta(total_game_duration, _(DURATION_FORMAT), inputtype='s')    
         self.total_game_duration_label.setText(fmt_total_game_duration)
