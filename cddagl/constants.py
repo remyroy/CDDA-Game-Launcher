@@ -60,6 +60,16 @@ BASE_ASSETS = {
 }
 
 STABLE_ASSETS = {
+    '0.E-3': {
+        'name': '0.E-3 Ellison-3',
+        'number': '10478',
+        'released_on': '2020-12-09T22:52:49Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/0.E-3/',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E-3/cataclysmdda-0.E-Windows_x64-Tiles-0.E-3.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.E-3/cataclysmdda-0.E-Windows-Tiles-0.E-3.zip'
+        }
+    },
     '0.E-2': {
         'name': '0.E-2 Ellison-2',
         'number': '10478',
@@ -113,12 +123,22 @@ STABLE_ASSETS = {
 }
 
 STABLE_CHANGELOG = '''
+<h3>0.E-3 Ellison-3</h3>
+<p>Point release Ellison-3 includes following important bugfixes to original Ellison release:</p>
+<ul>
+  <li>fixed compilation under clang;
+  <li>fixes for several errors and crashes;
+  <li>fixed hardware keyboard issue in Android builds.
+</ul>
+<p>See differences between current point release and original release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.E…0.E-3">0.E…0.E-3</a></p>
+
 <h3>0.E-2 Ellison-2</h3>
 <p>Point release Ellison-2 includes following important bugfixes to original Ellison release:</p>
 <ul>
   <li>fixed virtual keyboard issue in Android builds.</li>
 </ul>
 <p>See differences between current point release and original release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.E...0.E-2">0.E…0.E-2</a></p>
+
 <h3>0.E-1 Ellison-1</h3>
 <p>Point release Ellison-1 includes a number of following important bugfixes to original Ellison release:</p>
 <ul>
@@ -127,6 +147,7 @@ STABLE_CHANGELOG = '''
   <li>enhanced Android builds.</li>
 </ul>
 <p>See differences between current point release and original release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.E…0.E-1">0.E…0.E-1</a></p>
+
 <h3>0.E Ellison</h3>
 <p>The Ellison release adds a huge number of features and content that make the world feel more alive. From being able to climb onto building rooftops or hide behind cars, to building a camp for your followers in the wilderness, to exploring the new river and lake systems on a boat or raft, everything is more immersive and consistent. Also more STUFF. I didn’t think we would ever double the number of game entities with a release again, but we did.</p>
 <p>We aimed at a 6 month release cycle, and ended up spending 9 months adding features at a breakneck pace and 3 months putting the brakes on and stabilizing. I can’t honestly say that’s a huge disappointment, though toward the end the rest of the development team was really chomping at the bit to get back to feature work, so we’ll need to continue to adjust.</p>
@@ -193,7 +214,9 @@ STABLE_SHA256 = {
     'fb7db2b3cf101e19565ce515c012a089a75f54da541cd458144dc8483b5e59c8': '0.E-1',
     '1068867549c1a24ae241a886907651508830ccd9c091bad27bacbefabab99acc': '0.E-1',
     '0ce61cdfc299661382e30da133f7356b4faea38865ec0947139a08f40b595728': '0.E-2',
-    'c9ca51bd1e7549b0820fe736c10b3e73d358700c3460a0227fade59e9754e03d': '0.E-2'
+    'c9ca51bd1e7549b0820fe736c10b3e73d358700c3460a0227fade59e9754e03d': '0.E-2',
+    '563bd13cff18c4271c43c18568237046d1fd18ae200f7e5cdd969b80e6992967': '0.E-3',
+    'e4874bbb8e0a7b1e52b4dedb99575e2a90bfe84e74c36db58510f9973400077d': '0.E-3'
 }
 
 CONFIG_BRANCH_KEY = 'branch'
