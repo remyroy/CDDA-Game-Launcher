@@ -3371,10 +3371,18 @@ class ChangelogParsingThread(QThread):
             build_date_text = format_datetime(build_date_local,
                 format='long', locale=self.app_locale)
 
-            build_changes = build_data.findall(r'.//changeSet/item/msg')
-            build_changes = map(lambda x: html.escape(x.text.strip() if x.text is not None else '',
-                                True), build_changes)
-            build_changes = list(unique(build_changes))
+            build_items = build_data.findall(r'.//changeSet/item')
+            all_items = []
+            for build_item in build_items:
+                msg_node = build_item.find('msg')
+                commitid_node = build_item.find('commitId')
+                msg = html.escape(msg_node.text.strip() if msg_node.text is not None else '')
+                commitid = commitid_node.text.strip() if commitid_node.text is not None else ''
+                all_items.append({
+                    'msg': msg,
+                    'commitid': commitid
+                })
+
             build_number = int(build_data.find('number').text)
             build_desc = _('Build #{build_number}').format(build_number=build_number)
             build_link = f'<a href="{cons.BUILD_CHANGES_URL(build_number)}">{build_desc}</a>'
@@ -3407,15 +3415,22 @@ class ChangelogParsingThread(QThread):
                 )
 
             changelog_html.write('<ul>')
-            if len(build_changes) < 1:
+            if len(all_items) < 1:
                 changelog_html.write(
                     '<li><span style="color:green">{0}</span></li>'
                     .format(_('No changes, same code as previous build!')))
             else:
-                for change in build_changes:
+                commit_name = _('Commit')
+                for item in all_items:
+                    msg = item['msg']
+                    commitid = item['commitid']
                     link_repl = rf'<a href="{cons.CDDA_ISSUE_URL_ROOT}\g<id>">#\g<id></a>'
-                    change = id_regex.sub(link_repl, change)
-                    changelog_html.write(f'<li>{change}</li>')
+                    msg = id_regex.sub(link_repl, msg)
+                    if commitid:
+                        commit_url = cons.CDDA_COMMIT_URL_ROOT + commitid
+                        changelog_html.write(f'<li>{msg} [<a href="{commit_url}">{commit_name}</a>]</li>')
+                    else:
+                        changelog_html.write(f'<li>{msg}</li>')
             changelog_html.write('</ul>')
 
         self.completed.emit(changelog_html)
