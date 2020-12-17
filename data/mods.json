@@ -511,5 +511,16 @@
     "category": "rebalance",
     "url": "https://github.com/SpadeDraco/useful_helicopters/archive/master.zip",
     "homepage": "https://github.com/SpadeDraco/useful_helicopters"
+  },
+  {
+    "type": "direct_download",
+    "ident": "dig_a_tunna",
+    "name": "Mole Mutation",
+    "author": "Nancok",
+    "description": "Adds a new mutation category that turns you into a mole-man.",
+    "category": "misc_additions",
+    "size": 4198,
+    "url": "https://github.com/NancokPS2/Mole-Mutation/archive/main.zip",
+    "homepage": "https://github.com/NancokPS2/Mole-Mutation"
   }
 ]
