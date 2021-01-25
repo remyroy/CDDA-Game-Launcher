@@ -471,5 +471,17 @@
     "size": 4198,
     "url": "https://github.com/NancokPS2/Mole-Mutation/archive/main.zip",
     "homepage": "https://github.com/NancokPS2/Mole-Mutation"
+  },
+  {
+    "type": "direct_download",
+    "ident": "magiclysm_no_class_limit",
+    "name": "Magiclysm No Class Limit",
+    "authors": [ "martinrhan" ],
+    "maintainers": [ "martinrhan" ],
+    "description": "Remove limitation of conflict spell classes.",
+    "category": "rebalance",
+    "size": 1566,
+    "url": "https://github.com/martinrhan/Magiclysm_No_Class_Limit/archive/master.zip",
+    "homepage": "https://github.com/martinrhan/Magiclysm_No_Class_Limit"
   }
 ]
