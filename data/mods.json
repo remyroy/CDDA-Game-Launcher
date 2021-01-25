@@ -483,5 +483,16 @@
     "size": 1566,
     "url": "https://github.com/martinrhan/Magiclysm_No_Class_Limit/archive/master.zip",
     "homepage": "https://github.com/martinrhan/Magiclysm_No_Class_Limit"
+  },
+  {
+    "type": "direct_download",
+    "ident": "OG_Drugs",
+    "name": "Original Drug Names",
+    "authors": [ "Entity-y" ],
+    "description": "Restores original drug names.",
+    "category": "misc_additions",
+    "size": 1566,
+    "url": "https://github.com/Entity-y/OG_Drugs/archive/main.zip",
+    "homepage": "https://discourse.cataclysmdda.org/t/original-drug-names/25335"
   }
 ]
