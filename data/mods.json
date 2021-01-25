@@ -321,57 +321,6 @@
     "homepage": "https://github.com/DracoGriffin"
   },
   {
-    "type": "browser_download",
-    "mod-type": "SUPPLEMENTAL",
-    "ident": "BIGRIVER",
-    "name": "Big River Building Pack",
-    "description": "Adds a number of riverside additions, woodland moonshine stills and rural homes.",
-    "category": "buildings",
-    "author": "Whaley",
-    "size": 31085,
-    "url": "https://nofile.io/f/JHWXQPk80Uu/Whaleys+Big+River+Building+Pack.zip",
-    "expected_filename": "Whaleys Big River Building Pack.zip",
-    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8rfnio/whaleys_big_river_building_pack/"
-  },
-  {
-    "type": "browser_download",
-    "mod-type": "SUPPLEMENTAL",
-    "ident": "SEEDYSPOT",
-    "name": "Seedy Spots Building Pack",
-    "description": "Adds more low income building types.",
-    "category": "Buildings",
-    "author": "Whaley",
-    "size": 42392,
-    "url": "https://nofile.io/f/qD1Bh2Weo8f/Cataclysm+Seedy+Spots+Building+Pack+FIX.zip",
-    "expected_filename": "Cataclysm Seedy Spots Building Pack FIX.zip",
-    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8nayyx/cataclysm_building_pack_seedy_spots/"
-  },
-  {
-    "type": "browser_download",
-    "mod-type": "SUPPLEMENTAL",
-    "ident": "BIGOLBUILDING",
-    "name": "Whaleys Big Ol' Building Pack",
-    "description": "Adds more buildings , including a zoo, and a stadium.",
-    "category": "Buildings",
-    "author": "Whaley",
-    "size": 42998,
-    "url": "https://nofile.io/f/yNNkkQcdVGE/Whaleys+Big+Buildings+Pack+FIX.zip",
-    "expected_filename": "Whaleys Big Buildings Pack FIX.zip",
-    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8nc0b0/whaleys_big_buildings_pack/"
-  },
-  {
-    "type": "browser_download",
-    "ident": "more_buildings_and_locations",
-    "name": "More Builings & Locations!",
-    "description": "houses in various states of construction.. more cemeteries & parks.. also vacant lots, desolate barns, dollar stores & an indoor pool! (50+ instances)",
-    "category": "buildings",
-    "author": "CosmicCoincidence",
-    "size": 51209,
-    "url": "https://nofile.io/f/fpzg9u6S0om/More+Buildings+&+Locations!.rar",
-    "expected_filename": "More Buildings & Locations!.rar",
-    "homepage": "https://www.reddit.com/r/cataclysmdda/comments/8qzhjd/more_locations/"
-  },
-  {
     "type": "direct_download",
     "ident": "Bootleg_Walkers",
     "name": "Bootleg Walkers",
