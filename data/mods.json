@@ -1729,7 +1729,8 @@
       "eps_cbm"
     ],
     "name": "TheGoatGod's Mod Compilation",
-    "description": "Welcome to TheGoatGod's Mod Compilation. Currently contains just under 400 mods, not including mainline mods, 14 maintained mods, 50 rebalance mods, 22 legacy mods, 2 tile sets(legacy working but lacks a lot of new items etc...), 49 NO Mods, 8 sound packs."
+    "description": "Welcome to TheGoatGod's Mod Compilation. Currently contains just under 400 mods, not including mainline mods, 14 maintained mods, 50 rebalance mods, 22 legacy mods, 2 tile sets(legacy working but lacks a lot of new items etc...), 49 NO Mods, 8 sound packs.",
+
     "category": "content",
     "authors": [
   "pisskop and Noctifer and Malkeus",
@@ -1948,7 +1949,7 @@
   "pisskop and Noctifer"
 ],
     "size": 28034068,
-    "url": "https://github.com/GMC-Modding-Team/Community-Mod-Compilation-redux/releases/tag/v0.1.6"
+    "url": "https://github.com/GMC-Modding-Team/Community-Mod-Compilation-redux/releases/tag/v0.1.6",
     "homepage": "https://github.com/GMC-Modding-Team/Community-Mod-Compilation-redux"
   }
 ]
