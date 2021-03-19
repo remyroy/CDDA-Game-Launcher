@@ -494,5 +494,16 @@
     "size": 2949,
     "url": "https://github.com/Entity-y/OG_Drugs/archive/main.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/original-drug-names/25335"
+  },
+  {
+    "type": "direct_download",
+    "ident": "Youkai_Disco",
+    "name": "Youkai Enemies",
+    "authors": [ "Toltetix" ],
+    "description": "Adds some monsters based off Japanese folklore.",
+    "category": "creatures",
+    "size": 54105,
+    "url": "https://github.com/Toltetix/cdda-youkai-mod/archive/master.zip",
+    "homepage": "https://github.com/Toltetix/cdda-youkai-mod"
   }
 ]
