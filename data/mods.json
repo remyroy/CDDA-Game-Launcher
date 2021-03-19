@@ -505,5 +505,16 @@
     "size": 54105,
     "url": "https://github.com/Toltetix/cdda-youkai-mod/archive/master.zip",
     "homepage": "https://github.com/Toltetix/cdda-youkai-mod"
+  },
+  {
+    "type": "direct_download",
+    "ident": "adv_gear",
+    "name": "Advanced Gear",
+    "authors": [ "Shard" ],
+    "description": "Extremely high-end items based around nanotech and 3D printing, mutations to be added later.",
+    "category": "items",
+    "size": 39136,
+    "url": "https://github.com/Lorith/AdvancedGear-CDDA-Mod/archive/master.zip",
+    "homepage": "https://github.com/Lorith/AdvancedGear-CDDA-Mod"
   }
 ]
