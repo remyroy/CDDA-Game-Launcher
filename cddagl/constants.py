@@ -60,6 +60,19 @@ BASE_ASSETS = {
     }
 }
 
+NEW_BASE_ASSETS = {
+    'Tiles': {
+        'x64': {
+            'Platform': 'x64',
+            'Graphics': 'tiles'
+        },
+        'x86': {
+            'Platform': 'x32',
+            'Graphics': 'tiles'
+        }
+    }
+}
+
 STABLE_ASSETS = {
     '0.E-3': {
         'name': '0.E-3 Ellison-3',

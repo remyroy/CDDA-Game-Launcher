@@ -1451,8 +1451,18 @@ class UpdateGroupBox(QGroupBox):
             re.escape(asset_graphics) + r'-' +
             r'b?(?P<build>\d+)\.zip'
             )
+        
+        new_asset_platform = self.new_base_asset['Platform']
+        new_asset_graphics = self.new_base_asset['Graphics']
 
-        build_regex = re.compile(r'build #(?P<build>\d+)')
+        new_target_regex = re.compile(
+            r'cdda-windows-' +
+            re.escape(new_asset_graphics) + r'-' +
+            re.escape(new_asset_platform) + r'-' +
+            r'b?(?P<build>\d+)\.zip'
+            )
+
+        build_regex = re.compile(r'[Bb]uild #(?P<build>\d+)')
 
         if any(x not in release for x in ('name', 'created_at')):
             return
@@ -1466,7 +1476,9 @@ class UpdateGroupBox(QGroupBox):
                     x for x in release['assets']
                     if 'browser_download_url' in x
                         and 'name' in x
-                        and target_regex.search(x['name']) is not None
+                        and (
+                            target_regex.search(x['name']) is not None or
+                            new_target_regex.search(x['name']) is not None )
                 )
                 asset = next(asset_iter, None)
 
@@ -1496,7 +1508,7 @@ class UpdateGroupBox(QGroupBox):
             return
 
         if len(builds) > 0:
-            builds.sort(key=lambda x: (int(x['number']), x['date']), reverse=True)
+            builds.sort(key=lambda x: (x['date'], int(x['number'])), reverse=True)
             self.builds = builds
 
             self.builds_combo.clear()
@@ -2816,7 +2828,7 @@ class UpdateGroupBox(QGroupBox):
             self.download_last_bytes_read = bytes_read
             self.download_last_read = datetime.utcnow()
 
-    def start_lb_request(self, base_asset):
+    def start_lb_request(self, base_asset, new_base_asset):
         self.disable_controls(True)
         self.refresh_warning_label.hide()
         self.find_build_warning_label.hide()
@@ -2833,6 +2845,7 @@ class UpdateGroupBox(QGroupBox):
 
         url = cons.GITHUB_REST_API_URL + cons.CDDA_RELEASES
         self.base_asset = base_asset
+        self.new_base_asset = new_base_asset
 
         fetching_label = QLabel()
         fetching_label.setText(_('Fetching: {url}').format(url=url))
@@ -2998,8 +3011,18 @@ class UpdateGroupBox(QGroupBox):
             re.escape(asset_graphics) + r'-' +
             r'b?(?P<build>\d+)\.zip'
             )
+        
+        new_asset_platform = self.new_base_asset['Platform']
+        new_asset_graphics = self.new_base_asset['Graphics']
 
-        build_regex = re.compile(r'build #(?P<build>\d+)')
+        new_target_regex = re.compile(
+            r'cdda-windows-' +
+            re.escape(new_asset_graphics) + r'-' +
+            re.escape(new_asset_platform) + r'-' +
+            r'b?(?P<build>\d+)\.zip'
+            )
+
+        build_regex = re.compile(r'[Bb]uild #(?P<build>\d+)')
 
         for release in releases:
             if any(x not in release for x in ('name', 'created_at')):
@@ -3013,7 +3036,9 @@ class UpdateGroupBox(QGroupBox):
                         x for x in release['assets']
                         if 'browser_download_url' in x
                            and 'name' in x
-                           and target_regex.search(x['name']) is not None
+                           and (
+                               target_regex.search(x['name']) is not None or
+                               new_target_regex.search(x['name']) is not None)
                     )
                     asset = next(asset_iter, None)
 
@@ -3027,7 +3052,7 @@ class UpdateGroupBox(QGroupBox):
                 builds.append(build)
 
         if len(builds) > 0:
-            builds.sort(key=lambda x: (int(x['number']), x['date']), reverse=True)
+            builds.sort(key=lambda x: (x['date'], int(x['number'])), reverse=True)
             self.builds = builds
 
             self.builds_combo.clear()
@@ -3180,8 +3205,9 @@ class UpdateGroupBox(QGroupBox):
             
         elif selected_branch is self.experimental_radio_button:
             release_asset = cons.BASE_ASSETS['Tiles'][selected_platform]
+            release_new_asset = cons.NEW_BASE_ASSETS['Tiles'][selected_platform]
 
-            self.start_lb_request(release_asset)
+            self.start_lb_request(release_asset, release_new_asset)
             self.refresh_changelog()
 
     def refresh_changelog(self):
