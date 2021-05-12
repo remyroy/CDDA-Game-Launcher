@@ -722,8 +722,21 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
         self.exe_total_read = 0
 
         self.exe_sha256 = hashlib.sha256()
-        self.last_bytes = None
         self.game_version = ''
+
+        game_dir = self.dir_combo.currentText()
+        version_file = os.path.join(game_dir, 'VERSION.txt')
+        if os.path.isfile(version_file):
+            file_content = None
+            with open(version_file, 'r', encoding='utf8') as read_file:
+                file_content = read_file.read(1024)
+            if file_content is not None:
+                match = re.search(r'commit sha: (?P<commitsha>\S+)', file_content)
+                if match:
+                    commit_sha = match.group('commitsha')
+                    if len(commit_sha) >= 7:
+                        self.game_version = commit_sha[:7]
+        
         self.opened_exe = open(self.exe_path, 'rb')
 
         def timeout():
@@ -803,22 +816,9 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
                     self.current_build = None
 
             else:
-                last_frame = bytes
-                if self.last_bytes is not None:
-                    last_frame = self.last_bytes + last_frame
-
-                match = re.search(
-                    b'(?P<version>[01]\\.[A-F](-\\d+-g[0-9a-f]+)?)\\x00',
-                    last_frame)
-                if match is not None:
-                    game_version = match.group('version').decode('ascii')
-                    if len(game_version) > len(self.game_version):
-                        self.game_version = game_version
-
                 self.exe_total_read += len(bytes)
                 self.reading_progress_bar.setValue(self.exe_total_read)
                 self.exe_sha256.update(bytes)
-                self.last_bytes = bytes
 
         timer.timeout.connect(timeout)
         timer.start(0)
@@ -3208,7 +3208,7 @@ class UpdateGroupBox(QGroupBox):
             self.refresh_changelog()
 
     def refresh_changelog(self):
-        self.changelog_content.setHtml(_('<h3>Changelog is not available experimental</h3>'))
+        self.changelog_content.setHtml(_('<h3>Changelog is not available for experimental</h3>'))
 
     def branch_clicked(self, button):
         if button is self.stable_radio_button:
