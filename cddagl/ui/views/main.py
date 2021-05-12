@@ -1181,9 +1181,6 @@ class UpdateGroupBox(QGroupBox):
         self.api_reply = None
         self.api_response_content = None
 
-        self.changelog_http_reply = None
-        self.changelog_http_data = None
-
         layout = QGridLayout()
 
         layout_row = 0
@@ -3211,82 +3208,7 @@ class UpdateGroupBox(QGroupBox):
             self.refresh_changelog()
 
     def refresh_changelog(self):
-        if self.changelog_http_reply is not None:
-            self.changelog_http_data = None
-            self.changelog_http_reply.abort()
-            self.changelog_http_reply = None
-
-        main_window = self.get_main_window()
-
-        status_bar = main_window.statusBar()
-        status_bar.clearMessage()
-        self.changelog_content.setHtml(_('<h3>Loading changelog...</h3>'))
-
-        status_bar.busy += 1
-
-        changelog_label = QLabel()
-        changelog_label.setText(_('Fetching latest build changelogs'))
-        status_bar.addWidget(changelog_label, 100)
-        self.changelog_label = changelog_label
-
-        progress_bar = QProgressBar()
-        status_bar.addWidget(progress_bar)
-        self.changelog_progress_bar = progress_bar
-
-        progress_bar.setMinimum(0)
-
-        self.changelog_http_data = BytesIO()
-
-        request = QNetworkRequest(QUrl(cons.CHANGELOG_URL))
-        request.setRawHeader(b'User-Agent',
-            b'CDDA-Game-Launcher/' + version.encode('utf8'))
-
-        self.changelog_http_reply = self.qnam.get(request)
-        self.changelog_http_reply.finished.connect(self.changelog_http_finished)
-        self.changelog_http_reply.readyRead.connect(
-            self.changelog_http_ready_read)
-        self.changelog_http_reply.downloadProgress.connect(
-            self.changelog_dl_progress)
-
-    def changelog_http_finished(self):
-        main_window = self.get_main_window()
-
-        status_bar = main_window.statusBar()
-        status_bar.removeWidget(self.changelog_label)
-        status_bar.removeWidget(self.changelog_progress_bar)
-
-        main_tab = self.get_main_tab()
-        game_dir_group_box = main_tab.game_dir_group_box
-
-        status_bar.busy -= 1
-
-        if not game_dir_group_box.game_started:
-            if status_bar.busy == 0:
-                status_bar.showMessage(_('Ready'))
-        else:
-            if status_bar.busy == 0:
-                status_bar.showMessage(_('Game process is running'))
-
-        if self.changelog_http_data is not None:
-            self.changelog_content.setHtml(_('<h3>Parsing changelog...</h3>'))
-
-            # Use thread to avoid blocking UI during parsing
-            parsing_thread = ChangelogParsingThread(self.changelog_http_data)
-            parsing_thread.completed.connect(
-                lambda x: self.changelog_content.setHtml(x.getvalue()))
-            parsing_thread.start()
-
-        self.changelog_http_data = None
-        self.changelog_http_reply = None
-
-    def changelog_http_ready_read(self):
-        self.changelog_http_data.write(self.changelog_http_reply.readAll())
-
-    def changelog_dl_progress(self, bytes_read, total_bytes):
-        if total_bytes == -1:
-            total_bytes = bytes_read * 2
-        self.changelog_progress_bar.setMaximum(total_bytes)
-        self.changelog_progress_bar.setValue(bytes_read)
+        self.changelog_content.setHtml(_('<h3>Changelog is not available experimental</h3>'))
 
     def branch_clicked(self, button):
         if button is self.stable_radio_button:
