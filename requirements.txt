@@ -1,13 +1,11 @@
 SQLAlchemy
 alembic
 PyQt5
-PyInstaller
 html5lib
 cssselect
 arrow
 rarfile
 Babel
-pypiwin32
 pywinutils
 Markdown
 Werkzeug

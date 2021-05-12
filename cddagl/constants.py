@@ -19,16 +19,14 @@ CDDAGL_LATEST_RELEASE = '/repos/remyroy/CDDA-Game-Launcher/releases/latest'
 
 NEW_ISSUE_URL = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/new'
 
-CHANGELOG_URL = 'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/api/xml?tree=builds[number,timestamp,building,result,changeSet[items[msg,commitId]],runs[result,fullDisplayName]]&xpath=//build&wrapper=builds'
 CDDA_ISSUE_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/issues/'
 CDDA_COMMIT_URL_ROOT = 'https://github.com/CleverRaven/Cataclysm-DDA/commit/'
 CDDAGL_ISSUE_URL_ROOT = 'https://github.com/remyroy/CDDA-Game-Launcher/issues/'
 
 GAME_ISSUE_URL = 'https://cataclysmdda.org/#ive-found-a-bug--i-would-like-to-make-a-suggestion-what-should-i-do'
 
-BUILD_CHANGES_URL = lambda bn: f'http://gorgon.narc.ro:8080/job/Cataclysm-Matrix/{bn}/changes'
-
 BUILD_TAG = lambda bn: f'cdda-jenkins-b{bn}'
+NEW_BUILD_TAG = lambda bn: f'experimental-{bn}'
 
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 

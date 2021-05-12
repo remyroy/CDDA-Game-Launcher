@@ -5,6 +5,13 @@ import sys
 import os.path
 import pathlib
 import winreg
+
+from pathlib import Path
+import shutil
+import httpx
+from zipfile import ZipFile
+import subprocess
+
 from distutils.cmd import Command
 from distutils.core import setup
 from os import scandir
@@ -53,6 +60,94 @@ class ExtendedCommand(Command):
 
         return command
 
+def include_requirements(target_path):
+    # Install packages from requirements.txt file into build dir
+    requirements_path = Path('requirements.txt')
+    subprocess.run([
+        'python', '-m', 'pip', 'install', '-r', requirements_path,
+        '--target', target_path
+    ])
+
+    # Clean __pycache__ directories
+    dir_list = []
+    dir_list.append(target_path)
+    while len(dir_list) > 0:
+        next_dir = dir_list.pop()
+        with os.scandir(next_dir) as it:
+            for entry in it:
+                if entry.name.startswith('.'):
+                    continue
+                if entry.is_dir():
+                    if entry.name == '__pycache__':
+                        shutil.rmtree(entry.path)
+                    else:
+                        dir_list.append(entry.path)
+
+    # Clean .dist-info directories
+    with os.scandir(target_path) as dir_it:
+        for entry in dir_it:
+            if entry.name.startswith('.') or not entry.is_dir():
+                continue
+            
+            if entry.name.endswith('.dist-info'):
+                shutil.rmtree(entry.path)
+
+class Bundle(ExtendedCommand):
+    description = 'Bundle CDDAGL with Python'
+    user_options = []
+
+    def initialize_options(self):
+        self.locale_dir = os.path.join('cddagl', 'locale')
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        print('Bundling with Python for Windows')
+
+        src_package_path = Path('cddagl')
+
+        build_path = Path('build')
+        if build_path.is_dir():
+            shutil.rmtree(build_path)
+        build_path.mkdir(parents=True, exist_ok=True)
+
+        download_path = build_path.joinpath('downloads')
+        download_path.mkdir(parents=True, exist_ok=True)
+
+        # Download Python embeddable package
+
+        python_embed_url = 'https://www.python.org/ftp/python/3.9.5/python-3.9.5-embed-amd64.zip'
+        python_embed_name = 'python-3.9.5-embed-amd64.zip'
+
+        python_embed_archive = download_path.joinpath(python_embed_name)
+        try:
+            with open(python_embed_archive, 'wb') as binary_file:
+                print(f'Downloading python archive {python_embed_name}...')
+                with httpx.stream('GET', python_embed_url) as http_stream:
+                    if http_stream.status_code != 200:
+                        print(f'Cannot download python archive {python_embed_name}.\n'
+                            f'Unexpected status code {http_stream.status_code}')
+                        return False
+                    for data in http_stream.iter_bytes():
+                        binary_file.write(data)
+        except httpx.RequestError as exception:
+            print(f'Exception while downloading python archive. Exception: {exception}')
+            return False
+
+        archive_dir_path = build_path.joinpath('archive')
+        archive_dir_path.mkdir(parents=True, exist_ok=True)
+
+        # Extracting Python embeddable package
+        print(f'Extracting python archive {python_embed_name}...')
+        with ZipFile(python_embed_archive, 'r') as zip_file:
+            zip_file.extractall(archive_dir_path)
+        
+        # Copy package into archive dir
+        archive_package_path = archive_dir_path.joinpath('cddagl')
+        shutil.copytree(src_package_path, archive_package_path)
+
+        include_requirements(archive_dir_path)
 
 class FreezeWithPyInstaller(ExtendedCommand):
     description = 'Build CDDAGL with PyInstaller'
@@ -301,6 +396,7 @@ setup(
     package_data={'cddagl': ['VERSION']},
     cmdclass={
         ### freeze & installer commands
+        'bundle': Bundle,
         'freeze': FreezeWithPyInstaller,
         'create_installer': CreateInnoSetupInstaller,
         ### babel commands

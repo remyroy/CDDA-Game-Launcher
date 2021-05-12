@@ -1181,6 +1181,8 @@ class UpdateGroupBox(QGroupBox):
         self.api_reply = None
         self.api_response_content = None
 
+        self.find_build_count = 0
+
         layout = QGridLayout()
 
         layout_row = 0
@@ -1365,7 +1367,13 @@ class UpdateGroupBox(QGroupBox):
         if build_number == '':
             return
 
-        url = cons.GITHUB_REST_API_URL + cons.CDDA_RELEASE_BY_TAG(cons.BUILD_TAG(build_number))
+        if self.find_build_count == 0:
+            url = cons.GITHUB_REST_API_URL + cons.CDDA_RELEASE_BY_TAG(cons.BUILD_TAG(build_number))
+            self.find_build_count = 1
+        elif self.find_build_count == 1:
+            url = cons.GITHUB_REST_API_URL + cons.CDDA_RELEASE_BY_TAG(
+                cons.NEW_BUILD_TAG(build_number))
+            self.find_build_count = 0
 
         self.api_response_content = BytesIO()
 
@@ -1423,9 +1431,13 @@ class UpdateGroupBox(QGroupBox):
             build_number = self.find_build_value.text()
             build_number = build_number.strip()
 
-            status_bar.showMessage(_('Build #{build} not found on GitHub'
-                ).format(build=build_number))
-            return
+            if self.find_build_count == 0:
+                status_bar.showMessage(_('Build #{build} not found on GitHub'
+                    ).format(build=build_number))
+                return
+            elif self.find_build_count == 1:
+                self.find_build()
+                return
 
         self.api_response_content.seek(0)
         try:
@@ -1537,7 +1549,9 @@ class UpdateGroupBox(QGroupBox):
                 if (combo_model.item(x).data(Qt.UserRole)['number'] == build_number and
                     combo_model.item(x).isEnabled()):
                     self.builds_combo.setCurrentIndex(x)
-
+            self.find_build_count = 0
+        elif self.find_build_count == 1:
+            self.find_build()
 
     def find_build_ready_read(self):
         self.api_response_content.write(self.api_reply.readAll())
@@ -3237,151 +3251,6 @@ class UpdateGroupBox(QGroupBox):
         set_config_value('platform', config_value)
 
         self.refresh_builds()
-
-
-class ChangelogParsingThread(QThread):
-    completed = pyqtSignal(StringIO)
-
-    def __init__(self, changelog_http_data):
-        super(ChangelogParsingThread, self).__init__()
-        self.changelog_http_data = changelog_http_data
-
-    def __del__(self):
-        self.wait()
-
-    def get_results_by_platform(self, build_data):
-        regex = re.compile(r'.*\b'
-                           r'(?P<ui>Curses|Tiles),'
-                           r'(?P<plat>Linux_x64|Windows(?:_x64)?)'
-                           r'\b.*')
-
-        def platform_display_name(code_name):
-            code_name = regex.sub(r'\g<ui>-\g<plat>',
-                                  code_name.find('fullDisplayName').text)
-
-            if code_name == 'Tiles-Windows': return _('Windows x86')
-            if code_name == 'Tiles-Windows_x64': return _('Windows x64')
-            if code_name == 'Curses-Linux_x64': return _('All Platforms')
-            return None
-
-        build_platforms = build_data.findall(r'.//run')
-        build_platforms = filter(
-            lambda x: x.find('result') is not None and
-                      x.find('fullDisplayName') is not None and
-                      regex.search(x.find('fullDisplayName').text) is not None,
-            build_platforms
-        )
-
-        return tuple({'result': x.find('result').text,
-                      'platform': platform_display_name(x)}
-                     for x in build_platforms
-                     if platform_display_name(x) is not None)
-
-    @property
-    def app_locale(self):
-        return QApplication.instance().app_locale
-
-    def run(self):
-        changelog_html = StringIO()
-        self.changelog_http_data.seek(0)
-        try:
-            changelog_xml = xml.etree.ElementTree.fromstring(
-                                self.changelog_http_data.read())
-        except xml.etree.ElementTree.ParseError as err:
-            log_exception(*sys.exc_info())
-            changelog_html.write(
-                '<h3 style="color:red">{0}</h3>'.format(
-                    _('Error parsing Changelog data. Retry later.')))
-            self.completed.emit(changelog_html)
-            return
-
-
-        ### "((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))" is like a \b
-        ### that accepts "#" as word char too.
-        ### regex used to match issues / PR IDs like "#43151"
-        id_regex = re.compile(r'((?<![\w#])(?=[\w#])|(?<=[\w#])(?![\w#]))'
-                              r'#(?P<id>\d+)\b')
-
-        for build_data in changelog_xml:
-            build_by_platform = self.get_results_by_platform(build_data)
-            if build_data.find('building').text == 'true':
-                build_status = 'IN_PROGRESS'
-            elif any(x['result'] == 'FAILURE' for x in build_by_platform):
-                build_status = 'FAILURE'
-            else:
-                ### possible "result" values: 'SUCCESS' or 'FAILURE'
-                build_status = 'SUCCESS'
-
-            build_timestamp = int(build_data.find('timestamp').text) // 1000
-            build_date_utc = datetime.utcfromtimestamp(build_timestamp)
-            build_date_utc = build_date_utc.replace(tzinfo=timezone.utc)
-            build_date_local = build_date_utc.astimezone(tz=None)
-            build_date_text = format_datetime(build_date_local,
-                format='long', locale=self.app_locale)
-
-            build_items = build_data.findall(r'.//changeSet/item')
-            all_items = []
-            for build_item in build_items:
-                msg_node = build_item.find('msg')
-                commitid_node = build_item.find('commitId')
-                msg = html.escape(msg_node.text.strip() if msg_node.text is not None else '')
-                commitid = commitid_node.text.strip() if commitid_node.text is not None else ''
-                all_items.append({
-                    'msg': msg,
-                    'commitid': commitid
-                })
-
-            build_number = int(build_data.find('number').text)
-            build_desc = _('Build #{build_number}').format(build_number=build_number)
-            build_link = f'<a href="{cons.BUILD_CHANGES_URL(build_number)}">{build_desc}</a>'
-
-            if build_status == 'IN_PROGRESS':
-                changelog_html.write(
-                    '<h4>{0} - {1} <span style="color:purple">{2}</span></h4>'
-                    .format(
-                        build_link,
-                        build_date_text,
-                        _('build still in progress!')
-                    )
-                )
-            elif build_status == 'SUCCESS':
-                changelog_html.write(
-                    '<h4>{0} - {1}</h4>'
-                    .format(build_link, build_date_text)
-                )
-            else:   ### build_status == 'FAILURE'
-                changelog_html.write(
-                    '<h4>{0} - {1} <span style="color:red">{2} {3}</span></h4>'
-                    .format(
-                        build_link,
-                        build_date_text,
-                        _('but build failed for:'),
-                        ', '.join(map(lambda x: x['platform'],
-                                      filter(lambda y: y['result'] == 'FAILURE',
-                                             build_by_platform)))
-                    )
-                )
-
-            changelog_html.write('<ul>')
-            if len(all_items) < 1:
-                changelog_html.write(
-                    '<li><span style="color:green">{0}</span></li>'
-                    .format(_('No changes, same code as previous build!')))
-            else:
-                commit_name = _('Commit')
-                for item in all_items:
-                    msg = item['msg']
-                    commitid = item['commitid']
-                    link_repl = rf'<a href="{cons.CDDA_ISSUE_URL_ROOT}\g<id>">#\g<id></a>'
-                    msg = id_regex.sub(link_repl, msg)
-                    if commitid:
-                        commit_url = cons.CDDA_COMMIT_URL_ROOT + commitid
-                        changelog_html.write(f'<li>{msg} [<a href="{commit_url}">{commit_name}</a>]</li>')
-                    else:
-                        changelog_html.write(f'<li>{msg}</li>')
-            changelog_html.write('</ul>')
-
-        self.completed.emit(changelog_html)
 
 
 # Recursively delete an entire directory tree while showing progress in a
