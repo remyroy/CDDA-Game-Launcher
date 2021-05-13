@@ -149,6 +149,15 @@ class Bundle(ExtendedCommand):
 
         include_requirements(archive_dir_path)
 
+        # Move pywin32_system32 dlls into archive root
+        pywin32_system32_path = archive_dir_path.joinpath('pywin32_system32')
+        with os.scandir(pywin32_system32_path) as it:
+            for entry in it:
+                if entry.is_file():
+                    shutil.move(entry.path, archive_dir_path)
+        
+        shutil.rmtree(pywin32_system32_path)
+
 class FreezeWithPyInstaller(ExtendedCommand):
     description = 'Build CDDAGL with PyInstaller'
     user_options = [

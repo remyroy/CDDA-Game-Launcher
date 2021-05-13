@@ -7,7 +7,7 @@ arrow
 rarfile
 Babel
 pywinutils
-Markdown
+markdown2
 Werkzeug
 
 lxml

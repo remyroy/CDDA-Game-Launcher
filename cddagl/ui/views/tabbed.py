@@ -11,7 +11,7 @@ from distutils.version import LooseVersion
 from io import BytesIO, TextIOWrapper
 from urllib.parse import urljoin
 
-import markdown
+import markdown2
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal, QByteArray, QThread
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtWidgets import (
@@ -258,7 +258,7 @@ class TabbedWindow(QMainWindow):
             markdown_desc = re.sub(number_pattern, replacement_pattern,
                 markdown_desc)
 
-            html_desc = markdown.markdown(markdown_desc)
+            html_desc = markdown2.markdown(markdown_desc)
 
             release_html = ('''
 <h2><a href="{release_url}">{release_name}</a></h2>{description}

@@ -19,7 +19,7 @@ from cddagl.functions import clean_qt_path, bitness
 from cddagl.i18n import proxy_gettext as _
 from cddagl.win32 import get_downloads_directory
 
-import markdown
+import markdown2
 
 logger = logging.getLogger('cddagl')
 
@@ -175,7 +175,7 @@ class FaqDialog(QDialog):
 
         m = _('<h2>CDDA Game Launcher Frequently asked questions (FAQ)</h2>')
 
-        html_faq = markdown.markdown(_('''
+        html_faq = markdown2.markdown(_('''
 ### Where is my previous version?
 
 Is it stored in the `previous_version` directory inside your game directory.
