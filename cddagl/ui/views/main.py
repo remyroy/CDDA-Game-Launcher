@@ -9,13 +9,12 @@ import stat
 import subprocess
 import sys
 import tempfile
-import xml.etree.ElementTree
 import zipfile
 import random
 
 from collections import deque
-from datetime import datetime, timedelta, timezone
-from io import BytesIO, StringIO, TextIOWrapper
+from datetime import datetime, timedelta
+from io import BytesIO, TextIOWrapper
 from os import scandir
 from pathlib import Path
 from urllib.parse import urljoin
