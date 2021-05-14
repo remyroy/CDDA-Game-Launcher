@@ -1466,10 +1466,10 @@ class UpdateGroupBox(QGroupBox):
             r'cdda-windows-' +
             re.escape(new_asset_graphics) + r'-' +
             re.escape(new_asset_platform) + r'-' +
-            r'b?(?P<build>\d+)\.zip'
+            r'b?(?P<build>[0-9\-]+)\.zip'
             )
 
-        build_regex = re.compile(r'[Bb]uild #(?P<build>\d+)')
+        build_regex = re.compile(r'[Bb]uild #?(?P<build>[0-9\-]+)')
 
         if any(x not in release for x in ('name', 'created_at')):
             return
@@ -1515,7 +1515,7 @@ class UpdateGroupBox(QGroupBox):
             return
 
         if len(builds) > 0:
-            builds.sort(key=lambda x: (x['date'], int(x['number'])), reverse=True)
+            builds.sort(key=lambda x: (x['date'], x['number']), reverse=True)
             self.builds = builds
 
             self.builds_combo.clear()
@@ -3026,10 +3026,10 @@ class UpdateGroupBox(QGroupBox):
             r'cdda-windows-' +
             re.escape(new_asset_graphics) + r'-' +
             re.escape(new_asset_platform) + r'-' +
-            r'b?(?P<build>\d+)\.zip'
+            r'b?(?P<build>[0-9\-]+)\.zip'
             )
 
-        build_regex = re.compile(r'[Bb]uild #(?P<build>\d+)')
+        build_regex = re.compile(r'[Bb]uild #?(?P<build>[0-9\-]+)')
 
         for release in releases:
             if any(x not in release for x in ('name', 'created_at')):
@@ -3059,7 +3059,7 @@ class UpdateGroupBox(QGroupBox):
                 builds.append(build)
 
         if len(builds) > 0:
-            builds.sort(key=lambda x: (x['date'], int(x['number'])), reverse=True)
+            builds.sort(key=lambda x: (x['date'], x['number']), reverse=True)
             self.builds = builds
 
             self.builds_combo.clear()
@@ -3175,7 +3175,7 @@ class UpdateGroupBox(QGroupBox):
                 }
                 builds.append(build)
             
-            builds.sort(key=lambda x: (int(x['number']), x['date']), reverse=True)
+            builds.sort(key=lambda x: (x['date'], x['number']), reverse=True)
             self.builds = builds
 
             self.builds_combo.clear()
