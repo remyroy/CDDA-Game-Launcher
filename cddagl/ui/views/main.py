@@ -308,11 +308,10 @@ class GameDirGroupBox(QGroupBox):
                         excluded_entries.add('save')
 
                     # Prevent moving the launcher if it's in the game directory
-                    if getattr(sys, 'frozen', False):
-                        launcher_exe = os.path.abspath(sys.executable)
-                        launcher_dir = os.path.dirname(launcher_exe)
-                        if os.path.abspath(game_dir) == launcher_dir:
-                            excluded_entries.add(os.path.basename(launcher_exe))
+                    launcher_exe = os.path.abspath(sys.executable)
+                    launcher_dir = os.path.dirname(launcher_exe)
+                    if os.path.abspath(game_dir) == launcher_dir:
+                        excluded_entries.add(os.path.basename(launcher_exe))
 
                     for entry in os.listdir(game_dir):
                         if entry not in excluded_entries:
@@ -1851,11 +1850,10 @@ class UpdateGroupBox(QGroupBox):
         if config_true(get_config_value('prevent_save_move', 'False')):
             excluded_entries.add('save')
         # Prevent moving the launcher if it's in the game directory
-        if getattr(sys, 'frozen', False):
-            launcher_exe = os.path.abspath(sys.executable)
-            launcher_dir = os.path.dirname(launcher_exe)
-            if os.path.abspath(game_dir) == launcher_dir:
-                excluded_entries.add(os.path.basename(launcher_exe))
+        launcher_exe = os.path.abspath(sys.executable)
+        launcher_dir = os.path.dirname(launcher_exe)
+        if os.path.abspath(game_dir) == launcher_dir:
+            excluded_entries.add(os.path.basename(launcher_exe))
         for entry in dir_list:
             if entry not in excluded_entries:
                 entry_path = os.path.join(game_dir, entry)
@@ -2158,13 +2156,12 @@ class UpdateGroupBox(QGroupBox):
             and 'save' in dir_list):
             dir_list.remove('save')
 
-        if getattr(sys, 'frozen', False):
-            launcher_exe = os.path.abspath(sys.executable)
-            launcher_dir = os.path.dirname(launcher_exe)
-            if os.path.abspath(game_dir) == launcher_dir:
-                launcher_name = os.path.basename(launcher_exe)
-                if launcher_name in dir_list:
-                    dir_list.remove(launcher_name)
+        launcher_exe = os.path.abspath(sys.executable)
+        launcher_dir = os.path.dirname(launcher_exe)
+        if os.path.abspath(game_dir) == launcher_dir:
+            launcher_name = os.path.basename(launcher_exe)
+            if launcher_name in dir_list:
+                dir_list.remove(launcher_name)
 
         if len(dir_list) > 0:
             status_bar.showMessage(_('Backing up current game'))

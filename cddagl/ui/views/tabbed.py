@@ -74,8 +74,7 @@ class TabbedWindow(QMainWindow):
         self.help_menu.setTitle(_('&Help'))
         self.faq_action.setText(_('&Frequently asked questions (FAQ)'))
         self.game_issue_action.setText(_('&Game issue'))
-        if getattr(sys, 'frozen', False):
-            self.update_action.setText(_('&Check for update'))
+        self.update_action.setText(_('&Check for update'))
         self.about_action.setText(_('&About CDDA Game Launcher'))
 
         if self.about_dialog is not None:
@@ -120,11 +119,10 @@ class TabbedWindow(QMainWindow):
 
         self.help_menu.addSeparator()
 
-        if getattr(sys, 'frozen', False):
-            update_action = QAction(_('&Check for update'), self,
-                triggered=self.manual_update_check)
-            self.update_action = update_action
-            self.help_menu.addAction(update_action)
+        update_action = QAction(_('&Check for update'), self,
+            triggered=self.manual_update_check)
+        self.update_action = update_action
+        self.help_menu.addAction(update_action)
 
         about_action = QAction(_('&About CDDA Game Launcher'), self,
             triggered=self.show_about_dialog)
@@ -373,9 +371,8 @@ class TabbedWindow(QMainWindow):
         if not self.shown:
             if not config_true(get_config_value('prevent_version_check_launch',
                 'False')):
-                if getattr(sys, 'frozen', False):
-                    self.in_manual_update_check = False
-                    self.check_new_launcher_version()
+                self.in_manual_update_check = False
+                self.check_new_launcher_version()
 
         self.shown = True
 
@@ -600,13 +597,10 @@ class LauncherUpdateDialog(QDialog):
                 self.http_reply.downloadProgress.connect(self.dl_progress)
             else:
                 # Download completed
-                if getattr(sys, 'frozen', False):
-                    # Launch self.downloaded_file and close
+                subprocess.Popen([self.downloaded_file])
 
-                    subprocess.Popen([self.downloaded_file])
-
-                    self.updated = True
-                    self.done(0)
+                self.updated = True
+                self.done(0)
 
     def http_ready_read(self):
         self.downloading_file.write(self.http_reply.readAll())

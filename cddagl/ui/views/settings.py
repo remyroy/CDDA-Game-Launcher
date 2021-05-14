@@ -125,18 +125,17 @@ class LauncherSettingsGroupBox(QGroupBox):
         layout.addWidget(allow_mul_insts_checkbox, 3, 0, 1, 2)
         self.allow_mul_insts_checkbox = allow_mul_insts_checkbox
 
-        if getattr(sys, 'frozen', False):
-            no_launcher_version_check_checkbox = QCheckBox()
-            check_state = (Qt.Checked if config_true(get_config_value(
-                'prevent_version_check_launch', 'False'))
-                else Qt.Unchecked)
-            no_launcher_version_check_checkbox.setCheckState(
-                check_state)
-            no_launcher_version_check_checkbox.stateChanged.connect(
-                self.nlvcc_changed)
-            layout.addWidget(no_launcher_version_check_checkbox, 5, 0, 1, 2)
-            self.no_launcher_version_check_checkbox = (
-                no_launcher_version_check_checkbox)
+        no_launcher_version_check_checkbox = QCheckBox()
+        check_state = (Qt.Checked if config_true(get_config_value(
+            'prevent_version_check_launch', 'False'))
+            else Qt.Unchecked)
+        no_launcher_version_check_checkbox.setCheckState(
+            check_state)
+        no_launcher_version_check_checkbox.stateChanged.connect(
+            self.nlvcc_changed)
+        layout.addWidget(no_launcher_version_check_checkbox, 4, 0, 1, 2)
+        self.no_launcher_version_check_checkbox = (
+            no_launcher_version_check_checkbox)
 
         self.setLayout(layout)
         self.set_text()
@@ -155,9 +154,8 @@ class LauncherSettingsGroupBox(QGroupBox):
                 locale=get_ui_locale()))
         self.allow_mul_insts_checkbox.setText(_('Allow multiple instances of '
             'the launcher to be started'))
-        if getattr(sys, 'frozen', False):
-            self.no_launcher_version_check_checkbox.setText(_('Do not check '
-                'for new version of the CDDA Game Launcher on launch'))
+        self.no_launcher_version_check_checkbox.setText(_('Do not check '
+            'for new version of the CDDA Game Launcher on launch'))
         self.setTitle(_('Launcher'))
 
     @property

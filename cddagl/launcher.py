@@ -84,29 +84,8 @@ def init_logging():
 
     logger.addHandler(handler)
 
-    if not getattr(sys, 'frozen', False):
-        handler = logging.StreamHandler()
-        logger.addHandler(handler)
-    else:
-        '''class LoggerWriter:
-            def __init__(self, logger, level, imp=None):
-                self.logger = logger
-                self.level = level
-                self.imp = imp
-
-            def __getattr__(self, attr):
-                return getattr(self.imp, attr)
-
-            def write(self, message):
-                if message != '\n':
-                    self.logger.log(self.level, message)
-
-
-        sys._stdout = sys.stdout
-        sys._stderr = sys.stderr
-
-        sys.stdout = LoggerWriter(logger, logging.INFO, sys._stdout)
-        sys.stderr = LoggerWriter(logger, logging.ERROR, sys._stderr)'''
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
 
     logger.info(_('CDDA Game Launcher started: {version}').format(version=version))
 

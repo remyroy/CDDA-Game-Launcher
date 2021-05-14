@@ -32,8 +32,7 @@ from cddagl.ui.views.dialogs import BrowserDownloadDialog
 
 logger = logging.getLogger('cddagl')
 
-if getattr(sys, 'frozen', False):
-    rarfile.UNRAR_TOOL = get_cddagl_path('UnRAR.exe')
+rarfile.UNRAR_TOOL = get_cddagl_path('UnRAR.exe')
 
 
 class ModsTab(QTabWidget):

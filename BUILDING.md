@@ -1,5 +1,7 @@
 # Building guide
 
+> This guide is **outdated**. A updated version should soon be added to replace this one.
+
 CDDA Game Launcher is developed using Python. In order to run or build the launcher, you will need to download a recent version of Python and install all the requirements.
 
 ## Requirements
@@ -16,8 +18,6 @@ Compiled binaries for lxml and pylzma can be found on [Christoph Gohlke's Unoffi
 Once you have Python installed and all the requirements, you can run the launcher by going into the project directory and by running `python -m cddagl`.
 
 ## Building the launcher installer for distribution
-
-> This guide is outdated. A updated version should soon be added to replace this one.
 
 Once you have Python installed and all the requirements, you can build the launcher installer for distribution by going into the project directory and running `python setup.py create_installer`. This will use the PyInstaller package to create a frozen stand-alone executable with all the dependencies alongside. Afterwards, it will build the installer using Inno Setup. If you want the executable to support RAR archives, you will also need to have the [UnRAR command line tool](http://www.rarlab.com/rar_add.htm) in your PATH.
 
