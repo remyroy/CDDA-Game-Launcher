@@ -2,7 +2,8 @@
 #define MyAppVersion FileRead(FileOpen("cddagl\VERSION"))
 #define MyAppPublisher "Rémy Roy"
 #define MyAppURL "https://github.com/remyroy/CDDA-Game-Launcher"
-#define MyAppExeName "launcher.exe"
+#define MyExecutable "Launcher.bat"
+#define MyIcon "cddagl\resources\launcher.ico"
 
 
 [Setup]
@@ -32,7 +33,7 @@ LicenseFile=LICENSE
 
 ;;;; Installer Icon, Filename & Path
 UninstallDisplayIcon={uninstallexe}
-SetupIconFile=cddagl\resources\launcher.ico
+SetupIconFile={#MyIcon}
 OutputDir=dist\innosetup
 OutputBaseFilename=cddagl_installer_v{#SetupSetting("AppVersion")}
 
@@ -72,16 +73,16 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 
 [Files]
-Source: "dist\launcher\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "build\archive\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyExecutable}"; IconFilename: "{app}\{#MyIcon}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyExecutable}"; IconFilename: "{app}\{#MyIcon}"; Tasks: desktopicon
 
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyExecutable}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 
 [Code]

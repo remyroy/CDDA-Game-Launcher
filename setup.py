@@ -116,7 +116,6 @@ class Bundle(ExtendedCommand):
         download_path.mkdir(parents=True, exist_ok=True)
 
         # Download Python embeddable package
-
         python_embed_url = 'https://www.python.org/ftp/python/3.9.5/python-3.9.5-embed-amd64.zip'
         python_embed_name = 'python-3.9.5-embed-amd64.zip'
 
@@ -143,9 +142,21 @@ class Bundle(ExtendedCommand):
         with ZipFile(python_embed_archive, 'r') as zip_file:
             zip_file.extractall(archive_dir_path)
         
+        # Add mo files for localization
+        self.run_other_command('compile_catalog')
+
         # Copy package into archive dir
         archive_package_path = archive_dir_path.joinpath('cddagl')
         shutil.copytree(src_package_path, archive_package_path)
+
+        # Additional directories
+        src_data_path = Path('data')
+        target_data_path = archive_dir_path.joinpath('data')
+        shutil.copytree(src_data_path, target_data_path)
+
+        src_alembicrepo_path = Path('alembicrepo')
+        target_alembicrepo_path = archive_dir_path.joinpath('alembicrepo')
+        shutil.copytree(src_alembicrepo_path, target_alembicrepo_path)
 
         include_requirements(archive_dir_path)
 
@@ -157,6 +168,36 @@ class Bundle(ExtendedCommand):
                     shutil.move(entry.path, archive_dir_path)
         
         shutil.rmtree(pywin32_system32_path)
+
+        # Let's find and add unrar if available
+        try:
+            unrar_path = check_output(['where', 'unrar.exe'], stderr=DEVNULL)
+            unrar_path = unrar_path.strip().decode('cp437')
+            shutil.copy(unrar_path, archive_dir_path)
+        except CalledProcessError:
+            log("'unrar.exe' couldn't be found.")
+        
+        # Remove unneeded files in archive
+        paths_to_remove = [
+            ['bin'],
+            ['adodbapi'],
+            ['pythonwin'],
+            ['PyQt5', 'Qt5', 'qml']
+        ]
+        for path in paths_to_remove:
+            target_path = archive_dir_path.joinpath(*path)
+            if target_path.is_dir():
+                shutil.rmtree(target_path)
+        
+        # Create batch file for starting the launcher easily
+        batch_file_path = archive_dir_path.joinpath('Launcher.bat')
+        with open(batch_file_path, 'w', encoding='utf8') as batch_file:
+            batch_file.write(
+'''
+@echo off
+start pythonw.exe -m cddagl
+'''
+            )
 
 class FreezeWithPyInstaller(ExtendedCommand):
     description = 'Build CDDAGL with PyInstaller'
@@ -279,7 +320,7 @@ class CreateInnoSetupInstaller(ExtendedCommand):
         #### Make sure we are running Inno Setup from the project directory
         os.chdir(get_setup_dir())
 
-        self.run_other_command('freeze')
+        self.run_other_command('bundle')
         inno_call = [self.compiler, '/cc', 'launcher.iss']
         log(f'executing {inno_call}')
         call(inno_call)

@@ -33,7 +33,7 @@ def get_db_url():
 
 
 def init_config(basedir):
-    alembic_dir = os.path.join(basedir, 'alembic')
+    alembic_dir = os.path.join(basedir, 'alembicrepo')
 
     alembic_cfg = Config()
     alembic_cfg.set_main_option('sqlalchemy.url', get_db_url())

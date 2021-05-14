@@ -17,6 +17,8 @@ Once you have Python installed and all the requirements, you can run the launche
 
 ## Building the launcher installer for distribution
 
+> This guide is outdated. A updated version should soon be added to replace this one.
+
 Once you have Python installed and all the requirements, you can build the launcher installer for distribution by going into the project directory and running `python setup.py create_installer`. This will use the PyInstaller package to create a frozen stand-alone executable with all the dependencies alongside. Afterwards, it will build the installer using Inno Setup. If you want the executable to support RAR archives, you will also need to have the [UnRAR command line tool](http://www.rarlab.com/rar_add.htm) in your PATH.
 
 The resulting launcher installer should be in the `dist\innosetup` directory.

@@ -1,8 +1,6 @@
 SQLAlchemy
 alembic
 PyQt5
-html5lib
-cssselect
 arrow
 rarfile
 Babel
@@ -10,5 +8,4 @@ pywinutils
 markdown2
 Werkzeug
 
-lxml
 pylzma
