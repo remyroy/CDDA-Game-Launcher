@@ -1,48 +1,6 @@
 [
   {
     "type": "direct_download",
-    "ident": "Arts' Guns",
-    "name": "Artyoms' Gun Emporium",
-    "description": "Adds all the guns that YOU need to survive the Cataclysm",
-    "author": "Artyom177",
-    "size": 23616,
-    "url": "https://www.dropbox.com/s/woq8jdbr4ri7s4i/Artyoms%27%20Gun%20Emporium.rar?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/artyoms-gun-emporium-update-2-hotfix-1-holy-shit/10035"
-  },
-  {
-    "type": "browser_download",
-    "ident": "Arts' Guns",
-    "name": "Artyoms' Gun Emporium - Reloaded",
-    "description": "Adds all the guns that YOU need to survive the Cataclysm",
-    "author": "Artyom177, Leon713, and /u/chieflean",
-    "size": 28885,
-    "url": "https://mega.nz/#!jBIwVSSD!nlFJlnEvvUi9Z8AhIbEQqUxc0F7hYIXfOpEKay1eybE",
-    "expected_filename": "Artyom Emporium v.1.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/artyoms-gun-emporium-reloaded-more-guns/15045"
-  },
-  {
-    "type": "direct_download",
-    "ident": "ext",
-    "name": "EXTENDED_BUILDINGS",
-    "description": "Adds More Buildings",
-    "author": "Whaley",
-    "size": 25800,
-    "url": "https://www.dropbox.com/s/buonljnjy2csz5c/ZSFixed_Extended%20Buildings.zip?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/extended-buildings-v1-0-bad-moon-rising/8104"
-  },
-  {
-    "type": "direct_download",
-    "ident": "ZSFIXED_cddaxp",
-    "name": "ZSFIXED_C:DDA Extra Professions & Gears",
-    "author": "Marte",
-    "description": "Adds a new set of professions and relative gears.",
-    "category": "rebalance",
-    "size": 21367,
-    "url": "https://www.dropbox.com/s/mn9bdz7j097mull/ZSFixed_CDDAXP_2018-11-29.zip?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/c-dda-extra-professions-gears/10856"
-  },
-  {
-    "type": "direct_download",
     "mod_type": "SUPPLEMENTAL",
     "ident": "jury_rigged_robots",
     "name": "Jury-Rigged Robots",
@@ -61,17 +19,6 @@
     "size": 15779,
     "url": "https://github.com/Malkeus/M_Nimian_Manufacture/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/nimians-manufacture-weapons-mod/10031/13"
-  },
-  {
-    "type": "browser_download",
-    "ident": "Remove_Nether",
-    "name": "Removes Nether Creatures",
-    "author": "TheMightyHercules",
-    "description": "Having Difficulties With Those Nether Creatures?                With This Mod, Those Mi-gos Will Be Mi-gone!",
-    "size": 1240,
-    "url": "http://www.mediafire.com/download/xxck63jcwhbf1g0/Removes+Nether+Creatures+Mod.zip",
-    "expected_filename": "Removes Nether Creatures Mod.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/removes-nether-creatures-mod-wip/10307"
   },
   {
     "type": "direct_download",
@@ -119,28 +66,6 @@
   },
   {
     "type": "direct_download",
-    "ident": "Packaging",
-    "name": "Packaging",
-    "author": "Leon",
-    "description": "Adds medium sized cardboard boxes and makeshift storage boxes. These grant reduction in volume at the price of increased weight (wrapping).",
-    "category": "items",
-    "size": 276302,
-    "url": "https://www.dropbox.com/s/50kk1p59l70pgox/Packaging.zip?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/packaging-update-2016-11-02/11916"
-  },
-  {
-    "type": "direct_download",
-    "ident": "PARKSANDREC",
-    "name": "Parks and Rec Building Pack",
-    "description": "Adds more park themed buildings.",
-    "category": "Buildings",
-    "author": "Whaley",
-    "size": 29308,
-    "url": "https://www.dropbox.com/s/maj5rks5kr2aek9/ZSFixed_Cataclysm%20Parks%20and%20Rec%20Building%20Pack.zip?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/parks-and-recreation-building-pack-v1-0/11803"
-  },
-  {
-    "type": "direct_download",
     "ident": "Mutation_Changes",
     "name": "Mutation Changes",
     "description": "Changes, rebalances and adds some more mutations. This a fixed version to cleanse the mod of the old bugs and problems. It also has some new mutations and additions.",
@@ -149,28 +74,6 @@
     "size": 32184,
     "url": "https://github.com/Snofielf/Mutation-Changes-Snofielf-Patch/archive/master.zip",
     "homepage": "https://github.com/Snofielf/Mutation-Changes-Snofielf-Patch"
-  },
-  {
-    "type": "browser_download",
-    "ident": "No_Recreationals",
-    "name": "No Recreationals",
-    "description": "Removes all recreational drug instances from the game so that my dad doesn't freak when I teach him how to play.",
-    "category": "item_exclude",
-    "size": 645,
-    "url": "http://www.mediafire.com/download/sp1r0y160048uw3/No_Recreationals.zip",
-    "expected_filename": "No_Recreationals.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/no-recreational-drugs-mod/12354"
-  },
-  {
-    "type": "direct_download",
-    "ident": "SMALLTOWNBUILDING",
-    "name": "Whaleys Small Town Building Pack",
-    "description": "Adds more quiant buildings, and a zoo.",
-    "category": "Buildings",
-    "author": "Whaley",
-    "size": 31773,
-    "url": "https://www.dropbox.com/s/1rtpemg9pxbt0lb/Small%20Town%20Building%20Pack.zip?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/small-town-building-pack/13690"
   },
   {
     "type": "direct_download",
@@ -229,54 +132,6 @@
     "homepage": "https://discourse.cataclysmdda.org/t/no-makeshift-guns-mod"
   },
   {
-    "type": "browser_download",
-    "ident": "SD_Winterclothes",
-    "name": "Wintertime Classes",
-    "description": "Adds upcosted, powered-up clones of standard professions clad for wintertime.",
-    "category": "rebalance",
-    "author": "ShadowDragon8685",
-    "size": 5816,
-    "url": "https://drive.google.com/open?id=1Syut09Asr393JYkzND3-FAYcR5sv_jFM",
-    "expected_filename": "SD_Winterclothes.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/wintertime-classes/14608"
-  },
-  {
-    "type": "browser_download",
-    "ident": "SD_Batcon",
-    "name": "Storage Battery Conversions",
-    "description": "Convert Brightnights' Rechargable Batteries to vanilla Storage Batteries.",
-    "category": "items",
-    "author": "ShadowDragon8685",
-    "size": 1059,
-    "url": "https://drive.google.com/open?id=1cEN6MG--udSFDIf03Yulazp049oSvQZ_",
-    "expected_filename": "SD_Batcon.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/battery-conversion-brightnights-to-vanilla/14639"
-  },
-  {
-    "type": "browser_download",
-    "ident": "SD_Magcrafting",
-    "name": "Craft Ammo Magazines & Belt Links",
-    "description": "Adds recipes for ammo mags and belt linkages.",
-    "category": "items",
-    "author": "ShadowDragon8685",
-    "size": 16441,
-    "url": "https://drive.google.com/open?id=1yUoz9XrSGG7TaLpWzNMCFKMS-2lETuuU",
-    "expected_filename": "SD_Magcrafting.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/craftable-ammunition-magazines/14607"
-  },
-  {
-    "type": "browser_download",
-    "ident": "SD_Magcrafting_Realguns_Extension",
-    "name": "Craft Ammo Mags - ERG",
-    "description": "Adds recipes for ammo mags for Extended Realistic Guns.",
-    "category": "items",
-    "author": "ShadowDragon8685",
-    "size": 1316,
-    "url": "https://drive.google.com/open?id=1rfZUhaJAGMOKIWzfdN7wuJnJH6bGBZAl",
-    "expected_filename": "SD_Magcrafting_Extension_Realguns.zip",
-    "homepage": "https://discourse.cataclysmdda.org/t/craftable-ammunition-magazines/14607"
-  },
-  {
     "type": "direct_download",
     "ident": [ "dda-lua", "dda-lua-fun", "dda-lua-items", "dda-lua-skills", "dda-lua-traits" ],
     "name": "Dark Days Ahead: Lua",
@@ -297,17 +152,6 @@
     "size": 3359,
     "url": "https://github.com/chootrain/cdda_wrecks/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/cars-to-wrecks/15506"
-  },
-  {
-    "type": "direct_download",
-    "ident": "Ninja",
-    "name": "Ninja MOD",
-    "description": "Secret mod only for Ninja",
-    "category": "misc_additions",
-    "author": "hount of \"@\"",
-    "size": 43501,
-    "url": "https://www.dropbox.com/s/z1wv9fauosi443p/Ninja_2018-05-18_Linted.zip?dl=1",
-    "homepage": "https://discourse.cataclysmdda.org/t/ninja-mod-from-the-japanese-wiki/13704/"
   },
   {
     "type": "direct_download",
@@ -383,19 +227,6 @@
     "category": "misc_additions",
     "url": "https://github.com/Axema/Vampiric-Stuff/archive/master.zip",
     "homepage": "https://discourse.cataclysmdda.org/t/vampiric-stuffs-mod-thread/16001/1"
-  },
-  {
-    "type": "browser_download",
-    "ident": "hydroponics",
-    "name": "Hydroponics",
-    "authors": [ "Unknown" ],
-    "maintainers": [ "Tiny Hippo" ],
-    "description": "Adds hydroponic units, a terrain which can be harvested for vegetables once a season. Spawn occasionally in labs or basements. Or build your own.",
-    "category": "misc_additions",
-    "size": 5797,
-    "url": "https://drive.google.com/file/d/1avdtB8WsRPaBtx4zbQhjBK9gtWQ4ujYq/view?usp=sharing",
-    "expected_filename": "Hydroponics.zip",
-    "homepage": "https://github.com/remyroy/CDDA-Game-Launcher/issues/266"
   },
   {
     "type": "direct_download",
