@@ -1259,7 +1259,6 @@ class UpdateGroupBox(QGroupBox):
         self.find_build_label = find_build_label
 
         find_build_value = QLineEdit()
-        find_build_value.setValidator(QIntValidator())
         find_build_value.returnPressed.connect(self.find_build)
         layout.addWidget(find_build_value, layout_row, 1, 1, 2)
         self.find_build_value = find_build_value
@@ -1360,6 +1359,8 @@ class UpdateGroupBox(QGroupBox):
     def find_build(self):
         build_number = self.find_build_value.text()
         build_number = build_number.strip()
+
+        build_number = re.sub(r'[^0-9\-]', '', build_number)
 
         if build_number == '':
             return
