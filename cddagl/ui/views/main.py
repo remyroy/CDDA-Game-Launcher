@@ -20,14 +20,16 @@ from pathlib import Path
 from urllib.parse import urljoin
 
 import arrow
-from PyQt5.QtCore import Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QStringListModel, QThread
+from PyQt5.QtCore import (
+    Qt, QTimer, QUrl, QFileInfo, pyqtSignal, QStringListModel, QThread, QRegularExpression
+)
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QGridLayout, QGroupBox, QVBoxLayout, QLabel, QLineEdit,
     QPushButton, QFileDialog, QToolButton, QProgressBar, QButtonGroup, QRadioButton,
     QComboBox, QTextBrowser, QMessageBox, QStyle, QHBoxLayout, QSizePolicy
 )
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QRegularExpressionValidator
 from babel.dates import format_datetime
 from pywintypes import error as PyWinError
 
@@ -1259,6 +1261,8 @@ class UpdateGroupBox(QGroupBox):
         self.find_build_label = find_build_label
 
         find_build_value = QLineEdit()
+        find_build_value.setValidator(QRegularExpressionValidator(
+            QRegularExpression(r'\d+(-\d+)*')))
         find_build_value.returnPressed.connect(self.find_build)
         layout.addWidget(find_build_value, layout_row, 1, 1, 2)
         self.find_build_value = find_build_value
