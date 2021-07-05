@@ -435,6 +435,15 @@ def get_path(folderid, user_handle=UserHandle.common):
     _CoTaskMemFree(pPath)
     return path
 
+def get_documents_directory():
+    if VISTA_OR_LATER:
+        try:
+            return get_path(FOLDERID.Documents, UserHandle.current)
+        except PathNotFoundException:
+            return os.path.join(os.path.expanduser('~'))
+    else:
+        return shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, None, 0)
+
 def get_downloads_directory():
     if VISTA_OR_LATER:
         try:

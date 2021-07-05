@@ -46,7 +46,8 @@ from cddagl.sql.functions import (
     new_build, config_true
 )
 from cddagl.win32 import (
-    find_process_with_file_handle, activate_window, process_id_from_path, wait_for_pid
+    find_process_with_file_handle, activate_window, process_id_from_path, wait_for_pid,
+    get_documents_directory
 )
 
 logger = logging.getLogger('cddagl')
@@ -242,10 +243,8 @@ class GameDirGroupBox(QGroupBox):
 
             game_directory = get_config_value('game_directory')
             if game_directory is None:
-                
-                cddagl_path = os.path.dirname(os.path.realpath(
-                    sys.executable))
-                default_dir = os.path.join(cddagl_path, 'cdda')
+                documents_path = get_documents_directory()
+                default_dir = os.path.join(documents_path, 'cdda')
                 game_directory = default_dir
 
             self.set_dir_combo_value(game_directory)
