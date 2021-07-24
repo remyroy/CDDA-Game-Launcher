@@ -244,6 +244,7 @@ class FreezeWithPyInstaller(ExtendedCommand):
         # Additional files
         added_files = [
             ('alembic', 'alembic'),
+            ('alembicrepo', 'alembicrepo'),
             ('data', 'data'),
             ('cddagl/resources', 'cddagl/resources'),
             ('cddagl/VERSION', 'cddagl')
