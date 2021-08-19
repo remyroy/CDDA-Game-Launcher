@@ -72,6 +72,16 @@ NEW_BASE_ASSETS = {
 }
 
 STABLE_ASSETS = {
+    '0.F-1': {
+        'name': '0.F Frank-1',
+        'number': '2021-08-14-0132',
+        'released_on': '2021-08-14T01:32:00Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/0.F-1/',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.F-1/cataclysmdda-0.F-Windows_x64-Tiles-0.F-1.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.F-1/cataclysmdda-0.F-Windows-Tiles-0.F-1.zip'
+        }
+    },
     '0.F': {
         'name': '0.F Frank',
         'number': '2021-07-03-0512',
@@ -145,6 +155,167 @@ STABLE_ASSETS = {
 }
 
 STABLE_CHANGELOG = '''
+<p>Point release <strong>Frank-1</strong> includes following bugfixes backported to <a href="https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.F">original Frank release</a>:</p>
+<ul>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49538">#49538</a> Fix welding requirement on some recipes</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50534">#50534</a> Fix overmap NPC names showing for NPCs out of range</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50173">#50173</a> Fix manually assigned item letter being removed on unwield</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49396">#49396</a> Fix classic zombies map extras chance values which could cause debugmsg</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49537">#49537</a> Fix incorrect conditional name of smoked wasteland sausage</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49543">#49543</a> Only apply disabled effect for main bodyparts</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48607">#48607</a> Mapgen road connections improved in the absence of overmap cities</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49211">#49211</a> Add lesser magic items to pawn and hunting itemgroups</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49565">#49565</a> Add version to debugmsg</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49568">#49568</a> Add back legacy wheel definitions</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48882">#48882</a> Fix magiclysm 1L V-Twin Engine has infinite fuel</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49589">#49589</a> Migrate legacy wheels and fix memory corruption in vehicle deserialization</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49401">#49401</a> Chitin Leg Guards and Tails</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49631">#49631</a> Add the missing door in private resort</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49597">#49597</a> Allow a region overlay to set all weights to zero</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49715">#49715</a> Update monster_attacks.json</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49628">#49628</a> Update keg description to no longer errorneously suggest they can be used for fermenting</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49741">#49741</a> Fix:Ninjutsu martial art does incorrect damage due to multiplicative …</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49690">#49690</a> Fix typo in stone.json</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49421">#49421</a> Change time to install oars from 60 m to 60 s</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49599">#49599</a> Prophylactic antivenom pills rename</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49622">#49622</a> Make Tallon Mutation allow fingerless gloves</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49577">#49577</a> Fix orc village's name</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/45787">#45787</a> Lowered encumbrance and tweaked belts</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49559">#49559</a> Add belt clip ability to webbing belt</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49534">#49534</a> Made Tea batch crafting mod equal to boiling plain water</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49513">#49513</a> Fix Cut Logs faction camp mission difficulty disp.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49318">#49318</a> Ignore pocket settings when manually inserting stackable items</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49550">#49550</a> Colt Delta Damage</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49734">#49734</a> Reduce solder in electronics control unit from 150 to 40</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49303">#49303</a> Adjust Burrowing mutation's description/effects</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48637">#48637</a> Fix fur/scales loop in Chimera</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49596">#49596</a> Roof and general improvements for orchard_apple</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48827">#48827</a> Replace MREs with itemgroups</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49512">#49512</a> Reworked brewing, now with merge conflicts resolved</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48960">#48960</a> Fix various meaty comestibles' vitamin values</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49760">#49760</a> Improve error message re armor portions</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49380">#49380</a> 10mm adheres to GAME_BALANCE.md</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49109">#49109</a> fix feints and lightly clean up some miss recovery and grab break code;</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/47986">#47986</a> Populated Bone Skewers into recipes, made Skewers millable</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49762">#49762</a> Change recipe sort to difficulty, name, crafting time</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49279">#49279</a> Remove additional spawns from Wander Hordes</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/45584">#45584</a> Balance tactical helmets</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49759">#49759</a> Fix CBM install data retrieval when installing CBM on NPC</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49778">#49778</a> Force place_special_forced to place special in forced mode</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49799">#49799</a> Fix healthy rounding bug</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49758">#49758</a> Make cooking oil unhealthy</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49794">#49794</a> Move workshop toolbox recipe to containers tab</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49751">#49751</a> Correct monster_size_capacity to creature_size_capacity</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48651">#48651</a> [Magiclysm] Can't cast if Stunned</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48078">#48078</a> [Magiclysm] Add mutations to manatouched</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49844">#49844</a> Correct the plural name of 'mana infused blood'</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48746">#48746</a> [Magiclysm] Leprechaun adjustments</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49217">#49217</a> [Magiclysm] More magical loot in wizard towers</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49729">#49729</a> Sword cane should fit in the hollow cane</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49764">#49764</a> Reordered magazine type for M17/M18</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49613">#49613</a> Changed time and energy to create a washboard.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49871">#49871</a> Makes flammable arrow components reflect the damage.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49883">#49883</a> Increased volume and length of western holster to accommodate other revolvers (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/48532" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/48532/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/48532">#48532</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49861">#49861</a> fix meatarian/vegetarian text</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49805">#49805</a> Fix weight of wild yeast</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49904">#49904</a> Fix weapons dropping without message on reload</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49934">#49934</a> Allow MISSION_FREE_MERCHANTS_HUB_DELIVERY_1 to complete after player has already met HUB-01</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49946">#49946</a> Remove TRADER_AVOID flag from mre containers</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49931">#49931</a> Hide vehicle UI when pouring on the ground</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49962">#49962</a> fixed reload times of guns</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49442">#49442</a> Change Hobo Stove to deployable furniture</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49997">#49997</a> Use positional arguments for 'It should take %d minutes to finish washing items in the %s.'</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50003">#50003</a> Chainlink fence posts now require pipe fittings to build</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48662">#48662</a> When telling NPCs to read something, include all columns in the 'choose a book' popup</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50032">#50032</a> Changed Humvee jerrycans to use JP8 fuel (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/50008" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/50008/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/50008">#50008</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49995">#49995</a> Fix ammo capitalization</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49919">#49919</a> [Dinomod] Duplicate entry caused CTD</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49879">#49879</a> Dogs zombify</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49957">#49957</a> Improve chance to find hidden lab in MISSION_SCIENCE_REP_3</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48930">#48930</a> Butchering use best tool in crafting radius</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49377">#49377</a> Prevent overmap mongroups from spawning on top of faction bases</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50043">#50043</a> Hatchets aren't melee durable</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49949">#49949</a> Prevent UB passing 0 to LIGHT_RANGE</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50044">#50044</a> Change stone chopper requirement from fab (3) to fab (2) to resolve crafting bottleneck.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50061">#50061</a> Changed morphine description to naturally occurring drug (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/48710" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/48710/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/48710">#48710</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50053">#50053</a> Require hemostatic powder to require <em>powdered</em> chitin only.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50006">#50006</a> vehicles: helicopters do not have 100% load in idle()</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50086">#50086</a> Update cordage and cordage ropes crafting time.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50096">#50096</a> Added batch cook times to Granola and Cookies (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/50089" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/50089/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/50089">#50089</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50046">#50046</a> Recompute overmap::safe_at_worldgen during unserialize()</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50114">#50114</a> Fix disappearance of CRIT vest on activation</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48462">#48462</a> Colorize spells in spellbooks</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/47257">#47257</a> Stand up peek</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48794">#48794</a> Ability to configure user-defined map extra symbols</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50074">#50074</a> Check skill requirements for vehicle most_repairable_part</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50165">#50165</a> Added condom to item restriction on travel wallet (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/49932" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/49932/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/49932">#49932</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50182">#50182</a> Fix wind not updating</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50134">#50134</a> Modified mass ratio of sheep wool on harvest to give similar to shearing returns (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/48962" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/48962/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/48962">#48962</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50180">#50180</a> Fix multitile variations</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50132">#50132</a> Fix armor pen from martial arts buffs not working</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49595">#49595</a> Target to Mac OS X 10.12+ in release build workflow</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49593">#49593</a> Raise the proportional AP value of handloaded 5.7mm</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50107">#50107</a> [Aftershock] Increase volume/weight of lichen, fix processing not neutralizing toxins</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50170">#50170</a> Add permeable flag to appropriate windows</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50243">#50243</a> Add Boxing to Self-Defense Classes</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49769">#49769</a> Remove CROWS turrets from irradiator overmap special</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50184">#50184</a> [DinoMod] wilderness spawn counts and fixes</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50230">#50230</a> Bondage mask layer mismatch</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50272">#50272</a> Display kicking monster name</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50222">#50222</a> Fix layer ordering of demon skin</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50216">#50216</a> ASCII tileset QoL changes</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49953">#49953</a> Serialize moves_total</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/48864">#48864</a> Don't add magazines to all guns, don't show '(empty)' on unreloadable guns.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50100">#50100</a> Fix resuming mass disassembly not working</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50403">#50403</a> fix strong stomach granting nausea immunity</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50172">#50172</a> Reduce River weight to under 1k</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50251">#50251</a> Fix NPC claiming to eat FROZEN food without EDIBLE_FROZEN flag</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50381">#50381</a> Prevent stacking AIM windows when moving NO_UNWIELD flagged items</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50401">#50401</a> Change armored car to use JP8 (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/50252" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/50252/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/50252">#50252</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50309">#50309</a> Added barred window with no glass (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/48453" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/48453/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/48453">#48453</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50174">#50174</a> Modified stained glass description to reflect the fact it is a wall with a high window, changed all external walls to stone walls for cathedral (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/49440" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/49440/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/49440">#49440</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50353">#50353</a> Fixed safe spawning on top of shrub in one of the houses</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50416">#50416</a> set number to 1 if no charges</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50240">#50240</a> Fix inconsistencies on all sleeveless dusters</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50371">#50371</a> Update Crowbars with DURABLE_MELEE</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50443">#50443</a> [DinoMod] dinos don't hear great</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50000">#50000</a> Bugfixes 'Port fix for 'phantom fuel' from Cataclysm-BN'</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50460">#50460</a> Modified the Batwing Zombie Description (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/50383" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/50383/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/50383">#50383</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50536">#50536</a> Fishing spears can be stored in spear strap</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50543">#50543</a> Avoid division-by-zero in lerped_multiplier</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50525">#50525</a> Fixes crash during save due to invalid ammo_location</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50508">#50508</a> Balance 'Rebar cage breaks into concrete floor, not pit'</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50471">#50471</a> Atomic headlamp should not have DURABLE_MELEE</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50556">#50556</a> Make ironshod quarterstaff looks like quarterstaff</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50555">#50555</a> Add missing dot and the end of the sencence</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50487">#50487</a> Audit lawn mower length</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50448">#50448</a> Prevent display of martial arts traits as traits</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50550">#50550</a> Avoid placing hospitals in the woods during MISSION_SCIENCE_REP_1</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50564">#50564</a> cmake: don't use PREFIX variable</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50562">#50562</a> cmake: install core and help directories</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50528">#50528</a> random cosmetic traits respect scenario (<a data-url="https://github.com/CleverRaven/Cataclysm-DDA/issues/50224" data-hovercard-type="issue" data-hovercard-url="/CleverRaven/Cataclysm-DDA/issues/50224/hovercard" href="https://github.com/CleverRaven/Cataclysm-DDA/issues/50224">#50224</a>)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50385">#50385</a> Spawn correct underwear for female True Foodperson</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50494">#50494</a> Fix the mission 'Visit the Isherwoods' that was impossible to complete</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50478">#50478</a> Clarify the mission descriptions in the pizzaiolo quest line</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50588">#50588</a> Fix the wooden privacy gate name</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50581">#50581</a> cmake: set RELEASE variable to generate install target</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50546">#50546</a> Avoid crashing when the player's gun is destroyed while firing.</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50607">#50607</a> Fixed density of legume products</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50598">#50598</a> Camp NPCs will refuse to eat inedible animal food</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50602">#50602</a> Add a crafting recipe for skirts</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50601">#50601</a> Fix Bathroom scale symbol</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50620">#50620</a> iwyu cuboid_rectangle.h</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50616">#50616</a> Add repairs_like to runner pack</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50618">#50618</a> Billous Soldier Zombie acid-attack description fix</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50610">#50610</a> Fix duplicate unitfont.ttf in config/fonts.json</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50609">#50609</a> Disable Terminus.ttf on Mac</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50606">#50606</a> Backport BN's MSVC sound fix</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50547">#50547</a> Do not remove vehicle label when canceling input</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50646">#50646</a> Recolor the blackjack oak</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50577">#50577</a> Fixed unpack leaving containers invalid</li>
+</ul>
+<p>See differences between current point release and original release here - <a class="commit-link" href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.F...0.F-1"><tt>0.F...0.F-1</tt></a></p>
+
 <h3>0.F Frank</h3>
 
 <p>After a long and anticlimactic buildup, we are pleased to announce the release of stable version 0.F “Frank” of Cataclysm: Dark Days Ahead! Like our previous stable versions, this release features an expansive range of bugfixes, code and content additions, and new features. 4,500 new game entities were added, 123,162 lines of source code were inserted, and 77,727 lines were deleted.</p>
@@ -271,7 +442,9 @@ STABLE_SHA256 = {
     '563bd13cff18c4271c43c18568237046d1fd18ae200f7e5cdd969b80e6992967': '0.E-3',
     'e4874bbb8e0a7b1e52b4dedb99575e2a90bfe84e74c36db58510f9973400077d': '0.E-3',
     '1f5beb8b3dcb5ca1f704b816864771e2dd8ff38ca435a4abdb9a59e4bb95d099': '0.F',
-    '2794df225787174c6f5d8557d63f434a46a82f562c0395294901fb5d5d10d564': '0.F'
+    '2794df225787174c6f5d8557d63f434a46a82f562c0395294901fb5d5d10d564': '0.F',
+    '3c5e7b46ad8ccd140c9f5fb138458069b221bc99552d8ee88fc96256077876d0': '0.F-1',
+    '1bbc33ba4172c038ebc70bbf4e4f20288253e5c8f92433b7320caaa290cbb40a': '0.F-1'
 }
 
 CONFIG_BRANCH_KEY = 'branch'
