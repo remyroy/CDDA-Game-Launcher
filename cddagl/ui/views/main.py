@@ -3222,7 +3222,7 @@ class UpdateGroupBox(QGroupBox):
             self.refresh_changelog()
 
     def refresh_changelog(self):
-        self.changelog_content.setHtml(_('<h3>Changelog is not available for experimental</h3><br><h2>You can see recently merged and closed pull requests <a href=https://github.com/CleverRaven/Cataclysm-DDA/pulls?q=is%3Apr+is%3Aclosed>here</a>.</h2>'))
+        self.changelog_content.setHtml(_('<h3>Changelog is not available for experimental</h3><br><h2>You can see recently merged and closed pull requests <a href=https://github.com/CleverRaven/Cataclysm-DDA/pulls?q=is%3Apr+is%3Amerged>here</a>.</h2>'))
 
     def branch_clicked(self, button):
         if button is self.stable_radio_button:
