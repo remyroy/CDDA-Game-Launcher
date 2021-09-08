@@ -72,6 +72,16 @@ NEW_BASE_ASSETS = {
 }
 
 STABLE_ASSETS = {
+    '0.F-2': {
+        'name': '0.F Frank-2',
+        'number': '2021-08-31-2315',
+        'released_on': '2021-08-31T13:36:46Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/0.F-2/',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.F-2/cataclysmdda-0.F-Windows_x64-Tiles-0.F-2.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.F-2/cataclysmdda-0.F-Windows-Tiles-0.F-2.zip'
+        }
+    },
     '0.F-1': {
         'name': '0.F Frank-1',
         'number': '2021-08-14-0132',
@@ -155,6 +165,24 @@ STABLE_ASSETS = {
 }
 
 STABLE_CHANGELOG = '''
+<h3>0.F-2 Frank-2</h3>
+
+<p>Point release Frank-2 includes following bugfixes backported to <a href="https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.F">original Frank release</a>:</p>
+
+<ul>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50877">#50877</a> Catch SecurityException in SDL getSerialNumber</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50452">#50452</a> Fix dropping worn items from AIM</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50814">#50814</a> Prevent endless loop during butchering</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51035">#51035</a> Resolve a bug in partial stack dropping/using and unify ui behaviour</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51147">#51147</a> Fix crash resulting from NPC activity migration (loading 0.F saves)</li>
+</ul>
+
+<p>See differences between current point release and original release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.F...0.F-2">https://github.com/CleverRaven/Cataclysm-DDA/compare/0.F…0.F-2</a></p>
+
+<p>See differences between current point release and previous point release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.F-1...0.F-2">https://github.com/CleverRaven/Cataclysm-DDA/compare/0.F-1…0.F-2</a></p>
+
+<h3>0.F-1 Frank-1</h3>
+
 <p>Point release <strong>Frank-1</strong> includes following bugfixes backported to <a href="https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.F">original Frank release</a>:</p>
 <ul>
 <li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49538">#49538</a> Fix welding requirement on some recipes</li>
@@ -444,7 +472,9 @@ STABLE_SHA256 = {
     '1f5beb8b3dcb5ca1f704b816864771e2dd8ff38ca435a4abdb9a59e4bb95d099': '0.F',
     '2794df225787174c6f5d8557d63f434a46a82f562c0395294901fb5d5d10d564': '0.F',
     '960140f7926267b56ef6933670b7a73d00087bd53149e9e63c48a8631cfbed53': '0.F-1',
-    'c87f226d8b4e6543fbc8527d645cf4342b5e1036e94e16920381d7e5b5b9e34f': '0.F-1'
+    'c87f226d8b4e6543fbc8527d645cf4342b5e1036e94e16920381d7e5b5b9e34f': '0.F-1',
+    '5da7ebd7ab07ebf755e445440210309eda0ae8f5924026d401b9eb5c52c5b6e7': '0.F-2',
+    '6870353e6d142735dfd21dec1eaf6b39af088daf5eef27b02e53ebb1c9eca684': '0.F-2'
 }
 
 CONFIG_BRANCH_KEY = 'branch'
