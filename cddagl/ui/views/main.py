@@ -1356,6 +1356,8 @@ class UpdateGroupBox(QGroupBox):
             elif platform == 'x86':
                 self.x86_radio_button.setChecked(True)
 
+            self.show_hide_find_build()
+
             self.refresh_builds()
 
         self.shown = True
