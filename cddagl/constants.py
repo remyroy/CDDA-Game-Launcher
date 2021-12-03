@@ -72,6 +72,16 @@ NEW_BASE_ASSETS = {
 }
 
 STABLE_ASSETS = {
+    '0.F-3': {
+        'name': '0.F Frank-3',
+        'number': '11002',
+        'released_on': '2021-11-27T10:16:25Z',
+        'github_release': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.F-3',
+        'Tiles': {
+            'x64': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.F-3/cataclysmdda-0.F-Windows_x64-Tiles-0.F-3.zip',
+            'x86': 'https://github.com/CleverRaven/Cataclysm-DDA/releases/download/0.F-3/cataclysmdda-0.F-Windows-Tiles-0.F-3.zip'
+        }
+    },
     '0.F-2': {
         'name': '0.F Frank-2',
         'number': '2021-08-31-2315',
@@ -165,6 +175,104 @@ STABLE_ASSETS = {
 }
 
 STABLE_CHANGELOG = '''
+<h3>0.F-3 Frank-3</h3>
+
+<p>Point release <strong>Frank-3</strong> includes following features and bugfixes backported to <a href="https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.F">original Frank release</a>:</p>
+<ul>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50360">#50360</a> Handle window events during long operations</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/47253">#47253</a> Unlimited map memory</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49906">#49906</a> Return an invalid mm_submap if the map_memory is not prepared</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49772">#49772</a> Autodrive v2</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50637">#50637</a> Offroad autodrive</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50695">#50695</a> Overmap path fixes</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50670">#50670</a> Make autowalk more like autodrive</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50803">#50803</a> Render one frame per turn during autodrive</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50835">#50835</a> Improved overmap pathfinding in 3D</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51312">#51312</a> Update 0.F translations</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51742">#51742</a> Update 0.F translations</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/53037">#53037</a> Update 0.F translations</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/49828">#49828</a> Fix health test</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50021">#50021</a> Translate monster death function messages</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50760">#50760</a> Fix for WEBWALK flag</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50834">#50834</a> Added fruit as a material in fruit wine</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50881">#50881</a> Silence warnings reported from inside SDL header</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/50933">#50933</a> Fix siphon from and fill to the same tank</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51086">#51086</a> In crafting every tool is displayed only once</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51096">#51096</a> Prevent inserting an item with NO_UNWIELD into a container</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51100">#51100</a> Fix clerical errors about Demihuman</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51124">#51124</a> Street facing churches</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51129">#51129</a> Fix infinitely falling vehicle</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51131">#51131</a> Adds missing knives to the Krav Maga list</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51136">#51136</a> Fix spammy warning in string_formatter.h when using clang on Windows</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51199">#51199</a> Fix horde indicators showing in elements outside of sidebar overmap</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51205">#51205</a> A few microoptimizations</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51220">#51220</a> Ice cream is edible frozen</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51226">#51226</a> Fix choppy vehicle animation</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51227">#51227</a> Fix: inedible MELTS while FROZEN (milkshake)</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51250">#51250</a> Capping shakes duration to prevent month-long shakes after withdrawal is gone</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51257">#51257</a> Allow multitile sprites to be animated</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51262">#51262</a> Fix sealed containers being targets for pickup actions</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51275">#51275</a> Iridescent cats now visible at night</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51282">#51282</a> Invalidate weight carried cache</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51287">#51287</a> Animated background</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51295">#51295</a> Limit zombie_fuse, other size change to within tiny-huge</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51319">#51319</a> Fixed Filter Paper Always Hitting</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51362">#51362</a> Add DESTROYS, PUSH_MON to albertosaurus</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51381">#51381</a> Fix NC_JUNK_SHOPKEEP item list</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51385">#51385</a> Fix bug when grabbing a vehicle</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51406">#51406</a> Make Gozu and Amigara yield demihuman meat</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51407">#51407</a> Workaround for heavy slowdown caused by eager evaluation of debug message strings</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51411">#51411</a> Adjust cannibal trait cost</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51439">#51439</a> Display name of loaded ammo instead of ammo type</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51441">#51441</a> If want successful test output, include messages</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51447">#51447</a> Change item list highlight color to white</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51458">#51458</a> Add the "mayfail" flag to the fire spreading test</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51460">#51460</a> Actually throttle monster thinking</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51498">#51498</a> Make paper soft so it will fit in small pockets</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51519">#51519</a> Fix poppies unharvestable in Dark Skies mod</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51524">#51524</a> Fix eating demihuman not affecting morale</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51529">#51529</a> Make monster::power_rating() use is_ranged_attacker()</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51580">#51580</a> Fix stair navigation</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51710">#51710</a> Reset whitelist flag on scenario blacklist reset</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51711">#51711</a> Reset scenarios unconditionally</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51754">#51754</a> Fix: Force stereo when opening audio device</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/51911">#51911</a> Don't allow swapping places with NPC while grabbing something</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52010">#52010</a> Fix insect flesh vitamins</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52063">#52063</a> Fix NPCs cannot climb chickenwire fences but players can</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52133">#52133</a> Verify font can be rendered successfully at runtime</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52197">#52197</a> Fix crash when getting related recipes with no components and results for current recipe</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52243">#52243</a> Add missing translation in aiming UI</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52247">#52247</a> Fix compile errors on LLVM/Clang 13</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52257">#52257</a> Fragile television</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52289">#52289</a> Add omitted translation calls</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52356">#52356</a> Add more missing translations</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52413">#52413</a> Fix tabbing in character creation saving info</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52580">#52580</a> Fix an untranslated message in ATM deposit menu</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52612">#52612</a> Fix more untranslated messages</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52656">#52656</a> Fix compile error on LLVM/Clang 13</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/52847">#52847</a> Remove duplicate ATM spawn from movie theater palette</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/53019">#53019</a> Fix pathfinding hash functions for 32-bit systems</li>
+<li><a href="https://github.com/CleverRaven/Cataclysm-DDA/pull/53056">#53056</a> backporting tilesets from I-am-Erk/CDDA-Tilesets to 0.F</li>
+</ul>
+<p>Two major features were backported - unlimited map memory and autodrive v2.</p>
+<p>There is also significant update of translations:</p>
+<ul>
+<li><strong>Japanese [100% translated]</strong> (<em>+172 lines</em>);</li>
+<li><strong>Russian [100% translated]</strong> (<em>+297 lines</em>);</li>
+<li><strong>Simplified Chinese [100% translated]</strong> (<em>+191 lines</em>);</li>
+<li><strong>Spanish (Argentina) [100% translated]</strong> (<em>+180 lines</em>);</li>
+<li><strong>Spanish (Spain) [100% translated]</strong> (<em>+185 lines</em>);</li>
+<li>Polish (<em>+7,475 lines</em>) - most noticeable progress (up from 53% translated in <code>0.F-2</code> to 82% translated in <code>0.F-3</code>);</li>
+<li>Hungarian (<em>+4,084 lines</em>);</li>
+<li>Italian (Italy) (<em>+2,190 lines</em>);</li>
+<li>Traditional Chinese (<em>+1,020 lines</em>);</li>
+<li>Czech (<em>+952 lines</em>);</li>
+</ul>
+<p>And there are also some minor updates in translations to Indonesian, German, Ukrainian (Ukraine), French, Portuguese (Brazil), Danish, Dutch, Icelandic, Korean, Norwegian and Turkish.</p>
+<p>Tilesets were also updated to latest available versions.</p>
+<p>See differences between current point release and original release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.F...0.F-3"><tt>0.F...0.F-3</tt></a></p>
+<p>See differences between current point release and previous point release here - <a href="https://github.com/CleverRaven/Cataclysm-DDA/compare/0.F-2...0.F-3"><tt>0.F-2...0.F-3</tt></a></p></div>
+
 <h3>0.F-2 Frank-2</h3>
 
 <p>Point release Frank-2 includes following bugfixes backported to <a href="https://github.com/CleverRaven/Cataclysm-DDA/releases/tag/0.F">original Frank release</a>:</p>
@@ -474,7 +582,9 @@ STABLE_SHA256 = {
     '960140f7926267b56ef6933670b7a73d00087bd53149e9e63c48a8631cfbed53': '0.F-1',
     'c87f226d8b4e6543fbc8527d645cf4342b5e1036e94e16920381d7e5b5b9e34f': '0.F-1',
     '5da7ebd7ab07ebf755e445440210309eda0ae8f5924026d401b9eb5c52c5b6e7': '0.F-2',
-    '6870353e6d142735dfd21dec1eaf6b39af088daf5eef27b02e53ebb1c9eca684': '0.F-2'
+    '6870353e6d142735dfd21dec1eaf6b39af088daf5eef27b02e53ebb1c9eca684': '0.F-2',
+    '3e0b15543015389c34ad679a931186a1264dbccb010b813f63b6caef2d158dc8': '0.F-3',
+    '59404eeb88539b20c9ffbbcbe86a7e5c20267375975306245862c7fb731a5973': '0.F-3'
 }
 
 CONFIG_BRANCH_KEY = 'branch'
