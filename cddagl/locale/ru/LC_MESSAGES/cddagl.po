@@ -1,5 +1,11 @@
 # Translations template for cddagl.
 # Copyright (C) 2019 ORGANIZATION
+# SPDX-FileCopyrightText: 2019 8street
+# SPDX-FileCopyrightText: 2019 KurzedMetal <kurzedmetal@gmail.com>
+# SPDX-FileCopyrightText: 2019 Nazar Emma-O <zakses87@gmail.com>
+# SPDX-FileCopyrightText: 2019 Semyon Glukhov <chopagovnoo@rambler.ru>
+#
+# SPDX-License-Identifier: MIT
 # This file is distributed under the same license as the cddagl project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
 # 

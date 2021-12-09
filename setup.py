@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# SPDX-FileCopyrightText: 2015-2021 Rémy Roy
+#
+# SPDX-License-Identifier: MIT
+
 import os
 import sys
 import os.path

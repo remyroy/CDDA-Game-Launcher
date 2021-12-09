@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2015-2021 Rémy Roy
+
+SPDX-License-Identifier: MIT
+-->
+
 # Building guide
 
 > This guide is **outdated**. A updated version should soon be added to replace this one.

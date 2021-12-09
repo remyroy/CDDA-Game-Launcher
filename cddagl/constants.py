@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2015-2021 Rémy Roy
+#
+# SPDX-License-Identifier: MIT
+
 MAX_LOG_SIZE = 1024 * 1024
 MAX_LOG_FILES = 5
 

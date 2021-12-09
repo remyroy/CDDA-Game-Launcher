@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2015-2021 Rémy Roy
+
+SPDX-License-Identifier: MIT
+-->
+
 # CDDA Game Launcher
 
 A [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/) launcher with additional features.

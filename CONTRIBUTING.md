@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2015-2021 Rémy Roy
+
+SPDX-License-Identifier: MIT
+-->
+
 # Contributing to this project
 
 Please take a moment to review this document in order to make the contribution
