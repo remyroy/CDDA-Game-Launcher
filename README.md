@@ -4,6 +4,10 @@ A [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/) launcher with addition
 
 [Download here](https://github.com/remyroy/CDDA-Game-Launcher/releases).
 
+## Unmaintained
+
+Maintenance and support for this application has now ended. You might still be able to use it but no guarantee is provided. Feel free to fork it, change it, rebuild it or leave it as you please.
+
 ## Implemented features
 
 * Launching the game
