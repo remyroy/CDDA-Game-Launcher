@@ -116,8 +116,8 @@ class Bundle(ExtendedCommand):
         download_path.mkdir(parents=True, exist_ok=True)
 
         # Download Python embeddable package
-        python_embed_url = 'https://www.python.org/ftp/python/3.8.10/python-3.8.10-embed-amd64.zip'
-        python_embed_name = 'python-3.8.10-embed-amd64.zip'
+        python_embed_url = 'https://www.python.org/ftp/python/3.9.0/python-3.9.0-embed-amd64.zip'
+        python_embed_name = 'python-3.9.0-embed-amd64.zip'
 
         python_embed_archive = download_path.joinpath(python_embed_name)
         try:
