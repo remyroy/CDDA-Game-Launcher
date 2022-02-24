@@ -4,9 +4,13 @@ A [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/) launcher with addition
 
 [Download here](https://github.com/DazedNConfused-/CDDA-Game-Launcher/releases).
 
-## Unmaintained
+## ~~Un~~maintained
 
-Maintenance and support for this application has now ended. You might still be able to use it but no guarantee is provided. Feel free to fork it, change it, rebuild it or leave it as you please.
+~~Maintenance and support for this application has now ended. You might still be able to use it but no guarantee is provided. Feel free to fork it, change it, rebuild it or leave it as you please.~~
+
+Maintenance and support for this application has resumed _**in limited capacity**_. Until I learn more about both the launcher codebase _and the game itself_, expect mostly fixes for the bugs I have encountered myself during my CDDA play sessions.
+
+Bug reports and feature requests are still welcome and encouraged, with the tacit understanding that I may not be able to attend them all until I get more seasoned with both game and launcher.
 
 ## Implemented features
 
@@ -18,12 +22,18 @@ Maintenance and support for this application has now ended. You might still be a
 * Mod manager
 * Save backups and automatic backups
 
-## Planned features
+## ~~Planned features~~
 
-* Tileset manager
-* Font presets
+* ~~Tileset manager~~
+* ~~Font presets~~
+
+No planed features, only maintenance and bugfixes in the short term. Although having a Tileset manager would indeed be nice, it may be a scope far too ambitious for a project just resurrected from beyond the grave. We shall see.
 
 ## FAQ
+
+### What happened to the previous CDDA Game Launcher?
+
+It has become unmaintained. Nevertheless, praise and gratitude go to [remroy](https://github.com/remyroy) & [the rest of contributors](https://github.com/remyroy/CDDA-Game-Launcher/graphs/contributors) for their work on the launcher thus far, and for giving such a useful tool free of charge to the CDDA community.
 
 ### Where is my previous version?
 
