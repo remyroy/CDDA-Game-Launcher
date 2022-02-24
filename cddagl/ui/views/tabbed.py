@@ -149,6 +149,7 @@ class TabbedWindow(QMainWindow):
         self.about_dialog.exec()
 
     def check_new_launcher_version(self):
+        logger.info("Checking for new launcher version")
         self.lv_html = BytesIO()
 
         url = cons.GITHUB_REST_API_URL + cons.CDDAGL_LATEST_RELEASE
