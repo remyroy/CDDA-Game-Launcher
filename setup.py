@@ -171,8 +171,7 @@ class Bundle(ExtendedCommand):
 
         # Let's find and add unrar if available
         try:
-            unrar_path = check_output(['where', 'unrar.exe'], stderr=DEVNULL)
-            unrar_path = unrar_path.strip().decode('cp437')
+            unrar_path = r'.\external-deps\unrar-command-line-tool\UnRAR.exe'
             shutil.copy(unrar_path, archive_dir_path)
         except CalledProcessError:
             log("'unrar.exe' couldn't be found.")
@@ -311,7 +310,7 @@ class CreateInnoSetupInstaller(ExtendedCommand):
     ]
 
     def initialize_options(self):
-        self.compiler = r'C:\Program Files (x86)\Inno Setup 6\Compil32.exe'
+        self.compiler = r'.\external-deps\inno-setup\6.2.0\Compil32.exe'
 
     def finalize_options(self):
         if not pathlib.Path(self.compiler).exists():
@@ -442,7 +441,7 @@ setup(
     description=('A Cataclysm: Dark Days Ahead launcher with additional features'),
     author='Rémy Roy',
     author_email='remyroy@remyroy.com',
-    url='https://github.com/remyroy/CDDA-Game-Launcher',
+    url='https://github.com/DazedNConfused-/CDDA-Game-Launcher',
     packages=['cddagl'],
     package_data={'cddagl': ['VERSION']},
     cmdclass={

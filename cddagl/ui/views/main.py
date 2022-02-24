@@ -731,11 +731,11 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             with open(version_file, 'r', encoding='utf8') as read_file:
                 file_content = read_file.read(1024)
             if file_content is not None:
-                match = re.search(r'commit sha: (?P<commitsha>\S+)', file_content)
+                match = re.search(r'Build version: (?P<buildversion>\S+)', file_content)
                 if match:
-                    commit_sha = match.group('commitsha')
-                    if len(commit_sha) >= 7:
-                        self.game_version = commit_sha[:7]
+                    build_version = match.group('buildversion')
+                    if len(build_version) > 2:
+                        self.game_version = build_version
         
         self.opened_exe = open(self.exe_path, 'rb')
 

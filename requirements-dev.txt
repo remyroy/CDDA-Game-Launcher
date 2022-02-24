@@ -1,1 +1,3 @@
 httpx
+transifex-client
+wheel
