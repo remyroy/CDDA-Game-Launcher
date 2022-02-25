@@ -8,8 +8,10 @@ CDDA Game Launcher is developed using Python. In order to run or build the launc
 
 The full list of requirements is available in [requirements.txt](requirements.txt). Most of these requirements are Python packages that can be installed using [pip](https://en.wikipedia.org/wiki/Pip_%28package_manager%29). Unfortunately, some of these requirements need build tools which are not easy to use nor easy to install on Windows. Here are those special requirements:
 
-* lxml
 * pylzma
+* Microsoft C++ Build Tools
+* Windows 10 SDK
+* Inno Setup
 
 Compiled binaries for lxml and pylzma can be found on [Christoph Gohlke's Unofficial Windows Binaries](http://www.lfd.uci.edu/~gohlke/pythonlibs/). If you are using Python >= 3.5, scandir should already be included. If you are using Python <= 3.4, you can also find compiled binaries for scandir on that website.
 
