@@ -64,6 +64,9 @@ def include_requirements(target_path):
     # Install packages from requirements.txt file into build dir
     requirements_path = Path('requirements.txt')
     subprocess.run([
+        'python', '-m', 'pip', 'install', '--upgrade', "pip"
+    ])
+    subprocess.run([
         'python', '-m', 'pip', 'install', '-r', requirements_path,
         '--target', target_path
     ])
@@ -116,8 +119,8 @@ class Bundle(ExtendedCommand):
         download_path.mkdir(parents=True, exist_ok=True)
 
         # Download Python embeddable package
-        python_embed_url = 'https://www.python.org/ftp/python/3.9.0/python-3.9.0-embed-amd64.zip'
-        python_embed_name = 'python-3.9.0-embed-amd64.zip'
+        python_embed_url = 'https://www.python.org/ftp/python/3.9.7/python-3.9.7-embed-amd64.zip'
+        python_embed_name = 'python-3.9.7-embed-amd64.zip'
 
         python_embed_archive = download_path.joinpath(python_embed_name)
         try:
@@ -171,7 +174,7 @@ class Bundle(ExtendedCommand):
 
         # Let's find and add unrar if available
         try:
-            unrar_path = r'.\external-deps\unrar-command-line-tool\UnRAR.exe'
+            unrar_path = r'.\third-party\unrar-command-line-tool\UnRAR.exe'
             shutil.copy(unrar_path, archive_dir_path)
         except CalledProcessError:
             log("'unrar.exe' couldn't be found.")
@@ -310,7 +313,7 @@ class CreateInnoSetupInstaller(ExtendedCommand):
     ]
 
     def initialize_options(self):
-        self.compiler = r'.\external-deps\inno-setup\6.2.0\Compil32.exe'
+        self.compiler = r'.\third-party\inno-setup\6.2.0\Compil32.exe'
 
     def finalize_options(self):
         if not pathlib.Path(self.compiler).exists():
