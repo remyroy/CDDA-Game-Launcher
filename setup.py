@@ -195,11 +195,27 @@ class Bundle(ExtendedCommand):
         batch_file_path = archive_dir_path.joinpath('Launcher.bat')
         with open(batch_file_path, 'w', encoding='utf8') as batch_file:
             batch_file.write(
-'''
-@echo off
-start pythonw.exe -m cddagl
-'''
+                '''
+                @echo off
+                start pythonw.exe -m cddagl
+                '''
             )
+
+        # zip finished file
+        print('Writing portable zip file...')
+
+        zip_file_src = archive_dir_path
+
+        zip_file_dest = Path(f'dist')
+        zip_file_dest.mkdir(parents=True, exist_ok=True)
+        zip_file_dest = f'dist/cddagl_portable_v{get_version()}'
+
+        shutil.make_archive(
+            base_name=zip_file_dest,
+            format='zip',
+            root_dir=zip_file_src,
+            verbose=True
+        )
 
 class FreezeWithPyInstaller(ExtendedCommand):
     description = 'Build CDDAGL with PyInstaller'
@@ -444,6 +460,7 @@ setup(
     description=('A Cataclysm: Dark Days Ahead launcher with additional features'),
     author='Rémy Roy',
     author_email='remyroy@remyroy.com',
+    maintainer='Gonzalo López',
     url='https://github.com/DazedNConfused-/CDDA-Game-Launcher',
     packages=['cddagl'],
     package_data={'cddagl': ['VERSION']},
