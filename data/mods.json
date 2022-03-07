@@ -199,17 +199,6 @@
   },
   {
     "type": "direct_download",
-    "ident": "GunCotton",
-    "name": "Gun Cotton",
-    "authors": [ "vegarbg" ],
-    "description": "Adds craftable gun cotton, gun cotton based explosives, and gunpowder.",
-    "category": "items",
-    "dependencies": [ "dda" ],
-    "url": "https://github.com/vegarbg/GunCotton/archive/master.zip",
-    "homepage": "https://github.com/vegarbg/GunCotton"
-  },
-  {
-    "type": "direct_download",
     "ident": "secronom",
     "name": "Secronom",
     "authors": ["Axema Vales"],
