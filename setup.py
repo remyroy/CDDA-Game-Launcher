@@ -197,7 +197,7 @@ class Bundle(ExtendedCommand):
             batch_file.write(
                 '''
                 @echo off
-                start pythonw.exe -m cddagl
+                start /realtime python.exe -m cddagl
                 '''
             )
 
