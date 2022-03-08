@@ -26,7 +26,7 @@ CDDAGL_ISSUE_URL_ROOT = 'https://github.com/DazedNConfused-/CDDA-Game-Launcher/i
 GAME_ISSUE_URL = 'https://cataclysmdda.org/#ive-found-a-bug--i-would-like-to-make-a-suggestion-what-should-i-do'
 
 BUILD_TAG = lambda bn: f'cdda-jenkins-b{bn}'
-NEW_BUILD_TAG = lambda bn: f'experimental-{bn}'
+NEW_BUILD_TAG = lambda bn: f'cdda-experimental-{bn}'
 
 WORLD_FILES = set(('worldoptions.json', 'worldoptions.txt', 'master.gsav'))
 

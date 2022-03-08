@@ -1471,7 +1471,7 @@ class UpdateGroupBox(QGroupBox):
         new_target_regex = re.compile(
             r'cdda-windows-' +
             re.escape(new_asset_graphics) + r'-' +
-            re.escape(new_asset_platform) + r'-' +
+            re.escape(new_asset_platform) + r'-msvc-' +
             r'b?(?P<build>[0-9\-]+)\.zip'
             )
 
@@ -3031,7 +3031,7 @@ class UpdateGroupBox(QGroupBox):
         new_target_regex = re.compile(
             r'cdda-windows-' +
             re.escape(new_asset_graphics) + r'-' +
-            re.escape(new_asset_platform) + r'-' +
+            re.escape(new_asset_platform) + r'-msvc-' +
             r'b?(?P<build>[0-9\-]+)\.zip'
             )
 
