@@ -8,6 +8,11 @@ A [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/) launcher with addition
 
 Maintenance and support for this application has now ended. You might still be able to use it but no guarantee is provided. Feel free to fork it, change it, rebuild it or leave it as you please.
 
+You might want to try these alternatives:
+
+- A fork of CDDA-Game-Launcher: https://github.com/DazedNConfused-/CDDA-Game-Launcher
+- Another interesting launcher: https://github.com/qrrk/Catapult
+
 ## Implemented features
 
 * Launching the game
