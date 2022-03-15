@@ -1,0 +1,57 @@
+name: build
+
+# inspired from https://github.com/wkentaro/labelme/actions/runs/255102432/workflow
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        include:
+        - os: windows-latest
+          path: ~\AppData\Local\pip\Cache
+        python-version: ['3.9']
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Get pip cache dir
+      id: pip-cache
+      run: |
+        echo "::set-output name=dir::$(pip cache dir)"
+    - name: pip cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Set up Python
+      shell: bash -l {0}
+      env:
+        PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
+      run: |
+        which python
+        python --version
+        pip --version
+        pip install SQLAlchemy alembic PyQt5 PyInstaller html5lib cssselect arrow rarfile Babel pypiwin32 pywinutils Markdown Werkzeug httpx
+    - name: Install dependencies
+      shell: bash -l {0}
+      run: |
+        pip install third-party/pylzma/pylzma-0.5.0-cp39-cp39-win_amd64.whl
+    - name: Run installer
+      shell: bash -l {0}
+      run: |
+        # Build the standalone executable
+        python setup.py create_installer
