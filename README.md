@@ -2,6 +2,13 @@
 
 A [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/) launcher with additional features.
 
+![GitHub Workflow Status (master)](https://img.shields.io/github/workflow/status/DazedNConfused-/CDDA-Game-Launcher/build/master?label=master)
+![GitHub Workflow Status (develop)](https://img.shields.io/github/workflow/status/DazedNConfused-/CDDA-Game-Launcher/build/develop?label=develop)
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/DazedNConfused-/CDDA-Game-Launcher)
+![GitHub all releases](https://img.shields.io/github/downloads/DazedNConfused-/CDDA-Game-Launcher/total)
+[![GitHub forks](https://img.shields.io/github/forks/DazedNConfused-/CDDA-Game-Launcher)](https://github.com/DazedNConfused-/CDDA-Game-Launcher/network)
+
 [Download here](https://github.com/DazedNConfused-/CDDA-Game-Launcher/releases).
 
 ## ~~Un~~maintained
@@ -33,7 +40,7 @@ No planed features, only maintenance and bugfixes in the short term. Although ha
 
 ### What happened to the previous CDDA Game Launcher?
 
-It has become unmaintained. Nevertheless, praise and gratitude go to [remroy](https://github.com/remyroy) & [the rest of contributors](https://github.com/remyroy/CDDA-Game-Launcher/graphs/contributors) for their work on the launcher thus far, and for giving such a useful tool free of charge to the CDDA community.
+It has become unmaintained. Nevertheless, praise and gratitude go to [remyroy](https://github.com/remyroy) & [the rest of contributors](https://github.com/remyroy/CDDA-Game-Launcher/graphs/contributors) for their work on the launcher thus far, and for giving such a useful tool free of charge to the CDDA community.
 
 ### Where is my previous version?
 
