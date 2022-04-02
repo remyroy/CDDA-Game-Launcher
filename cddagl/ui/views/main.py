@@ -72,6 +72,8 @@ class MainTab(QWidget):
         layout.addWidget(update_group_box)
         self.setLayout(layout)
 
+        self.played = 0
+
     def set_text(self):
         self.game_dir_group_box.set_text()
         self.update_group_box.set_text()
@@ -90,6 +92,9 @@ class MainTab(QWidget):
 
     def get_backups_tab(self):
         return self.parentWidget().parentWidget().backups_tab
+
+    def get_statistics_tab(self):
+        return self.parentWidget().parentWidget().statistics_tab
 
     def disable_tab(self):
         self.game_dir_group_box.disable_controls()
@@ -456,6 +461,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             settings_tab.disable_tab()
             backups_tab.disable_tab()
 
+            statistics_tab = main_tab.get_statistics_tab()
+
             self.launch_game_button.setText(_('Show current game'))
             self.launch_game_button.setEnabled(True)
 
@@ -481,6 +488,8 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             process_wait_thread.ended.connect(process_ended)
             process_wait_thread.start()
 
+            statistics_tab.game_started()
+
             self.process_wait_thread = process_wait_thread
 
     def game_ended(self):
@@ -490,6 +499,10 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
 
         self.game_process = None
         self.game_started = False
+
+        main_tab = self.get_main_tab()
+        statistics_tab = main_tab.get_statistics_tab()
+        statistics_tab.game_ended()
 
         main_window = self.get_main_window()
         status_bar = main_window.statusBar()
@@ -735,11 +748,11 @@ antivirus whitelist or select the action to trust this binary when detected.</p>
             with open(version_file, 'r', encoding='utf8') as read_file:
                 file_content = read_file.read(1024)
             if file_content is not None:
-                match = re.search(r'commit sha: (?P<commitsha>\S+)', file_content)
+                match = re.search(r'Build version: (?P<buildversion>\S+)', file_content)
                 if match:
-                    commit_sha = match.group('commitsha')
-                    if len(commit_sha) >= 7:
-                        self.game_version = commit_sha[:7]
+                    build_version = match.group('buildversion')
+                    if len(build_version) > 2:
+                        self.game_version = build_version
         
         self.opened_exe = open(self.exe_path, 'rb')
 
@@ -1475,7 +1488,7 @@ class UpdateGroupBox(QGroupBox):
         new_target_regex = re.compile(
             r'cdda-windows-' +
             re.escape(new_asset_graphics) + r'-' +
-            re.escape(new_asset_platform) + r'-' +
+            re.escape(new_asset_platform) + r'-msvc-' +
             r'b?(?P<build>[0-9\-]+)\.zip'
             )
 
@@ -3035,7 +3048,7 @@ class UpdateGroupBox(QGroupBox):
         new_target_regex = re.compile(
             r'cdda-windows-' +
             re.escape(new_asset_graphics) + r'-' +
-            re.escape(new_asset_platform) + r'-' +
+            re.escape(new_asset_platform) + r'-msvc-' +
             r'b?(?P<build>[0-9\-]+)\.zip'
             )
 

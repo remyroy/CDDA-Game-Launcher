@@ -5,11 +5,14 @@
 SQLAlchemy
 alembic
 PyQt5
+PyQt5-sip
 arrow
 rarfile
 Babel
 pywinutils
 markdown2
 Werkzeug
-
+pypiwin32
+pywin32
+httpx
 pylzma

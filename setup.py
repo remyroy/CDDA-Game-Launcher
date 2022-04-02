@@ -68,6 +68,9 @@ def include_requirements(target_path):
     # Install packages from requirements.txt file into build dir
     requirements_path = Path('requirements.txt')
     subprocess.run([
+        'python', '-m', 'pip', 'install', '--upgrade', "pip"
+    ])
+    subprocess.run([
         'python', '-m', 'pip', 'install', '-r', requirements_path,
         '--target', target_path
     ])
@@ -120,8 +123,8 @@ class Bundle(ExtendedCommand):
         download_path.mkdir(parents=True, exist_ok=True)
 
         # Download Python embeddable package
-        python_embed_url = 'https://www.python.org/ftp/python/3.8.10/python-3.8.10-embed-amd64.zip'
-        python_embed_name = 'python-3.8.10-embed-amd64.zip'
+        python_embed_url = 'https://www.python.org/ftp/python/3.9.7/python-3.9.7-embed-amd64.zip'
+        python_embed_name = 'python-3.9.7-embed-amd64.zip'
 
         python_embed_archive = download_path.joinpath(python_embed_name)
         try:
@@ -175,8 +178,7 @@ class Bundle(ExtendedCommand):
 
         # Let's find and add unrar if available
         try:
-            unrar_path = check_output(['where', 'unrar.exe'], stderr=DEVNULL)
-            unrar_path = unrar_path.strip().decode('cp437')
+            unrar_path = r'.\third-party\unrar-command-line-tool\UnRAR.exe'
             shutil.copy(unrar_path, archive_dir_path)
         except CalledProcessError:
             log("'unrar.exe' couldn't be found.")
@@ -197,11 +199,27 @@ class Bundle(ExtendedCommand):
         batch_file_path = archive_dir_path.joinpath('Launcher.bat')
         with open(batch_file_path, 'w', encoding='utf8') as batch_file:
             batch_file.write(
-'''
-@echo off
-start pythonw.exe -m cddagl
-'''
+                '''
+                @echo off
+                start /realtime python.exe -m cddagl
+                '''
             )
+
+        # zip finished file
+        print('Writing portable zip file...')
+
+        zip_file_src = archive_dir_path
+
+        zip_file_dest = Path(f'dist')
+        zip_file_dest.mkdir(parents=True, exist_ok=True)
+        zip_file_dest = f'dist/cddagl_portable_v{get_version()}'
+
+        shutil.make_archive(
+            base_name=zip_file_dest,
+            format='zip',
+            root_dir=zip_file_src,
+            verbose=True
+        )
 
 class FreezeWithPyInstaller(ExtendedCommand):
     description = 'Build CDDAGL with PyInstaller'
@@ -315,7 +333,7 @@ class CreateInnoSetupInstaller(ExtendedCommand):
     ]
 
     def initialize_options(self):
-        self.compiler = r'C:\Program Files (x86)\Inno Setup 6\Compil32.exe'
+        self.compiler = r'.\third-party\inno-setup\6.2.0\Compil32.exe'
 
     def finalize_options(self):
         if not pathlib.Path(self.compiler).exists():
@@ -446,7 +464,8 @@ setup(
     description=('A Cataclysm: Dark Days Ahead launcher with additional features'),
     author='Rémy Roy',
     author_email='remyroy@remyroy.com',
-    url='https://github.com/remyroy/CDDA-Game-Launcher',
+    maintainer='Gonzalo López',
+    url='https://github.com/DazedNConfused-/CDDA-Game-Launcher',
     packages=['cddagl'],
     package_data={'cddagl': ['VERSION']},
     cmdclass={

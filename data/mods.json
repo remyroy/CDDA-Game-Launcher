@@ -199,17 +199,6 @@
   },
   {
     "type": "direct_download",
-    "ident": "GunCotton",
-    "name": "Gun Cotton",
-    "authors": [ "vegarbg" ],
-    "description": "Adds craftable gun cotton, gun cotton based explosives, and gunpowder.",
-    "category": "items",
-    "dependencies": [ "dda" ],
-    "url": "https://github.com/vegarbg/GunCotton/archive/master.zip",
-    "homepage": "https://github.com/vegarbg/GunCotton"
-  },
-  {
-    "type": "direct_download",
     "ident": "secronom",
     "name": "Secronom",
     "authors": ["Axema Vales"],
@@ -347,5 +336,16 @@
     "size": 39136,
     "url": "https://github.com/Lorith/AdvancedGear-CDDA-Mod/archive/master.zip",
     "homepage": "https://github.com/Lorith/AdvancedGear-CDDA-Mod"
+  },
+  {
+    "type": "direct_download",
+    "ident": "arcana_magic",
+    "name": "Arcana and Magic",
+    "authors": [ "chaosvolt" ],
+    "description": "Focused principally on magical items as the name implies (the mod predating the current spell mechanics), with proper spells being a valuable, powerful tool that demands hunting monsters and learning of the Beyond moreso than simple scavenging.",
+    "category": "items",
+    "size": 1649025,
+    "url": "https://github.com/chaosvolt/cdda-arcana-mod/archive/master.zip",
+    "homepage": "https://github.com/chaosvolt/cdda-arcana-mod"
   }
 ]

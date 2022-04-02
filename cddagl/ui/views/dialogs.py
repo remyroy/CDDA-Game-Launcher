@@ -200,7 +200,7 @@ The launcher goes to great lengths not to delete any file that could be importan
 
 Poor antivirus products are known to detect the launcher as a threat and block its execution or delete the launcher. A simple workaround is to add the launcher binary in your antivirus whitelist or select the action to trust this binary when detected.
 
-If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/remyroy/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
+If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/DazedNConfused-/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
 
 Many people are dying to know why antivirus products are identifying the launcher as a threat. There has been many wild speculations to try to pinpoint the root cause for this. The best way to find out would be to ask those antivirus product developers. Unfortunatly, they are unlikely to respond for many good reasons. We could also speculate on this for days on end. Our current best speculation is because we use a component called PyInstaller [that is commonly flagged as a threat](https://github.com/pyinstaller/pyinstaller/issues/4633). Now, if you want see how deep the rabbit hole goes, you can keep on searching or speculating on why PyInstaller itself is commonly flagged as a threat. This research is left as an exercise to the reader.
 
@@ -212,11 +212,11 @@ You should [contact the game developpers](https://cataclysmdda.org/#ive-found-a-
 
 ### How do I update to a new version of the game launcher?
 
-The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/remyroy/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher. From the help menu, you can also check for new updates.
+The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/DazedNConfused-/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher. From the help menu, you can also check for new updates.
 
 ### The launcher keeps crashing when I start it. What can I do?
 
-You might need to delete your configs file to work around this issue. That filename is `configs.db` and it is located in `%LOCALAPPDATA%\CDDA Game Launcher\`. Some users have reported and encountered unrelated starting issues. In some cases, running a debug version of the launcher to get more logs might help to locate the issue. [Creating an issue about this](https://github.com/remyroy/CDDA-Game-Launcher/issues) is probably the way to go.
+You might need to delete your configs file to work around this issue. That filename is `configs.db` and it is located in `%LOCALAPPDATA%\CDDA Game Launcher\`. Some users have reported and encountered unrelated starting issues. In some cases, running a debug version of the launcher to get more logs might help to locate the issue. [Creating an issue about this](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues) is probably the way to go.
 
 ### I just installed the game and it already has a big list of mods. Is there something wrong?
 
@@ -228,15 +228,15 @@ It is frequent for game updates to break mods especially on the experimental bra
 
 Maintaining external mods can be a difficult task for an ever expanding and changing base game. The only sure and *official* way to have good working mods is to have them included in the base game. If you are concerned about having a reliable gaming experience, you should consider using the base game mods exclusivly and you should consider using the stable branch.
 
-If you find out a mod in the repository is clearly abandonned and not working anymore, please [open an issue](https://github.com/remyroy/CDDA-Game-Launcher/issues) about it so it can be removed.
+If you find out a mod in the repository is clearly abandonned and not working anymore, please [open an issue](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues) about it so it can be removed.
 
 ### Will you make a Linux or macOS version?
 
-Most likely not. You can check [the linux issue](https://github.com/remyroy/CDDA-Game-Launcher/issues/329) and [the mac issue](https://github.com/remyroy/CDDA-Game-Launcher/issues/73) for more information.
+Most likely not. You can check [the linux issue](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues/329) and [the mac issue](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues/73) for more information.
 
 ### It does not work? Can you help me?
 
-Submit your issues [on Github](https://github.com/remyroy/CDDA-Game-Launcher/issues). Try to [report bugs effectively](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html).
+Submit your issues [on Github](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues). Try to [report bugs effectively](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html).
 '''))
 
         m += html_faq
@@ -274,23 +274,11 @@ class AboutDialog(QDialog):
         self.ok_button.setText(_('OK'))
         m = _('<p>CDDA Game Launcher version {version}</p>').format(version=version)
         m += _('<p>Get the latest release'
-               ' <a href="https://github.com/remyroy/CDDA-Game-Launcher/releases">on GitHub</a>.'
+               ' <a href="https://github.com/DazedNConfused-/CDDA-Game-Launcher/releases">on GitHub</a>.'
                '</p>')
         m += _('<p>Please report any issue'
-               ' <a href="https://github.com/remyroy/CDDA-Game-Launcher/issues/new">on GitHub</a>.'
+               ' <a href="https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues/new">on GitHub</a>.'
                '</p>')
-        bitcoin_text = r'3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV'
-        bitcoin_link = r'bitcoin:3N2BRM61bZLuFRHjSj2Lhtw6DrwPUGeTvV'
-        ether_link = r'https://etherscan.io/address/0xdb731476e913d75061a78105c3d1b5a7a03aa21b'
-        ether_text = r'0xdb731476e913d75061a78105c3d1b5a7a03aa21b'
-        m += _('<p>If you like the CDDA Game Launcher, you can buy me a beer by:</p>'
-               '<p>donating bitcoins to <a href="{bitcoin_link}">{bitcoin_text}</a></p>'
-               '<p><img src="btc-qr.png" /></p>'
-               '<p>or by donating ethers to <a href="{ether_link}">{ether_text}</a></p>'
-               '<p><img src="eth-qr.png" /></p>').format(bitcoin_text=bitcoin_text,
-                                                         bitcoin_link=bitcoin_link,
-                                                         ether_link=ether_link,
-                                                         ether_text=ether_text)
         m += _('<p>Thanks to the following people for their efforts in'
                ' translating the CDDA Game Launcher</p>'
                '<ul>'
@@ -309,6 +297,7 @@ class AboutDialog(QDialog):
                ' 100&#37; free software, completely free to use, modify and/or distribute.'
                ' If you like more details check the following boring legal stuff...</p>')
         m += '<p>Copyright (c) 2015-2021 Rémy Roy</p>'
+        m += '<p>Copy<i>cat</i> (c) 2022-2022 Gonzalo López</p>'
         m += ('<p>Permission is hereby granted, free of charge, to any person obtaining a copy'
               ' of this software and associated documentation files (the "Software"), to deal'
               ' in the Software without restriction, including without limitation the rights'

@@ -118,6 +118,13 @@ def new_version(version, sha256, stable):
 
         session.add(game_version)
         session.commit()
+    elif game_version.version != version or game_version.stable != stable:
+        # if info doesn't match, update it
+        game_version.version = version
+        game_version.stable = stable
+
+        session.add(game_version)
+        session.commit()
 
 
 def new_build(version, sha256, stable, number, release_date):

@@ -389,7 +389,7 @@ msgid ""
 "Launcher/issues/new\">on GitHub</a>.</p>"
 msgstr ""
 "<p>Veuillez nous informer des problèmes <a "
-"href=\"https\\://github.com/remyroy/CDDA-Game-Launcher/issues/new\">sur "
+"href=\"https\\://github.com/DazedNConfused-/CDDA-Game-Launcher/issues/new\">sur "
 "GitHub</a>.</p>"
 
 #: cddagl/ui/views/dialogs.py:238

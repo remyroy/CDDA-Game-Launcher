@@ -427,7 +427,7 @@ msgid ""
 "Launcher/issues/new\">on GitHub</a>.</p>"
 msgstr ""
 "<p>Por favor, reportar cualquier problema <a "
-"href=\"https://github.com/remyroy/CDDA-Game-Launcher/issues/new\">en "
+"href=\"https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues/new\">en "
 "GitHub</a>.</p>"
 
 #: cddagl/ui/views/dialogs.py:185

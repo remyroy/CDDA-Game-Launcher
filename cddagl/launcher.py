@@ -68,9 +68,11 @@ def get_preferred_locale(available_locales):
 
 
 def init_logging():
+    # get root logger
     logger = logging.getLogger('cddagl')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
+    # setup directory for written-to-file logs
     local_app_data = os.environ.get('LOCALAPPDATA', os.environ.get('APPDATA'))
     if local_app_data is None or not os.path.isdir(local_app_data):
         local_app_data = ''
@@ -81,16 +83,23 @@ def init_logging():
 
     logging_file = os.path.join(logging_dir, 'app.log')
 
-    handler = RotatingFileHandler(logging_file, encoding='utf8',
-                                  maxBytes=cons.MAX_LOG_SIZE, backupCount=cons.MAX_LOG_FILES)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
+    # setup logging formatter
+    log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
 
-    logger.addHandler(handler)
+    # setup file logger
+    file_handler = RotatingFileHandler(
+        logging_file, encoding='utf8',
+        maxBytes=cons.MAX_LOG_SIZE, backupCount=cons.MAX_LOG_FILES
+    )
+    file_handler.setFormatter(log_formatter)
+    logger.addHandler(file_handler)
 
-    handler = logging.StreamHandler()
-    logger.addHandler(handler)
+    # setup consoler logger
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_formatter)
+    logger.addHandler(console_handler)
 
+    # initialize
     logger.info(_('CDDA Game Launcher started: {version}').format(version=version))
 
 

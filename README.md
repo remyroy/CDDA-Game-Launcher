@@ -8,7 +8,22 @@ SPDX-License-Identifier: MIT
 
 A [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/) launcher with additional features.
 
-[Download here](https://github.com/remyroy/CDDA-Game-Launcher/releases).
+![GitHub Workflow Status (master)](https://img.shields.io/github/workflow/status/DazedNConfused-/CDDA-Game-Launcher/build/master?label=master)
+![GitHub Workflow Status (develop)](https://img.shields.io/github/workflow/status/DazedNConfused-/CDDA-Game-Launcher/build/develop?label=develop)
+
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/DazedNConfused-/CDDA-Game-Launcher)
+![GitHub all releases](https://img.shields.io/github/downloads/DazedNConfused-/CDDA-Game-Launcher/total)
+[![GitHub forks](https://img.shields.io/github/forks/DazedNConfused-/CDDA-Game-Launcher)](https://github.com/DazedNConfused-/CDDA-Game-Launcher/network)
+
+[Download here](https://github.com/DazedNConfused-/CDDA-Game-Launcher/releases).
+
+## ~~Un~~maintained
+
+~~Maintenance and support for this application has now ended. You might still be able to use it but no guarantee is provided. Feel free to fork it, change it, rebuild it or leave it as you please.~~
+
+Maintenance and support for this application has resumed _**in limited capacity**_. Until I learn more about both the launcher codebase _and the game itself_, expect mostly fixes for the bugs I have encountered myself during my CDDA play sessions.
+
+Bug reports and feature requests are still welcome and encouraged, with the tacit understanding that I may not be able to attend them all until I get more seasoned with both game and launcher.
 
 ## Implemented features
 
@@ -20,12 +35,18 @@ A [Cataclysm: Dark Days Ahead](https://cataclysmdda.org/) launcher with addition
 * Mod manager
 * Save backups and automatic backups
 
-## Planned features
+## ~~Planned features~~
 
-* Tileset manager
-* Font presets
+* ~~Tileset manager~~
+* ~~Font presets~~
+
+No planed features, only maintenance and bugfixes in the short term. Although having a Tileset manager would indeed be nice, it may be a scope far too ambitious for a project just resurrected from beyond the grave. We shall see.
 
 ## FAQ
+
+### What happened to the previous CDDA Game Launcher?
+
+It has become unmaintained. Nevertheless, praise and gratitude go to [remyroy](https://github.com/remyroy) & [the rest of contributors](https://github.com/remyroy/CDDA-Game-Launcher/graphs/contributors) for their work on the launcher thus far, and for giving such a useful tool free of charge to the CDDA community.
 
 ### Where is my previous version?
 
@@ -47,7 +68,7 @@ The launcher goes to great lengths not to delete any file that could be importan
 
 Poor antivirus products are known to detect the launcher as a threat and block its execution or delete the launcher. A simple workaround is to add the launcher binary in your antivirus whitelist or select the action to trust this binary when detected.
 
-If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/remyroy/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
+If you are paranoid, you can always inspect the source code yourself and build the launcher from the source code. You are still likely to get false positives. There is little productive efforts we can do as software developers with these. We have [a nice building guide](https://github.com/DazedNConfused-/CDDA-Game-Launcher/blob/master/BUILDING.md) for those who want to build the launcher from the source code.
 
 Many people are dying to know why antivirus products are identifying the launcher as a threat. There has been many wild speculations to try to pinpoint the root cause for this. The best way to find out would be to ask those antivirus product developers. Unfortunatly, they are unlikely to respond for many good reasons. We could also speculate on this for days on end. Our current best speculation is because we use a component called PyInstaller [that is commonly flagged as a threat](https://github.com/pyinstaller/pyinstaller/issues/4633). Now, if you want see how deep the rabbit hole goes, you can keep on searching or speculating on why PyInstaller itself is commonly flagged as a threat. This research is left as an exercise to the reader.
 
@@ -59,11 +80,11 @@ You should [contact the game developpers](https://cataclysmdda.org/#ive-found-a-
 
 ### How do I update to a new version of the game launcher?
 
-The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/remyroy/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher. From the help menu, you can also check for new updates.
+The launcher will automatically check for updated version on start. If it finds one, the launcher will prompt you to update. You can always download [the latest version on github](https://github.com/DazedNConfused-/CDDA-Game-Launcher/releases). Those using the portable version will have to manually download and manually update the launcher. From the help menu, you can also check for new updates.
 
 ### The launcher keeps crashing when I start it. What can I do?
 
-You might need to delete your configs file to work around this issue. That filename is `configs.db` and it is located in `%LOCALAPPDATA%\CDDA Game Launcher\`. Some users have reported and encountered unrelated starting issues. In some cases, running a debug version of the launcher to get more logs might help to locate the issue. [Creating an issue about this](https://github.com/remyroy/CDDA-Game-Launcher/issues) is probably the way to go.
+You might need to delete your configs file to work around this issue. That filename is `configs.db` and it is located in `%LOCALAPPDATA%\CDDA Game Launcher\`. Some users have reported and encountered unrelated starting issues. In some cases, running a debug version of the launcher to get more logs might help to locate the issue. [Creating an issue about this](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues) is probably the way to go.
 
 ### I just installed the game and it already has a big list of mods. Is there something wrong?
 
@@ -75,15 +96,15 @@ It is frequent for game updates to break mods especially on the experimental bra
 
 Maintaining external mods can be a difficult task for an ever expanding and changing base game. The only sure and *official* way to have good working mods is to have them included in the base game. If you are concerned about having a reliable gaming experience, you should consider using the base game mods exclusivly and you should consider using the stable branch.
 
-If you find out a mod in the repository is clearly abandonned and not working anymore, please [open an issue](https://github.com/remyroy/CDDA-Game-Launcher/issues) about it so it can be removed.
+If you find out a mod in the repository is clearly abandonned and not working anymore, please [open an issue](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues) about it so it can be removed.
 
 ### Will you make a Linux or macOS version?
 
-Most likely not. You can check [the linux issue](https://github.com/remyroy/CDDA-Game-Launcher/issues/329) and [the mac issue](https://github.com/remyroy/CDDA-Game-Launcher/issues/73) for more information.
+Most likely not. You can check [the linux issue](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues/329) and [the mac issue](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues/73) for more information.
 
 ### It does not work? Can you help me?
 
-Submit your issues [on Github](https://github.com/remyroy/CDDA-Game-Launcher/issues). Try to [report bugs effectively](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html).
+Submit your issues [on Github](https://github.com/DazedNConfused-/CDDA-Game-Launcher/issues). Try to [report bugs effectively](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html).
 
 ## Building
 

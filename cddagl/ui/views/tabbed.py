@@ -38,6 +38,7 @@ from cddagl.ui.views.mods import ModsTab
 from cddagl.ui.views.settings import SettingsTab
 from cddagl.ui.views.soundpacks import SoundpacksTab
 from cddagl.ui.views.tilesets import TilesetsTab
+from cddagl.ui.views.statistics import StatisticsTab
 from cddagl.win32 import SimpleNamedPipe
 
 logger = logging.getLogger('cddagl')
@@ -153,6 +154,7 @@ class TabbedWindow(QMainWindow):
         self.about_dialog.exec()
 
     def check_new_launcher_version(self):
+        logger.info("Checking for new launcher version")
         self.lv_html = BytesIO()
 
         url = cons.GITHUB_REST_API_URL + cons.CDDAGL_LATEST_RELEASE
@@ -425,6 +427,7 @@ class CentralWidget(QTabWidget):
         self.create_soundpacks_tab()
         #self.create_fonts_tab()
         self.create_settings_tab()
+        self.create_statistics_tab()
 
     def set_text(self):
         self.setTabText(self.indexOf(self.main_tab), _('Main'))
@@ -434,6 +437,7 @@ class CentralWidget(QTabWidget):
         self.setTabText(self.indexOf(self.soundpacks_tab), _('Soundpacks'))
         #self.setTabText(self.indexOf(self.fonts_tab), _('Fonts'))
         self.setTabText(self.indexOf(self.settings_tab), _('Settings'))
+        self.setTabText(self.indexOf(self.statistics_tab), _('Statistics'))
 
         self.main_tab.set_text()
         self.backups_tab.set_text()
@@ -442,6 +446,7 @@ class CentralWidget(QTabWidget):
         self.soundpacks_tab.set_text()
         #self.fonts_tab.set_text()
         self.settings_tab.set_text()
+        self.statistics_tab.set_text()
 
     def create_main_tab(self):
         main_tab = MainTab()
@@ -477,6 +482,11 @@ class CentralWidget(QTabWidget):
         settings_tab = SettingsTab()
         self.addTab(settings_tab, _('Settings'))
         self.settings_tab = settings_tab
+
+    def create_statistics_tab(self):
+        statistics_tab = StatisticsTab()
+        self.addTab(statistics_tab, _('Statistics'))
+        self.statistics_tab = statistics_tab
 
 
 class LauncherUpdateDialog(QDialog):
