@@ -1,0 +1,8 @@
+SPDX-FileCopyrightText: PyLZMA Copyright (C) 2004-2015 Joachim Bauch
+SPDX-FileCopyrightText: 7-Zip Copyright (C) 1999-2010 Igor Pavlov
+SPDX-FileCopyrightText: LZMA SDK Copyright (C) 1999-2010 Igor Pavlov
+
+SPDX-License-Identifier: LGPL-2.1-only
+
+This file was downbloaded from https://www.lfd.uci.edu/~gohlke/pythonlibs/
+The upstream is https://github.com/fancycode/pylzma
