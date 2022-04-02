@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 Gonzalo López <glopezvigliante@gmail.com>
+#
+# SPDX-License-Identifier: MIT
+
 import logging
 from datetime import datetime
 from cddagl.functions import strfdelta
