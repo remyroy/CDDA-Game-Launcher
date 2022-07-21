@@ -2498,50 +2498,66 @@ class UpdateGroupBox(QGroupBox):
 
             status_bar.clearMessage()
 
-        # soundpacks
-        soundpack_dir = os.path.join(self.game_dir, 'data', 'sound')
-        previous_soundpack_dir = os.path.join(self.game_dir, 'previous_version',
-            'data', 'sound')
+        # soundpacks & custom soundpacks
+        soundpack_locations = [
+            [self.game_dir, 'sound'],        # User soundpacks
+            [self.game_dir, 'data', 'sound'] # Game soundpacks
+        ]
 
-        if (os.path.isdir(soundpack_dir) and os.path.isdir(
-            previous_soundpack_dir) and self.in_post_extraction):
-            status_bar.showMessage(_('Restoring custom soundpacks'))
+        prev_soundpack_locations = [
+            [base, 'previous_version'] + parts for base, *parts in soundpack_locations
+        ]
 
-            official_set = {}
-            for entry in os.listdir(soundpack_dir):
-                if not self.in_post_extraction:
-                    break
+        join_parts = lambda parts: Path(os.path.join(*parts))
 
-                entry_path = os.path.join(soundpack_dir, entry)
-                if os.path.isdir(entry_path):
-                    name = self.asset_name(entry_path, 'soundpack.txt')
-                    if name is not None and name not in official_set:
-                        official_set[name] = entry_path
+        # A list of tuples with the shape (CURRENT_SOUNDPACK_DIR, PREV_SOUNDPACK_DIR)
+        soundpack_paths = list(tuple(
+            zip(
+                map(join_parts, soundpack_locations),
+                map(join_parts, prev_soundpack_locations)
+            )
+        ))        
 
-            previous_set = {}
-            for entry in os.listdir(previous_soundpack_dir):
-                if not self.in_post_extraction:
-                    break
+        for soundpack_dir, previous_soundpack_dir in soundpack_paths:
+            # Create soundpack dir if needed
+            Path(soundpack_dir).mkdir(parents=True, exist_ok=True)
+            
+            if (os.path.isdir(soundpack_dir) and os.path.isdir(
+                previous_soundpack_dir) and self.in_post_extraction):
+                status_bar.showMessage(_('Restoring custom soundpacks'))
 
-                entry_path = os.path.join(previous_soundpack_dir, entry)
-                if os.path.isdir(entry_path):
-                    name = self.asset_name(entry_path, 'soundpack.txt')
-                    if name is not None and name not in previous_set:
-                        previous_set[name] = entry_path
+                official_set = {}
+                for entry in os.listdir(soundpack_dir):
+                    if not self.in_post_extraction:
+                        break
 
-            custom_set = set(previous_set.keys()) - set(official_set.keys())
-            if len(custom_set) > 0:
-                self.soundpack_dir = soundpack_dir
-                self.previous_soundpack_set = previous_set
-                self.custom_soundpacks = list(custom_set)
+                    entry_path = os.path.join(soundpack_dir, entry)
+                    if os.path.isdir(entry_path):
+                        name = self.asset_name(entry_path, 'soundpack.txt')
+                        if name is not None and name not in official_set:
+                            official_set[name] = entry_path
 
-                self.copy_next_soundpack()
-            else:
-                status_bar.clearMessage()
-                self.post_extraction_step3()
+                previous_set = {}
+                for entry in os.listdir(previous_soundpack_dir):
+                    if not self.in_post_extraction:
+                        break
 
-        else:
-            self.post_extraction_step3()
+                    entry_path = os.path.join(previous_soundpack_dir, entry)
+                    if os.path.isdir(entry_path):
+                        name = self.asset_name(entry_path, 'soundpack.txt')
+                        if name is not None and name not in previous_set:
+                            previous_set[name] = entry_path
+
+                custom_set = set(previous_set.keys()) - set(official_set.keys())
+                if len(custom_set) > 0:
+                    self.soundpack_dir = soundpack_dir
+                    self.previous_soundpack_set = previous_set
+                    self.custom_soundpacks = list(custom_set)
+
+                    self.copy_next_soundpack()
+                else:
+                    status_bar.clearMessage()
+        self.post_extraction_step3
 
     def copy_next_soundpack(self):
         if self.in_post_extraction and len(self.custom_soundpacks) > 0:
@@ -2731,7 +2747,7 @@ class UpdateGroupBox(QGroupBox):
 
         if not self.in_post_extraction:
             return
-
+        
         self.in_post_extraction = False
 
         if config_true(get_config_value('remove_previous_version', 'False')):
